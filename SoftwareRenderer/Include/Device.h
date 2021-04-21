@@ -11,12 +11,9 @@
 
 namespace RenderDog
 {
-	struct RenderTargetDesc
-	{
-		uint32_t	width;
-		uint32_t	height;
-		void*		pFrameBuf;
-	};
+	class Texture2D;
+	class RenderTargetView;
+	struct RenderTargetDesc;
 
 	class Device
 	{
@@ -24,29 +21,25 @@ namespace RenderDog
 		Device() = default;
 		~Device() = default;
 
-		bool CreateRenderTarget(const RenderTargetDesc& Desc, uint32_t**& pRenderTarget);
+		bool CreateRenderTargetView(Texture2D* pTexture, const RenderTargetDesc* pDesc, RenderTargetView** ppRenderTarget);
 	};
 
 	class DeviceContext
 	{
 	public:
-		DeviceContext(uint32_t width, uint32_t height) :
-			m_frameBuffer(nullptr),
-			m_FrameBufferWidth(width),
-			m_FrameBufferHeight(height)
+		DeviceContext() :
+			m_pFrameBuffer(nullptr)
 		{}
 
 		~DeviceContext()
 		{}
 
-		void OMSetRenderTarget(uint32_t* pRenderTarget);
-		void ClearRenderTarget(uint32_t** pRenderTarget, const float* pClearColor);
+		void OMSetRenderTarget(RenderTargetView* pRenderTarget);
+		void ClearRenderTarget(RenderTargetView* pRenderTarget, const float* ClearColor);
 		void Draw();
 
 	private:
-		uint32_t*	m_frameBuffer;
-		uint32_t	m_FrameBufferWidth;
-		uint32_t	m_FrameBufferHeight;
+		uint32_t*	m_pFrameBuffer;
 	};
 
 	struct SwapChainDesc
@@ -61,8 +54,8 @@ namespace RenderDog
 	public:
 		SwapChain() :
 			m_pBackBuffer(nullptr),
-			m_Width(0),
-			m_Height(0),
+			m_nWidth(0),
+			m_nHeight(0),
 			m_hWnd(nullptr),
 			m_hWndDC(nullptr),
 			m_hBitMap(nullptr),
@@ -71,18 +64,18 @@ namespace RenderDog
 
 		~SwapChain();
 
-		SwapChain(const SwapChainDesc& desc);
+		SwapChain(const SwapChainDesc* pDesc);
 
-		unsigned char* GetBackBuffer() { return m_pBackBuffer; }
+		bool GetBuffer(Texture2D** ppSurface);
 
 		void Release();
 
 		void Present();
 
 	private:
-		unsigned char*	m_pBackBuffer;
-		uint32_t		m_Width;
-		uint32_t		m_Height;
+		uint32_t*		m_pBackBuffer;
+		uint32_t		m_nWidth;
+		uint32_t		m_nHeight;
 
 		HWND			m_hWnd;
 		HDC				m_hWndDC;
@@ -90,6 +83,5 @@ namespace RenderDog
 		HBITMAP			m_hOldBitMap;
 	};
 
-	bool CreateDeviceAndSwapChain(Device** pDevice, DeviceContext** pDeviceContext, SwapChain** pSwapChain, const SwapChainDesc& swapChainDesc);
-	void ReleaseDevice(Device* pDevice, DeviceContext* pDeviceContext);
+	bool CreateDeviceAndSwapChain(Device** pDevice, DeviceContext** pDeviceContext, SwapChain** ppSwapChain, const SwapChainDesc* pSwapChainDesc);
 }

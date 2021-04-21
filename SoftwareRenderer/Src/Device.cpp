@@ -1,39 +1,47 @@
 #include "Device.h"
+#include "Texture.h"
+#include "RenderTargetView.h"
 
 namespace RenderDog
 {
-	bool Device::CreateRenderTarget(const RenderTargetDesc& Desc, uint32_t**& pRenderTarget)
+	bool Device::CreateRenderTargetView(Texture2D* pTexture, const RenderTargetDesc* pDesc, RenderTargetView** ppRenderTarget)
 	{
-		int needSize = sizeof(void*) * (Desc.height * 2 + 1024) + Desc.width * Desc.height * 8;
-		char* ptr = (char*)malloc(needSize + 64);
-		pRenderTarget = (uint32_t**)ptr;
-
-		char* pFrameBuf = (char*)Desc.pFrameBuf;
-		for (uint32_t i = 0; i < Desc.height; ++i)
+		if (!pDesc)
 		{
-			pRenderTarget[i] = (uint32_t*)(pFrameBuf + Desc.width * 4 * i);
+			RenderTargetView* pRT = new RenderTargetView();
+			*ppRenderTarget = pRT;
+
+			pRT->GetView() = pTexture->GetData();
+			pRT->SetWidth(pTexture->GetWidth());
+			pRT->SetHeight(pTexture->GetHeight());
+		}
+		else
+		{
+			//ToDo: Create RenderTargetView by Desc
 		}
 
 		return true;
 	}
 
-	void DeviceContext::OMSetRenderTarget(uint32_t* pRenderTarget)
+	void DeviceContext::OMSetRenderTarget(RenderTargetView* pRenderTarget)
 	{
-		m_frameBuffer = pRenderTarget;
+		m_pFrameBuffer = pRenderTarget->GetView();
 	}
 
-	void DeviceContext::ClearRenderTarget(uint32_t** pRenderTarget, const float* pClearColor)
+	void DeviceContext::ClearRenderTarget(RenderTargetView* pRenderTarget, const float* ClearColor)
 	{
 		uint32_t nClearColor = 0x0;
-		nClearColor = (uint32_t)(255 * pClearColor[0]) << 16 |
-			(uint32_t)(255 * pClearColor[1]) << 8 |
-			(uint32_t)(255 * pClearColor[2]);
+		nClearColor = (uint32_t)(255 * ClearColor[0]) << 16 | (uint32_t)(255 * ClearColor[1]) << 8 | (uint32_t)(255 * ClearColor[2]);
 
-		for (uint32_t i = 0; i < m_FrameBufferHeight; ++i)
+		uint32_t rtWidth = pRenderTarget->GetWidth();
+		uint32_t rtHeight = pRenderTarget->GetHeight();
+		uint32_t* pRT = pRenderTarget->GetView();
+		for (uint32_t row = 0; row < rtHeight; ++row)
 		{
-			for (uint32_t j = 0; j < m_FrameBufferWidth; ++j)
+			for (uint32_t col = 0; col < rtWidth; ++col)
 			{
-				pRenderTarget[i][j] = nClearColor;
+				uint32_t nIndex = row * rtWidth + col;
+				pRT[nIndex] = nClearColor;
 			}
 		}
 	}
@@ -43,18 +51,20 @@ namespace RenderDog
 		return;
 	}
 
-	SwapChain::SwapChain(const SwapChainDesc& desc):
-		m_hWnd(desc.hOutputWindow),
-		m_Width(desc.nWidth),
-		m_Height(desc.nHeight)
+	SwapChain::SwapChain(const SwapChainDesc* pDesc):
+		m_hWnd(pDesc->hOutputWindow),
+		m_nWidth(pDesc->nWidth),
+		m_nHeight(pDesc->nHeight)
 	{
 		HDC hDC = GetDC(m_hWnd);
 		m_hWndDC = CreateCompatibleDC(hDC);
 		ReleaseDC(m_hWnd, hDC);
 
 		void* pTempBitMapBuffer;
-		BITMAPINFO BitMapInfo = { { sizeof(BITMAPINFOHEADER), (int)desc.nWidth, -(int)desc.nHeight, 1, 32, BI_RGB,
-			desc.nWidth* desc.nHeight * 4, 0, 0, 0, 0 } };
+		BITMAPINFO BitMapInfo = 
+		{ 
+			{ sizeof(BITMAPINFOHEADER), (int)pDesc->nWidth, -(int)pDesc->nHeight, 1, 32, BI_RGB, pDesc->nWidth* pDesc->nHeight * 4, 0, 0, 0, 0 }
+		};
 		m_hBitMap = CreateDIBSection(m_hWndDC, &BitMapInfo, DIB_RGB_COLORS, &pTempBitMapBuffer, 0, 0);
 		if (m_hBitMap)
 		{
@@ -65,9 +75,9 @@ namespace RenderDog
 			m_hOldBitMap = nullptr;
 		}
 
-		m_pBackBuffer = (unsigned char*)pTempBitMapBuffer;
+		m_pBackBuffer = (uint32_t*)pTempBitMapBuffer;
 
-		memset(m_pBackBuffer, 0, m_Width * m_Height * 4);
+		memset(m_pBackBuffer, 0, (size_t)m_nWidth * (size_t)m_nHeight * 4);
 	}
 
 	SwapChain::~SwapChain()
@@ -101,15 +111,26 @@ namespace RenderDog
 		}
 	}
 
-
 	void SwapChain::Present()
 	{
 		HDC hDC = GetDC(m_hWnd);
-		BitBlt(hDC, 0, 0, m_Width, m_Height, m_hWndDC, 0, 0, SRCCOPY);
+		BitBlt(hDC, 0, 0, m_nWidth, m_nHeight, m_hWndDC, 0, 0, SRCCOPY);
 		ReleaseDC(m_hWnd, hDC);
 	}
 
-	bool CreateDeviceAndSwapChain(Device** pDevice, DeviceContext** pDeviceContext, SwapChain** pSwapChain, const SwapChainDesc& swapChainDesc)
+	bool SwapChain::GetBuffer(Texture2D** ppSurface)
+	{
+		Texture2D* pTex = new Texture2D();
+		*ppSurface = pTex;
+
+		pTex->GetData() = m_pBackBuffer;
+		pTex->SetWidth(m_nWidth);
+		pTex->SetHeight(m_nHeight);
+
+		return true;
+	}
+
+	bool CreateDeviceAndSwapChain(Device** pDevice, DeviceContext** pDeviceContext, SwapChain** pSwapChain, const SwapChainDesc* pSwapChainDesc)
 	{
 		*pDevice = new Device;
 		if (!pDevice)
@@ -117,33 +138,18 @@ namespace RenderDog
 			return false;
 		}
 
-		*pDeviceContext = new DeviceContext(swapChainDesc.nWidth, swapChainDesc.nHeight);
+		*pDeviceContext = new DeviceContext();
 		if (!pDeviceContext)
 		{
 			return false;
 		}
 
-		*pSwapChain = new SwapChain(swapChainDesc);
+		*pSwapChain = new SwapChain(pSwapChainDesc);
 		if (!pSwapChain)
 		{
 			return false;
 		}
 
 		return true;
-	}
-
-	void ReleaseDevice(Device* pDevice, DeviceContext* pDeviceContext)
-	{
-		if (pDevice)
-		{
-			delete pDevice;
-			pDevice = nullptr;
-		}
-
-		if (pDeviceContext)
-		{
-			delete pDeviceContext;
-			pDeviceContext = nullptr;
-		}
 	}
 }

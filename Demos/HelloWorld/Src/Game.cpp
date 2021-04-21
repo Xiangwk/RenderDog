@@ -5,21 +5,27 @@
 //Written by Xiang Weikang
 ///////////////////////////////////
 
+#define CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+
 #include "Vector.h"
 #include "Device.h"
+#include "RenderTargetView.h"
+#include "Texture.h"
 
 #include <windows.h>
 #include <string>
 
-HINSTANCE					g_hInst = nullptr;
-HWND						g_hWnd = nullptr;
-uint32_t**					g_pRenderTarget = nullptr;
-uint32_t					g_nWindowWidth = 1024;
-uint32_t					g_nWindowHeight = 768;
-							
-RenderDog::Device*			g_pDevice = nullptr;
-RenderDog::DeviceContext*	g_pDeviceContext = nullptr;
-RenderDog::SwapChain*		g_pSwapChain = nullptr;
+HINSTANCE						g_hInst = nullptr;
+HWND							g_hWnd = nullptr;
+uint32_t						g_nWindowWidth = 1024;
+uint32_t						g_nWindowHeight = 768;
+								
+RenderDog::Device*				g_pDevice = nullptr;
+RenderDog::DeviceContext*		g_pDeviceContext = nullptr;
+RenderDog::SwapChain*			g_pSwapChain = nullptr;
+RenderDog::RenderTargetView*	g_pRenderTargetView = nullptr;
 
 HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow);
 bool InitDevice();
@@ -71,31 +77,61 @@ bool InitDevice()
 	swapChainDesc.nHeight = g_nWindowHeight;
 	swapChainDesc.hOutputWindow = g_hWnd;
 
-	if (!RenderDog::CreateDeviceAndSwapChain(&g_pDevice, &g_pDeviceContext, &g_pSwapChain, swapChainDesc))
+	if (!RenderDog::CreateDeviceAndSwapChain(&g_pDevice, &g_pDeviceContext, &g_pSwapChain, &swapChainDesc))
 	{
 		return false;
 	}
 
-	RenderDog::RenderTargetDesc rtDesc;
-	rtDesc.width = g_nWindowWidth;
-	rtDesc.height = g_nWindowHeight;
-	rtDesc.pFrameBuf = (void*)g_pSwapChain->GetBackBuffer();
-	g_pDevice->CreateRenderTarget(rtDesc, g_pRenderTarget);
+	RenderDog::Texture2D* pBackBuffer = nullptr;
+	if (!g_pSwapChain->GetBuffer(&pBackBuffer))
+	{
+		return false;
+	}
+
+	if (!g_pDevice->CreateRenderTargetView(pBackBuffer, nullptr, &g_pRenderTargetView))
+	{
+		return false;
+	}
+	delete pBackBuffer;
+	pBackBuffer = nullptr;
 
 	return true;
 }
 
 void CleanupDevice()
 {
-	g_pSwapChain->Release();
-	RenderDog::ReleaseDevice(g_pDevice, g_pDeviceContext);
+	if (g_pSwapChain)
+	{
+		g_pSwapChain->Release();
+		delete g_pSwapChain;
+		g_pSwapChain = nullptr;
+	}
+	
+	
+	if (g_pRenderTargetView)
+	{
+		delete g_pRenderTargetView;
+		g_pRenderTargetView = nullptr;
+	}
+
+	if (g_pDevice)
+	{
+		delete g_pDevice;
+		g_pDevice = nullptr;
+	}
+
+	if (g_pDeviceContext)
+	{
+		delete g_pDeviceContext;
+		g_pDeviceContext = nullptr;
+	}
 }
 
 void Render()
 {
-	g_pDeviceContext->OMSetRenderTarget(*g_pRenderTarget);
-	float ClearColor[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
-	g_pDeviceContext->ClearRenderTarget(g_pRenderTarget, ClearColor);
+	g_pDeviceContext->OMSetRenderTarget(g_pRenderTargetView);
+	float ClearColor[4] = { 0.3f, 0.3f, 0.3f, 1.0f };
+	g_pDeviceContext->ClearRenderTarget(g_pRenderTargetView, ClearColor);
 
 	g_pDeviceContext->Draw();
 
@@ -155,6 +191,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	}
 
 	CleanupDevice();
+
+	_CrtDumpMemoryLeaks();
 
 	return (int)msg.wParam;
 }
