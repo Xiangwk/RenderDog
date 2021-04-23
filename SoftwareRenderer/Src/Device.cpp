@@ -2,6 +2,8 @@
 #include "Texture.h"
 #include "RenderTargetView.h"
 
+#include <cmath>
+
 namespace RenderDog
 {
 	bool Device::CreateRenderTargetView(Texture2D* pTexture, const RenderTargetDesc* pDesc, RenderTargetView** ppRenderTarget)
@@ -48,7 +50,54 @@ namespace RenderDog
 
 	void DeviceContext::Draw()
 	{
-		return;
+		float ClearColor[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
+		
+		DrawLineWithDDA(100, 100, 100, 100, ClearColor);
+	}
+
+	void DeviceContext::DrawLineWithDDA(float fPos1X, float fPos1Y, float fPos2X, float fPos2Y, const float* lineColor)
+	{
+		uint32_t nClearColor = (uint32_t)(255 * lineColor[0]) << 16 | (uint32_t)(255 * lineColor[1]) << 8 | (uint32_t)(255 * lineColor[2]);
+
+		float DeltaX = fPos2X - fPos1X;
+		float DeltaY = fPos2Y - fPos1Y;
+		
+		if (std::abs(DeltaX - 0.0f) < 0.000001f)
+		{
+			float yStart = std::fmin(fPos1Y, fPos2Y);
+			float yEnd = std::fmax(fPos1Y, fPos2Y);
+			for (int yStep = (int)yStart; yStep <= (int)yEnd; ++yStep)
+			{
+				m_pFrameBuffer[(int)fPos1X + yStep * m_nWidth] = nClearColor;
+			}
+			return;
+		}
+		
+		float k = DeltaY / DeltaX;
+		if (std::abs(k) <= 1.0f)
+		{
+			float xStart	= fPos1X < fPos2X ? fPos1X : fPos2X;
+			float xEnd		= fPos1X < fPos2X ? fPos2X : fPos1X;
+			float y			= fPos1X < fPos2X ? fPos1Y : fPos2Y;
+			for (int xStep = (int)xStart; xStep <= (int)xEnd; ++xStep)
+			{
+				y += k;
+				int yStep = (int)y;
+				m_pFrameBuffer[xStep + yStep * m_nWidth] = nClearColor;
+			}
+		}
+		else
+		{
+			float yStart	= fPos1Y < fPos2Y ? fPos1Y : fPos2Y;
+			float yEnd		= fPos1Y < fPos2Y ? fPos2Y : fPos1Y;
+			float x			= fPos1Y < fPos2Y ? fPos1X : fPos2X;
+			for (int yStep = (int)yStart; yStep <= (int)yEnd; ++yStep)
+			{
+				x += 1.0f / k;
+				int xStep = (int)x;
+				m_pFrameBuffer[xStep + yStep * m_nWidth] = nClearColor;
+			}
+		}
 	}
 
 	SwapChain::SwapChain(const SwapChainDesc* pDesc):
@@ -63,7 +112,7 @@ namespace RenderDog
 		void* pTempBitMapBuffer;
 		BITMAPINFO BitMapInfo = 
 		{ 
-			{ sizeof(BITMAPINFOHEADER), (int)pDesc->nWidth, -(int)pDesc->nHeight, 1, 32, BI_RGB, pDesc->nWidth* pDesc->nHeight * 4, 0, 0, 0, 0 }
+			{ sizeof(BITMAPINFOHEADER), (int)pDesc->nWidth, -(int)pDesc->nHeight, 1, 32, BI_RGB, pDesc->nWidth * pDesc->nHeight * 4, 0, 0, 0, 0 }
 		};
 		m_hBitMap = CreateDIBSection(m_hWndDC, &BitMapInfo, DIB_RGB_COLORS, &pTempBitMapBuffer, 0, 0);
 		if (m_hBitMap)
@@ -138,7 +187,7 @@ namespace RenderDog
 			return false;
 		}
 
-		*pDeviceContext = new DeviceContext();
+		*pDeviceContext = new DeviceContext(pSwapChainDesc->nWidth, pSwapChainDesc->nHeight);
 		if (!pDeviceContext)
 		{
 			return false;

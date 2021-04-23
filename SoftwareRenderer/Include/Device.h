@@ -28,7 +28,15 @@ namespace RenderDog
 	{
 	public:
 		DeviceContext() :
-			m_pFrameBuffer(nullptr)
+			m_pFrameBuffer(nullptr),
+			m_nWidth(0),
+			m_nHeight(0)
+		{}
+
+		DeviceContext(uint32_t width, uint32_t height) :
+			m_pFrameBuffer(nullptr),
+			m_nWidth(width),
+			m_nHeight(height)
 		{}
 
 		~DeviceContext()
@@ -39,7 +47,12 @@ namespace RenderDog
 		void Draw();
 
 	private:
+		void DrawLineWithDDA(float fPos1X, float fPos1Y, float fPos2X, float fPos2Y, const float* lineColor);
+
+	private:
 		uint32_t*	m_pFrameBuffer;
+		uint32_t	m_nWidth;
+		uint32_t	m_nHeight;
 	};
 
 	struct SwapChainDesc

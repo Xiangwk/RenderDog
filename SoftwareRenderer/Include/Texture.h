@@ -22,8 +22,6 @@ namespace RenderDog
 		~Texture2D()
 		{}
 
-		void Release();
-
 		uint32_t*& GetData() { return m_pData; }
 		const uint32_t* GetData() const { return m_pData; }
 

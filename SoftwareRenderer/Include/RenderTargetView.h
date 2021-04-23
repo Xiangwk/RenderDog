@@ -14,7 +14,7 @@ namespace RenderDog
 	{
 		uint32_t	width;
 		uint32_t	height;
-		void* pFrameBuf;
+		void*		pFrameBuf;
 	};
 
 	class RenderTargetView
