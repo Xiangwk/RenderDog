@@ -7,13 +7,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SoftwareRenderer", "..\..\S
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{F912CF4E-74F6-4303-A7E4-45A3B67BB252}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Math", "Math", "{13378DF0-323E-49B4-B525-868F4D2B0265}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\Math\Matrix.h = ..\..\Math\Matrix.h
-		..\..\Math\Transform.h = ..\..\Math\Transform.h
-		..\..\Math\Vector.h = ..\..\Math\Vector.h
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloWorld", "..\..\Demos\HelloWorld\Build\VS16.0\HelloWorld.vcxproj", "{EFB94D11-25FF-45ED-98F2-2034B19C8179}"
 	ProjectSection(ProjectDependencies) = postProject
 		{3DF59058-DED5-4A65-A9E9-A8F90D56D61E} = {3DF59058-DED5-4A65-A9E9-A8F90D56D61E}

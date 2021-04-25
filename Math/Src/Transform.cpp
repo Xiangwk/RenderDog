@@ -1,12 +1,4 @@
-///////////////////////////////////
-//RenderDog <¡¤,¡¤>
-//FileName: Transform.h
-//Written by Xiang Weikang
-///////////////////////////////////
-
-#pragma once
-
-#include "Matrix.h"
+#include "Transform.h"
 
 namespace RenderDog
 {
@@ -51,8 +43,8 @@ namespace RenderDog
 	Matrix4x4 GetPerspProjectionMatrixLH(float Fov, float AspectRatio, float Near, float Far)
 	{
 		float RadianHalfFov = 0.5f * Fov / 180.0f * 3.1415926f;
-		float SinHalfFov = std::sin(RadianHalfFov);
-		float CosHalfFov = std::cos(RadianHalfFov);
+		float SinHalfFov = std::sinf(RadianHalfFov);
+		float CosHalfFov = std::cosf(RadianHalfFov);
 
 		float HeightRatio = CosHalfFov / SinHalfFov;
 		float WidthRatio = HeightRatio / AspectRatio;

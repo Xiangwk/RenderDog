@@ -1,6 +1,11 @@
 #include "Device.h"
 #include "Texture.h"
 #include "RenderTargetView.h"
+#include "Buffer.h"
+#include "Shader.h"
+#include "Vertex.h"
+#include "Viewport.h"
+#include "Matrix.h"
 
 #include <cmath>
 
@@ -23,6 +28,126 @@ namespace RenderDog
 		}
 
 		return true;
+	}
+
+	bool Device::CreateVertexBuffer(const VertexBufferDesc& vbDesc, VertexBuffer** ppVertexBuffer)
+	{
+		if (*ppVertexBuffer)
+		{
+			(*ppVertexBuffer)->Release();
+			*ppVertexBuffer = nullptr;
+		}
+
+		VertexBuffer* pVB = new VertexBuffer(vbDesc);
+		if (!pVB)
+		{
+			return false;
+		}
+
+		*ppVertexBuffer = pVB;
+		
+		return true;
+	}
+
+	bool Device::CreateIndexBuffer(const IndexBufferDesc& ibDesc, IndexBuffer** ppIndexBuffer)
+	{
+		if (*ppIndexBuffer)
+		{
+			(*ppIndexBuffer)->Release();
+			*ppIndexBuffer = nullptr;
+		}
+
+		IndexBuffer* pIB = new IndexBuffer(ibDesc);
+		if (!pIB)
+		{
+			return false;
+		}
+
+		*ppIndexBuffer = pIB;
+
+		return true;
+	}
+
+	bool Device::CreateVertexShader(VertexShader** ppVertexShader)
+	{
+		if (*ppVertexShader)
+		{
+			delete *ppVertexShader;
+		}
+
+		VertexShader* pVS = new VertexShader();
+		if (!pVS)
+		{
+			return false;
+		}
+
+		*ppVertexShader = pVS;
+
+		return true;
+	}
+
+	bool Device::CreatePixelShader(PixelShader** ppPixelShader)
+	{
+		if (*ppPixelShader)
+		{
+			delete *ppPixelShader;
+		}
+
+		PixelShader* pPS = new PixelShader();
+		if (!pPS)
+		{
+			return false;
+		}
+
+		*ppPixelShader = pPS;
+
+		return true;
+	}
+
+	DeviceContext::~DeviceContext()
+	{
+		if (m_pVSOutputs)
+		{
+			delete[] m_pVSOutputs;
+			m_pVSOutputs = nullptr;
+		}
+
+		if (m_pViewportMat)
+		{
+			delete m_pViewportMat;
+			m_pViewportMat = nullptr;
+		}
+	}
+
+	void DeviceContext::IASetVertexBuffer(const VertexBuffer* pVB)
+	{
+		if (m_pVB != pVB)
+		{
+			uint32_t nVertexNum = pVB->GetNum();
+			m_pVSOutputs = new Vertex[nVertexNum];
+
+			m_pVB = pVB;
+		}
+	}
+	void DeviceContext::IASetIndexBuffer(const IndexBuffer* pIB)
+	{
+		if (m_pIB != pIB)
+		{
+			m_pIB = pIB;
+		}
+	}
+
+	void DeviceContext::VSSetTransMats(const Matrix4x4* matWorld, const Matrix4x4* matView, const Matrix4x4* matProj)
+	{
+		m_pWorldMat = matWorld;
+		m_pViewMat = matView;
+		m_pProjMat = matProj;
+	}
+
+	void DeviceContext::RSSetViewport(const Viewport* pVP)
+	{
+		Matrix4x4 matViewport = pVP->GetViewportMatrix();
+		m_pViewportMat = new Matrix4x4(matViewport);
 	}
 
 	void DeviceContext::OMSetRenderTarget(RenderTargetView* pRenderTarget)
@@ -53,6 +178,43 @@ namespace RenderDog
 		float ClearColor[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
 		
 		DrawLineWithDDA(100, 100, 100, 100, ClearColor);
+	}
+
+	void DeviceContext::DrawIndex(uint32_t nIndexNum)
+	{
+		const Vertex* pVerts = m_pVB->GetData();
+		//Local to CVV
+		for (uint32_t i = 0; i < m_pVB->GetNum(); ++i)
+		{
+			const Vertex& vert = pVerts[i];
+			//FIXME!!! 除以w不能在VS里做
+			m_pVSOutputs[i] = m_pVS->VSMain(vert, *m_pWorldMat, *m_pViewMat, *m_pProjMat);
+		}
+
+		//CVV Clip
+
+
+		//CVV to Screen
+		for (uint32_t i = 0; i < m_pVB->GetNum(); ++i)
+		{
+			Vertex& vert = m_pVSOutputs[i];
+			Vector4 vScreenPos(vert.vPostion, 1.0f);
+			vScreenPos = vScreenPos * (*m_pViewportMat);
+			vert.vPostion = Vector3(vScreenPos.x, vScreenPos.y, vScreenPos.z);
+		}
+
+		const uint32_t* pIndice = m_pIB->GetData();
+		for (uint32_t i = 0; i < nIndexNum; i += 3)
+		{
+			const Vertex& vert0 = m_pVSOutputs[pIndice[i]];
+			const Vertex& vert1 = m_pVSOutputs[pIndice[i + 1]];
+			const Vertex& vert2 = m_pVSOutputs[pIndice[i + 2]];
+
+			float lineColor[4] = { vert0.vColor.x, vert0.vColor.y, vert0.vColor.z, 1.0f };
+			DrawLineWithDDA(vert0.vPostion.x, vert0.vPostion.y, vert1.vPostion.x, vert1.vPostion.y, lineColor);
+			DrawLineWithDDA(vert1.vPostion.x, vert1.vPostion.y, vert2.vPostion.x, vert2.vPostion.y, lineColor);
+			DrawLineWithDDA(vert2.vPostion.x, vert2.vPostion.y, vert0.vPostion.x, vert0.vPostion.y, lineColor);
+		}
 	}
 
 	void DeviceContext::DrawLineWithDDA(float fPos1X, float fPos1Y, float fPos2X, float fPos2Y, const float* lineColor)

@@ -119,7 +119,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Include;..\..\..\Math\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -146,12 +146,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\Math\Include\Matrix.h" />
+    <ClInclude Include="..\..\..\Math\Include\Transform.h" />
+    <ClInclude Include="..\..\..\Math\Include\Vector.h" />
+    <ClInclude Include="..\..\Include\Buffer.h" />
     <ClInclude Include="..\..\Include\Device.h" />
     <ClInclude Include="..\..\Include\RenderTargetView.h" />
     <ClInclude Include="..\..\Include\Texture.h" />
+    <ClInclude Include="..\..\Include\Shader.h" />
+    <ClInclude Include="..\..\Include\Vertex.h" />
+    <ClInclude Include="..\..\Include\Viewport.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\Math\Src\Matrix.cpp" />
+    <ClCompile Include="..\..\..\Math\Src\Transform.cpp" />
+    <ClCompile Include="..\..\..\Math\Src\Vector.cpp" />
+    <ClCompile Include="..\..\Src\Buffer.cpp" />
     <ClCompile Include="..\..\Src\Device.cpp" />
+    <ClCompile Include="..\..\Src\Shader.cpp" />
+    <ClCompile Include="..\..\Src\Viewport.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
