@@ -191,10 +191,10 @@ namespace RenderDog
 			m_pVSOutputs[i] = m_pVS->VSMain(vert, *m_pWorldMat, *m_pViewMat, *m_pProjMat);
 		}
 
-		//CVV Clip
+		//Clip
 
 
-		//CVV to Screen
+		//Clip to Screen
 		for (uint32_t i = 0; i < m_pVB->GetNum(); ++i)
 		{
 			Vertex& vert = m_pVSOutputs[i];
@@ -210,10 +210,14 @@ namespace RenderDog
 			const Vertex& vert1 = m_pVSOutputs[pIndice[i + 1]];
 			const Vertex& vert2 = m_pVSOutputs[pIndice[i + 2]];
 
-			float lineColor[4] = { vert0.vColor.x, vert0.vColor.y, vert0.vColor.z, 1.0f };
-			DrawLineWithDDA(vert0.vPostion.x, vert0.vPostion.y, vert1.vPostion.x, vert1.vPostion.y, lineColor);
-			DrawLineWithDDA(vert1.vPostion.x, vert1.vPostion.y, vert2.vPostion.x, vert2.vPostion.y, lineColor);
-			DrawLineWithDDA(vert2.vPostion.x, vert2.vPostion.y, vert0.vPostion.x, vert0.vPostion.y, lineColor);
+			if (m_PriTopology == PrimitiveTopology::LINE_LIST)
+			{
+				DrawTriangleWithLine(vert0, vert1, vert2);
+			}
+			else if(m_PriTopology == PrimitiveTopology::TRIANGLE_LIST)
+			{
+				DrawTriangleWithFlat(vert0, vert1, vert2);
+			}
 		}
 	}
 
@@ -260,6 +264,97 @@ namespace RenderDog
 				m_pFrameBuffer[xStep + yStep * m_nWidth] = nClearColor;
 			}
 		}
+	}
+
+	void DeviceContext::DrawTriangleWithLine(const Vertex& v0, const Vertex& v1, const Vertex& v2)
+	{
+		float lineColor[4] = { v0.vColor.x, v0.vColor.y, v0.vColor.z, 1.0f };
+		DrawLineWithDDA(v0.vPostion.x, v0.vPostion.y, v1.vPostion.x, v1.vPostion.y, lineColor);
+		DrawLineWithDDA(v1.vPostion.x, v1.vPostion.y, v2.vPostion.x, v2.vPostion.y, lineColor);
+		DrawLineWithDDA(v2.vPostion.x, v2.vPostion.y, v0.vPostion.x, v0.vPostion.y, lineColor);
+	}
+
+	void DeviceContext::DrawTriangleWithFlat(const Vertex& v0, const Vertex& v1, const Vertex& v2)
+	{
+		Vertex vert0(v0);
+		Vertex vert1(v1);
+		Vertex vert2(v2);
+		SortTriangleVertsByYGrow(vert0, vert1, vert2);
+
+		if (std::abs(vert0.vPostion.y - vert1.vPostion.y) < 0.000001f)
+		{
+			DrawTopTriangle(vert0, vert1, vert2);
+		}
+		else if (std::abs(vert1.vPostion.y - vert2.vPostion.y) < 0.000001f)
+		{
+			DrawBottomTriangle(vert0, vert1, vert2);
+		}
+		else
+		{
+			RenderDog::Vertex vertNew;
+			SliceTriangleToUpAndBottom(vert0, vert1, vert2, vertNew);
+
+			DrawBottomTriangle(vert0, vert1, vertNew);
+			DrawTopTriangle(vert1, vertNew, vert2);
+		}
+	}
+
+	void DeviceContext::SortTriangleVertsByYGrow(Vertex& v0, Vertex& v1, Vertex& v2)
+	{
+		if (v1.vPostion.y < v0.vPostion.y)
+		{
+			Vertex vTemp = v0;
+			v0 = v1;
+			v1 = vTemp;
+		}
+		else if (v2.vPostion.y < v0.vPostion.y)
+		{
+			Vertex vTemp = v0;
+			v0 = v2;
+			v2 = vTemp;
+		}
+
+		if (v2.vPostion.y < v1.vPostion.y)
+		{
+			Vertex vTemp = v1;
+			v1 = v2;
+			v2 = vTemp;
+		}
+	}
+
+	void DeviceContext::SortScanlineVertsByXGrow(Vertex& v0, Vertex& v1)
+	{
+		if (v1.vPostion.x < v0.vPostion.x)
+		{
+			Vertex vTemp = v0;
+			v0 = v1;
+			v1 = vTemp;
+		}
+	}
+
+	void DeviceContext::DrawTopTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2)
+	{
+
+	}
+
+	void DeviceContext::DrawBottomTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2)
+	{
+
+	}
+
+	void DeviceContext::SliceTriangleToUpAndBottom(const Vertex& v0, const Vertex& v1, const Vertex& v2, Vertex& vNew)
+	{
+		float fLerpFactor = (v1.vPostion.y - v0.vPostion.y) / (v2.vPostion.y - v0.vPostion.y);
+
+		float fNewX = v0.vPostion.x + fLerpFactor * (v2.vPostion.x - v0.vPostion.x);
+		float fNewZ = v0.vPostion.z + fLerpFactor * (v2.vPostion.z - v0.vPostion.z);
+
+		Vector3 vNewPos(fNewX, v1.vPostion.y, fNewZ);
+
+		Vector3 vNewColor = v0.vColor + fLerpFactor * (v2.vColor - v0.vColor);
+
+		vNew.vPostion = vNewPos;
+		vNew.vColor = vNewColor;
 	}
 
 	SwapChain::SwapChain(const SwapChainDesc* pDesc):

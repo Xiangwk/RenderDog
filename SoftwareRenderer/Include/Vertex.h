@@ -15,6 +15,9 @@ namespace RenderDog
 		Vertex() = default;
 		~Vertex() = default;
 
+		Vertex(const Vertex& v) = default;
+		Vertex& operator=(const Vertex& v) = default;
+
 		Vector3 vPostion;
 		Vector3 vColor;
 	};

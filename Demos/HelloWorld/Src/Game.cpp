@@ -275,6 +275,7 @@ void Render()
 
 	g_pDeviceContext->IASetVertexBuffer(g_pVertexBuffer);
 	g_pDeviceContext->IASetIndexBuffer(g_pIndexBuffer);
+	g_pDeviceContext->IASetPrimitiveTopology(RenderDog::PrimitiveTopology::LINE_LIST);
 
 	g_pDeviceContext->VSSetShader(g_pVertexShader);
 	g_pDeviceContext->VSSetTransMats(&g_WorldMatrix, &g_ViewMatrix, &g_PerspProjMatrix);

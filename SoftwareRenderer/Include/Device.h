@@ -24,6 +24,12 @@ namespace RenderDog
 	struct IndexBufferDesc;
 	struct Vertex;
 
+	enum class PrimitiveTopology
+	{
+		LINE_LIST,
+		TRIANGLE_LIST
+	};
+
 	class Device
 	{
 	public:
@@ -52,7 +58,8 @@ namespace RenderDog
 			m_pViewMat(nullptr),
 			m_pProjMat(nullptr),
 			m_pVSOutputs(nullptr),
-			m_pViewportMat(nullptr)
+			m_pViewportMat(nullptr),
+			m_PriTopology(PrimitiveTopology::TRIANGLE_LIST)
 		{}
 
 		DeviceContext(uint32_t width, uint32_t height) :
@@ -67,13 +74,15 @@ namespace RenderDog
 			m_pViewMat(nullptr),
 			m_pProjMat(nullptr),
 			m_pVSOutputs(nullptr),
-			m_pViewportMat(nullptr)
+			m_pViewportMat(nullptr),
+			m_PriTopology(PrimitiveTopology::TRIANGLE_LIST)
 		{}
 
 		~DeviceContext();
 
 		void IASetVertexBuffer(const VertexBuffer* pVB);
 		void IASetIndexBuffer(const IndexBuffer* pIB);
+		void IASetPrimitiveTopology(PrimitiveTopology topology) { m_PriTopology = topology; }
 
 		void VSSetShader(const VertexShader* pVS) { m_pVS = pVS; }
 		void VSSetTransMats(const Matrix4x4* matWorld, const Matrix4x4* matView, const Matrix4x4* matProj);
@@ -88,6 +97,16 @@ namespace RenderDog
 
 	private:
 		void DrawLineWithDDA(float fPos1X, float fPos1Y, float fPos2X, float fPos2Y, const float* lineColor);
+		void DrawTriangleWithLine(const Vertex& v0, const Vertex& v1, const Vertex& v2);
+		void DrawTriangleWithFlat(const Vertex& v0, const Vertex& v1, const Vertex& v2);
+
+		void SortTriangleVertsByYGrow(Vertex& v0, Vertex& v1, Vertex& v2);
+		void SortScanlineVertsByXGrow(Vertex& v0, Vertex& v1);
+
+		void DrawTopTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
+		void DrawBottomTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
+
+		void SliceTriangleToUpAndBottom(const Vertex& v0, const Vertex& v1, const Vertex& v2, Vertex& vNew);
 
 	private:
 		uint32_t*			m_pFrameBuffer;
@@ -107,6 +126,9 @@ namespace RenderDog
 		Vertex*				m_pVSOutputs;
 
 		Matrix4x4*			m_pViewportMat;
+
+		PrimitiveTopology	m_PriTopology;
+
 	};
 
 	struct SwapChainDesc
