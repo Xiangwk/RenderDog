@@ -22,6 +22,30 @@ namespace RenderDog
 		return scaleMat;
 	}
 
+	Matrix4x4 GetRotationMatrix(float fAngle, const Vector3& vRotAxis)
+	{
+		float fRadian = fAngle / 180.0f * 3.1415926f;
+		float fSinA = std::sinf(fRadian);
+		float fCosA = std::cosf(fRadian);
+
+		Vector3 vNormRotAxis = Normalize(vRotAxis);
+
+		Matrix4x4 Result = GetIdentityMatrix();
+		Result(0, 0) = fCosA + (1.0f - fCosA) * vNormRotAxis.x * vNormRotAxis.x;
+		Result(1, 0) = (1.0f - fCosA) * vNormRotAxis.x * vNormRotAxis.y - fSinA * vNormRotAxis.z;
+		Result(2, 0) = (1.0f - fCosA) * vNormRotAxis.x * vNormRotAxis.z + fSinA * vNormRotAxis.y;
+
+		Result(0, 1) = (1.0f - fCosA) * vNormRotAxis.x * vNormRotAxis.y + fSinA * vNormRotAxis.z;
+		Result(1, 1) = fCosA + (1.0f - fCosA) * vNormRotAxis.y * vNormRotAxis.y;
+		Result(2, 1) = (1.0f - fCosA) * vNormRotAxis.y * vNormRotAxis.z - fSinA * vNormRotAxis.x;
+		
+		Result(0, 2) = (1.0f - fCosA) * vNormRotAxis.x * vNormRotAxis.z - fSinA * vNormRotAxis.y;
+		Result(1, 2) = (1.0f - fCosA) * vNormRotAxis.y * vNormRotAxis.z + fSinA * vNormRotAxis.x;
+		Result(2, 2) = fCosA + (1.0f - fCosA) * vNormRotAxis.z * vNormRotAxis.z;
+
+		return Result;
+	}
+
 	Matrix4x4 GetLookAtMatrixLH(const Vector3& eyePos, const Vector3& focusPos, const Vector3& upDir)
 	{
 		Vector3 camZAxis = focusPos - eyePos;

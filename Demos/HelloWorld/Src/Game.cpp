@@ -46,6 +46,7 @@ HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow);
 bool InitDevice();
 void CleanupDevice();
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
+void Update(float fTime);
 void Render();
 
 HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow)
@@ -200,7 +201,7 @@ bool InitDevice()
 	}
 
 	g_WorldMatrix = RenderDog::GetIdentityMatrix();
-	g_ViewMatrix = RenderDog::GetLookAtMatrixLH(Vector3(5.0f, 8.0f, -10.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f));
+	g_ViewMatrix = RenderDog::GetLookAtMatrixLH(Vector3(0.0f, 0.0f, -10.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f));
 	g_PerspProjMatrix = RenderDog::GetPerspProjectionMatrixLH(45.0f, (float)g_nWindowWidth / g_nWindowHeight, 0.01f, 1000.0f);
 
 	return true;
@@ -259,6 +260,11 @@ void CleanupDevice()
 		delete g_pDeviceContext;
 		g_pDeviceContext = nullptr;
 	}
+}
+
+void Update(float fTime)
+{
+	g_WorldMatrix = GetRotationMatrix(fTime, Vector3(1.0f, 1.0f, 1.0f));
 }
 
 void Render()
@@ -327,7 +333,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		}
 		else
 		{
+			static float fTime = 0.0f;
+			Update(fTime);
 			Render();
+			fTime += 0.1f;
 		}
 	}
 
