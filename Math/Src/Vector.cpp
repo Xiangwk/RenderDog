@@ -27,6 +27,11 @@ namespace RenderDog
 		return f * lhs;
 	}
 
+	Vector3 operator/(const Vector3& lhs, float f)
+	{
+		return Vector3(lhs.x / f, lhs.y / f, lhs.z / f);
+	}
+
 	Vector3 Normalize(const Vector3& vec)
 	{
 		float len = vec.Length();

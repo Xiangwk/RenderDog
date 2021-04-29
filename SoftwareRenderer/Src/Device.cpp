@@ -223,7 +223,7 @@ namespace RenderDog
 
 	void DeviceContext::DrawLineWithDDA(float fPos1X, float fPos1Y, float fPos2X, float fPos2Y, const float* lineColor)
 	{
-		uint32_t nClearColor = (uint32_t)(255 * lineColor[0]) << 16 | (uint32_t)(255 * lineColor[1]) << 8 | (uint32_t)(255 * lineColor[2]);
+		uint32_t nClearColor = ConvertFloatColorToUInt(lineColor);
 
 		float DeltaX = fPos2X - fPos1X;
 		float DeltaY = fPos2Y - fPos1Y;
@@ -281,11 +281,11 @@ namespace RenderDog
 		Vertex vert2(v2);
 		SortTriangleVertsByYGrow(vert0, vert1, vert2);
 
-		if (std::abs(vert0.vPostion.y - vert1.vPostion.y) < 0.000001f)
+		if ((uint32_t)vert0.vPostion.y == (uint32_t)vert1.vPostion.y)
 		{
 			DrawTopTriangle(vert0, vert1, vert2);
 		}
-		else if (std::abs(vert1.vPostion.y - vert2.vPostion.y) < 0.000001f)
+		else if ((uint32_t)vert1.vPostion.y == (uint32_t)vert2.vPostion.y)
 		{
 			DrawBottomTriangle(vert0, vert1, vert2);
 		}
@@ -301,20 +301,21 @@ namespace RenderDog
 
 	void DeviceContext::SortTriangleVertsByYGrow(Vertex& v0, Vertex& v1, Vertex& v2)
 	{
-		if (v1.vPostion.y < v0.vPostion.y)
+		if ((uint32_t)v1.vPostion.y <= (uint32_t)v0.vPostion.y)
 		{
 			Vertex vTemp = v0;
 			v0 = v1;
 			v1 = vTemp;
 		}
-		else if (v2.vPostion.y < v0.vPostion.y)
+		
+		if ((uint32_t)v2.vPostion.y <= (uint32_t)v0.vPostion.y)
 		{
 			Vertex vTemp = v0;
 			v0 = v2;
 			v2 = vTemp;
 		}
 
-		if (v2.vPostion.y < v1.vPostion.y)
+		if ((uint32_t)v2.vPostion.y <= (uint32_t)v1.vPostion.y)
 		{
 			Vertex vTemp = v1;
 			v1 = v2;
@@ -334,12 +335,112 @@ namespace RenderDog
 
 	void DeviceContext::DrawTopTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2)
 	{
+		Vertex vert0 = v0;
+		Vertex vert1 = v1;
+		Vertex vert2 = v2;
+		if (vert1.vPostion.x < vert0.vPostion.x)
+		{
+			Vertex vTemp = vert0;
+			vert0 = vert1;
+			vert1 = vTemp;
+		}
 
+		float fDeltaY = vert2.vPostion.y - vert0.vPostion.y;
+		float fDeltaXLeft = (vert2.vPostion.x - vert0.vPostion.x) / fDeltaY;
+		float fDeltaXRight = (vert2.vPostion.x - vert1.vPostion.x) / fDeltaY;
+
+		float fDeltaZLeft = (1.0f / vert2.vPostion.z - 1.0f / vert0.vPostion.z) / fDeltaY;
+		float fDeltaZRight = (1.0f / vert2.vPostion.z - 1.0f / vert1.vPostion.z) / fDeltaY;
+
+		Vector3 vDeltaColorLeft = (vert2.vColor - vert0.vColor) / fDeltaY;
+		Vector3 vDeltaColorRight = (vert2.vColor - vert1.vColor) / fDeltaY;
+
+		for (uint32_t i = 0; i < (uint32_t)fDeltaY; ++i)
+		{
+			float fXStart = vert0.vPostion.x + i * fDeltaXLeft;
+			float fXEnd = vert1.vPostion.x + i * fDeltaXRight;
+
+			float fInvZStart = 1.0f / vert0.vPostion.z + i * fDeltaZLeft;
+			float fInvZEnd = 1.0f / vert1.vPostion.z + i * fDeltaZRight;
+
+			Vector3 vColorStart = vert0.vColor + (float)i * vDeltaColorLeft;
+			Vector3 vColorEnd = vert1.vColor + (float)i * vDeltaColorRight;
+
+			float fDeltaX = fXEnd - fXStart;
+			float fInvDeltaZ = fInvZEnd - fInvZStart;
+			Vector3 vDeltaColor(0.0f);
+			if (fDeltaX != 0)
+			{
+				Vector3 vDeltaColor = (vColorEnd - vColorStart) / fDeltaX;
+			}
+			for (uint32_t j = 0; j < (uint32_t)fDeltaX; ++j)
+			{
+				float fInvZ = fInvZStart + j * fInvDeltaZ;
+				float fDepth = 1.0f / fInvZ;
+
+				Vector3 vColor = vColorStart + (float)j * vDeltaColor;
+				uint32_t nDrawIndexX = (uint32_t)fXStart + j;
+				uint32_t nDrawIndexY = (uint32_t)vert0.vPostion.y + i;
+
+				float pixelColor[4] = { vColor.x, vColor.y, vColor.z, 1.0f };
+				m_pFrameBuffer[nDrawIndexX + nDrawIndexY * m_nWidth] = ConvertFloatColorToUInt(pixelColor);
+			}
+		}
 	}
 
 	void DeviceContext::DrawBottomTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2)
 	{
+		Vertex vert0 = v0;
+		Vertex vert1 = v1;
+		Vertex vert2 = v2;
+		if (vert2.vPostion.x < vert1.vPostion.x)
+		{
+			Vertex vTemp = vert1;
+			vert1 = vert2;
+			vert2 = vTemp;
+		}
 
+		float fDeltaY = vert2.vPostion.y - vert0.vPostion.y;
+		float fDeltaXLeft = (vert1.vPostion.x - vert0.vPostion.x) / fDeltaY;
+		float fDeltaXRight = (vert2.vPostion.x - vert0.vPostion.x) / fDeltaY;
+
+		float fDeltaZLeft = (1.0f / vert1.vPostion.z - 1.0f / vert0.vPostion.z) / fDeltaY;
+		float fDeltaZRight = (1.0f / vert2.vPostion.z - 1.0f / vert0.vPostion.z) / fDeltaY;
+
+		Vector3 vDeltaColorLeft = (vert1.vColor - vert0.vColor) / fDeltaY;
+		Vector3 vDeltaColorRight = (vert2.vColor - vert0.vColor) / fDeltaY;
+
+		for (uint32_t i = 0; i < (uint32_t)fDeltaY; ++i)
+		{
+			float fXStart = vert0.vPostion.x + i * fDeltaXLeft;
+			float fXEnd = vert0.vPostion.x + i * fDeltaXRight;
+
+			float fInvZStart = 1.0f / vert0.vPostion.z + i * fDeltaZLeft;
+			float fInvZEnd = 1.0f / vert0.vPostion.z + i * fDeltaZRight;
+
+			Vector3 vColorStart = vert0.vColor + (float)i * vDeltaColorLeft;
+			Vector3 vColorEnd = vert0.vColor + (float)i * vDeltaColorRight;
+
+			float fDeltaX = fXEnd - fXStart;
+			float fInvDeltaZ = fInvZEnd - fInvZStart;
+			Vector3 vDeltaColor(0.0f);
+			if (fDeltaX != 0)
+			{
+				Vector3 vDeltaColor = (vColorEnd - vColorStart) / fDeltaX;
+			}
+			for (uint32_t j = 0; j < (uint32_t)fDeltaX; ++j)
+			{
+				float fInvZ = fInvZStart + j * fInvDeltaZ;
+				float fDepth = 1.0f / fInvZ;
+
+				Vector3 vColor = vColorStart + (float)j * vDeltaColor;
+				uint32_t nDrawIndexX = (uint32_t)fXStart + j;
+				uint32_t nDrawIndexY = (uint32_t)vert0.vPostion.y + i;
+
+				float pixelColor[4] = { vColor.x, vColor.y, vColor.z, 1.0f };
+				m_pFrameBuffer[nDrawIndexX + nDrawIndexY * m_nWidth] = ConvertFloatColorToUInt(pixelColor);
+			}
+		}
 	}
 
 	void DeviceContext::SliceTriangleToUpAndBottom(const Vertex& v0, const Vertex& v1, const Vertex& v2, Vertex& vNew)
@@ -347,7 +448,8 @@ namespace RenderDog
 		float fLerpFactor = (v1.vPostion.y - v0.vPostion.y) / (v2.vPostion.y - v0.vPostion.y);
 
 		float fNewX = v0.vPostion.x + fLerpFactor * (v2.vPostion.x - v0.vPostion.x);
-		float fNewZ = v0.vPostion.z + fLerpFactor * (v2.vPostion.z - v0.vPostion.z);
+		float fInvNewZ = 1.0f / v0.vPostion.z + fLerpFactor * (1.0f / v2.vPostion.z - 1.0f / v0.vPostion.z);
+		float fNewZ = 1.0f / fInvNewZ;
 
 		Vector3 vNewPos(fNewX, v1.vPostion.y, fNewZ);
 

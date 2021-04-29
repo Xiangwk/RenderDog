@@ -132,35 +132,35 @@ bool InitDevice()
 
 	Vertex aBoxVertices[] =
 	{
-		{Vector3(-1.0f, 1.0f, -1.0f),	Vector3(1.0f, 1.0f, 1.0f)},
-		{Vector3(1.0f, 1.0f, -1.0f),	Vector3(1.0f, 1.0f, 1.0f)},
-		{Vector3(1.0f, 1.0f, 1.0f),		Vector3(1.0f, 1.0f, 1.0f)},
-		{Vector3(-1.0f, 1.0f, 1.0f),	Vector3(1.0f, 1.0f, 1.0f)},
+		{Vector3(-1.0f, 1.0f, -1.0f),	Vector3(1.0f, 0.0f, 0.0f)},
+		{Vector3(1.0f, 1.0f, -1.0f),	Vector3(0.0f, 1.0f, 0.0f)},
+		{Vector3(1.0f, 1.0f, 1.0f),		Vector3(1.0f, 0.0f, 0.0f)},
+		{Vector3(-1.0f, 1.0f, 1.0f),	Vector3(0.0f, 0.0f, 1.0f)},
 
-		{Vector3(-1.0f, -1.0f, -1.0f),	Vector3(1.0f, 1.0f, 1.0f)},
-		{Vector3(1.0f, -1.0f, -1.0f) ,	Vector3(1.0f, 1.0f, 1.0f)},
-		{Vector3(1.0f, -1.0f, 1.0f),	Vector3(1.0f, 1.0f, 1.0f)},
-		{Vector3(-1.0f, -1.0f, 1.0f) ,	Vector3(1.0f, 1.0f, 1.0f)},
+		{Vector3(-1.0f, -1.0f, -1.0f),	Vector3(1.0f, 1.0f, 0.0f)},
+		{Vector3(1.0f, -1.0f, -1.0f) ,	Vector3(0.0f, 1.0f, 1.0f)},
+		{Vector3(1.0f, -1.0f, 1.0f),	Vector3(1.0f, 0.0f, 1.0f)},
+		{Vector3(-1.0f, -1.0f, 1.0f) ,	Vector3(1.0f, 0.0f, 1.0f)},
 
-		{Vector3(-1.0f, -1.0f, 1.0f),	Vector3(1.0f, 1.0f, 1.0f)},
-		{Vector3(-1.0f, -1.0f, -1.0f),	Vector3(1.0f, 1.0f, 1.0f)},
-		{Vector3(-1.0f, 1.0f, -1.0f), 	Vector3(1.0f, 1.0f, 1.0f)},
-		{Vector3(-1.0f, 1.0f, 1.0f),	Vector3(1.0f, 1.0f, 1.0f)},
+		{Vector3(-1.0f, -1.0f, 1.0f),	Vector3(1.0f, 0.0f, 0.0f)},
+		{Vector3(-1.0f, -1.0f, -1.0f),	Vector3(0.0f, 1.0f, 0.0f)},
+		{Vector3(-1.0f, 1.0f, -1.0f), 	Vector3(1.0f, 0.0f, 0.0f)},
+		{Vector3(-1.0f, 1.0f, 1.0f),	Vector3(0.0f, 0.0f, 1.0f)},
 
-		{Vector3(1.0f, -1.0f, 1.0f),	Vector3(1.0f, 1.0f, 1.0f)},
-		{Vector3(1.0f, -1.0f, -1.0f),	Vector3(1.0f, 1.0f, 1.0f)},
-		{Vector3(1.0f, 1.0f, -1.0f), 	Vector3(1.0f, 1.0f, 1.0f)},
-		{Vector3(1.0f, 1.0f, 1.0f),		Vector3(1.0f, 1.0f, 1.0f)},
+		{Vector3(1.0f, -1.0f, 1.0f),	Vector3(1.0f, 1.0f, 0.0f)},
+		{Vector3(1.0f, -1.0f, -1.0f),	Vector3(0.0f, 1.0f, 1.0f)},
+		{Vector3(1.0f, 1.0f, -1.0f), 	Vector3(1.0f, 0.0f, 1.0f)},
+		{Vector3(1.0f, 1.0f, 1.0f),		Vector3(1.0f, 0.0f, 1.0f)},
 
-		{Vector3(-1.0f, -1.0f, -1.0f),	Vector3(1.0f, 1.0f, 1.0f)},
-		{Vector3(1.0f, -1.0f, -1.0f),	Vector3(1.0f, 1.0f, 1.0f)},
-		{Vector3(1.0f, 1.0f, -1.0f),	Vector3(1.0f, 1.0f, 1.0f)},
-		{Vector3(-1.0f, 1.0f, -1.0f),	Vector3(1.0f, 1.0f, 1.0f)},
+		{Vector3(-1.0f, -1.0f, -1.0f),	Vector3(1.0f, 0.0f, 0.0f)},
+		{Vector3(1.0f, -1.0f, -1.0f),	Vector3(0.0f, 1.0f, 0.0f)},
+		{Vector3(1.0f, 1.0f, -1.0f),	Vector3(1.0f, 0.0f, 0.0f)},
+		{Vector3(-1.0f, 1.0f, -1.0f),	Vector3(0.0f, 0.0f, 1.0f)},
 
-		{Vector3(-1.0f, -1.0f, 1.0f),	Vector3(1.0f, 1.0f, 1.0f)},
-		{Vector3(1.0f, -1.0f, 1.0f),	Vector3(1.0f, 1.0f, 1.0f)},
-		{Vector3(1.0f, 1.0f, 1.0f),		Vector3(1.0f, 1.0f, 1.0f)},
-		{Vector3(-1.0f, 1.0f, 1.0f),	Vector3(1.0f, 1.0f, 1.0f)},
+		{Vector3(-1.0f, -1.0f, 1.0f),	Vector3(1.0f, 1.0f, 0.0f)},
+		{Vector3(1.0f, -1.0f, 1.0f),	Vector3(0.0f, 1.0f, 1.0f)},
+		{Vector3(1.0f, 1.0f, 1.0f),		Vector3(1.0f, 0.0f, 1.0f)},
+		{Vector3(-1.0f, 1.0f, 1.0f),	Vector3(1.0f, 0.0f, 1.0f)},
 	};
 
 	RenderDog::VertexBufferDesc vbDesc;
@@ -264,7 +264,7 @@ void CleanupDevice()
 
 void Update(float fTime)
 {
-	g_WorldMatrix = GetRotationMatrix(fTime, Vector3(1.0f, 1.0f, 1.0f));
+	g_WorldMatrix = GetRotationMatrix(fTime, Vector3(1.0f, 0.0f, 0.0f));
 }
 
 void Render()
@@ -275,7 +275,7 @@ void Render()
 
 	g_pDeviceContext->IASetVertexBuffer(g_pVertexBuffer);
 	g_pDeviceContext->IASetIndexBuffer(g_pIndexBuffer);
-	g_pDeviceContext->IASetPrimitiveTopology(RenderDog::PrimitiveTopology::LINE_LIST);
+	g_pDeviceContext->IASetPrimitiveTopology(RenderDog::PrimitiveTopology::TRIANGLE_LIST);
 
 	g_pDeviceContext->VSSetShader(g_pVertexShader);
 	g_pDeviceContext->VSSetTransMats(&g_WorldMatrix, &g_ViewMatrix, &g_PerspProjMatrix);

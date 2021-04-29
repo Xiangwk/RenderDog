@@ -48,6 +48,7 @@ namespace RenderDog
 	Vector3 operator*(const Vector3& lhs, const Vector3& rhs);
 	Vector3 operator*(float f, const Vector3& rhs);
 	Vector3 operator*(const Vector3& lhs, float f);
+	Vector3 operator/(const Vector3& lhs, float f);
 
 	Vector3 Normalize(const Vector3& vec);
 	float DotProduct(const Vector3& lhs, const Vector3& rhs);
