@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <crtdbg.h>
 
-#include "Device.h"
+#include "RenderDog.h"
 #include "RenderTargetView.h"
 #include "Texture.h"
 #include "Buffer.h"
@@ -337,7 +337,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 			static float fTime = 0.0f;
 			Update(fTime);
 			Render();
-			fTime += 0.1f;
+			fTime += 0.5f;
 		}
 	}
 

@@ -51,6 +51,15 @@
     <ClInclude Include="..\..\..\Math\Include\Vector.h">
       <Filter>Header Files\Math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Include\SwapChain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\RenderDog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\DeviceContext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Src\Device.cpp">
@@ -73,6 +82,15 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Math\Src\Transform.cpp">
       <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Src\SwapChain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Src\DeviceContext.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Src\RenderDog.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

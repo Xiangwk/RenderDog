@@ -151,7 +151,10 @@
     <ClInclude Include="..\..\..\Math\Include\Vector.h" />
     <ClInclude Include="..\..\Include\Buffer.h" />
     <ClInclude Include="..\..\Include\Device.h" />
+    <ClInclude Include="..\..\Include\DeviceContext.h" />
+    <ClInclude Include="..\..\Include\RenderDog.h" />
     <ClInclude Include="..\..\Include\RenderTargetView.h" />
+    <ClInclude Include="..\..\Include\SwapChain.h" />
     <ClInclude Include="..\..\Include\Texture.h" />
     <ClInclude Include="..\..\Include\Shader.h" />
     <ClInclude Include="..\..\Include\Vertex.h" />
@@ -163,7 +166,10 @@
     <ClCompile Include="..\..\..\Math\Src\Vector.cpp" />
     <ClCompile Include="..\..\Src\Buffer.cpp" />
     <ClCompile Include="..\..\Src\Device.cpp" />
+    <ClCompile Include="..\..\Src\DeviceContext.cpp" />
+    <ClCompile Include="..\..\Src\RenderDog.cpp" />
     <ClCompile Include="..\..\Src\Shader.cpp" />
+    <ClCompile Include="..\..\Src\SwapChain.cpp" />
     <ClCompile Include="..\..\Src\Viewport.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
