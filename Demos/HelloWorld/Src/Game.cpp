@@ -5,10 +5,6 @@
 //Written by Xiang Weikang
 ///////////////////////////////////
 
-#define CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-
 #include "RenderDog.h"
 #include "RenderTargetView.h"
 #include "Texture.h"
@@ -18,6 +14,9 @@
 #include "Transform.h"
 #include "Viewport.h"
 
+#define CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
 #include <windows.h>
 #include <string>
 
@@ -38,6 +37,10 @@ RenderDog::PixelShader*			g_pPixelShader = nullptr;
 RenderDog::Matrix4x4			g_WorldMatrix;
 RenderDog::Matrix4x4			g_ViewMatrix;
 RenderDog::Matrix4x4			g_PerspProjMatrix;
+
+int aKeys[512];	// 当前键盘按下状态
+
+float fRotAngle = 0.0f;
 
 using RenderDog::Vector3;
 using RenderDog::Vertex;
@@ -133,34 +136,34 @@ bool InitDevice()
 	Vertex aBoxVertices[] =
 	{
 		{Vector3(-1.0f, 1.0f, -1.0f),	Vector3(1.0f, 0.0f, 0.0f)},
-		{Vector3(1.0f, 1.0f, -1.0f),	Vector3(0.0f, 1.0f, 0.0f)},
+		{Vector3(1.0f, 1.0f, -1.0f),	Vector3(1.0f, 0.0f, 0.0f)},
 		{Vector3(1.0f, 1.0f, 1.0f),		Vector3(1.0f, 0.0f, 0.0f)},
-		{Vector3(-1.0f, 1.0f, 1.0f),	Vector3(0.0f, 0.0f, 1.0f)},
-
-		{Vector3(-1.0f, -1.0f, -1.0f),	Vector3(1.0f, 1.0f, 0.0f)},
-		{Vector3(1.0f, -1.0f, -1.0f) ,	Vector3(0.0f, 1.0f, 1.0f)},
-		{Vector3(1.0f, -1.0f, 1.0f),	Vector3(1.0f, 0.0f, 1.0f)},
-		{Vector3(-1.0f, -1.0f, 1.0f) ,	Vector3(1.0f, 0.0f, 1.0f)},
-
-		{Vector3(-1.0f, -1.0f, 1.0f),	Vector3(1.0f, 0.0f, 0.0f)},
-		{Vector3(-1.0f, -1.0f, -1.0f),	Vector3(0.0f, 1.0f, 0.0f)},
-		{Vector3(-1.0f, 1.0f, -1.0f), 	Vector3(1.0f, 0.0f, 0.0f)},
-		{Vector3(-1.0f, 1.0f, 1.0f),	Vector3(0.0f, 0.0f, 1.0f)},
-
-		{Vector3(1.0f, -1.0f, 1.0f),	Vector3(1.0f, 1.0f, 0.0f)},
-		{Vector3(1.0f, -1.0f, -1.0f),	Vector3(0.0f, 1.0f, 1.0f)},
-		{Vector3(1.0f, 1.0f, -1.0f), 	Vector3(1.0f, 0.0f, 1.0f)},
-		{Vector3(1.0f, 1.0f, 1.0f),		Vector3(1.0f, 0.0f, 1.0f)},
+		{Vector3(-1.0f, 1.0f, 1.0f),	Vector3(1.0f, 0.0f, 0.0f)},
 
 		{Vector3(-1.0f, -1.0f, -1.0f),	Vector3(1.0f, 0.0f, 0.0f)},
-		{Vector3(1.0f, -1.0f, -1.0f),	Vector3(0.0f, 1.0f, 0.0f)},
-		{Vector3(1.0f, 1.0f, -1.0f),	Vector3(1.0f, 0.0f, 0.0f)},
-		{Vector3(-1.0f, 1.0f, -1.0f),	Vector3(0.0f, 0.0f, 1.0f)},
+		{Vector3(1.0f, -1.0f, -1.0f) ,	Vector3(1.0f, 0.0f, 0.0f)},
+		{Vector3(1.0f, -1.0f, 1.0f),	Vector3(1.0f, 0.0f, 0.0f)},
+		{Vector3(-1.0f, -1.0f, 1.0f) ,	Vector3(1.0f, 0.0f, 0.0f)},
 
-		{Vector3(-1.0f, -1.0f, 1.0f),	Vector3(1.0f, 1.0f, 0.0f)},
-		{Vector3(1.0f, -1.0f, 1.0f),	Vector3(0.0f, 1.0f, 1.0f)},
-		{Vector3(1.0f, 1.0f, 1.0f),		Vector3(1.0f, 0.0f, 1.0f)},
-		{Vector3(-1.0f, 1.0f, 1.0f),	Vector3(1.0f, 0.0f, 1.0f)},
+		{Vector3(-1.0f, -1.0f, 1.0f),	Vector3(1.0f, 0.0f, 0.0f)},
+		{Vector3(-1.0f, -1.0f, -1.0f),	Vector3(1.0f, 0.0f, 0.0f)},
+		{Vector3(-1.0f, 1.0f, -1.0f), 	Vector3(1.0f, 0.0f, 0.0f)},
+		{Vector3(-1.0f, 1.0f, 1.0f),	Vector3(1.0f, 0.0f, 0.0f)},
+
+		{Vector3(1.0f, -1.0f, 1.0f),	Vector3(1.0f, 0.0f, 0.0f)},
+		{Vector3(1.0f, -1.0f, -1.0f),	Vector3(1.0f, 0.0f, 0.0f)},
+		{Vector3(1.0f, 1.0f, -1.0f), 	Vector3(1.0f, 0.0f, 0.0f)},
+		{Vector3(1.0f, 1.0f, 1.0f),		Vector3(1.0f, 0.0f, 0.0f)},
+
+		{Vector3(-1.0f, -1.0f, -1.0f),	Vector3(1.0f, 0.0f, 0.0f)},
+		{Vector3(1.0f, -1.0f, -1.0f),	Vector3(1.0f, 0.0f, 0.0f)},
+		{Vector3(1.0f, 1.0f, -1.0f),	Vector3(1.0f, 0.0f, 0.0f)},
+		{Vector3(-1.0f, 1.0f, -1.0f),	Vector3(1.0f, 0.0f, 0.0f)},
+
+		{Vector3(-1.0f, -1.0f, 1.0f),	Vector3(1.0f, 0.0f, 0.0f)},
+		{Vector3(1.0f, -1.0f, 1.0f),	Vector3(1.0f, 0.0f, 0.0f)},
+		{Vector3(1.0f, 1.0f, 1.0f),		Vector3(1.0f, 0.0f, 0.0f)},
+		{Vector3(-1.0f, 1.0f, 1.0f),	Vector3(1.0f, 0.0f, 0.0f)},
 	};
 
 	RenderDog::VertexBufferDesc vbDesc;
@@ -201,8 +204,10 @@ bool InitDevice()
 	}
 
 	g_WorldMatrix = RenderDog::GetIdentityMatrix();
-	g_ViewMatrix = RenderDog::GetLookAtMatrixLH(Vector3(0.0f, 0.0f, -10.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f));
+	g_ViewMatrix = RenderDog::GetLookAtMatrixLH(Vector3(0.0f, 0.0f, -6.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f));
 	g_PerspProjMatrix = RenderDog::GetPerspProjectionMatrixLH(45.0f, (float)g_nWindowWidth / g_nWindowHeight, 0.01f, 1000.0f);
+
+	memset(aKeys, 0, sizeof(int) * 512);
 
 	return true;
 }
@@ -264,7 +269,16 @@ void CleanupDevice()
 
 void Update(float fTime)
 {
-	g_WorldMatrix = GetRotationMatrix(fTime, Vector3(1.0f, 0.0f, 0.0f));
+	float fSpeed = 0.8f;
+	if (aKeys[VK_UP])
+	{
+		fRotAngle -= fSpeed;
+	}
+	if (aKeys[VK_DOWN])
+	{
+		fRotAngle += fSpeed;
+	}
+	g_WorldMatrix = GetRotationMatrix(fRotAngle, Vector3(0.0f, 1.0f, 1.0f));
 }
 
 void Render()
@@ -300,6 +314,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WM_DESTROY:
 		PostQuitMessage(0);
+		break;
+
+	case WM_KEYDOWN: 
+		aKeys[wParam & 511] = 1; 
+		break;
+	case WM_KEYUP: 
+		aKeys[wParam & 511] = 0; 
 		break;
 
 	default:

@@ -51,12 +51,12 @@ namespace RenderDog
 		void SortTriangleVertsByYGrow(Vertex& v0, Vertex& v1, Vertex& v2);
 		void SortScanlineVertsByXGrow(Vertex& v0, Vertex& v1);
 
-		void DrawTopTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
-		void DrawBottomTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2);
+		void DrawTopTriangle(Vertex& v0, Vertex& v1, Vertex& v2);
+		void DrawBottomTriangle(Vertex& v0, Vertex& v1, Vertex& v2);
 
 		void SliceTriangleToUpAndBottom(const Vertex& v0, const Vertex& v1, const Vertex& v2, Vertex& vNew);
 
-		uint32_t ConvertFloatColorToUInt(const float* color) { return (uint32_t)(255 * color[0]) << 16 | (uint32_t)(255 * color[1]) << 8 | (uint32_t)(255 * color[2]); }
+		inline uint32_t ConvertFloatColorToUInt(const float* color);
 
 	private:
 		uint32_t* m_pFrameBuffer;
