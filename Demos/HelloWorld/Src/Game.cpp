@@ -204,7 +204,7 @@ bool InitDevice()
 	}
 
 	g_WorldMatrix = RenderDog::GetIdentityMatrix();
-	g_ViewMatrix = RenderDog::GetLookAtMatrixLH(Vector3(0.0f, 0.0f, -6.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f));
+	g_ViewMatrix = RenderDog::GetLookAtMatrixLH(Vector3(0.0f, 0.0f, -5.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f));
 	g_PerspProjMatrix = RenderDog::GetPerspProjectionMatrixLH(45.0f, (float)g_nWindowWidth / g_nWindowHeight, 0.01f, 1000.0f);
 
 	memset(aKeys, 0, sizeof(int) * 512);
