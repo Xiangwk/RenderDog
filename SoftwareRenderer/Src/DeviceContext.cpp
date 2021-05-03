@@ -274,48 +274,18 @@ namespace RenderDog
 		float fDeltaXLeft = (v2.vPostion.x - v0.vPostion.x) / fDeltaY;
 		float fDeltaXRight = (v2.vPostion.x - v1.vPostion.x) / fDeltaY;
 
-		float fDeltaZLeft = (1.0f / v2.vPostion.z - 1.0f / v0.vPostion.z) / fDeltaY;
-		float fDeltaZRight = (1.0f / v2.vPostion.z - 1.0f / v1.vPostion.z) / fDeltaY;
-
-		Vector3 vDeltaColorLeft = (v2.vColor - v0.vColor) / fDeltaY;
-		Vector3 vDeltaColorRight = (v2.vColor - v1.vColor) / fDeltaY;
-
-		float fYStart = std::ceilf(v0.vPostion.y);
-		float fYEnd = std::ceilf(v2.vPostion.y) - 1;
-		for (uint32_t i = (uint32_t)fYStart; i <= (uint32_t)fYEnd; ++i)
+		float fYStart = std::ceilf(v0.vPostion.y - 0.5f);
+		float fYEnd = std::ceilf(v2.vPostion.y - 0.5f);
+		for (uint32_t i = (uint32_t)fYStart; i < (uint32_t)fYEnd; ++i)
 		{
-			uint32_t nYStep = i - (uint32_t)fYStart;
-			float fXStart = v0.vPostion.x + nYStep * fDeltaXLeft;
-			float fXEnd = v1.vPostion.x + nYStep * fDeltaXRight;
-
-			float fInvZStart = 1.0f / v0.vPostion.z + nYStep * fDeltaZLeft;
-			float fInvZEnd = 1.0f / v1.vPostion.z + nYStep * fDeltaZRight;
-
-			Vector3 vColorStart = v0.vColor + (float)nYStep * vDeltaColorLeft;
-			Vector3 vColorEnd = v1.vColor + (float)nYStep * vDeltaColorRight;
-
-			float fDeltaX = fXEnd - fXStart;
-			float fInvDeltaZ = fInvZEnd - fInvZStart;
-			Vector3 vDeltaColor(0.0f);
-			if (fDeltaX != 0)
+			float fYStep = (float)i - fYStart;
+			float fXStart = std::ceilf(v0.vPostion.x + fYStep * fDeltaXLeft - 0.5f);
+			float fXEnd = std::ceilf(v1.vPostion.x + fYStep * fDeltaXRight - 0.5f);
+			for (uint32_t j = (uint32_t)fXStart; j < (uint32_t)fXEnd; ++j)
 			{
-				Vector3 vDeltaColor = (vColorEnd - vColorStart) / fDeltaX;
-			}
-
-			uint32_t nXStart = (uint32_t)std::ceilf(fXStart);
-			uint32_t nXEnd = (uint32_t)std::ceilf(fXEnd) - 1;
-			for (uint32_t j = nXStart; j <= nXEnd; ++j)
-			{
-				uint32_t nXStep = j - nXStart;
-				float fInvZ = fInvZStart + nXStep * fInvDeltaZ;
-				float fDepth = 1.0f / fInvZ;
-
-				Vector3 vColor = vColorStart + (float)nXStep * vDeltaColor;
-				uint32_t nDrawIndexX = (uint32_t)fXStart + nXStep;
-				uint32_t nDrawIndexY = (uint32_t)v0.vPostion.y + nYStep;
-
+				Vector3 vColor = Vector3(1.0f, 0.0f, 0.0f);
 				float pixelColor[4] = { vColor.x, vColor.y, vColor.z, 1.0f };
-				m_pFrameBuffer[nDrawIndexX + nDrawIndexY * m_nWidth] = ConvertFloatColorToUInt(pixelColor);
+				m_pFrameBuffer[j + i * m_nWidth] = ConvertFloatColorToUInt(pixelColor);
 			}
 		}
 	}
@@ -328,50 +298,18 @@ namespace RenderDog
 		float fDeltaXLeft = (v1.vPostion.x - v0.vPostion.x) / fDeltaY;
 		float fDeltaXRight = (v2.vPostion.x - v0.vPostion.x) / fDeltaY;
 
-		float fDeltaZLeft = (1.0f / v1.vPostion.z - 1.0f / v0.vPostion.z) / fDeltaY;
-		float fDeltaZRight = (1.0f / v2.vPostion.z - 1.0f / v0.vPostion.z) / fDeltaY;
-
-		Vector3 vDeltaColorLeft = (v1.vColor - v0.vColor) / fDeltaY;
-		Vector3 vDeltaColorRight = (v2.vColor - v0.vColor) / fDeltaY;
-
-		float fYStart = std::ceilf(v0.vPostion.y);
-		float fYEnd = std::ceilf(v2.vPostion.y) - 1;
-		for (uint32_t i = (uint32_t)fYStart; i <= (uint32_t)fYEnd; ++i)
+		float fYStart = std::ceilf(v0.vPostion.y - 0.5f);
+		float fYEnd = std::ceilf(v2.vPostion.y - 0.5f);
+		for (uint32_t i = (uint32_t)fYStart; i < (uint32_t)fYEnd; ++i)
 		{
-			uint32_t nYStep = i - (uint32_t)fYStart;
-			float fXStart = v0.vPostion.x + nYStep * fDeltaXLeft;
-			float fXEnd = v0.vPostion.x + nYStep * fDeltaXRight;
-			/*fXStart = fXStart + (fYStart - v0.vPostion.y) * fDeltaXLeft;
-			fXEnd = fXEnd + (fYStart - v0.vPostion.y) * fDeltaXRight;*/
-
-			float fInvZStart = 1.0f / v0.vPostion.z + nYStep * fDeltaZLeft;
-			float fInvZEnd = 1.0f / v0.vPostion.z + nYStep * fDeltaZRight;
-
-			Vector3 vColorStart = v0.vColor + (float)nYStep * vDeltaColorLeft;
-			Vector3 vColorEnd = v0.vColor + (float)nYStep * vDeltaColorRight;
-
-			float fDeltaX = fXEnd - fXStart;
-			float fInvDeltaZ = fInvZEnd - fInvZStart;
-			Vector3 vDeltaColor(0.0f);
-			if (fDeltaX != 0)
+			float fYStep = (float)i - fYStart;
+			float fXStart = std::ceilf(v0.vPostion.x + fYStep * fDeltaXLeft - 0.5f);
+			float fXEnd = std::ceilf(v0.vPostion.x + fYStep * fDeltaXRight - 0.5f);
+			for (uint32_t j = (uint32_t)fXStart; j < (uint32_t)fXEnd; ++j)
 			{
-				Vector3 vDeltaColor = (vColorEnd - vColorStart) / fDeltaX;
-			}
-
-			uint32_t nXStart = (uint32_t)std::ceilf(fXStart);
-			uint32_t nXEnd = (uint32_t)std::ceilf(fXEnd) - 1;
-			for (uint32_t j = nXStart; j <= nXEnd; ++j)
-			{
-				uint32_t nXStep = j - nXStart;
-				float fInvZ = fInvZStart + nXStep * fInvDeltaZ;
-				float fDepth = 1.0f / fInvZ;
-
-				Vector3 vColor = vColorStart + (float)nXStep * vDeltaColor;
-				uint32_t nDrawIndexX = (uint32_t)fXStart + nXStep;
-				uint32_t nDrawIndexY = (uint32_t)v0.vPostion.y + nYStep;
-
+				Vector3 vColor = Vector3(1.0f, 0.0f, 0.0f);
 				float pixelColor[4] = { vColor.x, vColor.y, vColor.z, 1.0f };
-				m_pFrameBuffer[nDrawIndexX + nDrawIndexY * m_nWidth] = ConvertFloatColorToUInt(pixelColor);
+				m_pFrameBuffer[j + i * m_nWidth] = ConvertFloatColorToUInt(pixelColor);
 			}
 		}
 	}

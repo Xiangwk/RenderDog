@@ -176,7 +176,7 @@ bool InitDevice()
 
 	uint32_t aBoxIndices[] =
 	{
-		3,1,0,
+		/*3,1,0,
 		2,1,3,
 
 		6,4,5,
@@ -186,13 +186,13 @@ bool InitDevice()
 		10,9,11,
 
 		14,12,13,
-		15,12,14,
+		15,12,14,*/
 
 		19,17,16,
 		18,17,19,
 
-		22,20,21,
-		23,20,22
+		/*22,20,21,
+		23,20,22*/
 	};
 
 	RenderDog::IndexBufferDesc ibDesc;
@@ -295,7 +295,7 @@ void Render()
 	g_pDeviceContext->VSSetTransMats(&g_WorldMatrix, &g_ViewMatrix, &g_PerspProjMatrix);
 	g_pDeviceContext->PSSetShader(g_pPixelShader);
 
-	g_pDeviceContext->DrawIndex(36);
+	g_pDeviceContext->DrawIndex(6);
 
 	g_pSwapChain->Present();
 }
