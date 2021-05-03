@@ -284,7 +284,7 @@ void Update(float fTime)
 void Render()
 {
 	g_pDeviceContext->OMSetRenderTarget(g_pRenderTargetView);
-	float ClearColor[4] = { 0.3f, 0.3f, 0.3f, 1.0f };
+	float ClearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
 	g_pDeviceContext->ClearRenderTarget(g_pRenderTargetView, ClearColor);
 
 	g_pDeviceContext->IASetVertexBuffer(g_pVertexBuffer);
@@ -297,10 +297,10 @@ void Render()
 
 	g_pDeviceContext->DrawIndex(6);
 
-	if (g_pDeviceContext->CheckDrawPixelTiwce())
+	/*if (g_pDeviceContext->CheckDrawPixelTiwce())
 	{
 		return;
-	}
+	}*/
 
 	g_pSwapChain->Present();
 }
