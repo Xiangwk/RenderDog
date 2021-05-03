@@ -269,7 +269,7 @@ void CleanupDevice()
 
 void Update(float fTime)
 {
-	float fSpeed = 0.8f;
+	float fSpeed = 0.1f;
 	if (aKeys[VK_UP])
 	{
 		fRotAngle -= fSpeed;
@@ -296,6 +296,11 @@ void Render()
 	g_pDeviceContext->PSSetShader(g_pPixelShader);
 
 	g_pDeviceContext->DrawIndex(6);
+
+	if (g_pDeviceContext->CheckDrawPixelTiwce())
+	{
+		return;
+	}
 
 	g_pSwapChain->Present();
 }

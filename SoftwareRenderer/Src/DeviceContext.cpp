@@ -7,12 +7,15 @@
 #include "Shader.h"
 #include "Utility.h"
 
+#include <iostream>
+
 namespace RenderDog
 {
 	extern const float fEpsilon;
 
 	DeviceContext::DeviceContext(uint32_t width, uint32_t height) :
 		m_pFrameBuffer(nullptr),
+		m_pDebugBuffer(nullptr),
 		m_nWidth(width),
 		m_nHeight(height),
 		m_pVB(nullptr),
@@ -25,7 +28,15 @@ namespace RenderDog
 		m_pVSOutputs(nullptr),
 		m_pViewportMat(nullptr),
 		m_PriTopology(PrimitiveTopology::TRIANGLE_LIST)
-	{}
+	{
+		uint32_t nBufferSize = m_nWidth * m_nHeight;
+		m_pDebugBuffer = new uint32_t[nBufferSize];
+
+		for (uint32_t i = 0; i < nBufferSize; ++i)
+		{
+			m_pDebugBuffer[i] = 0;
+		}
+	}
 
 	DeviceContext::~DeviceContext()
 	{
@@ -39,6 +50,12 @@ namespace RenderDog
 		{
 			delete m_pViewportMat;
 			m_pViewportMat = nullptr;
+		}
+
+		if (m_pDebugBuffer)
+		{
+			delete[] m_pDebugBuffer;
+			m_pDebugBuffer = nullptr;
 		}
 	}
 
@@ -94,6 +111,12 @@ namespace RenderDog
 				pRT[nIndex] = nClearColor;
 			}
 		}
+
+		uint32_t nBufferSize = rtWidth * rtHeight;
+		for (uint32_t i = 0; i < nBufferSize; ++i)
+		{
+			m_pDebugBuffer[i] = 0;
+		}
 	}
 
 	void DeviceContext::Draw()
@@ -142,6 +165,24 @@ namespace RenderDog
 				DrawTriangleWithFlat(vert0, vert1, vert2);
 			}
 		}
+	}
+
+	bool DeviceContext::CheckDrawPixelTiwce()
+	{
+		for (uint32_t i = 0; i < m_nHeight; ++i)
+		{
+			for (uint32_t j = 0; j < m_nWidth; ++j)
+			{
+				uint32_t nDrawCnt = m_pDebugBuffer[i * m_nWidth + j];
+				if (nDrawCnt > 1)
+				{
+					//std::cout << "Pixel: " << i << " " << j << " Draw " << nDrawCnt << std::endl;
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 
@@ -278,7 +319,7 @@ namespace RenderDog
 		float fYEnd = std::ceilf(v2.vPostion.y - 0.5f);
 		for (uint32_t i = (uint32_t)fYStart; i < (uint32_t)fYEnd; ++i)
 		{
-			float fYStep = (float)i - fYStart;
+			float fYStep = (float)i - v0.vPostion.y + 0.5f;
 			float fXStart = std::ceilf(v0.vPostion.x + fYStep * fDeltaXLeft - 0.5f);
 			float fXEnd = std::ceilf(v1.vPostion.x + fYStep * fDeltaXRight - 0.5f);
 			for (uint32_t j = (uint32_t)fXStart; j < (uint32_t)fXEnd; ++j)
@@ -286,6 +327,8 @@ namespace RenderDog
 				Vector3 vColor = Vector3(1.0f, 0.0f, 0.0f);
 				float pixelColor[4] = { vColor.x, vColor.y, vColor.z, 1.0f };
 				m_pFrameBuffer[j + i * m_nWidth] = ConvertFloatColorToUInt(pixelColor);
+
+				m_pDebugBuffer[j + i * m_nWidth]++;
 			}
 		}
 	}
@@ -302,7 +345,7 @@ namespace RenderDog
 		float fYEnd = std::ceilf(v2.vPostion.y - 0.5f);
 		for (uint32_t i = (uint32_t)fYStart; i < (uint32_t)fYEnd; ++i)
 		{
-			float fYStep = (float)i - fYStart;
+			float fYStep = (float)i - v0.vPostion.y + 0.5f;
 			float fXStart = std::ceilf(v0.vPostion.x + fYStep * fDeltaXLeft - 0.5f);
 			float fXEnd = std::ceilf(v0.vPostion.x + fYStep * fDeltaXRight - 0.5f);
 			for (uint32_t j = (uint32_t)fXStart; j < (uint32_t)fXEnd; ++j)
@@ -310,6 +353,8 @@ namespace RenderDog
 				Vector3 vColor = Vector3(1.0f, 0.0f, 0.0f);
 				float pixelColor[4] = { vColor.x, vColor.y, vColor.z, 1.0f };
 				m_pFrameBuffer[j + i * m_nWidth] = ConvertFloatColorToUInt(pixelColor);
+
+				m_pDebugBuffer[j + i * m_nWidth]++;
 			}
 		}
 	}
