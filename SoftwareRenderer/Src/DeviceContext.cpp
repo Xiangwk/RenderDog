@@ -257,45 +257,19 @@ namespace RenderDog
 
 		if (floatEqual(vert0.vPostion.y, vert1.vPostion.y, fEpsilon))
 		{
-			SortScanlineVertsByXGrow(vert0, vert1);
-			float fDeltaXLeft = (vert2.vPostion.x - vert0.vPostion.x) / (vert2.vPostion.y - vert0.vPostion.y);
-			float fDeltaXRight = (vert2.vPostion.x - vert1.vPostion.x) / (vert2.vPostion.y - vert1.vPostion.y);
-			DrawTopTriangle(vert0, vert1, vert2, fDeltaXLeft, fDeltaXRight);
+			DrawTopTriangle(vert0, vert1, vert2);
 		}
 		else if (floatEqual(vert1.vPostion.y, vert2.vPostion.y, fEpsilon))
 		{
-			SortScanlineVertsByXGrow(vert1, vert2);
-			float fDeltaXLeft = (vert1.vPostion.x - vert0.vPostion.x) / (vert1.vPostion.y - vert0.vPostion.y);
-			float fDeltaXRight = (vert2.vPostion.x - vert0.vPostion.x) / (vert2.vPostion.y - vert0.vPostion.y);
-			DrawBottomTriangle(vert0, vert1, vert2, fDeltaXLeft, fDeltaXRight);
+			DrawBottomTriangle(vert0, vert1, vert2);
 		}
 		else
 		{
 			RenderDog::Vertex vertNew;
 			SliceTriangleToUpAndBottom(vert0, vert1, vert2, vertNew);
 
-			float fDeltaXLeft[2];
-			float fDeltaXRight[2];
-			if (vert1.vPostion.x < vertNew.vPostion.x)
-			{
-				fDeltaXLeft[0] = (vert1.vPostion.x - vert0.vPostion.x) / (vert1.vPostion.y - vert0.vPostion.y);
-				fDeltaXLeft[1] = (vert2.vPostion.x - vert1.vPostion.x) / (vert2.vPostion.y - vert1.vPostion.y);
-
-				fDeltaXRight[0] = (vert2.vPostion.x - vert0.vPostion.x) / (vert2.vPostion.y - vert0.vPostion.y);
-				fDeltaXRight[1] = fDeltaXRight[0];
-			}
-			else
-			{
-				fDeltaXLeft[0] = (vert2.vPostion.x - vert0.vPostion.x) / (vert2.vPostion.y - vert0.vPostion.y);
-				fDeltaXLeft[1] = fDeltaXLeft[0];
-
-				fDeltaXRight[0] = (vert1.vPostion.x - vert0.vPostion.x) / (vert1.vPostion.y - vert0.vPostion.y);
-				fDeltaXRight[1] = (vert2.vPostion.x - vert1.vPostion.x) / (vert2.vPostion.y - vert1.vPostion.y);
-			}
-
-			SortScanlineVertsByXGrow(vert1, vertNew);
-			DrawBottomTriangle(vert0, vert1, vertNew, fDeltaXLeft[0], fDeltaXRight[0]);
-			DrawTopTriangle(vert1, vertNew, vert2, fDeltaXLeft[1], fDeltaXRight[1]);
+			DrawBottomTriangle(vert0, vert1, vertNew);
+			DrawTopTriangle(vert1, vertNew, vert2);
 		}
 	}
 
@@ -333,18 +307,23 @@ namespace RenderDog
 		}
 	}
 
-	void DeviceContext::DrawTopTriangle(Vertex& v0, Vertex& v1, Vertex& v2, float fDeltaXLeft, float fDeltaXRight)
+	void DeviceContext::DrawTopTriangle(Vertex& v0, Vertex& v1, Vertex& v2)
 	{
+		SortScanlineVertsByXGrow(v0, v1);
+
+		float fDeltaXLeft = (v2.vPostion.x - v0.vPostion.x) / (v2.vPostion.y - v0.vPostion.y);
+		float fDeltaXRight = (v2.vPostion.x - v1.vPostion.x) / (v2.vPostion.y - v1.vPostion.y);
+
 		float fYStart = std::ceilf(v0.vPostion.y);
 		float fYEnd = std::ceilf(v2.vPostion.y);
 
-		float fXStart = v0.vPostion.x + (fYStart - v0.vPostion.y) * fDeltaXLeft;
-		float fXEnd = v1.vPostion.x + (fYStart - v1.vPostion.y) * fDeltaXRight;
-
 		for (uint32_t i = (uint32_t)fYStart; i < (uint32_t)fYEnd; ++i)
 		{
-			uint32_t nXStart = (uint32_t)std::ceilf(fXStart);
-			uint32_t nXEnd = (uint32_t)std::ceilf(fXEnd);
+			float fXStart = v0.vPostion.x + (i - v0.vPostion.y) * fDeltaXLeft;
+			float fXEnd = v1.vPostion.x + (i - v1.vPostion.y) * fDeltaXRight;
+
+			uint32_t nXStart = (uint32_t)std::ceil(fXStart);
+			uint32_t nXEnd = (uint32_t)std::ceil(fXEnd);
 			for (uint32_t j = nXStart; j < nXEnd; ++j)
 			{
 				Vector3 vColor = Vector3(0.5f, 0.0f, 0.0f);
@@ -362,23 +341,26 @@ namespace RenderDog
 
 				m_pDebugBuffer[j + i * m_nWidth]++;
 			}
-			fXStart += fDeltaXLeft;
-			fXEnd += fDeltaXRight;
 		}
 	}
 
-	void DeviceContext::DrawBottomTriangle(Vertex& v0, Vertex& v1, Vertex& v2, float fDeltaXLeft, float fDeltaXRight)
+	void DeviceContext::DrawBottomTriangle(Vertex& v0, Vertex& v1, Vertex& v2)
 	{
+		SortScanlineVertsByXGrow(v1, v2);
+
+		float fDeltaXLeft = (v1.vPostion.x - v0.vPostion.x) / (v1.vPostion.y - v0.vPostion.y);
+		float fDeltaXRight = (v2.vPostion.x - v0.vPostion.x) / (v2.vPostion.y - v0.vPostion.y);
+
 		float fYStart = std::ceilf(v0.vPostion.y);
 		float fYEnd = std::ceilf(v2.vPostion.y);
 
-		float fXStart = v0.vPostion.x + (fYStart - v0.vPostion.y) * fDeltaXLeft;
-		float fXEnd = v0.vPostion.x + (fYStart - v0.vPostion.y) * fDeltaXRight;
-
 		for (uint32_t i = (uint32_t)fYStart; i < (uint32_t)fYEnd; ++i)
 		{
-			uint32_t nXStart = (uint32_t)std::ceilf(fXStart);
-			uint32_t nXEnd = (uint32_t)std::ceilf(fXEnd);
+			float fXStart = v0.vPostion.x + (i - v0.vPostion.y) * fDeltaXLeft ;
+			float fXEnd = v0.vPostion.x + (i - v0.vPostion.y) * fDeltaXRight;
+
+			uint32_t nXStart = (uint32_t)std::ceil(fXStart);
+			uint32_t nXEnd = (uint32_t)std::ceil(fXEnd);
 			for (uint32_t j = nXStart; j < nXEnd; ++j)
 			{
 				Vector3 vColor = Vector3(0.5f, 0.0f, 0.0f);
@@ -396,8 +378,6 @@ namespace RenderDog
 
 				m_pDebugBuffer[j + i * m_nWidth]++;
 			}
-			fXStart += fDeltaXLeft;
-			fXEnd += fDeltaXRight;
 		}
 	}
 

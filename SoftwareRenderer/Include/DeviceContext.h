@@ -53,8 +53,8 @@ namespace RenderDog
 		void SortTriangleVertsByYGrow(Vertex& v0, Vertex& v1, Vertex& v2);
 		void SortScanlineVertsByXGrow(Vertex& v0, Vertex& v1);
 
-		void DrawTopTriangle(Vertex& v0, Vertex& v1, Vertex& v2, float fDeltaXLeft, float fDeltaXRight);
-		void DrawBottomTriangle(Vertex& v0, Vertex& v1, Vertex& v2, float fDeltaXLeft, float fDeltaXRight);
+		void DrawTopTriangle(Vertex& v0, Vertex& v1, Vertex& v2);
+		void DrawBottomTriangle(Vertex& v0, Vertex& v1, Vertex& v2);
 
 		void SliceTriangleToUpAndBottom(const Vertex& v0, const Vertex& v1, const Vertex& v2, Vertex& vNew);
 
