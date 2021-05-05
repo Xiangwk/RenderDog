@@ -1,0 +1,62 @@
+{
+    "root": {
+        "data": {
+            "id": "cb5ezzwiw6w0",
+            "created": 1620228305169,
+            "text": "RenderDog"
+        },
+        "children": [
+            {
+                "data": {
+                    "id": "cb5f08vw6ds0",
+                    "created": 1620228324722,
+                    "text": "SoftwareRenderer",
+                    "layout_mind_offset": {
+                        "x": 33,
+                        "y": -416
+                    }
+                },
+                "children": []
+            },
+            {
+                "data": {
+                    "id": "cb5f0f7lkdc0",
+                    "created": 1620228338491,
+                    "text": "DX11Renderer",
+                    "layout_mind_offset": {
+                        "x": 41,
+                        "y": -90
+                    }
+                },
+                "children": []
+            },
+            {
+                "data": {
+                    "id": "cb5f0khksf40",
+                    "created": 1620228349978,
+                    "text": "DX12Renderer",
+                    "layout_mind_offset": {
+                        "x": 555,
+                        "y": 88
+                    }
+                },
+                "children": []
+            },
+            {
+                "data": {
+                    "id": "cb5f0tkl3og0",
+                    "created": 1620228369751,
+                    "text": "VulkanRenderer",
+                    "layout_mind_offset": {
+                        "x": 558,
+                        "y": 116
+                    }
+                },
+                "children": []
+            }
+        ]
+    },
+    "template": "default",
+    "theme": "fresh-blue",
+    "version": "1.4.43"
+}
