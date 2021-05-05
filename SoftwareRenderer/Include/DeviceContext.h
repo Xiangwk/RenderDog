@@ -43,7 +43,9 @@ namespace RenderDog
 		void Draw();
 		void DrawIndex(uint32_t nIndexNum);
 
+#if DEBUG_RASTERIZATION
 		bool CheckDrawPixelTiwce();
+#endif
 
 	private:
 		void DrawLineWithDDA(float fPos1X, float fPos1Y, float fPos2X, float fPos2Y, const float* lineColor);
@@ -58,11 +60,13 @@ namespace RenderDog
 
 		void SliceTriangleToUpAndBottom(const Vertex& v0, const Vertex& v1, const Vertex& v2, Vertex& vNew);
 
-		inline uint32_t ConvertFloatColorToUInt(const float* color);
+		inline uint32_t ConvertFloatColorToUInt32(const float* color);
 
 	private:
 		uint32_t*			m_pFrameBuffer;
+#if DEBUG_RASTERIZATION
 		uint32_t*			m_pDebugBuffer;  //检查是否有重复绘制的像素
+#endif
 		uint32_t			m_nWidth;
 		uint32_t			m_nHeight;
 

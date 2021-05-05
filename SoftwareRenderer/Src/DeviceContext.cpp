@@ -15,7 +15,9 @@ namespace RenderDog
 
 	DeviceContext::DeviceContext(uint32_t width, uint32_t height) :
 		m_pFrameBuffer(nullptr),
+#if DEBUG_RASTERIZATION
 		m_pDebugBuffer(nullptr),
+#endif
 		m_nWidth(width),
 		m_nHeight(height),
 		m_pVB(nullptr),
@@ -29,6 +31,7 @@ namespace RenderDog
 		m_pViewportMat(nullptr),
 		m_PriTopology(PrimitiveTopology::TRIANGLE_LIST)
 	{
+#if DEBUG_RASTERIZATION
 		uint32_t nBufferSize = m_nWidth * m_nHeight;
 		m_pDebugBuffer = new uint32_t[nBufferSize];
 
@@ -36,6 +39,7 @@ namespace RenderDog
 		{
 			m_pDebugBuffer[i] = 0;
 		}
+#endif
 	}
 
 	DeviceContext::~DeviceContext()
@@ -52,11 +56,13 @@ namespace RenderDog
 			m_pViewportMat = nullptr;
 		}
 
+#if DEBUG_RASTERIZATION
 		if (m_pDebugBuffer)
 		{
 			delete[] m_pDebugBuffer;
 			m_pDebugBuffer = nullptr;
 		}
+#endif
 	}
 
 	void DeviceContext::IASetVertexBuffer(const VertexBuffer* pVB)
@@ -98,7 +104,7 @@ namespace RenderDog
 	void DeviceContext::ClearRenderTarget(RenderTargetView* pRenderTarget, const float* ClearColor)
 	{
 		uint32_t nClearColor = 0x0;
-		nClearColor = ConvertFloatColorToUInt(ClearColor);
+		nClearColor = ConvertFloatColorToUInt32(ClearColor);
 
 		uint32_t rtWidth = pRenderTarget->GetWidth();
 		uint32_t rtHeight = pRenderTarget->GetHeight();
@@ -112,11 +118,13 @@ namespace RenderDog
 			}
 		}
 
+#if DEBUG_RASTERIZATION
 		uint32_t nBufferSize = rtWidth * rtHeight;
 		for (uint32_t i = 0; i < nBufferSize; ++i)
 		{
 			m_pDebugBuffer[i] = 0;
 		}
+#endif
 	}
 
 	void DeviceContext::Draw()
@@ -167,6 +175,7 @@ namespace RenderDog
 		}
 	}
 
+#if DEBUG_RASTERIZATION
 	bool DeviceContext::CheckDrawPixelTiwce()
 	{
 		for (uint32_t i = 0; i < m_nHeight; ++i)
@@ -184,6 +193,7 @@ namespace RenderDog
 
 		return false;
 	}
+#endif
 
 
 	//------------------------------------------------------------------------------------------------------------------
@@ -191,7 +201,7 @@ namespace RenderDog
 	//------------------------------------------------------------------------------------------------------------------
 	void DeviceContext::DrawLineWithDDA(float fPos1X, float fPos1Y, float fPos2X, float fPos2Y, const float* lineColor)
 	{
-		uint32_t nClearColor = ConvertFloatColorToUInt(lineColor);
+		uint32_t nClearColor = ConvertFloatColorToUInt32(lineColor);
 
 		float DeltaX = fPos2X - fPos1X;
 		float DeltaY = fPos2Y - fPos1Y;
@@ -329,18 +339,11 @@ namespace RenderDog
 			{
 				Vector3 vColor = Vector3(0.5f, 0.0f, 0.0f);
 				float pixelColor[4] = { vColor.x, vColor.y, vColor.z, 1.0f };
-				float ClearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
-				if (m_pFrameBuffer[j + i * m_nWidth] != ConvertFloatColorToUInt(ClearColor))
-				{
-					float RepeatColor[4] = { 0.0f, 1.0f, 0.0f, 1.0f };
-					m_pFrameBuffer[j + i * m_nWidth] = ConvertFloatColorToUInt(RepeatColor);
-				}
-				else
-				{
-					m_pFrameBuffer[j + i * m_nWidth] = ConvertFloatColorToUInt(pixelColor);
-				}
+				m_pFrameBuffer[j + i * m_nWidth] = ConvertFloatColorToUInt32(pixelColor);
 
+#if DEBUG_RASTERIZATION
 				m_pDebugBuffer[j + i * m_nWidth]++;
+#endif
 			}
 		}
 	}
@@ -358,7 +361,7 @@ namespace RenderDog
 
 		for (uint32_t i = (uint32_t)fYStart; i < (uint32_t)fYEnd; ++i)
 		{
-			float fXStart = v0.vPostion.x + (i - v0.vPostion.y) * fDeltaXLeft ;
+			float fXStart = v0.vPostion.x + (i - v0.vPostion.y) * fDeltaXLeft;
 			float fXEnd = v0.vPostion.x + (i - v0.vPostion.y) * fDeltaXRight;
 
 			uint32_t nXStart = (uint32_t)std::ceil(fXStart);
@@ -367,18 +370,11 @@ namespace RenderDog
 			{
 				Vector3 vColor = Vector3(0.5f, 0.0f, 0.0f);
 				float pixelColor[4] = { vColor.x, vColor.y, vColor.z, 1.0f };
-				float ClearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
-				if (m_pFrameBuffer[j + i * m_nWidth] != ConvertFloatColorToUInt(ClearColor))
-				{
-					float RepeatColor[4] = { 0.0f, 1.0f, 0.0f, 1.0f };
-					m_pFrameBuffer[j + i * m_nWidth] = ConvertFloatColorToUInt(RepeatColor);
-				}
-				else
-				{
-					m_pFrameBuffer[j + i * m_nWidth] = ConvertFloatColorToUInt(pixelColor);
-				}
+				m_pFrameBuffer[j + i * m_nWidth] = ConvertFloatColorToUInt32(pixelColor);
 
+#if DEBUG_RASTERIZATION
 				m_pDebugBuffer[j + i * m_nWidth]++;
+#endif
 			}
 		}
 	}
@@ -392,7 +388,7 @@ namespace RenderDog
 		vNew.vPostion = vNewPos;
 	}
 
-	inline uint32_t DeviceContext::ConvertFloatColorToUInt(const float* color)
+	inline uint32_t DeviceContext::ConvertFloatColorToUInt32(const float* color)
 	{
 		return (uint32_t)(255 * color[0]) << 16 | (uint32_t)(255 * color[1]) << 8 | (uint32_t)(255 * color[2]);
 	}
