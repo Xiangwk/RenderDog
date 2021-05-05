@@ -12,11 +12,314 @@
                     "created": 1620228324722,
                     "text": "SoftwareRenderer",
                     "layout_mind_offset": {
-                        "x": 33,
-                        "y": -416
-                    }
+                        "x": -11.166666501098234,
+                        "y": -423.33332624700364
+                    },
+                    "layout": null
                 },
-                "children": []
+                "children": [
+                    {
+                        "data": {
+                            "id": "cb5g5a09ojc0",
+                            "created": 1620231540094,
+                            "text": "Math",
+                            "layout_right_offset": {
+                                "x": 533.6666654083465,
+                                "y": -584.3333234654536
+                            },
+                            "layout": null,
+                            "note": "功能随着需要增加即可"
+                        },
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "cb5g7r89omo0",
+                                    "created": 1620231734312,
+                                    "text": "Vector",
+                                    "layout_right_offset": {
+                                        "x": 29.166665507687412,
+                                        "y": -134.9999946355822
+                                    },
+                                    "progress": 6
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "cb5g7ugtzf40",
+                                    "created": 1620231741360,
+                                    "text": "Matrix",
+                                    "layout_right_offset": {
+                                        "x": 28.333332207467834,
+                                        "y": -94.99999622503924
+                                    },
+                                    "progress": 6
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "cb5g82m7uzc0",
+                                    "created": 1620231759100,
+                                    "text": "Quaternion",
+                                    "layout_right_offset": {
+                                        "x": 12.499999503294703,
+                                        "y": -54.99999781449651
+                                    },
+                                    "progress": 1
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "cb5g7yqo01c0",
+                                    "created": 1620231750661,
+                                    "text": "Utility",
+                                    "layout_right_offset": {
+                                        "x": 50.83333131339816,
+                                        "y": -24.166665706369713
+                                    },
+                                    "progress": 2
+                                },
+                                "children": []
+                            }
+                        ]
+                    },
+                    {
+                        "data": {
+                            "id": "cb5g6dhl3jk0",
+                            "created": 1620231626036,
+                            "text": "Device",
+                            "layout_right_offset": {
+                                "x": 460.6666656070287,
+                                "y": -322.83332813448385
+                            },
+                            "layout": null,
+                            "note": "参考DX11中的Device接口\n"
+                        },
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "cb5g9nispx40",
+                                    "created": 1620231882969,
+                                    "text": "Device",
+                                    "layout_right_offset": {
+                                        "x": 27.833332108127024,
+                                        "y": -72.66666242811425
+                                    },
+                                    "progress": 5
+                                },
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cb5gjrp4w9k0",
+                                            "created": 1620232675701,
+                                            "text": "RenderTargetView",
+                                            "layout_right_offset": {
+                                                "x": 65,
+                                                "y": -86
+                                            },
+                                            "progress": 5
+                                        },
+                                        "children": []
+                                    },
+                                    {
+                                        "data": {
+                                            "id": "cb5gkcshug00",
+                                            "created": 1620232721617,
+                                            "text": "DepthStencilView",
+                                            "layout_right_offset": {
+                                                "x": 50,
+                                                "y": -2
+                                            },
+                                            "priority": 1,
+                                            "progress": 1
+                                        },
+                                        "children": []
+                                    }
+                                ]
+                            },
+                            {
+                                "data": {
+                                    "id": "cb5g9r4siaw0",
+                                    "created": 1620231890830,
+                                    "text": "DeviceContext",
+                                    "layout_right_offset": {
+                                        "x": 29.6666666004395,
+                                        "y": 20.666668785942875
+                                    },
+                                    "progress": 5
+                                },
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cb5gcv8bwyo0",
+                                            "created": 1620232134843,
+                                            "text": "Rasterization",
+                                            "layout_right_offset": {
+                                                "x": 27,
+                                                "y": -2
+                                            },
+                                            "progress": 8,
+                                            "note": "1. 检查像素重绘时，发现按照3D游戏编程大师技巧书上的方法时，会出现像素重绘的情况，怀疑问题出在每次扫描线换行时，新的xStart和xEnd由上一行的xStart和xEnd加上DeltaXLeft和DeltaXRight得到，由于浮点数存在一定的误差，导致在累加过程中误差逐渐累积，最终使得两个相邻三角形的共边不再是一条直线，而是两条斜率略有差异的直线，从而导致有些像素点产生重绘，修改为每次根据扫描线的y值以及三角形斜边的斜率以及斜边上的点坐标来计算xStart和xEnd的话，会大大减少重绘情况的发生，但是偶尔还是有，暂时想不清楚原因，只能搁置。如果后面有思路的话再回来测试；\n\n2. 漏绘如何检查？"
+                                        },
+                                        "children": [
+                                            {
+                                                "data": {
+                                                    "id": "cb5gj2vgrvs0",
+                                                    "created": 1620232621665,
+                                                    "text": "检查重绘和漏绘",
+                                                    "layout_right_offset": {
+                                                        "x": 116,
+                                                        "y": -28
+                                                    },
+                                                    "progress": 8
+                                                },
+                                                "children": []
+                                            },
+                                            {
+                                                "data": {
+                                                    "id": "cb5gjd1dkrc0",
+                                                    "created": 1620232643790,
+                                                    "text": "顶点属性插值",
+                                                    "layout_right_offset": {
+                                                        "x": 119,
+                                                        "y": 30
+                                                    },
+                                                    "priority": 1,
+                                                    "progress": 1
+                                                },
+                                                "children": []
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "data": {
+                                    "id": "cb5g9uupeb40",
+                                    "created": 1620231898927,
+                                    "text": "SwapChain",
+                                    "layout_right_offset": {
+                                        "x": 48.33333260483198,
+                                        "y": 126.49999890724825
+                                    },
+                                    "progress": 5,
+                                    "note": "增加双缓存支持",
+                                    "priority": 4
+                                },
+                                "children": []
+                            }
+                        ]
+                    },
+                    {
+                        "data": {
+                            "id": "cb5g6jqqao80",
+                            "created": 1620231639649,
+                            "text": "Buffer",
+                            "layout_right_offset": {
+                                "x": 419.99999960263574,
+                                "y": -41.166665507687526
+                            },
+                            "layout": null,
+                            "note": "增加ContantBuffer"
+                        },
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "cb5gamyj04w0",
+                                    "created": 1620231960108,
+                                    "text": "VertexBuffer",
+                                    "layout_right_offset": {
+                                        "x": 36,
+                                        "y": -72
+                                    },
+                                    "progress": 5
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "cb5gaq9l3xs0",
+                                    "created": 1620231967307,
+                                    "text": "IndexBuffer",
+                                    "layout_right_offset": {
+                                        "x": 38,
+                                        "y": -37
+                                    },
+                                    "progress": 5
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "cb5gb2cbptk0",
+                                    "created": 1620231993594,
+                                    "text": "ConstantBuffer",
+                                    "layout_right_offset": {
+                                        "x": 16,
+                                        "y": 0
+                                    },
+                                    "priority": 2,
+                                    "progress": 1
+                                },
+                                "children": []
+                            }
+                        ]
+                    },
+                    {
+                        "data": {
+                            "id": "cb5g712faso0",
+                            "created": 1620231677362,
+                            "text": "Shader",
+                            "layout_right_offset": {
+                                "x": 416.16666610373386,
+                                "y": 71.1666663024161
+                            },
+                            "note": "暂时写成函数的形式，有机会的话尝试改变形式"
+                        },
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "cb5gbvnw8pc0",
+                                    "created": 1620232057420,
+                                    "text": "VertexShader",
+                                    "layout_right_offset": {
+                                        "x": 49,
+                                        "y": -65
+                                    },
+                                    "progress": 4
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "cb5gbytxenc0",
+                                    "created": 1620232064315,
+                                    "text": "PixelShader",
+                                    "layout_right_offset": {
+                                        "x": 52,
+                                        "y": -4
+                                    },
+                                    "progress": 4
+                                },
+                                "children": []
+                            }
+                        ]
+                    },
+                    {
+                        "data": {
+                            "id": "cb5g7b4d9jc0",
+                            "created": 1620231699247,
+                            "text": "Texture",
+                            "layout_right_offset": {
+                                "x": 407.8333329028553,
+                                "y": 147.16666391823043
+                            }
+                        },
+                        "children": []
+                    }
+                ]
             },
             {
                 "data": {
@@ -24,9 +327,10 @@
                     "created": 1620228338491,
                     "text": "DX11Renderer",
                     "layout_mind_offset": {
-                        "x": 41,
-                        "y": -90
-                    }
+                        "x": 11,
+                        "y": -73
+                    },
+                    "layout": null
                 },
                 "children": []
             },
@@ -36,9 +340,10 @@
                     "created": 1620228349978,
                     "text": "DX12Renderer",
                     "layout_mind_offset": {
-                        "x": 555,
-                        "y": 88
-                    }
+                        "x": 539,
+                        "y": 404
+                    },
+                    "layout": null
                 },
                 "children": []
             },
@@ -48,9 +353,10 @@
                     "created": 1620228369751,
                     "text": "VulkanRenderer",
                     "layout_mind_offset": {
-                        "x": 558,
-                        "y": 116
-                    }
+                        "x": 529,
+                        "y": 433
+                    },
+                    "layout": null
                 },
                 "children": []
             }
