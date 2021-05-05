@@ -311,8 +311,9 @@ namespace RenderDog
 	{
 		SortScanlineVertsByXGrow(v0, v1);
 
-		float fDeltaXLeft = (v2.vPostion.x - v0.vPostion.x) / (v2.vPostion.y - v0.vPostion.y);
-		float fDeltaXRight = (v2.vPostion.x - v1.vPostion.x) / (v2.vPostion.y - v1.vPostion.y);
+		float fDeltaY = v2.vPostion.y - v0.vPostion.y;
+		float fDeltaXLeft = (v2.vPostion.x - v0.vPostion.x) / fDeltaY;
+		float fDeltaXRight = (v2.vPostion.x - v1.vPostion.x) / fDeltaY;
 
 		float fYStart = std::ceilf(v0.vPostion.y);
 		float fYEnd = std::ceilf(v2.vPostion.y);
@@ -348,8 +349,9 @@ namespace RenderDog
 	{
 		SortScanlineVertsByXGrow(v1, v2);
 
-		float fDeltaXLeft = (v1.vPostion.x - v0.vPostion.x) / (v1.vPostion.y - v0.vPostion.y);
-		float fDeltaXRight = (v2.vPostion.x - v0.vPostion.x) / (v2.vPostion.y - v0.vPostion.y);
+		float fDeltaY = v1.vPostion.y - v0.vPostion.y;
+		float fDeltaXLeft = (v1.vPostion.x - v0.vPostion.x) / fDeltaY;
+		float fDeltaXRight = (v2.vPostion.x - v0.vPostion.x) / fDeltaY;
 
 		float fYStart = std::ceilf(v0.vPostion.y);
 		float fYEnd = std::ceilf(v2.vPostion.y);
