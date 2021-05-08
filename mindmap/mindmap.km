@@ -133,8 +133,9 @@
                                                 "x": 53,
                                                 "y": -60
                                             },
-                                            "priority": 2,
-                                            "progress": 1
+                                            "priority": 1,
+                                            "progress": 1,
+                                            "note": "边缘处颜色会漏，需要检查一下"
                                         },
                                         "children": []
                                     },
@@ -203,7 +204,7 @@
                                                         "y": 30
                                                     },
                                                     "priority": 1,
-                                                    "progress": 1
+                                                    "progress": 7
                                                 },
                                                 "children": []
                                             }

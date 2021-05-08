@@ -352,11 +352,10 @@ namespace RenderDog
 			Vertex vEnd;
 			LerpVertexParams(v1, v2, vEnd, fLerpFactorY);
 
-			uint32_t nXStart = (uint32_t)std::ceil(vStart.vPostion.x);
-			uint32_t nXEnd = (uint32_t)std::ceil(vEnd.vPostion.x);
-
+			float fXStart = std::ceil(vStart.vPostion.x);
+			float fXEnd = std::ceil(vEnd.vPostion.x);
 			float fDeltaX = vEnd.vPostion.x - vStart.vPostion.x;
-			for (uint32_t j = nXStart; j < nXEnd; ++j)
+			for (uint32_t j = (uint32_t)fXStart; j < (uint32_t)fXEnd; ++j)
 			{
 				float fLerpFactorX = (j - vStart.vPostion.x) / fDeltaX;
 
@@ -396,11 +395,10 @@ namespace RenderDog
 			Vertex vEnd;
 			LerpVertexParams(v0, v2, vEnd, fLerpFactorY);
 
-			uint32_t nXStart = (uint32_t)std::ceil(vStart.vPostion.x);
-			uint32_t nXEnd = (uint32_t)std::ceil(vEnd.vPostion.x);
-
+			float fXStart = std::ceil(vStart.vPostion.x);
+			float fXEnd = std::ceil(vEnd.vPostion.x);
 			float fDeltaX = vEnd.vPostion.x - vStart.vPostion.x;
-			for (uint32_t j = nXStart; j < nXEnd; ++j)
+			for (uint32_t j = (uint32_t)fXStart; j < (uint32_t)fXEnd; ++j)
 			{
 				float fLerpFactorX = (j - vStart.vPostion.x) / fDeltaX;
 

@@ -43,7 +43,8 @@ RenderDog::Matrix4x4			g_PerspProjMatrix;
 
 int aKeys[512];	// 当前键盘按下状态
 
-float fRotAngle = 0.0f;
+float fRotAngleX = 0.0f;
+float fRotAngleY = 0.0f;
 
 using RenderDog::Vector3;
 using RenderDog::Vertex;
@@ -300,16 +301,28 @@ void CleanupDevice()
 
 void Update(float fTime)
 {
+	g_WorldMatrix = RenderDog::GetIdentityMatrix();
+
 	float fSpeed = 0.5f;
 	if (aKeys[VK_UP])
 	{
-		fRotAngle -= fSpeed;
+		fRotAngleX -= fSpeed;
 	}
 	if (aKeys[VK_DOWN])
 	{
-		fRotAngle += fSpeed;
+		fRotAngleX += fSpeed;
 	}
-	g_WorldMatrix = GetRotationMatrix(fRotAngle, Vector3(0.0f, 1.0f, 1.0f));
+	g_WorldMatrix = g_WorldMatrix * GetRotationMatrix(fRotAngleX, Vector3(1.0f, 0.0f, 0.0f));
+
+	if (aKeys[VK_LEFT])
+	{
+		fRotAngleY -= fSpeed;
+	}
+	if (aKeys[VK_RIGHT])
+	{
+		fRotAngleY += fSpeed;
+	}
+	g_WorldMatrix = g_WorldMatrix * GetRotationMatrix(fRotAngleY, Vector3(0.0f, 1.0f, 0.0f));
 }
 
 void Render()

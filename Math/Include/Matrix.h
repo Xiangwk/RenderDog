@@ -63,5 +63,7 @@ namespace RenderDog
 
 	Vector4 operator*(const Vector4& vec, const Matrix4x4& mat);
 
+	Matrix4x4 operator*(const Matrix4x4& matLHS, const Matrix4x4& matRHS);
+
 	Matrix4x4 GetIdentityMatrix();
 }
