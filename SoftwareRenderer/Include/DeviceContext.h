@@ -4,6 +4,8 @@
 
 #include <cstdint>
 
+#define DEBUG_RASTERIZATION 0
+
 namespace RenderDog
 {
 	class VertexBuffer;
@@ -12,6 +14,7 @@ namespace RenderDog
 	class PixelShader;
 	class Matrix4x4;
 	class RenderTargetView;
+	class DepthStencilView;
 
 	struct Viewport;
 	struct Vertex;
@@ -38,8 +41,9 @@ namespace RenderDog
 
 		void RSSetViewport(const Viewport* pVP);
 
-		void OMSetRenderTarget(RenderTargetView* pRenderTarget);
+		void OMSetRenderTarget(RenderTargetView* pRenderTarget, DepthStencilView* pDepthStencil);
 		void ClearRenderTarget(RenderTargetView* pRenderTarget, const float* ClearColor);
+		void ClearDepthStencil(DepthStencilView* pDepthStencil, float fDepth);
 		void Draw();
 		void DrawIndex(uint32_t nIndexNum);
 
@@ -55,15 +59,19 @@ namespace RenderDog
 		void SortTriangleVertsByYGrow(Vertex& v0, Vertex& v1, Vertex& v2);
 		void SortScanlineVertsByXGrow(Vertex& v0, Vertex& v1);
 
+		//平定三角形和平底三角形
 		void DrawTopTriangle(Vertex& v0, Vertex& v1, Vertex& v2);
 		void DrawBottomTriangle(Vertex& v0, Vertex& v1, Vertex& v2);
 
 		void SliceTriangleToUpAndBottom(const Vertex& v0, const Vertex& v1, const Vertex& v2, Vertex& vNew);
 
+		void LerpVertexParams(const Vertex& v0, const Vertex& v1, Vertex& vNew, float fLerpFactor);
+
 		inline uint32_t ConvertFloatColorToUInt32(const float* color);
 
 	private:
 		uint32_t*			m_pFrameBuffer;
+		float*				m_pDepthBuffer;
 #if DEBUG_RASTERIZATION
 		uint32_t*			m_pDebugBuffer;  //检查是否有重复绘制的像素
 #endif

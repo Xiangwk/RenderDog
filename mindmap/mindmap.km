@@ -107,7 +107,8 @@
                                         "x": 27.833332108127024,
                                         "y": -72.66666242811425
                                     },
-                                    "progress": 5
+                                    "progress": 5,
+                                    "note": "目前Device管理资源的释放有些问题，没有按照DX11那样，使用引用计数；"
                                 },
                                 "children": [
                                     {
@@ -129,11 +130,26 @@
                                             "created": 1620232721617,
                                             "text": "DepthStencilView",
                                             "layout_right_offset": {
-                                                "x": 50,
-                                                "y": -2
+                                                "x": 53,
+                                                "y": -60
                                             },
-                                            "priority": 1,
+                                            "priority": 2,
                                             "progress": 1
+                                        },
+                                        "children": []
+                                    },
+                                    {
+                                        "data": {
+                                            "id": "cb7ym9cbruw0",
+                                            "created": 1620486770729,
+                                            "text": "Texture2D",
+                                            "layout_right_offset": {
+                                                "x": 78,
+                                                "y": -283
+                                            },
+                                            "progress": 5,
+                                            "note": "暂时使用Release来释放使用CreateTexture2D分配的内存，而不是使用析构函数，后面应将这些资源统一改为使用引用计数管理内存的释放。",
+                                            "priority": 2
                                         },
                                         "children": []
                                     }
@@ -260,7 +276,7 @@
                                         "x": 16,
                                         "y": 0
                                     },
-                                    "priority": 2,
+                                    "priority": 3,
                                     "progress": 1
                                 },
                                 "children": []

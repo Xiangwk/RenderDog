@@ -2,20 +2,39 @@
 #include "SwapChain.h"
 #include "Texture.h"
 #include "RenderTargetView.h"
+#include "DepthStencilView.h"
 #include "Buffer.h"
 #include "Shader.h"
 #include "Vertex.h"
 
 namespace RenderDog
 {
+	bool Device::CreateTexture2D(const Texture2DDesc* pDesc, Texture2D** ppTexture)
+	{
+		Texture2D* pTex = new Texture2D(pDesc->width, pDesc->height, pDesc->format);
+		if (!pTex)
+		{
+			return false;
+		}
+
+		*ppTexture = pTex;
+
+		return true;
+	}
+
 	bool Device::CreateRenderTargetView(Texture2D* pTexture, const RenderTargetDesc* pDesc, RenderTargetView** ppRenderTarget)
 	{
 		if (!pDesc)
 		{
 			RenderTargetView* pRT = new RenderTargetView();
+			if (!pRT)
+			{
+				return false;
+			}
+
 			*ppRenderTarget = pRT;
 
-			pRT->GetView() = pTexture->GetData();
+			pRT->GetView() = (uint32_t*)pTexture->GetData();
 			pRT->SetWidth(pTexture->GetWidth());
 			pRT->SetHeight(pTexture->GetHeight());
 		}
@@ -23,6 +42,23 @@ namespace RenderDog
 		{
 			//ToDo: Create RenderTargetView by Desc
 		}
+
+		return true;
+	}
+
+	bool Device::CreateDepthStencilView(Texture2D* pTexture, DepthStencilView** ppDepthStencil)
+	{
+		DepthStencilView* pDS = new DepthStencilView();
+		if (!pDS)
+		{
+			return false;
+		}
+
+		*ppDepthStencil = pDS;
+
+		pDS->GetView() = (float*)pTexture->GetData();
+		pDS->SetWidth(pTexture->GetWidth());
+		pDS->SetHeight(pTexture->GetHeight());
 
 		return true;
 	}

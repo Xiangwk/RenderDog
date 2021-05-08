@@ -6,7 +6,8 @@
 ///////////////////////////////////
 
 #include "RenderDog.h"
-#include "RenderTargetView.h"
+#include "RenderTargetView.h" 
+#include "DepthStencilView.h"
 #include "Texture.h"
 #include "Buffer.h"
 #include "Shader.h"
@@ -33,6 +34,8 @@ RenderDog::VertexBuffer*		g_pVertexBuffer = nullptr;
 RenderDog::IndexBuffer*			g_pIndexBuffer = nullptr;
 RenderDog::VertexShader*		g_pVertexShader = nullptr;
 RenderDog::PixelShader*			g_pPixelShader = nullptr;
+RenderDog::Texture2D*			g_pDepthTexture = nullptr;
+RenderDog::DepthStencilView*	g_pDepthStencilView = nullptr;
 
 RenderDog::Matrix4x4			g_WorldMatrix;
 RenderDog::Matrix4x4			g_ViewMatrix;
@@ -113,6 +116,20 @@ bool InitDevice()
 	}
 	delete pBackBuffer;
 	pBackBuffer = nullptr;
+
+	RenderDog::Texture2DDesc depthDesc;
+	depthDesc.width = g_nWindowWidth;
+	depthDesc.height = g_nWindowWidth;
+	depthDesc.format = RenderDog::TextureFormat::TF_FLOAT32;
+	if (!g_pDevice->CreateTexture2D(&depthDesc, &g_pDepthTexture))
+	{
+		return false;
+	}
+
+	if (!g_pDevice->CreateDepthStencilView(g_pDepthTexture, &g_pDepthStencilView))
+	{
+		return false;
+	}
 
 	RenderDog::Viewport vp;
 	vp.fWidth = (float)g_nWindowWidth;
@@ -254,6 +271,20 @@ void CleanupDevice()
 		g_pIndexBuffer = nullptr;
 	}
 
+	if (g_pDepthTexture)
+	{
+		g_pDepthTexture->Release();
+
+		delete g_pDepthTexture;
+		g_pDepthTexture = nullptr;
+	}
+
+	if (g_pDepthStencilView)
+	{
+		delete g_pDepthStencilView;
+		g_pDepthStencilView = nullptr;
+	}
+
 	if (g_pDevice)
 	{
 		delete g_pDevice;
@@ -269,7 +300,7 @@ void CleanupDevice()
 
 void Update(float fTime)
 {
-	float fSpeed = 0.1f;
+	float fSpeed = 0.5f;
 	if (aKeys[VK_UP])
 	{
 		fRotAngle -= fSpeed;
@@ -283,9 +314,11 @@ void Update(float fTime)
 
 void Render()
 {
-	g_pDeviceContext->OMSetRenderTarget(g_pRenderTargetView);
+	g_pDeviceContext->OMSetRenderTarget(g_pRenderTargetView, g_pDepthStencilView);
 	float ClearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
 	g_pDeviceContext->ClearRenderTarget(g_pRenderTargetView, ClearColor);
+
+	g_pDeviceContext->ClearDepthStencil(g_pDepthStencilView, 1.0f);
 
 	g_pDeviceContext->IASetVertexBuffer(g_pVertexBuffer);
 	g_pDeviceContext->IASetIndexBuffer(g_pIndexBuffer);

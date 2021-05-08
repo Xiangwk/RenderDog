@@ -151,6 +151,7 @@
     <ClInclude Include="..\..\..\Math\Include\Utility.h" />
     <ClInclude Include="..\..\..\Math\Include\Vector.h" />
     <ClInclude Include="..\..\Include\Buffer.h" />
+    <ClInclude Include="..\..\Include\DepthStencilView.h" />
     <ClInclude Include="..\..\Include\Device.h" />
     <ClInclude Include="..\..\Include\DeviceContext.h" />
     <ClInclude Include="..\..\Include\RenderDog.h" />
@@ -172,6 +173,7 @@
     <ClCompile Include="..\..\Src\RenderDog.cpp" />
     <ClCompile Include="..\..\Src\Shader.cpp" />
     <ClCompile Include="..\..\Src\SwapChain.cpp" />
+    <ClCompile Include="..\..\Src\Texture.cpp" />
     <ClCompile Include="..\..\Src\Viewport.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
