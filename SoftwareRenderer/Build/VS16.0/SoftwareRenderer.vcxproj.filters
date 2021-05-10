@@ -1,108 +1,108 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\Math">
+    <Filter Include="Public">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Public\Math">
       <UniqueIdentifier>{3bb642e7-777f-4cce-9798-76469f52d9d9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Math">
+    <Filter Include="Private">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Private\Math">
       <UniqueIdentifier>{2af3f66f-3a73-4f38-85a3-e07f0e029113}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Include\Device.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\Public\Buffer.h">
+      <Filter>Public</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\Texture.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\Public\DepthStencilView.h">
+      <Filter>Public</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\RenderTargetView.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\Public\Device.h">
+      <Filter>Public</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\Buffer.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\Public\DeviceContext.h">
+      <Filter>Public</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\Shader.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\Public\RenderDog.h">
+      <Filter>Public</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\Vertex.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\Public\RenderTargetView.h">
+      <Filter>Public</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\Viewport.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\Public\Shader.h">
+      <Filter>Public</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Math\Include\Matrix.h">
-      <Filter>Header Files\Math</Filter>
+    <ClInclude Include="..\..\Public\SwapChain.h">
+      <Filter>Public</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Math\Include\Transform.h">
-      <Filter>Header Files\Math</Filter>
+    <ClInclude Include="..\..\Public\Texture.h">
+      <Filter>Public</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Math\Include\Vector.h">
-      <Filter>Header Files\Math</Filter>
+    <ClInclude Include="..\..\Public\Vertex.h">
+      <Filter>Public</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\SwapChain.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\Public\Viewport.h">
+      <Filter>Public</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\RenderDog.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\Math\Public\Matrix.h">
+      <Filter>Public\Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\DeviceContext.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\Math\Public\Transform.h">
+      <Filter>Public\Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Math\Include\Utility.h">
-      <Filter>Header Files\Math</Filter>
+    <ClInclude Include="..\..\..\Math\Public\Utility.h">
+      <Filter>Public\Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\DepthStencilView.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\Math\Public\Vector.h">
+      <Filter>Public\Math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Src\Device.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\Math\Private\Matrix.cpp">
+      <Filter>Private\Math</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Src\Shader.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\Math\Private\Transform.cpp">
+      <Filter>Private\Math</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Src\Buffer.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\Math\Private\Utility.cpp">
+      <Filter>Private\Math</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Src\Viewport.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\Math\Private\Vector.cpp">
+      <Filter>Private\Math</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Math\Src\Vector.cpp">
-      <Filter>Source Files\Math</Filter>
+    <ClCompile Include="..\..\Private\Buffer.cpp">
+      <Filter>Private</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Math\Src\Matrix.cpp">
-      <Filter>Source Files\Math</Filter>
+    <ClCompile Include="..\..\Private\Device.cpp">
+      <Filter>Private</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Math\Src\Transform.cpp">
-      <Filter>Source Files\Math</Filter>
+    <ClCompile Include="..\..\Private\DeviceContext.cpp">
+      <Filter>Private</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Src\SwapChain.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\Private\RenderDog.cpp">
+      <Filter>Private</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Src\DeviceContext.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\Private\Shader.cpp">
+      <Filter>Private</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Src\RenderDog.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\Private\SwapChain.cpp">
+      <Filter>Private</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Math\Src\Utility.cpp">
-      <Filter>Source Files\Math</Filter>
+    <ClCompile Include="..\..\Private\Texture.cpp">
+      <Filter>Private</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Src\Texture.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\Private\Viewport.cpp">
+      <Filter>Private</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

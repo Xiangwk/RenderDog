@@ -121,7 +121,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\Include;..\..\..\Math\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Public;..\..\..\Math\Public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -139,7 +139,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\Include;..\..\..\Math\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Public;..\..\..\Math\Public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -152,35 +152,35 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Math\Include\Matrix.h" />
-    <ClInclude Include="..\..\..\Math\Include\Transform.h" />
-    <ClInclude Include="..\..\..\Math\Include\Utility.h" />
-    <ClInclude Include="..\..\..\Math\Include\Vector.h" />
-    <ClInclude Include="..\..\Include\Buffer.h" />
-    <ClInclude Include="..\..\Include\DepthStencilView.h" />
-    <ClInclude Include="..\..\Include\Device.h" />
-    <ClInclude Include="..\..\Include\DeviceContext.h" />
-    <ClInclude Include="..\..\Include\RenderDog.h" />
-    <ClInclude Include="..\..\Include\RenderTargetView.h" />
-    <ClInclude Include="..\..\Include\SwapChain.h" />
-    <ClInclude Include="..\..\Include\Texture.h" />
-    <ClInclude Include="..\..\Include\Shader.h" />
-    <ClInclude Include="..\..\Include\Vertex.h" />
-    <ClInclude Include="..\..\Include\Viewport.h" />
+    <ClInclude Include="..\..\..\Math\Public\Matrix.h" />
+    <ClInclude Include="..\..\..\Math\Public\Transform.h" />
+    <ClInclude Include="..\..\..\Math\Public\Utility.h" />
+    <ClInclude Include="..\..\..\Math\Public\Vector.h" />
+    <ClInclude Include="..\..\Public\Buffer.h" />
+    <ClInclude Include="..\..\Public\DepthStencilView.h" />
+    <ClInclude Include="..\..\Public\Device.h" />
+    <ClInclude Include="..\..\Public\DeviceContext.h" />
+    <ClInclude Include="..\..\Public\RenderDog.h" />
+    <ClInclude Include="..\..\Public\RenderTargetView.h" />
+    <ClInclude Include="..\..\Public\Shader.h" />
+    <ClInclude Include="..\..\Public\SwapChain.h" />
+    <ClInclude Include="..\..\Public\Texture.h" />
+    <ClInclude Include="..\..\Public\Vertex.h" />
+    <ClInclude Include="..\..\Public\Viewport.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\Math\Src\Matrix.cpp" />
-    <ClCompile Include="..\..\..\Math\Src\Transform.cpp" />
-    <ClCompile Include="..\..\..\Math\Src\Utility.cpp" />
-    <ClCompile Include="..\..\..\Math\Src\Vector.cpp" />
-    <ClCompile Include="..\..\Src\Buffer.cpp" />
-    <ClCompile Include="..\..\Src\Device.cpp" />
-    <ClCompile Include="..\..\Src\DeviceContext.cpp" />
-    <ClCompile Include="..\..\Src\RenderDog.cpp" />
-    <ClCompile Include="..\..\Src\Shader.cpp" />
-    <ClCompile Include="..\..\Src\SwapChain.cpp" />
-    <ClCompile Include="..\..\Src\Texture.cpp" />
-    <ClCompile Include="..\..\Src\Viewport.cpp" />
+    <ClCompile Include="..\..\..\Math\Private\Matrix.cpp" />
+    <ClCompile Include="..\..\..\Math\Private\Transform.cpp" />
+    <ClCompile Include="..\..\..\Math\Private\Utility.cpp" />
+    <ClCompile Include="..\..\..\Math\Private\Vector.cpp" />
+    <ClCompile Include="..\..\Private\Buffer.cpp" />
+    <ClCompile Include="..\..\Private\Device.cpp" />
+    <ClCompile Include="..\..\Private\DeviceContext.cpp" />
+    <ClCompile Include="..\..\Private\RenderDog.cpp" />
+    <ClCompile Include="..\..\Private\Shader.cpp" />
+    <ClCompile Include="..\..\Private\SwapChain.cpp" />
+    <ClCompile Include="..\..\Private\Texture.cpp" />
+    <ClCompile Include="..\..\Private\Viewport.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

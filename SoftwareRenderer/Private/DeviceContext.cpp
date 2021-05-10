@@ -354,6 +354,7 @@ namespace RenderDog
 
 			float fXStart = std::ceil(vStart.vPostion.x);
 			float fXEnd = std::ceil(vEnd.vPostion.x);
+
 			float fDeltaX = vEnd.vPostion.x - vStart.vPostion.x;
 			for (uint32_t j = (uint32_t)fXStart; j < (uint32_t)fXEnd; ++j)
 			{
@@ -363,7 +364,7 @@ namespace RenderDog
 				LerpVertexParams(vStart, vEnd, vCurr, fLerpFactorX);
 
 				float fPixelDepth = m_pDepthBuffer[j + i * m_nWidth];
-				if (vCurr.vPostion.z < fPixelDepth)
+				if (vCurr.vPostion.z <= fPixelDepth)
 				{
 					float pixelColor[4] = { vCurr.vColor.x, vCurr.vColor.y, vCurr.vColor.z, 1.0f };
 					m_pFrameBuffer[j + i * m_nWidth] = ConvertFloatColorToUInt32(pixelColor);
@@ -397,6 +398,7 @@ namespace RenderDog
 
 			float fXStart = std::ceil(vStart.vPostion.x);
 			float fXEnd = std::ceil(vEnd.vPostion.x);
+
 			float fDeltaX = vEnd.vPostion.x - vStart.vPostion.x;
 			for (uint32_t j = (uint32_t)fXStart; j < (uint32_t)fXEnd; ++j)
 			{
@@ -406,7 +408,7 @@ namespace RenderDog
 				LerpVertexParams(vStart, vEnd, vCurr, fLerpFactorX);
 
 				float fPixelDepth = m_pDepthBuffer[j + i * m_nWidth];
-				if (vCurr.vPostion.z < fPixelDepth)
+				if (vCurr.vPostion.z <= fPixelDepth)
 				{
 					float pixelColor[4] = { vCurr.vColor.x, vCurr.vColor.y, vCurr.vColor.z, 1.0f };
 					m_pFrameBuffer[j + i * m_nWidth] = ConvertFloatColorToUInt32(pixelColor);
