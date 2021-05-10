@@ -12,6 +12,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloWorld", "..\..\Demos\H
 		{3DF59058-DED5-4A65-A9E9-A8F90D56D61E} = {3DF59058-DED5-4A65-A9E9-A8F90D56D61E}
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3rdSDK", "3rdSDK", "{F86212ED-5261-440F-ABA5-57D28412DA9D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectXTex", "..\..\3rdSDK\DirectXTex\Build\VS16.0\DirectXTex_Desktop_2019_Win10.vcxproj", "{371B9FA9-4C90-4AC6-A123-ACED756D6C77}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -36,12 +40,19 @@ Global
 		{EFB94D11-25FF-45ED-98F2-2034B19C8179}.Release|x64.Build.0 = Release|x64
 		{EFB94D11-25FF-45ED-98F2-2034B19C8179}.Release|x86.ActiveCfg = Release|Win32
 		{EFB94D11-25FF-45ED-98F2-2034B19C8179}.Release|x86.Build.0 = Release|Win32
+		{371B9FA9-4C90-4AC6-A123-ACED756D6C77}.Debug|x64.ActiveCfg = Debug|x64
+		{371B9FA9-4C90-4AC6-A123-ACED756D6C77}.Debug|x64.Build.0 = Debug|x64
+		{371B9FA9-4C90-4AC6-A123-ACED756D6C77}.Debug|x86.ActiveCfg = Debug|x64
+		{371B9FA9-4C90-4AC6-A123-ACED756D6C77}.Release|x64.ActiveCfg = Release|x64
+		{371B9FA9-4C90-4AC6-A123-ACED756D6C77}.Release|x64.Build.0 = Release|x64
+		{371B9FA9-4C90-4AC6-A123-ACED756D6C77}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{EFB94D11-25FF-45ED-98F2-2034B19C8179} = {F912CF4E-74F6-4303-A7E4-45A3B67BB252}
+		{371B9FA9-4C90-4AC6-A123-ACED756D6C77} = {F86212ED-5261-440F-ABA5-57D28412DA9D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F0D4812D-BB41-4D52-A8A3-B2C006F5E15E}

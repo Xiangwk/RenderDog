@@ -128,7 +128,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy $(TargetDir)*.lib ..\..\..\Libs\$(ProjectName)\ /i /s /y</Command>
+      <Command>xcopy $(TargetDir)*.lib ..\..\..\EngineSDK\Renderer\Libs\$(ProjectName)\ /i /s /y
+xcopy ..\..\Public\*.* ..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i /s /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -148,7 +149,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy $(TargetDir)*.lib ..\..\..\Libs\$(ProjectName)\ /i /s /y</Command>
+      <Command>xcopy $(TargetDir)*.lib ..\..\..\EngineSDK\Renderer\Libs\$(ProjectName)\ /i /s /y
+xcopy ..\..\Public\*.* ..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i /s /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
