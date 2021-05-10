@@ -77,8 +77,8 @@
       </Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>xcopy $(TargetDir)*.lib ..\..\..\..\EngineSDK\3rdParty\Lib\ /i /s /y
-xcopy ..\..\Public\*.* ..\..\..\..\EngineSDK\3rdParty\Public\$(ProjectName)\ /i /s /y</Command>
+      <Command>xcopy $(TargetDir)*.lib ..\..\..\..\EngineSDK\3rdSDK\Lib\ /i /s /y
+xcopy ..\..\Public\*.* ..\..\..\..\EngineSDK\3rdSDK\Public\$(ProjectName)\ /i /s /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|X64'">
@@ -110,8 +110,8 @@ xcopy ..\..\Public\*.* ..\..\..\..\EngineSDK\3rdParty\Public\$(ProjectName)\ /i 
       </Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>xcopy $(TargetDir)*.lib ..\..\..\..\EngineSDK\3rdParty\Lib\ /i /s /y
-xcopy ..\..\Public\*.* ..\..\..\..\EngineSDK\3rdParty\Public\$(ProjectName)\ /i /s /y</Command>
+      <Command>xcopy $(TargetDir)*.lib ..\..\..\..\EngineSDK\3rdSDK\Lib\ /i /s /y
+xcopy ..\..\Public\*.* ..\..\..\..\EngineSDK\3rdSDK\Public\$(ProjectName)\ /i /s /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
