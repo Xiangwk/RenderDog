@@ -131,6 +131,10 @@
       <Command>xcopy $(TargetDir)*.lib ..\..\..\EngineSDK\Renderer\Libs\$(ProjectName)\ /i /s /y
 xcopy ..\..\Public\*.* ..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i /s /y</Command>
     </PostBuildEvent>
+    <Lib>
+      <AdditionalDependencies>DirectXTex_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\EngineSDK\3rdSDK\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -152,6 +156,10 @@ xcopy ..\..\Public\*.* ..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i /s 
       <Command>xcopy $(TargetDir)*.lib ..\..\..\EngineSDK\Renderer\Libs\$(ProjectName)\ /i /s /y
 xcopy ..\..\Public\*.* ..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i /s /y</Command>
     </PostBuildEvent>
+    <Lib>
+      <AdditionalDependencies>DirectXTex.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\EngineSDK\3rdSDK\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Math\Public\Matrix.h" />
@@ -165,6 +173,7 @@ xcopy ..\..\Public\*.* ..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i /s 
     <ClInclude Include="..\..\Public\RenderDog.h" />
     <ClInclude Include="..\..\Public\RenderTargetView.h" />
     <ClInclude Include="..\..\Public\Shader.h" />
+    <ClInclude Include="..\..\Public\ShaderResourceView.h" />
     <ClInclude Include="..\..\Public\SwapChain.h" />
     <ClInclude Include="..\..\Public\Texture.h" />
     <ClInclude Include="..\..\Public\Vertex.h" />
@@ -180,6 +189,7 @@ xcopy ..\..\Public\*.* ..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i /s 
     <ClCompile Include="..\..\Private\DeviceContext.cpp" />
     <ClCompile Include="..\..\Private\RenderDog.cpp" />
     <ClCompile Include="..\..\Private\Shader.cpp" />
+    <ClCompile Include="..\..\Private\ShaderResourceView.cpp" />
     <ClCompile Include="..\..\Private\SwapChain.cpp" />
     <ClCompile Include="..\..\Private\Texture.cpp" />
     <ClCompile Include="..\..\Private\Viewport.cpp" />

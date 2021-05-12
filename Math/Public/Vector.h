@@ -10,6 +10,29 @@
 
 namespace RenderDog
 {
+	class Vector2
+	{
+	public:
+		Vector2() = default;
+		~Vector2() = default;
+
+		Vector2(const Vector2&) = default;
+		Vector2& operator=(const Vector2&) = default;
+
+		Vector2(float x, float y) :
+			x(x), y(y)
+		{}
+
+	public:
+		float x;
+		float y;
+	};
+
+	Vector2 operator+(const Vector2& lhs, const Vector2& rhs);
+	Vector2 operator*(const Vector2& v, float f);
+	Vector2 operator*(float f, const Vector2& v);
+	Vector2 operator/(const Vector2& v, float f);
+
 	class Vector3
 	{
 	public:

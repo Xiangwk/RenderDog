@@ -2,6 +2,26 @@
 
 namespace RenderDog
 {
+	Vector2 operator+(const Vector2& lhs, const Vector2& rhs)
+	{
+		return Vector2(lhs.x + rhs.x, lhs.y + rhs.y);
+	}
+
+	Vector2 operator*(const Vector2& v, float f)
+	{
+		return Vector2(v.x * f, v.y * f);
+	}
+
+	Vector2 operator*(float f, const Vector2& v)
+	{
+		return v * f;
+	}
+
+	Vector2 operator/(const Vector2& v, float f)
+	{
+		return Vector2(v.x / f, v.y / f);
+	}
+
 	Vector3 operator+(const Vector3& lhs, const Vector3& rhs)
 	{
 		return Vector3(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);

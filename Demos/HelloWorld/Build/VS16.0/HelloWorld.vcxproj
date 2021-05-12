@@ -129,6 +129,9 @@
       <AdditionalDependencies>SoftwareRenderer_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\..\EngineSDK\Renderer\Libs\SoftwareRenderer;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy $(TargetDir)*.exe ..\..\..\..\Bin\Demos\$(ProjectName)\ /i /s /y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -148,6 +151,9 @@
       <AdditionalLibraryDirectories>..\..\..\..\EngineSDK\Renderer\Libs\SoftwareRenderer;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SoftwareRenderer.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy $(TargetDir)*.exe ..\..\..\..\Bin\Demos\$(ProjectName)\ /i /s /y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Src\Game.cpp" />

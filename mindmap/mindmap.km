@@ -117,8 +117,8 @@
                                             "created": 1620232675701,
                                             "text": "RenderTargetView",
                                             "layout_right_offset": {
-                                                "x": 65,
-                                                "y": -86
+                                                "x": 85,
+                                                "y": -84
                                             },
                                             "progress": 5
                                         },
@@ -130,11 +130,11 @@
                                             "created": 1620232721617,
                                             "text": "DepthStencilView",
                                             "layout_right_offset": {
-                                                "x": 53,
-                                                "y": -60
+                                                "x": 78,
+                                                "y": -52
                                             },
-                                            "priority": 1,
-                                            "progress": 1,
+                                            "priority": null,
+                                            "progress": 8,
                                             "note": "边缘处颜色会漏，需要检查一下"
                                         },
                                         "children": []
@@ -149,8 +149,23 @@
                                                 "y": -283
                                             },
                                             "progress": 5,
-                                            "note": "暂时使用Release来释放使用CreateTexture2D分配的内存，而不是使用析构函数，后面应将这些资源统一改为使用引用计数管理内存的释放。",
-                                            "priority": 2
+                                            "note": "1. 暂时使用Release来释放使用CreateTexture2D分配的内存，而不是使用析构函数，后面应将这些资源统一改为使用引用计数管理内存的释放。\n\n2. 增加从文件中加载纹理数据的功能。",
+                                            "priority": 1
+                                        },
+                                        "children": []
+                                    },
+                                    {
+                                        "data": {
+                                            "id": "cb9p75x3lrs0",
+                                            "created": 1620663317740,
+                                            "text": "ShaderResourceView",
+                                            "layout_right_offset": {
+                                                "x": 57,
+                                                "y": -80
+                                            },
+                                            "priority": 1,
+                                            "progress": 1,
+                                            "note": "1. mipmap"
                                         },
                                         "children": []
                                     }

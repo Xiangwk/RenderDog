@@ -20,6 +20,7 @@ namespace RenderDog
 
 		Vector3 vPostion;
 		Vector3 vColor;
+		Vector2 vUV;
 	};
 }
 

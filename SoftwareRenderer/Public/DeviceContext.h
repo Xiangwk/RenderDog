@@ -15,9 +15,11 @@ namespace RenderDog
 	class Matrix4x4;
 	class RenderTargetView;
 	class DepthStencilView;
+	class ShaderResourceView;
 
 	struct Viewport;
 	struct Vertex;
+	struct VSOutput;
 
 	enum class PrimitiveTopology
 	{
@@ -38,6 +40,7 @@ namespace RenderDog
 		void VSSetShader(const VertexShader* pVS) { m_pVS = pVS; }
 		void VSSetTransMats(const Matrix4x4* matWorld, const Matrix4x4* matView, const Matrix4x4* matProj);
 		void PSSetShader(const PixelShader* pPS) { m_pPS = pPS; }
+		void PSSetShaderResource(ShaderResourceView* const* pSRV) { m_pSRV = *pSRV; }
 
 		void RSSetViewport(const Viewport* pVP);
 
@@ -53,19 +56,19 @@ namespace RenderDog
 
 	private:
 		void DrawLineWithDDA(float fPos1X, float fPos1Y, float fPos2X, float fPos2Y, const float* lineColor);
-		void DrawTriangleWithLine(const Vertex& v0, const Vertex& v1, const Vertex& v2);
-		void DrawTriangleWithFlat(const Vertex& v0, const Vertex& v1, const Vertex& v2);
+		void DrawTriangleWithLine(const VSOutput& v0, const VSOutput& v1, const VSOutput& v2);
+		void DrawTriangleWithFlat(const VSOutput& v0, const VSOutput& v1, const VSOutput& v2);
 
-		void SortTriangleVertsByYGrow(Vertex& v0, Vertex& v1, Vertex& v2);
-		void SortScanlineVertsByXGrow(Vertex& v0, Vertex& v1);
+		void SortTriangleVertsByYGrow(VSOutput& v0, VSOutput& v1, VSOutput& v2);
+		void SortScanlineVertsByXGrow(VSOutput& v0, VSOutput& v1);
 
 		//平定三角形和平底三角形
-		void DrawTopTriangle(Vertex& v0, Vertex& v1, Vertex& v2);
-		void DrawBottomTriangle(Vertex& v0, Vertex& v1, Vertex& v2);
+		void DrawTopTriangle(VSOutput& v0, VSOutput& v1, VSOutput& v2);
+		void DrawBottomTriangle(VSOutput& v0, VSOutput& v1, VSOutput& v2);
 
-		void SliceTriangleToUpAndBottom(const Vertex& v0, const Vertex& v1, const Vertex& v2, Vertex& vNew);
+		void SliceTriangleToUpAndBottom(const VSOutput& v0, const VSOutput& v1, const VSOutput& v2, VSOutput& vNew);
 
-		void LerpVertexParams(const Vertex& v0, const Vertex& v1, Vertex& vNew, float fLerpFactor);
+		void LerpVertexParams(const VSOutput& v0, const VSOutput& v1, VSOutput& vNew, float fLerpFactor);
 
 		inline uint32_t ConvertFloatColorToUInt32(const float* color);
 
@@ -79,18 +82,20 @@ namespace RenderDog
 		uint32_t			m_nHeight;
 
 		const VertexBuffer* m_pVB;
-		const IndexBuffer* m_pIB;
+		const IndexBuffer*	m_pIB;
 
 		const VertexShader* m_pVS;
-		const PixelShader* m_pPS;
+		const PixelShader*	m_pPS;
 
-		const Matrix4x4* m_pWorldMat;
-		const Matrix4x4* m_pViewMat;
-		const Matrix4x4* m_pProjMat;
+		ShaderResourceView* m_pSRV;
 
-		Vertex* m_pVSOutputs;
+		const Matrix4x4*	m_pWorldMat;
+		const Matrix4x4*	m_pViewMat;
+		const Matrix4x4*	m_pProjMat;
 
-		Matrix4x4* m_pViewportMat;
+		VSOutput*			m_pVSOutputs;
+
+		Matrix4x4*			m_pViewportMat;
 
 		PrimitiveTopology	m_PriTopology;
 	};

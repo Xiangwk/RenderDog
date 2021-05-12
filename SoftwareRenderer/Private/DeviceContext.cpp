@@ -72,7 +72,7 @@ namespace RenderDog
 		if (m_pVB != pVB)
 		{
 			uint32_t nVertexNum = pVB->GetNum();
-			m_pVSOutputs = new Vertex[nVertexNum];
+			m_pVSOutputs = new VSOutput[nVertexNum];
 
 			m_pVB = pVB;
 		}
@@ -169,18 +169,18 @@ namespace RenderDog
 		//Clip to Screen
 		for (uint32_t i = 0; i < m_pVB->GetNum(); ++i)
 		{
-			Vertex& vert = m_pVSOutputs[i];
-			Vector4 vScreenPos(vert.vPostion, 1.0f);
+			VSOutput& vsOutput = m_pVSOutputs[i];
+			Vector4 vScreenPos(vsOutput.vert.vPostion, 1.0f);
 			vScreenPos = vScreenPos * (*m_pViewportMat);
-			vert.vPostion = Vector3(vScreenPos.x, vScreenPos.y, vScreenPos.z);
+			vsOutput.vert.vPostion = Vector3(vScreenPos.x, vScreenPos.y, vScreenPos.z);
 		}
 
 		const uint32_t* pIndice = m_pIB->GetData();
 		for (uint32_t i = 0; i < nIndexNum; i += 3)
 		{
-			const Vertex& vert0 = m_pVSOutputs[pIndice[i]];
-			const Vertex& vert1 = m_pVSOutputs[pIndice[i + 1]];
-			const Vertex& vert2 = m_pVSOutputs[pIndice[i + 2]];
+			const VSOutput& vert0 = m_pVSOutputs[pIndice[i]];
+			const VSOutput& vert1 = m_pVSOutputs[pIndice[i + 1]];
+			const VSOutput& vert2 = m_pVSOutputs[pIndice[i + 2]];
 
 			if (m_PriTopology == PrimitiveTopology::LINE_LIST)
 			{
@@ -262,38 +262,38 @@ namespace RenderDog
 		}
 	}
 
-	void DeviceContext::DrawTriangleWithLine(const Vertex& v0, const Vertex& v1, const Vertex& v2)
+	void DeviceContext::DrawTriangleWithLine(const VSOutput& v0, const VSOutput& v1, const VSOutput& v2)
 	{
-		float lineColor[4] = { v0.vColor.x, v0.vColor.y, v0.vColor.z, 1.0f };
-		DrawLineWithDDA(v0.vPostion.x, v0.vPostion.y, v1.vPostion.x, v1.vPostion.y, lineColor);
-		DrawLineWithDDA(v1.vPostion.x, v1.vPostion.y, v2.vPostion.x, v2.vPostion.y, lineColor);
-		DrawLineWithDDA(v2.vPostion.x, v2.vPostion.y, v0.vPostion.x, v0.vPostion.y, lineColor);
+		float lineColor[4] = { v0.vert.vColor.x, v0.vert.vColor.y, v0.vert.vColor.z, 1.0f };
+		DrawLineWithDDA(v0.vert.vPostion.x, v0.vert.vPostion.y, v1.vert.vPostion.x, v1.vert.vPostion.y, lineColor);
+		DrawLineWithDDA(v1.vert.vPostion.x, v1.vert.vPostion.y, v2.vert.vPostion.x, v2.vert.vPostion.y, lineColor);
+		DrawLineWithDDA(v2.vert.vPostion.x, v2.vert.vPostion.y, v0.vert.vPostion.x, v0.vert.vPostion.y, lineColor);
 	}
 
-	void DeviceContext::DrawTriangleWithFlat(const Vertex& v0, const Vertex& v1, const Vertex& v2)
+	void DeviceContext::DrawTriangleWithFlat(const VSOutput& v0, const VSOutput& v1, const VSOutput& v2)
 	{
-		if (floatEqual(v0.vPostion.y, v1.vPostion.y, fEpsilon) && floatEqual(v0.vPostion.y, v2.vPostion.y, fEpsilon) ||
-			floatEqual(v0.vPostion.x, v1.vPostion.x, fEpsilon) && floatEqual(v0.vPostion.x, v2.vPostion.x, fEpsilon))
+		if (floatEqual(v0.vert.vPostion.y, v1.vert.vPostion.y, fEpsilon) && floatEqual(v0.vert.vPostion.y, v2.vert.vPostion.y, fEpsilon) ||
+			floatEqual(v0.vert.vPostion.x, v1.vert.vPostion.x, fEpsilon) && floatEqual(v0.vert.vPostion.x, v2.vert.vPostion.x, fEpsilon))
 		{
 			return;
 		}
 
-		Vertex vert0(v0);
-		Vertex vert1(v1);
-		Vertex vert2(v2);
+		VSOutput vert0(v0);
+		VSOutput vert1(v1);
+		VSOutput vert2(v2);
 		SortTriangleVertsByYGrow(vert0, vert1, vert2);
 
-		if (floatEqual(vert0.vPostion.y, vert1.vPostion.y, fEpsilon))
+		if (floatEqual(vert0.vert.vPostion.y, vert1.vert.vPostion.y, fEpsilon))
 		{
 			DrawTopTriangle(vert0, vert1, vert2);
 		}
-		else if (floatEqual(vert1.vPostion.y, vert2.vPostion.y, fEpsilon))
+		else if (floatEqual(vert1.vert.vPostion.y, vert2.vert.vPostion.y, fEpsilon))
 		{
 			DrawBottomTriangle(vert0, vert1, vert2);
 		}
 		else
 		{
-			RenderDog::Vertex vertNew;
+			VSOutput vertNew;
 			SliceTriangleToUpAndBottom(vert0, vert1, vert2, vertNew);
 
 			DrawBottomTriangle(vert0, vert1, vertNew);
@@ -301,75 +301,77 @@ namespace RenderDog
 		}
 	}
 
-	void DeviceContext::SortTriangleVertsByYGrow(Vertex& v0, Vertex& v1, Vertex& v2)
+	void DeviceContext::SortTriangleVertsByYGrow(VSOutput& v0, VSOutput& v1, VSOutput& v2)
 	{
-		if ((uint32_t)v1.vPostion.y <= (uint32_t)v0.vPostion.y)
+		if ((uint32_t)v1.vert.vPostion.y <= (uint32_t)v0.vert.vPostion.y)
 		{
-			Vertex vTemp = v0;
+			VSOutput vTemp = v0;
 			v0 = v1;
 			v1 = vTemp;
 		}
 
-		if ((uint32_t)v2.vPostion.y <= (uint32_t)v0.vPostion.y)
+		if ((uint32_t)v2.vert.vPostion.y <= (uint32_t)v0.vert.vPostion.y)
 		{
-			Vertex vTemp = v0;
+			VSOutput vTemp = v0;
 			v0 = v2;
 			v2 = vTemp;
 		}
 
-		if ((uint32_t)v2.vPostion.y <= (uint32_t)v1.vPostion.y)
+		if ((uint32_t)v2.vert.vPostion.y <= (uint32_t)v1.vert.vPostion.y)
 		{
-			Vertex vTemp = v1;
+			VSOutput vTemp = v1;
 			v1 = v2;
 			v2 = vTemp;
 		}
 	}
 
-	void DeviceContext::SortScanlineVertsByXGrow(Vertex& v0, Vertex& v1)
+	void DeviceContext::SortScanlineVertsByXGrow(VSOutput& v0, VSOutput& v1)
 	{
-		if ((uint32_t)v1.vPostion.x <= (uint32_t)v0.vPostion.x)
+		if ((uint32_t)v1.vert.vPostion.x <= (uint32_t)v0.vert.vPostion.x)
 		{
-			Vertex vTemp = v0;
+			VSOutput vTemp = v0;
 			v0 = v1;
 			v1 = vTemp;
 		}
 	}
 
-	void DeviceContext::DrawTopTriangle(Vertex& v0, Vertex& v1, Vertex& v2)
+	void DeviceContext::DrawTopTriangle(VSOutput& v0, VSOutput& v1, VSOutput& v2)
 	{
 		SortScanlineVertsByXGrow(v0, v1);
 
-		float fYStart = std::ceilf(v0.vPostion.y);
-		float fYEnd = std::ceilf(v2.vPostion.y);
-		float fDeltaY = v2.vPostion.y - v0.vPostion.y;
+		float fYStart = std::ceilf(v0.vert.vPostion.y);
+		float fYEnd = std::ceilf(v2.vert.vPostion.y);
+		float fDeltaY = v2.vert.vPostion.y - v0.vert.vPostion.y;
 
 		for (uint32_t i = (uint32_t)fYStart; i < (uint32_t)fYEnd; ++i)
 		{
-			float fLerpFactorY = (i - v0.vPostion.y) / fDeltaY;
+			float fLerpFactorY = (i - v0.vert.vPostion.y) / fDeltaY;
 
-			Vertex vStart;
+			VSOutput vStart;
 			LerpVertexParams(v0, v2, vStart, fLerpFactorY);
-			Vertex vEnd;
+			VSOutput vEnd;
 			LerpVertexParams(v1, v2, vEnd, fLerpFactorY);
 
-			float fXStart = std::ceil(vStart.vPostion.x);
-			float fXEnd = std::ceil(vEnd.vPostion.x);
+			float fXStart = std::ceil(vStart.vert.vPostion.x);
+			float fXEnd = std::ceil(vEnd.vert.vPostion.x);
 
-			float fDeltaX = vEnd.vPostion.x - vStart.vPostion.x;
+			float fDeltaX = vEnd.vert.vPostion.x - vStart.vert.vPostion.x;
 			for (uint32_t j = (uint32_t)fXStart; j < (uint32_t)fXEnd; ++j)
 			{
-				float fLerpFactorX = (j - vStart.vPostion.x) / fDeltaX;
+				float fLerpFactorX = (j - vStart.vert.vPostion.x) / fDeltaX;
 
-				Vertex vCurr;
+				VSOutput vCurr;
 				LerpVertexParams(vStart, vEnd, vCurr, fLerpFactorX);
 
 				float fPixelDepth = m_pDepthBuffer[j + i * m_nWidth];
-				if (vCurr.vPostion.z <= fPixelDepth)
+				if (vCurr.vert.vPostion.z <= fPixelDepth)
 				{
-					float pixelColor[4] = { vCurr.vColor.x, vCurr.vColor.y, vCurr.vColor.z, 1.0f };
-					m_pFrameBuffer[j + i * m_nWidth] = ConvertFloatColorToUInt32(pixelColor);
+					/*Vector3 PSResult = m_pPS->PSMain(vCurr, m_pSRV);
+					float pixelColor[4] = { PSResult.x, PSResult.y, PSResult.z, 1.0f };
+					m_pFrameBuffer[j + i * m_nWidth] = ConvertFloatColorToUInt32(pixelColor);*/
+					m_pFrameBuffer[j + i * m_nWidth] = m_pPS->PSMain(vCurr, m_pSRV);
 
-					m_pDepthBuffer[j + i * m_nWidth] = vCurr.vPostion.z;
+					m_pDepthBuffer[j + i * m_nWidth] = vCurr.vert.vPostion.z;
 				}
 
 #if DEBUG_RASTERIZATION
@@ -379,41 +381,43 @@ namespace RenderDog
 		}
 	}
 
-	void DeviceContext::DrawBottomTriangle(Vertex& v0, Vertex& v1, Vertex& v2)
+	void DeviceContext::DrawBottomTriangle(VSOutput& v0, VSOutput& v1, VSOutput& v2)
 	{
 		SortScanlineVertsByXGrow(v1, v2);
 
-		float fYStart = std::ceilf(v0.vPostion.y);
-		float fYEnd = std::ceilf(v1.vPostion.y);
-		float fDeltaY = v1.vPostion.y - v0.vPostion.y;
+		float fYStart = std::ceilf(v0.vert.vPostion.y);
+		float fYEnd = std::ceilf(v1.vert.vPostion.y);
+		float fDeltaY = v1.vert.vPostion.y - v0.vert.vPostion.y;
 
 		for (uint32_t i = (uint32_t)fYStart; i < (uint32_t)fYEnd; ++i)
 		{
-			float fLerpFactorY = (i - v0.vPostion.y) / fDeltaY;
+			float fLerpFactorY = (i - v0.vert.vPostion.y) / fDeltaY;
 
-			Vertex vStart;
+			VSOutput vStart;
 			LerpVertexParams(v0, v1, vStart, fLerpFactorY);
-			Vertex vEnd;
+			VSOutput vEnd;
 			LerpVertexParams(v0, v2, vEnd, fLerpFactorY);
 
-			float fXStart = std::ceil(vStart.vPostion.x);
-			float fXEnd = std::ceil(vEnd.vPostion.x);
+			float fXStart = std::ceil(vStart.vert.vPostion.x);
+			float fXEnd = std::ceil(vEnd.vert.vPostion.x);
 
-			float fDeltaX = vEnd.vPostion.x - vStart.vPostion.x;
+			float fDeltaX = vEnd.vert.vPostion.x - vStart.vert.vPostion.x;
 			for (uint32_t j = (uint32_t)fXStart; j < (uint32_t)fXEnd; ++j)
 			{
-				float fLerpFactorX = (j - vStart.vPostion.x) / fDeltaX;
+				float fLerpFactorX = (j - vStart.vert.vPostion.x) / fDeltaX;
 
-				Vertex vCurr;
+				VSOutput vCurr;
 				LerpVertexParams(vStart, vEnd, vCurr, fLerpFactorX);
 
 				float fPixelDepth = m_pDepthBuffer[j + i * m_nWidth];
-				if (vCurr.vPostion.z <= fPixelDepth)
+				if (vCurr.vert.vPostion.z <= fPixelDepth)
 				{
-					float pixelColor[4] = { vCurr.vColor.x, vCurr.vColor.y, vCurr.vColor.z, 1.0f };
-					m_pFrameBuffer[j + i * m_nWidth] = ConvertFloatColorToUInt32(pixelColor);
+					/*Vector3 PSResult = m_pPS->PSMain(vCurr, m_pSRV);
+					float pixelColor[4] = { PSResult.x, PSResult.y, PSResult.z, 1.0f };
+					m_pFrameBuffer[j + i * m_nWidth] = ConvertFloatColorToUInt32(pixelColor);*/
+					m_pFrameBuffer[j + i * m_nWidth] = m_pPS->PSMain(vCurr, m_pSRV);
 
-					m_pDepthBuffer[j + i * m_nWidth] = vCurr.vPostion.z;
+					m_pDepthBuffer[j + i * m_nWidth] = vCurr.vert.vPostion.z;
 				}
 
 #if DEBUG_RASTERIZATION
@@ -423,22 +427,25 @@ namespace RenderDog
 		}
 	}
 
-	void DeviceContext::SliceTriangleToUpAndBottom(const Vertex& v0, const Vertex& v1, const Vertex& v2, Vertex& vNew)
+	void DeviceContext::SliceTriangleToUpAndBottom(const VSOutput& v0, const VSOutput& v1, const VSOutput& v2, VSOutput& vNew)
 	{
-		float fLerpFactor = (v1.vPostion.y - v0.vPostion.y) / (v2.vPostion.y - v0.vPostion.y);
+		float fLerpFactor = (v1.vert.vPostion.y - v0.vert.vPostion.y) / (v2.vert.vPostion.y - v0.vert.vPostion.y);
 		
 		LerpVertexParams(v0, v2, vNew, fLerpFactor);
 	}
 
-	void DeviceContext::LerpVertexParams(const Vertex& v0, const Vertex& v1, Vertex& vNew, float fLerpFactor)
+	void DeviceContext::LerpVertexParams(const VSOutput& v0, const VSOutput& v1, VSOutput& vNew, float fLerpFactor)
 	{
-		float fNewX = v0.vPostion.x + (v1.vPostion.x - v0.vPostion.x) * fLerpFactor;
-		float fNewY = v0.vPostion.y + (v1.vPostion.y - v0.vPostion.y) * fLerpFactor;
-		float fInvNewZ = 1.0f / v0.vPostion.z + (1.0f / v1.vPostion.z - 1.0f / v0.vPostion.z) * fLerpFactor;
-		float fNewZ = 1.0f / fInvNewZ;
+		float fNewX = v0.vert.vPostion.x + (v1.vert.vPostion.x - v0.vert.vPostion.x) * fLerpFactor;
+		float fNewY = v0.vert.vPostion.y + (v1.vert.vPostion.y - v0.vert.vPostion.y) * fLerpFactor;
+		float fNewZ = v0.vert.vPostion.z + (v1.vert.vPostion.z - v0.vert.vPostion.z) * fLerpFactor;
 
-		vNew.vPostion = Vector3(fNewX, fNewY, fNewZ);
-		vNew.vColor = fNewZ * ((v0.vColor / v0.vPostion.z) * (1.0f - fLerpFactor) + (v1.vColor / v1.vPostion.z) * fLerpFactor);
+		float fNewInvZ = v0.fInvZ + (v1.fInvZ - v0.fInvZ) * fLerpFactor;
+
+		vNew.vert.vPostion = Vector3(fNewX, fNewY, fNewZ);
+		vNew.vert.vColor = (1.0f / fNewInvZ) * ((v0.vert.vColor * v0.fInvZ) * (1.0f - fLerpFactor) + (v1.vert.vColor * v1.fInvZ) * fLerpFactor);
+		vNew.vert.vUV = (1.0f / fNewInvZ) * ((v0.vert.vUV * v0.fInvZ) * (1.0f - fLerpFactor) + (v1.vert.vUV * v1.fInvZ) * fLerpFactor);
+		vNew.fInvZ = fNewInvZ;
 	}
 
 	inline uint32_t DeviceContext::ConvertFloatColorToUInt32(const float* color)

@@ -8,6 +8,7 @@
 #include "RenderDog.h"
 #include "RenderTargetView.h" 
 #include "DepthStencilView.h"
+#include "ShaderResourceView.h"
 #include "Texture.h"
 #include "Buffer.h"
 #include "Shader.h"
@@ -36,6 +37,7 @@ RenderDog::VertexShader*		g_pVertexShader = nullptr;
 RenderDog::PixelShader*			g_pPixelShader = nullptr;
 RenderDog::Texture2D*			g_pDepthTexture = nullptr;
 RenderDog::DepthStencilView*	g_pDepthStencilView = nullptr;
+RenderDog::ShaderResourceView*	g_pTextureSRV = nullptr;
 
 RenderDog::Matrix4x4			g_WorldMatrix;
 RenderDog::Matrix4x4			g_ViewMatrix;
@@ -46,6 +48,7 @@ int aKeys[512];	// 当前键盘按下状态
 float fRotAngleX = 0.0f;
 float fRotAngleY = 0.0f;
 
+using RenderDog::Vector2;
 using RenderDog::Vector3;
 using RenderDog::Vertex;
 
@@ -153,35 +156,35 @@ bool InitDevice()
 
 	Vertex aBoxVertices[] =
 	{
-		{Vector3(-1.0f, 1.0f, -1.0f),	Vector3(1.0f, 0.0f, 0.0f)},
-		{Vector3(1.0f, 1.0f, -1.0f),	Vector3(1.0f, 0.0f, 0.0f)},
-		{Vector3(1.0f, 1.0f, 1.0f),		Vector3(1.0f, 0.0f, 0.0f)},
-		{Vector3(-1.0f, 1.0f, 1.0f),	Vector3(1.0f, 0.0f, 0.0f)},
+		{Vector3(-1.0f, 1.0f, -1.0f),	Vector3(1.0f, 0.0f, 0.0f),	Vector2(0.0f, 1.0f)},
+		{Vector3(1.0f, 1.0f, -1.0f),	Vector3(1.0f, 0.0f, 0.0f),	Vector2(1.0f, 1.0f)},
+		{Vector3(1.0f, 1.0f, 1.0f),		Vector3(1.0f, 0.0f, 0.0f),	Vector2(1.0f, 0.0f)},
+		{Vector3(-1.0f, 1.0f, 1.0f),	Vector3(1.0f, 0.0f, 0.0f),	Vector2(0.0f, 0.0f)},
 
-		{Vector3(-1.0f, -1.0f, -1.0f),	Vector3(0.0f, 1.0f, 0.0f)},
-		{Vector3(1.0f, -1.0f, -1.0f) ,	Vector3(0.0f, 1.0f, 0.0f)},
-		{Vector3(1.0f, -1.0f, 1.0f),	Vector3(0.0f, 1.0f, 0.0f)},
-		{Vector3(-1.0f, -1.0f, 1.0f) ,	Vector3(0.0f, 1.0f, 0.0f)},
+		{Vector3(-1.0f, -1.0f, -1.0f),	Vector3(0.0f, 1.0f, 0.0f),	Vector2(0.0f, 1.0f)},
+		{Vector3(1.0f, -1.0f, -1.0f) ,	Vector3(0.0f, 1.0f, 0.0f),	Vector2(1.0f, 1.0f)},
+		{Vector3(1.0f, -1.0f, 1.0f),	Vector3(0.0f, 1.0f, 0.0f),	Vector2(1.0f, 0.0f)},
+		{Vector3(-1.0f, -1.0f, 1.0f) ,	Vector3(0.0f, 1.0f, 0.0f),	Vector2(0.0f, 0.0f)},
 
-		{Vector3(-1.0f, -1.0f, 1.0f),	Vector3(0.0f, 0.0f, 1.0f)},
-		{Vector3(-1.0f, -1.0f, -1.0f),	Vector3(0.0f, 0.0f, 1.0f)},
-		{Vector3(-1.0f, 1.0f, -1.0f), 	Vector3(0.0f, 0.0f, 1.0f)},
-		{Vector3(-1.0f, 1.0f, 1.0f),	Vector3(0.0f, 0.0f, 1.0f)},
+		{Vector3(-1.0f, -1.0f, 1.0f),	Vector3(0.0f, 0.0f, 1.0f),	Vector2(0.0f, 1.0f)},
+		{Vector3(-1.0f, -1.0f, -1.0f),	Vector3(0.0f, 0.0f, 1.0f),	Vector2(1.0f, 1.0f)},
+		{Vector3(-1.0f, 1.0f, -1.0f), 	Vector3(0.0f, 0.0f, 1.0f),	Vector2(1.0f, 0.0f)},
+		{Vector3(-1.0f, 1.0f, 1.0f),	Vector3(0.0f, 0.0f, 1.0f),	Vector2(0.0f, 0.0f)},
 
-		{Vector3(1.0f, -1.0f, 1.0f),	Vector3(1.0f, 1.0f, 0.0f)},
-		{Vector3(1.0f, -1.0f, -1.0f),	Vector3(1.0f, 1.0f, 0.0f)},
-		{Vector3(1.0f, 1.0f, -1.0f), 	Vector3(1.0f, 1.0f, 0.0f)},
-		{Vector3(1.0f, 1.0f, 1.0f),		Vector3(1.0f, 1.0f, 0.0f)},
+		{Vector3(1.0f, -1.0f, 1.0f),	Vector3(1.0f, 1.0f, 0.0f),	Vector2(0.0f, 1.0f)},
+		{Vector3(1.0f, -1.0f, -1.0f),	Vector3(1.0f, 1.0f, 0.0f),	Vector2(1.0f, 1.0f)},
+		{Vector3(1.0f, 1.0f, -1.0f), 	Vector3(1.0f, 1.0f, 0.0f),	Vector2(1.0f, 0.0f)},
+		{Vector3(1.0f, 1.0f, 1.0f),		Vector3(1.0f, 1.0f, 0.0f),	Vector2(0.0f, 0.0f)},
 
-		{Vector3(-1.0f, -1.0f, -1.0f),	Vector3(1.0f, 0.0f, 1.0f)},
-		{Vector3(1.0f, -1.0f, -1.0f),	Vector3(1.0f, 0.0f, 1.0f)},
-		{Vector3(1.0f, 1.0f, -1.0f),	Vector3(1.0f, 0.0f, 1.0f)},
-		{Vector3(-1.0f, 1.0f, -1.0f),	Vector3(1.0f, 0.0f, 1.0f)},
+		{Vector3(-1.0f, -1.0f, -1.0f),	Vector3(1.0f, 0.0f, 1.0f),	Vector2(0.0f, 1.0f)},
+		{Vector3(1.0f, -1.0f, -1.0f),	Vector3(1.0f, 0.0f, 1.0f),	Vector2(1.0f, 1.0f)},
+		{Vector3(1.0f, 1.0f, -1.0f),	Vector3(1.0f, 0.0f, 1.0f),	Vector2(1.0f, 0.0f)},
+		{Vector3(-1.0f, 1.0f, -1.0f),	Vector3(1.0f, 0.0f, 1.0f),	Vector2(0.0f, 0.0f)},
 
-		{Vector3(-1.0f, -1.0f, 1.0f),	Vector3(0.0f, 1.0f, 1.0f)},
-		{Vector3(1.0f, -1.0f, 1.0f),	Vector3(0.0f, 1.0f, 1.0f)},
-		{Vector3(1.0f, 1.0f, 1.0f),		Vector3(0.0f, 1.0f, 1.0f)},
-		{Vector3(-1.0f, 1.0f, 1.0f),	Vector3(0.0f, 1.0f, 1.0f)},
+		{Vector3(-1.0f, -1.0f, 1.0f),	Vector3(0.0f, 1.0f, 1.0f),	Vector2(0.0f, 1.0f)},
+		{Vector3(1.0f, -1.0f, 1.0f),	Vector3(0.0f, 1.0f, 1.0f),	Vector2(1.0f, 1.0f)},
+		{Vector3(1.0f, 1.0f, 1.0f),		Vector3(0.0f, 1.0f, 1.0f),	Vector2(1.0f, 0.0f)},
+		{Vector3(-1.0f, 1.0f, 1.0f),	Vector3(0.0f, 1.0f, 1.0f),	Vector2(0.0f, 0.0f)},
 	};
 
 	RenderDog::VertexBufferDesc vbDesc;
@@ -226,6 +229,12 @@ bool InitDevice()
 	g_PerspProjMatrix = RenderDog::GetPerspProjectionMatrixLH(45.0f, (float)g_nWindowWidth / g_nWindowHeight, 0.01f, 1000.0f);
 
 	memset(aKeys, 0, sizeof(int) * 512);
+
+	g_pTextureSRV = new RenderDog::ShaderResourceView();
+	if (!g_pTextureSRV->LoadFromFile(L"Textures/ErrorTexture_diff.dds"))
+	{
+		return false;
+	}
 
 	return true;
 }
@@ -286,6 +295,14 @@ void CleanupDevice()
 		g_pDepthStencilView = nullptr;
 	}
 
+	if (g_pTextureSRV)
+	{
+		g_pTextureSRV->Release();
+
+		delete g_pTextureSRV;
+		g_pTextureSRV = nullptr;
+	}
+
 	if (g_pDevice)
 	{
 		delete g_pDevice;
@@ -340,6 +357,7 @@ void Render()
 	g_pDeviceContext->VSSetShader(g_pVertexShader);
 	g_pDeviceContext->VSSetTransMats(&g_WorldMatrix, &g_ViewMatrix, &g_PerspProjMatrix);
 	g_pDeviceContext->PSSetShader(g_pPixelShader);
+	g_pDeviceContext->PSSetShaderResource(&g_pTextureSRV);
 
 	g_pDeviceContext->DrawIndex(36);
 
