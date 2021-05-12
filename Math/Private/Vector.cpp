@@ -90,6 +90,16 @@ namespace RenderDog
 		return Vector4(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z, lhs.w - rhs.w);
 	}
 
+	Vector4 operator*(const Vector4& lhs, float f)
+	{
+		return Vector4(lhs.x * f, lhs.y * f, lhs.z * f, lhs.w * f);
+	}
+
+	Vector4 operator*(float f, const Vector4& rhs)
+	{
+		return rhs * f;
+	}
+
 	Vector4 operator/(const Vector4& lhs, float rhs)
 	{
 		return Vector4(lhs.x / rhs, lhs.y / rhs, lhs.z / rhs, lhs.w / rhs);

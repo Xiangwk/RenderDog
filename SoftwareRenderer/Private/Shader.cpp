@@ -15,25 +15,27 @@ namespace RenderDog
 	VSOutput VertexShader::VSMain(const Vertex& inVertex, const Matrix4x4& matWorld, const Matrix4x4& matView, const Matrix4x4& matProj) const
 	{
 		VSOutput Output = {};
-		Vector4 vInPos = Vector4(inVertex.vPostion, 1.0f);
+		Vector4 vInPos = Vector4(inVertex.vPosition, 1.0f);
 		vInPos = vInPos * matWorld;
 		vInPos = vInPos * matView;
 		vInPos = vInPos * matProj;
 
-		Output.fInvZ = 1.0f / vInPos.w;
+		Output.SVPosition.w = vInPos.w;
 
 		vInPos = vInPos / vInPos.w;
 
-		Output.vert.vPostion = Vector3(vInPos.x, vInPos.y, vInPos.z);
-		Output.vert.vColor = inVertex.vColor;
-		Output.vert.vUV = inVertex.vUV;
+		Output.SVPosition.x = vInPos.x;
+		Output.SVPosition.y = vInPos.y;
+		Output.SVPosition.z = vInPos.z;
+		Output.Color = Vector4(inVertex.vColor, 1.0f);
+		Output.UV = inVertex.vUV;
 
 		return Output;
 	}
 
 	uint32_t PixelShader::PSMain(const VSOutput& PSInput, const ShaderResourceView* pSRV) const
 	{
-		Vector2 vUV = PSInput.vert.vUV;
+		Vector2 vUV = PSInput.UV;
 
 		uint32_t TextureColor = Sample(pSRV, vUV);
 

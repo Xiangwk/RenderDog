@@ -25,8 +25,9 @@ namespace RenderDog
 		VSOutput(const VSOutput & v) = default;
 		VSOutput& operator=(const VSOutput & v) = default;
 
-		Vertex	vert;
-		float	fInvZ;
+		Vector4 SVPosition;
+		Vector4 Color;
+		Vector2 UV;
 	};
 
 	class VertexShader

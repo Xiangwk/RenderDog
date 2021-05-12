@@ -107,5 +107,7 @@ namespace RenderDog
 
 	Vector4 operator+(const Vector4& lhs, const Vector4& rhs);
 	Vector4 operator-(const Vector4& lhs, const Vector4& rhs);
+	Vector4 operator*(const Vector4& lhs, float f);
+	Vector4 operator*(float f, const Vector4& rhs);
 	Vector4 operator/(const Vector4& lhs, float rhs);
 }
