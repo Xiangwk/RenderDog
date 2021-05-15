@@ -441,16 +441,10 @@ namespace RenderDog
 		float fNewX = v0.SVPosition.x + (v1.SVPosition.x - v0.SVPosition.x) * fLerpFactor;
 		float fNewY = v0.SVPosition.y + (v1.SVPosition.y - v0.SVPosition.y) * fLerpFactor;
 		float fNewZ = v0.SVPosition.z + (v1.SVPosition.z - v0.SVPosition.z) * fLerpFactor;
-		float fNewW = 1.0f / (1.0f / v0.SVPosition.w + (1.0f / v1.SVPosition.w - 1.0f / v0.SVPosition.w) * fLerpFactor);
+		float fNewW = v0.SVPosition.w + (v1.SVPosition.w - v0.SVPosition.w) * fLerpFactor;
 
 		vNew.SVPosition = Vector4(fNewX, fNewY, fNewZ, fNewW);
-		vNew.Color = fNewW * ((v0.Color / v0.SVPosition.w) * (1.0f - fLerpFactor) + (v1.Color / v1.SVPosition.w) * fLerpFactor);
-		vNew.UV = fNewW * ((v0.UV / v0.SVPosition.w) * (1.0f - fLerpFactor) + (v1.UV / v1.SVPosition.w) * fLerpFactor);
+		vNew.Color = (1.0f / fNewW) * ((v0.Color * v0.SVPosition.w) * (1.0f - fLerpFactor) + (v1.Color * v1.SVPosition.w) * fLerpFactor);
+		vNew.UV = (1.0f / fNewW) * ((v0.UV * v0.SVPosition.w) * (1.0f - fLerpFactor) + (v1.UV * v1.SVPosition.w) * fLerpFactor);
 	}
-
-	inline uint32_t DeviceContext::ConvertFloatColorToUInt32(const float* color)
-	{
-		return (uint32_t)(255 * color[0]) << 16 | (uint32_t)(255 * color[1]) << 8 | (uint32_t)(255 * color[2]);
-	}
-
 }

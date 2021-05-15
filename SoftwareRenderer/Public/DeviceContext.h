@@ -70,8 +70,6 @@ namespace RenderDog
 
 		void LerpVertexParams(const VSOutput& v0, const VSOutput& v1, VSOutput& vNew, float fLerpFactor);
 
-		inline uint32_t ConvertFloatColorToUInt32(const float* color);
-
 	private:
 		uint32_t*			m_pFrameBuffer;
 		float*				m_pDepthBuffer;

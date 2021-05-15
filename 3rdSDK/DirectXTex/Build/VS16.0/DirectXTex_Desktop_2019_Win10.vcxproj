@@ -77,7 +77,7 @@
       </Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>xcopy $(TargetDir)*.lib ..\..\..\..\EngineSDK\3rdSDK\Lib\ /i /s /y
+      <Command>xcopy $(TargetDir)*.lib ..\..\..\..\EngineSDK\3rdSDK\Libs\ /i /s /y
 xcopy ..\..\Public\*.* ..\..\..\..\EngineSDK\3rdSDK\Public\$(ProjectName)\ /i /s /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -110,7 +110,7 @@ xcopy ..\..\Public\*.* ..\..\..\..\EngineSDK\3rdSDK\Public\$(ProjectName)\ /i /s
       </Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>xcopy $(TargetDir)*.lib ..\..\..\..\EngineSDK\3rdSDK\Lib\ /i /s /y
+      <Command>xcopy $(TargetDir)*.lib ..\..\..\..\EngineSDK\3rdSDK\Libs\ /i /s /y
 xcopy ..\..\Public\*.* ..\..\..\..\EngineSDK\3rdSDK\Public\$(ProjectName)\ /i /s /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>

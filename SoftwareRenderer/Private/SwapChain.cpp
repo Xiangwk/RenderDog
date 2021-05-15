@@ -75,7 +75,7 @@ namespace RenderDog
 		Texture2D* pTex = new Texture2D();
 		*ppSurface = pTex;
 
-		pTex->GetData() = m_pBackBuffer;
+		pTex->GetDataUint32() = m_pBackBuffer;
 		pTex->SetWidth(m_nWidth);
 		pTex->SetHeight(m_nHeight);
 

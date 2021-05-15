@@ -231,7 +231,8 @@ bool InitDevice()
 	memset(aKeys, 0, sizeof(int) * 512);
 
 	g_pTextureSRV = new RenderDog::ShaderResourceView();
-	if (!g_pTextureSRV->LoadFromFile(L"Textures/ErrorTexture_diff.dds"))
+
+	if (!g_pTextureSRV->LoadFromFile("Textures/ErrorTexture_diff.tga"))
 	{
 		return false;
 	}
@@ -247,7 +248,6 @@ void CleanupDevice()
 		delete g_pSwapChain;
 		g_pSwapChain = nullptr;
 	}
-	
 	
 	if (g_pRenderTargetView)
 	{

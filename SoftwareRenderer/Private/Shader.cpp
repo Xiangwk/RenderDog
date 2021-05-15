@@ -7,6 +7,7 @@
 #include "Shader.h"
 #include "Matrix.h"
 #include "ShaderResourceView.h"
+#include "Utility.h"
 
 #include <cstdint>
 
@@ -20,7 +21,7 @@ namespace RenderDog
 		vInPos = vInPos * matView;
 		vInPos = vInPos * matProj;
 
-		Output.SVPosition.w = vInPos.w;
+		Output.SVPosition.w = 1.0f / vInPos.w;
 
 		vInPos = vInPos / vInPos.w;
 
@@ -46,10 +47,16 @@ namespace RenderDog
 	{
 		const uint32_t* pData = pSRV->GetView();
 
-		uint32_t nRow = (uint32_t)(vUV.y * 256);
-		uint32_t nCol = (uint32_t)(vUV.x * 256);
+		uint32_t nWidth = pSRV->GetWidth();
+		uint32_t nHeight = pSRV->GetHeight();
 
-		uint32_t color = pData[nRow * 256 + nCol];
+		uint32_t nRow = (uint32_t)(vUV.y * (nHeight - 1));
+		uint32_t nCol = (uint32_t)(vUV.x * (nWidth - 1));
+
+		uint32_t color = pData[nRow * nWidth + nCol];
+
+		/*float Color[4] = { 1, 0, 0, 1 };
+		uint32_t color = ConvertFloatColorToUInt32(Color);*/
 
 		return color;
 	}

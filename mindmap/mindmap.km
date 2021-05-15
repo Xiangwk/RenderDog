@@ -167,7 +167,19 @@
                                             "progress": 1,
                                             "note": "1. mipmap"
                                         },
-                                        "children": []
+                                        "children": [
+                                            {
+                                                "data": {
+                                                    "id": "cbdosej531c0",
+                                                    "created": 1621068400851,
+                                                    "text": "从文件中加载贴图",
+                                                    "priority": 1,
+                                                    "progress": 8,
+                                                    "note": "1. 使用FreeImage库加载贴图资源；目前还有内存泄漏，经过测试发现，内存泄漏应该是发生在FreeImage库中，其官方的例子中亦存在内存泄漏。。。\n\n2. 使用stbImage库，或者手写一个TGA加载函数（可以参考DirectXTex)。\n\n3. 若使用DirectXTex的话，需要调用DeCompress函数，可以参考texconv中的保存PPM的程序；"
+                                                },
+                                                "children": []
+                                            }
+                                        ]
                                     }
                                 ]
                             },

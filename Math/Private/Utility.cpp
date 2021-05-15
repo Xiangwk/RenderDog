@@ -10,4 +10,9 @@ namespace RenderDog
 	{
 		return std::abs(lhs - rhs) < epsilon;
 	}
+
+	uint32_t ConvertFloatColorToUInt32(const float* color)
+	{
+		return (uint32_t)(255 * color[0]) << 16 | (uint32_t)(255 * color[1]) << 8 | (uint32_t)(255 * color[2]);
+	}
 }
