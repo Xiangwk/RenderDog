@@ -76,10 +76,11 @@
                                     "created": 1620231750661,
                                     "text": "Utility",
                                     "layout_right_offset": {
-                                        "x": 50.83333131339816,
-                                        "y": -24.166665706369713
+                                        "x": 36.83333131339816,
+                                        "y": -5.166665706369713
                                     },
-                                    "progress": 2
+                                    "progress": null,
+                                    "note": "随用随加；"
                                 },
                                 "children": []
                             }
@@ -95,7 +96,7 @@
                                 "y": -322.83332813448385
                             },
                             "layout": null,
-                            "note": "参考DX11中的Device接口\n"
+                            "note": "参考DX11中的Device接口\n\n1. 将所有资源修改为从Resource中继承出来，Resouce中使用引用计数来管理内存的释放，Device使用工厂模式设计；\n"
                         },
                         "children": [
                             {
@@ -108,7 +109,8 @@
                                         "y": -72.66666242811425
                                     },
                                     "progress": 5,
-                                    "note": "目前Device管理资源的释放有些问题，没有按照DX11那样，使用引用计数；"
+                                    "note": "目前Device管理资源的释放有些问题，没有按照DX11那样，使用引用计数；",
+                                    "priority": 3
                                 },
                                 "children": [
                                     {
@@ -164,7 +166,7 @@
                                                 "y": -80
                                             },
                                             "priority": 1,
-                                            "progress": 1,
+                                            "progress": 8,
                                             "note": "1. mipmap"
                                         },
                                         "children": [
@@ -175,7 +177,7 @@
                                                     "text": "从文件中加载贴图",
                                                     "priority": null,
                                                     "progress": 9,
-                                                    "note": "1. 使用FreeImage库加载贴图资源；目前还有内存泄漏，经过测试发现，内存泄漏应该是发生在FreeImage库中，其官方的例子中亦存在内存泄漏。。。\n\n2. 使用stbImage库，或者手写一个TGA加载函数（可以参考DirectXTex)。\n\n3. 若使用DirectXTex的话，需要调用DeCompress函数，可以参考texconv中的保存PPM的程序；"
+                                                    "note": "1. 使用FreeImage库加载贴图资源；目前还有内存泄漏，经过测试发现，内存泄漏应该是发生在FreeImage库中，其官方的例子中亦存在内存泄漏。。。\n\n2. 使用stbImage，或者手写一个TGA加载函数（可以参考DirectXTex)。\n\n3. 若使用DirectXTex的话，需要调用DeCompress函数，可以参考texconv中的保存PPM的程序；\n\n目前使用stbImage，单个头文件即可解决问题；"
                                                 },
                                                 "children": []
                                             }
@@ -192,7 +194,8 @@
                                         "x": 29.6666666004395,
                                         "y": 20.666668785942875
                                     },
-                                    "progress": 5
+                                    "progress": 5,
+                                    "expandState": "expand"
                                 },
                                 "children": [
                                     {
@@ -201,8 +204,8 @@
                                             "created": 1620232134843,
                                             "text": "Rasterization",
                                             "layout_right_offset": {
-                                                "x": 27,
-                                                "y": -2
+                                                "x": 33,
+                                                "y": 115
                                             },
                                             "progress": 8,
                                             "note": "1. 检查像素重绘时，发现按照3D游戏编程大师技巧书上的方法时，会出现像素重绘的情况，怀疑问题出在每次扫描线换行时，新的xStart和xEnd由上一行的xStart和xEnd加上DeltaXLeft和DeltaXRight得到，由于浮点数存在一定的误差，导致在累加过程中误差逐渐累积，最终使得两个相邻三角形的共边不再是一条直线，而是两条斜率略有差异的直线，从而导致有些像素点产生重绘，修改为每次根据扫描线的y值以及三角形斜边的斜率以及斜边上的点坐标来计算xStart和xEnd的话，会大大减少重绘情况的发生，但是偶尔还是有，暂时想不清楚原因，只能搁置。如果后面有思路的话再回来测试；\n\n2. 漏绘如何检查？"
@@ -217,7 +220,8 @@
                                                         "x": 116,
                                                         "y": -28
                                                     },
-                                                    "progress": 8
+                                                    "progress": 8,
+                                                    "note": "1. 光栅化时使用Delta增量累加的形式会有像素重绘；\n\n2. 全部改成插值后仍然有个别像素重绘，但是数量大大减少，怀疑是分割上下三角形时，新顶点的位置计算存在一定的误差，导致相邻三角形的共边实际上并不共线；\n\n"
                                                 },
                                                 "children": []
                                             },
@@ -236,6 +240,20 @@
                                                 "children": []
                                             }
                                         ]
+                                    },
+                                    {
+                                        "data": {
+                                            "id": "cbdybisk9iw0",
+                                            "created": 1621095289036,
+                                            "text": "三角形的cvv裁剪",
+                                            "layout_right_offset": {
+                                                "x": 18,
+                                                "y": -143
+                                            },
+                                            "priority": 1,
+                                            "progress": 1
+                                        },
+                                        "children": []
                                     }
                                 ]
                             },
