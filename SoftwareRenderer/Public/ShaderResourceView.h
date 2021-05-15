@@ -6,9 +6,6 @@
 
 #pragma once
 
-#define USE_FREE_IMAGE 0
-#define USE_STB_IMAGE 1
-
 #include <cstdint>
 
 namespace RenderDog
@@ -19,11 +16,7 @@ namespace RenderDog
 		ShaderResourceView();
 		~ShaderResourceView();
 
-#if USE_DIRECTX_TEX
-		bool LoadFromFile(const wchar_t* strFileName);
-#else
 		bool LoadFromFile(const char* strFileName);
-#endif
 
 		void Release();
 
