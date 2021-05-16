@@ -46,6 +46,7 @@ namespace RenderDog
 
 		float operator()(int r, int c) const { return m_fData[r][c]; }
 		float& operator()(int r, int c) { return m_fData[r][c]; }
+		Vector4 GetRow(int r) const { return Vector4(m_fData[r][0], m_fData[r][1], m_fData[r][2], m_fData[r][3]); }
 
 	private:
 		union

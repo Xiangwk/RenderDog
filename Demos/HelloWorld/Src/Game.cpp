@@ -15,12 +15,18 @@
 #include "Vertex.h"
 #include "Transform.h"
 #include "Viewport.h"
+#include "Camera.h"
 
 #define CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 #include <crtdbg.h>
-#include <windows.h>
+//#include <windows.h>
+#include <windowsx.h>
 #include <string>
+
+using RenderDog::Vector2;
+using RenderDog::Vector3;
+using RenderDog::Vertex;
 
 HINSTANCE						g_hInst = nullptr;
 HWND							g_hWnd = nullptr;
@@ -43,14 +49,12 @@ RenderDog::Matrix4x4			g_WorldMatrix;
 RenderDog::Matrix4x4			g_ViewMatrix;
 RenderDog::Matrix4x4			g_PerspProjMatrix;
 
+Vector2							g_LastMousePos;
+
+
 int aKeys[512];	// 当前键盘按下状态
 
-float fRotAngleX = 0.0f;
-float fRotAngleY = 0.0f;
-
-using RenderDog::Vector2;
-using RenderDog::Vector3;
-using RenderDog::Vertex;
+RenderDog::FPSCamera*			g_pMainCamera;
 
 HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow);
 bool InitDevice();
@@ -58,6 +62,11 @@ void CleanupDevice();
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 void Update(float fTime);
 void Render();
+
+void    OnMouseDown(WPARAM btnState, int x, int y);
+void    OnMouseUp(WPARAM btnState, int x, int y);
+void    OnMouseMove(WPARAM btnState, int x, int y);
+void    OnMouseWheelMove(WPARAM btnState);
 
 HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow)
 {
@@ -224,18 +233,28 @@ bool InitDevice()
 		return false;
 	}
 
-	g_WorldMatrix = RenderDog::GetIdentityMatrix();
-	g_ViewMatrix = RenderDog::GetLookAtMatrixLH(Vector3(0.0f, 0.0f, -7.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f));
-	g_PerspProjMatrix = RenderDog::GetPerspProjectionMatrixLH(45.0f, (float)g_nWindowWidth / g_nWindowHeight, 0.01f, 1000.0f);
-
-	memset(aKeys, 0, sizeof(int) * 512);
-
 	g_pTextureSRV = new RenderDog::ShaderResourceView();
 
 	if (!g_pTextureSRV->LoadFromFile("Textures/ErrorTexture_diff.tga"))
 	{
 		return false;
 	}
+
+	RenderDog::CameraDesc camDesc;
+	camDesc.vPosition = Vector3(0, 0, -5);
+	camDesc.vDirection = Vector3(0, 0, 1);
+	camDesc.fFov = 45.0f;
+	camDesc.fAspect = (float)g_nWindowWidth / g_nWindowHeight;
+	camDesc.fNear = 0.1f;
+	camDesc.fFar = 1000.0f;
+
+	g_pMainCamera = new RenderDog::FPSCamera(camDesc);
+
+	g_WorldMatrix = RenderDog::GetIdentityMatrix();
+	g_ViewMatrix = g_pMainCamera->GetViewMatrix();
+	g_PerspProjMatrix = g_pMainCamera->GetPerspProjectionMatrix();
+
+	memset(aKeys, 0, sizeof(int) * 512);
 
 	return true;
 }
@@ -314,32 +333,49 @@ void CleanupDevice()
 		delete g_pDeviceContext;
 		g_pDeviceContext = nullptr;
 	}
+
+	if (g_pMainCamera)
+	{
+		delete g_pMainCamera;
+		g_pMainCamera = nullptr;
+	}
 }
 
 void Update(float fTime)
 {
-	g_WorldMatrix = RenderDog::GetIdentityMatrix();
-
-	float fSpeed = 0.5f;
-	if (aKeys[VK_UP])
+	float fSpeed = 0.01f;
+	//W
+	if (aKeys[0x57])
 	{
-		fRotAngleX -= fSpeed;
+		g_pMainCamera->Move(fSpeed, RenderDog::FPSCamera::MoveMode::FrontAndBack);
 	}
-	if (aKeys[VK_DOWN])
+	//S
+	if (aKeys[0x53])
 	{
-		fRotAngleX += fSpeed;
+		g_pMainCamera->Move(-fSpeed, RenderDog::FPSCamera::MoveMode::FrontAndBack);
 	}
-	g_WorldMatrix = g_WorldMatrix * GetRotationMatrix(fRotAngleX, Vector3(1.0f, 0.0f, 0.0f));
-
-	if (aKeys[VK_LEFT])
+	//A
+	if (aKeys[0x41])
 	{
-		fRotAngleY -= fSpeed;
+		g_pMainCamera->Move(-fSpeed, RenderDog::FPSCamera::MoveMode::LeftAndRight);
 	}
-	if (aKeys[VK_RIGHT])
+	//D
+	if (aKeys[0x44])
 	{
-		fRotAngleY += fSpeed;
+		g_pMainCamera->Move(fSpeed, RenderDog::FPSCamera::MoveMode::LeftAndRight);
 	}
-	g_WorldMatrix = g_WorldMatrix * GetRotationMatrix(fRotAngleY, Vector3(0.0f, 1.0f, 0.0f));
+	//Q
+	if (aKeys[0x51])
+	{
+		g_pMainCamera->Move(fSpeed, RenderDog::FPSCamera::MoveMode::UpAndDown);
+	}
+	//E
+	if (aKeys[0x45])
+	{
+		g_pMainCamera->Move(-fSpeed, RenderDog::FPSCamera::MoveMode::UpAndDown);
+	}
+	
+	g_ViewMatrix = g_pMainCamera->GetViewMatrix();
 }
 
 void Render()
@@ -393,6 +429,30 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_KEYUP: 
 		aKeys[wParam & 511] = 0; 
 		break;
+	case WM_LBUTTONDOWN:
+	case WM_MBUTTONDOWN:
+	case WM_RBUTTONDOWN:
+	{
+		OnMouseDown(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+		break;
+	}
+	case WM_LBUTTONUP:
+	case WM_MBUTTONUP:
+	case WM_RBUTTONUP:
+	{
+		OnMouseUp(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+		break;
+	}
+	case WM_MOUSEMOVE:
+	{
+		OnMouseMove(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+		break;
+	}
+	case WM_MOUSEWHEEL:
+	{
+		OnMouseWheelMove(wParam);
+		break;
+	}
 
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
@@ -438,4 +498,42 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	_CrtDumpMemoryLeaks();
 
 	return (int)msg.wParam;
+}
+
+void OnMouseDown(WPARAM btnState, int x, int y)
+{
+	g_LastMousePos.x = (float)x;
+	g_LastMousePos.y = (float)y;
+
+	SetCapture(g_hWnd);
+}
+
+void OnMouseUp(WPARAM btnState, int x, int y)
+{
+	ReleaseCapture();
+}
+
+void OnMouseMove(WPARAM btnState, int x, int y)
+{
+	float fSpeed = 0.05f;
+
+	if ((btnState & MK_LBUTTON) != 0)
+	{
+		float dx = x - g_LastMousePos.x;
+		float dy = y - g_LastMousePos.y;
+
+		g_pMainCamera->Rotate(dx, dy, fSpeed);
+	}
+	else if ((btnState & MK_RBUTTON) != 0)
+	{
+		//TODO: Light Dir Change
+	}
+
+	g_LastMousePos.x = (float)x;
+	g_LastMousePos.y = (float)y;
+}
+
+void OnMouseWheelMove(WPARAM btnState)
+{
+	return;
 }

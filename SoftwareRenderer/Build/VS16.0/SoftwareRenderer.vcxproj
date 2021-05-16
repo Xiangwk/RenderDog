@@ -167,6 +167,7 @@ xcopy ..\..\Public\*.* ..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i /s 
     <ClInclude Include="..\..\..\Math\Public\Utility.h" />
     <ClInclude Include="..\..\..\Math\Public\Vector.h" />
     <ClInclude Include="..\..\Public\Buffer.h" />
+    <ClInclude Include="..\..\Public\Camera.h" />
     <ClInclude Include="..\..\Public\DepthStencilView.h" />
     <ClInclude Include="..\..\Public\Device.h" />
     <ClInclude Include="..\..\Public\DeviceContext.h" />
@@ -185,6 +186,7 @@ xcopy ..\..\Public\*.* ..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i /s 
     <ClCompile Include="..\..\..\Math\Private\Utility.cpp" />
     <ClCompile Include="..\..\..\Math\Private\Vector.cpp" />
     <ClCompile Include="..\..\Private\Buffer.cpp" />
+    <ClCompile Include="..\..\Private\Camera.cpp" />
     <ClCompile Include="..\..\Private\Device.cpp" />
     <ClCompile Include="..\..\Private\DeviceContext.cpp" />
     <ClCompile Include="..\..\Private\RenderDog.cpp" />

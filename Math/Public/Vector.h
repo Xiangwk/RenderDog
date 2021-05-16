@@ -60,6 +60,15 @@ namespace RenderDog
 			return Vector3(-x, -y, -z);
 		}
 
+		Vector3& operator+=(const Vector3& rhs)
+		{
+			x += rhs.x;
+			y += rhs.y;
+			z += rhs.z;
+
+			return *this;
+		}
+
 	public:
 		float x;
 		float y;

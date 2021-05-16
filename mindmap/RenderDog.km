@@ -28,7 +28,7 @@
                                 "y": -584.3333234654536
                             },
                             "layout": null,
-                            "note": "功能随着需要增加即可"
+                            "note": "功能随着需要增加即可\n\n日后需要从渲染器中拆分出来"
                         },
                         "children": [
                             {
@@ -55,7 +55,18 @@
                                     },
                                     "progress": 6
                                 },
-                                "children": []
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cbekiju16ao0",
+                                            "created": 1621157904269,
+                                            "text": "矩阵乘法",
+                                            "priority": 4,
+                                            "note": "改用更为清晰的实现方式（使用向量相乘）"
+                                        },
+                                        "children": []
+                                    }
+                                ]
                             },
                             {
                                 "data": {
@@ -378,6 +389,21 @@
                                 "x": 407.8333329028553,
                                 "y": 147.16666391823043
                             }
+                        },
+                        "children": []
+                    },
+                    {
+                        "data": {
+                            "id": "cbekexaf8f40",
+                            "created": 1621157620101,
+                            "text": "Camera",
+                            "layout_right_offset": {
+                                "x": 432,
+                                "y": -506
+                            },
+                            "priority": 1,
+                            "progress": 1,
+                            "note": "日后需要从Renderer中拆出来"
                         },
                         "children": []
                     }
