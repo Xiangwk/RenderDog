@@ -467,7 +467,12 @@ namespace RenderDog
 			m_vClippingVerts.push_back(vert1);
 			m_vClippingVerts.push_back(vert2);
 
-			ClipTriangleWithClipPlane(CLIP_PLANE_X);
+			ClipTriangleWithPlaneX(1.0f);
+			ClipTriangleWithPlaneX(-1.0f);
+			ClipTriangleWithPlaneY(1.0f);
+			ClipTriangleWithPlaneY(-1.0f);
+			ClipTriangleWithPlaneZ(1.0f);
+			ClipTriangleWithPlaneZ(-1.0f);
 
 			for (uint32_t i = 0; i < m_vClippingVerts.size(); ++i)
 			{
@@ -482,27 +487,105 @@ namespace RenderDog
 			m_vClipOutputVerts[i].SVPosition.z /= m_vClipOutputVerts[i].SVPosition.w;
 		}
 	}
-	void DeviceContext::ClipTriangleWithClipPlane(ClipPlane clipPlane)
+
+	void DeviceContext::ClipTriangleWithPlaneX(float fSign)
 	{
-		switch (clipPlane)
+		//x = w
+		int nOutOfClipPlaneNum = 0;
+		for (uint32_t i = 0; i < m_vClippingVerts.size(); i += 3)
 		{
-		case CLIP_PLANE_X:
-		{
-			break;
+			VSOutputVertex& vert0 = m_vClippingVerts[i];
+			VSOutputVertex& vert1 = m_vClippingVerts[i + 1];
+			VSOutputVertex& vert2 = m_vClippingVerts[i + 2];
+
+			fSign * vert0.SVPosition.x > vert0.SVPosition.w ? ++nOutOfClipPlaneNum : nOutOfClipPlaneNum;
+			fSign * vert1.SVPosition.x > vert1.SVPosition.w ? ++nOutOfClipPlaneNum : nOutOfClipPlaneNum;
+			fSign * vert2.SVPosition.x > vert2.SVPosition.w ? ++nOutOfClipPlaneNum : nOutOfClipPlaneNum;
+
+			if (nOutOfClipPlaneNum == 0)
+			{
+				break;
+			}
+			else if(nOutOfClipPlaneNum == 3)
+			{
+				m_vClippingVerts.clear();
+				return;
+			}
+			else if(nOutOfClipPlaneNum == 2)
+			{
+				if (fSign * vert0.SVPosition.x < vert0.SVPosition.w)
+				{
+					ClipTwoVertsInTriangle(vert0, vert1, vert2, fSign);
+				}
+				else if (fSign * vert1.SVPosition.x < vert1.SVPosition.w)
+				{
+					ClipTwoVertsInTriangle(vert1, vert2, vert0, fSign);
+				}
+				else
+				{
+					ClipTwoVertsInTriangle(vert2, vert0, vert1, fSign);
+				}
+			}
+			else
+			{
+				if (fSign * vert0.SVPosition.x > vert0.SVPosition.w)
+				{
+					ClipOneVertInTriangle(vert0, vert1, vert2, fSign);
+				}
+				else if (fSign * vert1.SVPosition.x > vert1.SVPosition.w)
+				{
+					ClipOneVertInTriangle(vert1, vert2, vert0, fSign);
+				}
+				else
+				{
+					ClipOneVertInTriangle(vert2, vert0, vert1, fSign);
+				}
+				break;
+			}
 		}
-		case CLIP_PLANE_Y:
-		{
-			break;
-		}
-		case CLIP_PLANE_Z:
-		{
-			break;
-		}
-		default:
-			break;
-		}
+
+		
+	}
+	
+	void DeviceContext::ClipTriangleWithPlaneY(float fSign)
+	{
+
 	}
 
+	void DeviceContext::ClipTriangleWithPlaneZ(float fSign)
+	{
+
+	}
+
+	void DeviceContext::ClipTwoVertsInTriangle(const VSOutputVertex& vertIn, VSOutputVertex& vertOut1, VSOutputVertex& vertOut2, float fSign)
+	{
+		float fLerpFactor1 = (vertIn.SVPosition.x - fSign * vertIn.SVPosition.w) / (fSign * vertOut1.SVPosition.w - fSign * vertIn.SVPosition.w - vertOut1.SVPosition.x + vertIn.SVPosition.x);
+		VSOutputVertex vertNew1;
+		LerpVertexParamsInClip(vertIn, vertOut1, vertNew1, fLerpFactor1);
+
+		float fLerpFactor2 = (vertIn.SVPosition.x - fSign * vertIn.SVPosition.w) / (fSign * vertOut2.SVPosition.w - fSign * vertIn.SVPosition.w - vertOut2.SVPosition.x + vertIn.SVPosition.x);
+		VSOutputVertex vertNew2;
+		LerpVertexParamsInClip(vertIn, vertOut2, vertNew2, fLerpFactor2);
+
+		vertOut1 = vertNew1;
+		vertOut2 = vertNew2;
+	}
+
+	void DeviceContext::ClipOneVertInTriangle(VSOutputVertex& vertOut, const VSOutputVertex& vertIn1, const VSOutputVertex& vertIn2, float fSign)
+	{
+		VSOutputVertex vertNew1;
+		float fLerpFactor1 = (vertIn1.SVPosition.x - fSign * vertIn1.SVPosition.w) / (fSign * vertOut.SVPosition.w - fSign * vertIn1.SVPosition.w - vertOut.SVPosition.x + vertIn1.SVPosition.x);
+		LerpVertexParamsInClip(vertIn1, vertOut, vertNew1, fLerpFactor1);
+
+		VSOutputVertex vertNew2;
+		float fLerpFactor2 = (vertIn2.SVPosition.x - fSign * vertIn2.SVPosition.w) / (fSign * vertOut.SVPosition.w - fSign * vertIn2.SVPosition.w - vertOut.SVPosition.x + vertIn2.SVPosition.x);
+		LerpVertexParamsInClip(vertIn2, vertOut, vertNew2, fLerpFactor2);
+
+		vertOut = vertNew2;
+		m_vClippingVerts.push_back(vertNew2);
+		m_vClippingVerts.push_back(vertNew1);
+		m_vClippingVerts.push_back(vertIn1);
+	}
 
 	void DeviceContext::ShapeAssemble(uint32_t nIndexNum)
 	{

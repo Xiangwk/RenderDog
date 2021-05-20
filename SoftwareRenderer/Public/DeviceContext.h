@@ -30,14 +30,6 @@ namespace RenderDog
 
 	class DeviceContext
 	{
-	private:
-		enum ClipPlane
-		{
-			CLIP_PLANE_X,
-			CLIP_PLANE_Y,
-			CLIP_PLANE_Z
-		};
-
 	public:
 		DeviceContext(uint32_t width, uint32_t height);
 		~DeviceContext();
@@ -83,7 +75,12 @@ namespace RenderDog
 
 		void ClipTrianglesInClipSpace();
 
-		void ClipTriangleWithClipPlane(ClipPlane clipPlane);
+		void ClipTriangleWithPlaneX(float fSign); //fSign为+1或者-1
+		void ClipTriangleWithPlaneY(float fSign); //fSign为+1或者-1
+		void ClipTriangleWithPlaneZ(float fSign); //fSign为+1或者-1
+
+		void ClipTwoVertsInTriangle(const VSOutputVertex& vertIn, VSOutputVertex& vertOut1, VSOutputVertex& vertOut2, float fSign);
+		void ClipOneVertInTriangle(VSOutputVertex& vertOut, const VSOutputVertex& vertIn1, const VSOutputVertex& vertIn2, float fSign);
 
 		void ShapeAssemble(uint32_t nIndexNum);
 
