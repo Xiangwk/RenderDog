@@ -46,6 +46,9 @@ namespace RenderDog
 
 	DeviceContext::~DeviceContext()
 	{
+		m_vClipOutputVerts.clear();
+		m_vAssembledVerts.clear();
+
 		if (m_pVSOutputs)
 		{
 			delete[] m_pVSOutputs;
@@ -72,7 +75,7 @@ namespace RenderDog
 		if (m_pVB != pVB)
 		{
 			uint32_t nVertexNum = pVB->GetNum();
-			m_pVSOutputs = new VSOutput[nVertexNum];
+			m_pVSOutputs = new VSOutputVertex[nVertexNum];
 
 			m_pVB = pVB;
 		}
@@ -155,21 +158,23 @@ namespace RenderDog
 	void DeviceContext::DrawIndex(uint32_t nIndexNum)
 	{
 		const Vertex* pVerts = m_pVB->GetData();
-		//Local to CVV
+		//Local Space to Clip Space
 		for (uint32_t i = 0; i < m_pVB->GetNum(); ++i)
 		{
 			const Vertex& vert = pVerts[i];
-			//FIXME!!! 除以w不能在VS里做
+			
 			m_pVSOutputs[i] = m_pVS->VSMain(vert, *m_pWorldMat, *m_pViewMat, *m_pProjMat);
 		}
 
+		ShapeAssemble(nIndexNum);
+
 		//Clip
+		ClipTrianglesInClipSpace();
 
-
-		//Clip to Screen
-		for (uint32_t i = 0; i < m_pVB->GetNum(); ++i)
+		//ClipSpace to ScreenSpace
+		for (uint32_t i = 0; i < m_vClipOutputVerts.size(); ++i)
 		{
-			VSOutput& vsOutput = m_pVSOutputs[i];
+			VSOutputVertex& vsOutput = m_vClipOutputVerts[i];
 			Vector4 vScreenPos(vsOutput.SVPosition.x, vsOutput.SVPosition.y, vsOutput.SVPosition.z, 1.0f);
 			vScreenPos = vScreenPos * (*m_pViewportMat);
 			vsOutput.SVPosition.x = vScreenPos.x;
@@ -177,22 +182,7 @@ namespace RenderDog
 			vsOutput.SVPosition.z = vScreenPos.z;
 		}
 
-		const uint32_t* pIndice = m_pIB->GetData();
-		for (uint32_t i = 0; i < nIndexNum; i += 3)
-		{
-			const VSOutput& vert0 = m_pVSOutputs[pIndice[i]];
-			const VSOutput& vert1 = m_pVSOutputs[pIndice[i + 1]];
-			const VSOutput& vert2 = m_pVSOutputs[pIndice[i + 2]];
-
-			if (m_PriTopology == PrimitiveTopology::LINE_LIST)
-			{
-				DrawTriangleWithLine(vert0, vert1, vert2);
-			}
-			else if (m_PriTopology == PrimitiveTopology::TRIANGLE_LIST)
-			{
-				DrawTriangleWithFlat(vert0, vert1, vert2);
-			}
-		}
+		Rasterization();
 	}
 
 #if DEBUG_RASTERIZATION
@@ -264,7 +254,7 @@ namespace RenderDog
 		}
 	}
 
-	void DeviceContext::DrawTriangleWithLine(const VSOutput& v0, const VSOutput& v1, const VSOutput& v2)
+	void DeviceContext::DrawTriangleWithLine(const VSOutputVertex& v0, const VSOutputVertex& v1, const VSOutputVertex& v2)
 	{
 		float lineColor[4] = { v0.Color.x, v0.Color.y, v0.Color.z, 1.0f };
 		DrawLineWithDDA(v0.SVPosition.x, v0.SVPosition.y, v1.SVPosition.x, v1.SVPosition.y, lineColor);
@@ -272,7 +262,7 @@ namespace RenderDog
 		DrawLineWithDDA(v2.SVPosition.x, v2.SVPosition.y, v0.SVPosition.x, v0.SVPosition.y, lineColor);
 	}
 
-	void DeviceContext::DrawTriangleWithFlat(const VSOutput& v0, const VSOutput& v1, const VSOutput& v2)
+	void DeviceContext::DrawTriangleWithFlat(const VSOutputVertex& v0, const VSOutputVertex& v1, const VSOutputVertex& v2)
 	{
 		if (floatEqual(v0.SVPosition.y, v1.SVPosition.y, fEpsilon) && floatEqual(v0.SVPosition.y, v2.SVPosition.y, fEpsilon) ||
 			floatEqual(v0.SVPosition.x, v1.SVPosition.x, fEpsilon) && floatEqual(v0.SVPosition.x, v2.SVPosition.x, fEpsilon))
@@ -280,9 +270,9 @@ namespace RenderDog
 			return;
 		}
 
-		VSOutput vert0(v0);
-		VSOutput vert1(v1);
-		VSOutput vert2(v2);
+		VSOutputVertex vert0(v0);
+		VSOutputVertex vert1(v1);
+		VSOutputVertex vert2(v2);
 		SortTriangleVertsByYGrow(vert0, vert1, vert2);
 
 		if (floatEqual(vert0.SVPosition.y, vert1.SVPosition.y, fEpsilon))
@@ -295,7 +285,7 @@ namespace RenderDog
 		}
 		else
 		{
-			VSOutput vertNew;
+			VSOutputVertex vertNew;
 			SliceTriangleToUpAndBottom(vert0, vert1, vert2, vertNew);
 
 			DrawBottomTriangle(vert0, vert1, vertNew);
@@ -303,41 +293,41 @@ namespace RenderDog
 		}
 	}
 
-	void DeviceContext::SortTriangleVertsByYGrow(VSOutput& v0, VSOutput& v1, VSOutput& v2)
+	void DeviceContext::SortTriangleVertsByYGrow(VSOutputVertex& v0, VSOutputVertex& v1, VSOutputVertex& v2)
 	{
 		if ((uint32_t)v1.SVPosition.y <= (uint32_t)v0.SVPosition.y)
 		{
-			VSOutput vTemp = v0;
+			VSOutputVertex vTemp = v0;
 			v0 = v1;
 			v1 = vTemp;
 		}
 
 		if ((uint32_t)v2.SVPosition.y <= (uint32_t)v0.SVPosition.y)
 		{
-			VSOutput vTemp = v0;
+			VSOutputVertex vTemp = v0;
 			v0 = v2;
 			v2 = vTemp;
 		}
 
 		if ((uint32_t)v2.SVPosition.y <= (uint32_t)v1.SVPosition.y)
 		{
-			VSOutput vTemp = v1;
+			VSOutputVertex vTemp = v1;
 			v1 = v2;
 			v2 = vTemp;
 		}
 	}
 
-	void DeviceContext::SortScanlineVertsByXGrow(VSOutput& v0, VSOutput& v1)
+	void DeviceContext::SortScanlineVertsByXGrow(VSOutputVertex& v0, VSOutputVertex& v1)
 	{
 		if ((uint32_t)v1.SVPosition.x <= (uint32_t)v0.SVPosition.x)
 		{
-			VSOutput vTemp = v0;
+			VSOutputVertex vTemp = v0;
 			v0 = v1;
 			v1 = vTemp;
 		}
 	}
 
-	void DeviceContext::DrawTopTriangle(VSOutput& v0, VSOutput& v1, VSOutput& v2)
+	void DeviceContext::DrawTopTriangle(VSOutputVertex& v0, VSOutputVertex& v1, VSOutputVertex& v2)
 	{
 		SortScanlineVertsByXGrow(v0, v1);
 
@@ -349,10 +339,10 @@ namespace RenderDog
 		{
 			float fLerpFactorY = (i - v0.SVPosition.y) / fDeltaY;
 
-			VSOutput vStart;
-			LerpVertexParams(v0, v2, vStart, fLerpFactorY);
-			VSOutput vEnd;
-			LerpVertexParams(v1, v2, vEnd, fLerpFactorY);
+			VSOutputVertex vStart;
+			LerpVertexParamsInScreen(v0, v2, vStart, fLerpFactorY);
+			VSOutputVertex vEnd;
+			LerpVertexParamsInScreen(v1, v2, vEnd, fLerpFactorY);
 
 			float fXStart = std::ceil(vStart.SVPosition.x);
 			float fXEnd = std::ceil(vEnd.SVPosition.x);
@@ -362,15 +352,12 @@ namespace RenderDog
 			{
 				float fLerpFactorX = (j - vStart.SVPosition.x) / fDeltaX;
 
-				VSOutput vCurr;
-				LerpVertexParams(vStart, vEnd, vCurr, fLerpFactorX);
+				VSOutputVertex vCurr;
+				LerpVertexParamsInScreen(vStart, vEnd, vCurr, fLerpFactorX);
 
 				float fPixelDepth = m_pDepthBuffer[j + i * m_nWidth];
 				if (vCurr.SVPosition.z <= fPixelDepth)
 				{
-					/*Vector3 PSResult = m_pPS->PSMain(vCurr, m_pSRV);
-					float pixelColor[4] = { PSResult.x, PSResult.y, PSResult.z, 1.0f };
-					m_pFrameBuffer[j + i * m_nWidth] = ConvertFloatColorToUInt32(pixelColor);*/
 					m_pFrameBuffer[j + i * m_nWidth] = m_pPS->PSMain(vCurr, m_pSRV);
 
 					m_pDepthBuffer[j + i * m_nWidth] = vCurr.SVPosition.z;
@@ -383,7 +370,7 @@ namespace RenderDog
 		}
 	}
 
-	void DeviceContext::DrawBottomTriangle(VSOutput& v0, VSOutput& v1, VSOutput& v2)
+	void DeviceContext::DrawBottomTriangle(VSOutputVertex& v0, VSOutputVertex& v1, VSOutputVertex& v2)
 	{
 		SortScanlineVertsByXGrow(v1, v2);
 
@@ -395,10 +382,10 @@ namespace RenderDog
 		{
 			float fLerpFactorY = (i - v0.SVPosition.y) / fDeltaY;
 
-			VSOutput vStart;
-			LerpVertexParams(v0, v1, vStart, fLerpFactorY);
-			VSOutput vEnd;
-			LerpVertexParams(v0, v2, vEnd, fLerpFactorY);
+			VSOutputVertex vStart;
+			LerpVertexParamsInScreen(v0, v1, vStart, fLerpFactorY);
+			VSOutputVertex vEnd;
+			LerpVertexParamsInScreen(v0, v2, vEnd, fLerpFactorY);
 
 			float fXStart = std::ceil(vStart.SVPosition.x);
 			float fXEnd = std::ceil(vEnd.SVPosition.x);
@@ -408,15 +395,12 @@ namespace RenderDog
 			{
 				float fLerpFactorX = (j - vStart.SVPosition.x) / fDeltaX;
 
-				VSOutput vCurr;
-				LerpVertexParams(vStart, vEnd, vCurr, fLerpFactorX);
+				VSOutputVertex vCurr;
+				LerpVertexParamsInScreen(vStart, vEnd, vCurr, fLerpFactorX);
 
 				float fPixelDepth = m_pDepthBuffer[j + i * m_nWidth];
 				if (vCurr.SVPosition.z <= fPixelDepth)
 				{
-					/*Vector3 PSResult = m_pPS->PSMain(vCurr, m_pSRV);
-					float pixelColor[4] = { PSResult.x, PSResult.y, PSResult.z, 1.0f };
-					m_pFrameBuffer[j + i * m_nWidth] = ConvertFloatColorToUInt32(pixelColor);*/
 					m_pFrameBuffer[j + i * m_nWidth] = m_pPS->PSMain(vCurr, m_pSRV);
 
 					m_pDepthBuffer[j + i * m_nWidth] = vCurr.SVPosition.z;
@@ -429,14 +413,26 @@ namespace RenderDog
 		}
 	}
 
-	void DeviceContext::SliceTriangleToUpAndBottom(const VSOutput& v0, const VSOutput& v1, const VSOutput& v2, VSOutput& vNew)
+	void DeviceContext::SliceTriangleToUpAndBottom(const VSOutputVertex& v0, const VSOutputVertex& v1, const VSOutputVertex& v2, VSOutputVertex& vNew)
 	{
 		float fLerpFactor = (v1.SVPosition.y - v0.SVPosition.y) / (v2.SVPosition.y - v0.SVPosition.y);
 		
-		LerpVertexParams(v0, v2, vNew, fLerpFactor);
+		LerpVertexParamsInScreen(v0, v2, vNew, fLerpFactor);
 	}
 
-	void DeviceContext::LerpVertexParams(const VSOutput& v0, const VSOutput& v1, VSOutput& vNew, float fLerpFactor)
+	void DeviceContext::LerpVertexParamsInScreen(const VSOutputVertex& v0, const VSOutputVertex& v1, VSOutputVertex& vNew, float fLerpFactor)
+	{
+		float fNewX = v0.SVPosition.x + (v1.SVPosition.x - v0.SVPosition.x) * fLerpFactor;
+		float fNewY = v0.SVPosition.y + (v1.SVPosition.y - v0.SVPosition.y) * fLerpFactor;
+		float fNewZ = v0.SVPosition.z + (v1.SVPosition.z - v0.SVPosition.z) * fLerpFactor;
+		float fNewW = 1.0f / (1.0f / v0.SVPosition.w + (1.0f / v1.SVPosition.w - 1.0f / v0.SVPosition.w) * fLerpFactor);
+
+		vNew.SVPosition = Vector4(fNewX, fNewY, fNewZ, fNewW);
+		vNew.Color = fNewW * ((v0.Color / v0.SVPosition.w) * (1.0f - fLerpFactor) + (v1.Color / v1.SVPosition.w) * fLerpFactor);
+		vNew.UV = fNewW * ((v0.UV / v0.SVPosition.w) * (1.0f - fLerpFactor) + (v1.UV / v1.SVPosition.w) * fLerpFactor);
+	}
+
+	void DeviceContext::LerpVertexParamsInClip(const VSOutputVertex& v0, const VSOutputVertex& v1, VSOutputVertex& vNew, float fLerpFactor)
 	{
 		float fNewX = v0.SVPosition.x + (v1.SVPosition.x - v0.SVPosition.x) * fLerpFactor;
 		float fNewY = v0.SVPosition.y + (v1.SVPosition.y - v0.SVPosition.y) * fLerpFactor;
@@ -444,7 +440,79 @@ namespace RenderDog
 		float fNewW = v0.SVPosition.w + (v1.SVPosition.w - v0.SVPosition.w) * fLerpFactor;
 
 		vNew.SVPosition = Vector4(fNewX, fNewY, fNewZ, fNewW);
-		vNew.Color = (1.0f / fNewW) * ((v0.Color * v0.SVPosition.w) * (1.0f - fLerpFactor) + (v1.Color * v1.SVPosition.w) * fLerpFactor);
-		vNew.UV = (1.0f / fNewW) * ((v0.UV * v0.SVPosition.w) * (1.0f - fLerpFactor) + (v1.UV * v1.SVPosition.w) * fLerpFactor);
+		vNew.Color = v0.Color * (1.0f - fLerpFactor) + v1.Color * fLerpFactor;
+		vNew.UV = v0.UV * (1.0f - fLerpFactor) + v1.UV * fLerpFactor;
+	}
+
+	void DeviceContext::ClipTrianglesInClipSpace()
+	{
+		//FIXME!!! 不要每帧都重新分配内存
+		m_vClipOutputVerts.clear();
+		if (m_vClipOutputVerts.capacity() < m_vAssembledVerts.capacity())
+		{
+			m_vClipOutputVerts.reserve(m_vAssembledVerts.capacity());
+		}
+
+		for (uint32_t i = 0; i < m_vAssembledVerts.size(); i += 3)
+		{
+			const VSOutputVertex& vert0 = m_vAssembledVerts[i];
+			const VSOutputVertex& vert1 = m_vAssembledVerts[i + 1];
+			const VSOutputVertex& vert2 = m_vAssembledVerts[i + 2];
+
+			ClipTriangleWithClipPlane(vert0, vert1, vert2);
+		}
+
+		for (uint32_t i = 0; i < m_vClipOutputVerts.size(); ++i)
+		{
+			m_vClipOutputVerts[i].SVPosition.x /= m_vClipOutputVerts[i].SVPosition.w;
+			m_vClipOutputVerts[i].SVPosition.y /= m_vClipOutputVerts[i].SVPosition.w;
+			m_vClipOutputVerts[i].SVPosition.z /= m_vClipOutputVerts[i].SVPosition.w;
+		}
+	}
+	void DeviceContext::ClipTriangleWithClipPlane(const VSOutputVertex& vert0, const VSOutputVertex& vert1, const VSOutputVertex& vert2)
+	{
+		m_vClipOutputVerts.push_back(vert0);
+		m_vClipOutputVerts.push_back(vert1);
+		m_vClipOutputVerts.push_back(vert2);
+	}
+
+
+	void DeviceContext::ShapeAssemble(uint32_t nIndexNum)
+	{
+		m_vAssembledVerts.clear();
+		if (m_vAssembledVerts.capacity() < nIndexNum)
+		{
+			m_vAssembledVerts.reserve(nIndexNum);
+		}
+
+		if (m_PriTopology == PrimitiveTopology::LINE_LIST || m_PriTopology == PrimitiveTopology::TRIANGLE_LIST)
+		{
+			const uint32_t* pIndice = m_pIB->GetData();
+			for (uint32_t i = 0; i < nIndexNum; ++i)
+			{
+				const VSOutputVertex& vert0 = m_pVSOutputs[pIndice[i]];
+
+				m_vAssembledVerts.push_back(vert0);
+			}
+		}
+	}
+
+	void DeviceContext::Rasterization()
+	{
+		for (uint32_t i = 0; i < m_vClipOutputVerts.size(); i += 3)
+		{
+			const VSOutputVertex& vert0 = m_vClipOutputVerts[i];
+			const VSOutputVertex& vert1 = m_vClipOutputVerts[i + 1];
+			const VSOutputVertex& vert2 = m_vClipOutputVerts[i + 2];
+
+			if (m_PriTopology == PrimitiveTopology::LINE_LIST)
+			{
+				DrawTriangleWithLine(vert0, vert1, vert2);
+			}
+			else if (m_PriTopology == PrimitiveTopology::TRIANGLE_LIST)
+			{
+				DrawTriangleWithFlat(vert0, vert1, vert2);
+			}
+		}
 	}
 }

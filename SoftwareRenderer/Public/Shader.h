@@ -19,11 +19,11 @@ namespace RenderDog
 	class Vector4;
 	class ShaderResourceView;
 
-	struct VSOutput
+	struct VSOutputVertex
 	{
-		VSOutput() = default;
-		VSOutput(const VSOutput & v) = default;
-		VSOutput& operator=(const VSOutput & v) = default;
+		VSOutputVertex() = default;
+		VSOutputVertex(const VSOutputVertex & v) = default;
+		VSOutputVertex& operator=(const VSOutputVertex & v) = default;
 
 		Vector4 SVPosition;
 		Vector4 Color;
@@ -36,7 +36,7 @@ namespace RenderDog
 		VertexShader() = default;
 		~VertexShader() = default;
 
-		VSOutput VSMain(const Vertex& inVertex, const Matrix4x4& matWorld, const Matrix4x4& matView, const Matrix4x4& matProj) const;
+		VSOutputVertex VSMain(const Vertex& inVertex, const Matrix4x4& matWorld, const Matrix4x4& matView, const Matrix4x4& matProj) const;
 	};
 
 	class PixelShader
@@ -45,7 +45,7 @@ namespace RenderDog
 		PixelShader() = default;
 		~PixelShader() = default;
 
-		uint32_t PSMain(const VSOutput& VSOutput, const ShaderResourceView* pSRV) const;
+		uint32_t PSMain(const VSOutputVertex& VSOutput, const ShaderResourceView* pSRV) const;
 
 	private:
 		uint32_t Sample(const ShaderResourceView* pSRV, const Vector2& vUV) const;

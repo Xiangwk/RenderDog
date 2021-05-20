@@ -13,28 +13,27 @@
 
 namespace RenderDog
 {
-	VSOutput VertexShader::VSMain(const Vertex& inVertex, const Matrix4x4& matWorld, const Matrix4x4& matView, const Matrix4x4& matProj) const
+	VSOutputVertex VertexShader::VSMain(const Vertex& inVertex, const Matrix4x4& matWorld, const Matrix4x4& matView, const Matrix4x4& matProj) const
 	{
-		VSOutput Output = {};
+		VSOutputVertex Output = {};
 		Vector4 vInPos = Vector4(inVertex.vPosition, 1.0f);
 		vInPos = vInPos * matWorld;
 		vInPos = vInPos * matView;
 		vInPos = vInPos * matProj;
 
-		Output.SVPosition.w = 1.0f / vInPos.w;
-
-		vInPos = vInPos / vInPos.w;
-
 		Output.SVPosition.x = vInPos.x;
 		Output.SVPosition.y = vInPos.y;
 		Output.SVPosition.z = vInPos.z;
+		Output.SVPosition.w = vInPos.w;
+
 		Output.Color = Vector4(inVertex.vColor, 1.0f);
+
 		Output.UV = inVertex.vUV;
 
 		return Output;
 	}
 
-	uint32_t PixelShader::PSMain(const VSOutput& PSInput, const ShaderResourceView* pSRV) const
+	uint32_t PixelShader::PSMain(const VSOutputVertex& PSInput, const ShaderResourceView* pSRV) const
 	{
 		Vector2 vUV = PSInput.UV;
 
@@ -54,9 +53,6 @@ namespace RenderDog
 		uint32_t nCol = (uint32_t)(vUV.x * (nWidth - 1));
 
 		uint32_t color = pData[nRow * nWidth + nCol];
-
-		/*float Color[4] = { 1, 0, 0, 1 };
-		uint32_t color = ConvertFloatColorToUInt32(Color);*/
 
 		return color;
 	}
