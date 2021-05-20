@@ -30,6 +30,14 @@ namespace RenderDog
 
 	class DeviceContext
 	{
+	private:
+		enum ClipPlane
+		{
+			CLIP_PLANE_X,
+			CLIP_PLANE_Y,
+			CLIP_PLANE_Z
+		};
+
 	public:
 		DeviceContext(uint32_t width, uint32_t height);
 		~DeviceContext();
@@ -75,7 +83,7 @@ namespace RenderDog
 
 		void ClipTrianglesInClipSpace();
 
-		void ClipTriangleWithClipPlane(const VSOutputVertex& vert0, const VSOutputVertex& vert1, const VSOutputVertex& vert2);
+		void ClipTriangleWithClipPlane(ClipPlane clipPlane);
 
 		void ShapeAssemble(uint32_t nIndexNum);
 
@@ -105,6 +113,7 @@ namespace RenderDog
 		VSOutputVertex*				m_pVSOutputs;
 		std::vector<VSOutputVertex> m_vAssembledVerts;
 		std::vector<VSOutputVertex>	m_vClipOutputVerts;
+		std::vector<VSOutputVertex> m_vClippingVerts;
 
 		Matrix4x4*					m_pViewportMat;
 

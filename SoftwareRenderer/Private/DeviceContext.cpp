@@ -26,6 +26,7 @@ namespace RenderDog
 		m_pIB(nullptr),
 		m_pVS(nullptr),
 		m_pPS(nullptr),
+		m_pSRV(nullptr),
 		m_pWorldMat(nullptr),
 		m_pViewMat(nullptr),
 		m_pProjMat(nullptr),
@@ -48,6 +49,7 @@ namespace RenderDog
 	{
 		m_vClipOutputVerts.clear();
 		m_vAssembledVerts.clear();
+		m_vClippingVerts.clear();
 
 		if (m_pVSOutputs)
 		{
@@ -455,11 +457,22 @@ namespace RenderDog
 
 		for (uint32_t i = 0; i < m_vAssembledVerts.size(); i += 3)
 		{
+			m_vClippingVerts.clear();
+
 			const VSOutputVertex& vert0 = m_vAssembledVerts[i];
 			const VSOutputVertex& vert1 = m_vAssembledVerts[i + 1];
 			const VSOutputVertex& vert2 = m_vAssembledVerts[i + 2];
 
-			ClipTriangleWithClipPlane(vert0, vert1, vert2);
+			m_vClippingVerts.push_back(vert0);
+			m_vClippingVerts.push_back(vert1);
+			m_vClippingVerts.push_back(vert2);
+
+			ClipTriangleWithClipPlane(CLIP_PLANE_X);
+
+			for (uint32_t i = 0; i < m_vClippingVerts.size(); ++i)
+			{
+				m_vClipOutputVerts.push_back(m_vClippingVerts[i]);
+			}
 		}
 
 		for (uint32_t i = 0; i < m_vClipOutputVerts.size(); ++i)
@@ -469,11 +482,25 @@ namespace RenderDog
 			m_vClipOutputVerts[i].SVPosition.z /= m_vClipOutputVerts[i].SVPosition.w;
 		}
 	}
-	void DeviceContext::ClipTriangleWithClipPlane(const VSOutputVertex& vert0, const VSOutputVertex& vert1, const VSOutputVertex& vert2)
+	void DeviceContext::ClipTriangleWithClipPlane(ClipPlane clipPlane)
 	{
-		m_vClipOutputVerts.push_back(vert0);
-		m_vClipOutputVerts.push_back(vert1);
-		m_vClipOutputVerts.push_back(vert2);
+		switch (clipPlane)
+		{
+		case CLIP_PLANE_X:
+		{
+			break;
+		}
+		case CLIP_PLANE_Y:
+		{
+			break;
+		}
+		case CLIP_PLANE_Z:
+		{
+			break;
+		}
+		default:
+			break;
+		}
 	}
 
 
