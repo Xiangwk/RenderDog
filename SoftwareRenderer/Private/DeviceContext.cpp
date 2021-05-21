@@ -492,6 +492,8 @@ namespace RenderDog
 	{
 		//x = w
 		int nOutOfClipPlaneNum = 0;
+		std::vector<VSOutputVertex> vTempNewVerts;
+
 		for (uint32_t i = 0; i < m_vClippingVerts.size(); i += 3)
 		{
 			VSOutputVertex& vert0 = m_vClippingVerts[i];
@@ -530,21 +532,23 @@ namespace RenderDog
 			{
 				if (fSign * vert0.SVPosition.x > vert0.SVPosition.w)
 				{
-					ClipOneVertInTriangle(vert0, vert1, vert2, fSign);
+					ClipOneVertInTriangle(vert0, vert1, vert2, vTempNewVerts, fSign);
 				}
 				else if (fSign * vert1.SVPosition.x > vert1.SVPosition.w)
 				{
-					ClipOneVertInTriangle(vert1, vert2, vert0, fSign);
+					ClipOneVertInTriangle(vert1, vert2, vert0, vTempNewVerts, fSign);
 				}
 				else
 				{
-					ClipOneVertInTriangle(vert2, vert0, vert1, fSign);
+					ClipOneVertInTriangle(vert2, vert0, vert1, vTempNewVerts, fSign);
 				}
-				break;
 			}
 		}
 
-		
+		for (uint32_t i = 0; i < vTempNewVerts.size(); ++i)
+		{
+			m_vClippingVerts.push_back(vTempNewVerts[i]);
+		}
 	}
 	
 	void DeviceContext::ClipTriangleWithPlaneY(float fSign)
@@ -571,7 +575,7 @@ namespace RenderDog
 		vertOut2 = vertNew2;
 	}
 
-	void DeviceContext::ClipOneVertInTriangle(VSOutputVertex& vertOut, const VSOutputVertex& vertIn1, const VSOutputVertex& vertIn2, float fSign)
+	void DeviceContext::ClipOneVertInTriangle(VSOutputVertex& vertOut, const VSOutputVertex& vertIn1, const VSOutputVertex& vertIn2, std::vector<VSOutputVertex>& vTempVerts, float fSign)
 	{
 		VSOutputVertex vertNew1;
 		float fLerpFactor1 = (vertIn1.SVPosition.x - fSign * vertIn1.SVPosition.w) / (fSign * vertOut.SVPosition.w - fSign * vertIn1.SVPosition.w - vertOut.SVPosition.x + vertIn1.SVPosition.x);
@@ -582,9 +586,9 @@ namespace RenderDog
 		LerpVertexParamsInClip(vertIn2, vertOut, vertNew2, fLerpFactor2);
 
 		vertOut = vertNew2;
-		m_vClippingVerts.push_back(vertNew2);
-		m_vClippingVerts.push_back(vertNew1);
-		m_vClippingVerts.push_back(vertIn1);
+		vTempVerts.push_back(vertNew2);
+		vTempVerts.push_back(vertNew1);
+		vTempVerts.push_back(vertIn1);
 	}
 
 	void DeviceContext::ShapeAssemble(uint32_t nIndexNum)
