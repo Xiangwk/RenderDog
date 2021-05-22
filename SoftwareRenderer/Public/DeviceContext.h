@@ -75,14 +75,17 @@ namespace RenderDog
 
 		void ClipTrianglesInClipSpace();
 
-		void ClipTriangleWithPlaneX(float fSign); //fSign为+1或者-1
-		void ClipTriangleWithPlaneY(float fSign); //fSign为+1或者-1
-		void ClipTriangleWithPlaneZ(float fSign); //fSign为+1或者-1
+		void ClipTriangleWithPlaneX(int nSign); //fSign为+1或者-1
+		void ClipTriangleWithPlaneY(int nSign); //fSign为+1或者-1
+		void ClipTriangleWithPlaneZeroZ();
+		void ClipTriangleWithPlanePositiveZ();
 
 		void ClipTwoVertsInTriangle(const VSOutputVertex& vertIn, VSOutputVertex& vertOut1, VSOutputVertex& vertOut2, float fLerpFactor1, float fLerpFactor2);
 		void ClipOneVertInTriangle(VSOutputVertex& vertOut, const VSOutputVertex& vertIn1, const VSOutputVertex& vertIn2, float fLerpFactor1, float fLerpFactor2, std::vector<VSOutputVertex>& vTempVerts);
 		float GetClipLerpFactorX(const VSOutputVertex& vert0, const VSOutputVertex& vert1, float fSign);
 		float GetClipLerpFactorY(const VSOutputVertex& vert0, const VSOutputVertex& vert1, float fSign);
+		float GetClipLerpFactorZeroZ(const VSOutputVertex& vert0, const VSOutputVertex& vert1);
+		float GetClipLerpFactorPositiveZ(const VSOutputVertex& vert0, const VSOutputVertex& vert1);
 
 		void ShapeAssemble(uint32_t nIndexNum);
 

@@ -246,7 +246,7 @@ bool InitDevice()
 	camDesc.fFov = 45.0f;
 	camDesc.fAspect = (float)g_nWindowWidth / g_nWindowHeight;
 	camDesc.fNear = 0.1f;
-	camDesc.fFar = 1000.0f;
+	camDesc.fFar = 100.0f;
 
 	g_pMainCamera = new RenderDog::FPSCamera(camDesc);
 
