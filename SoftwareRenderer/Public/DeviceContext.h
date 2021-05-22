@@ -69,9 +69,9 @@ namespace RenderDog
 
 		void SliceTriangleToUpAndBottom(const VSOutputVertex& v0, const VSOutputVertex& v1, const VSOutputVertex& v2, VSOutputVertex& vNew);
 
-		void LerpVertexParamsInScreen(const VSOutputVertex& v0, const VSOutputVertex& v1, VSOutputVertex& vNew, float fLerpFactor);
+		void LerpVertexParamsInScreen(const VSOutputVertex& vStart, const VSOutputVertex& vEnd, VSOutputVertex& vNew, float fLerpFactor);
 
-		void LerpVertexParamsInClip(const VSOutputVertex& v0, const VSOutputVertex& v1, VSOutputVertex& vNew, float fLerpFactor);
+		void LerpVertexParamsInClip(const VSOutputVertex& vStart, const VSOutputVertex& vEnd, VSOutputVertex& vNew, float fLerpFactor);
 
 		void ClipTrianglesInClipSpace();
 

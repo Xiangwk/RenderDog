@@ -49,8 +49,11 @@ namespace RenderDog
 		uint32_t nWidth = pSRV->GetWidth();
 		uint32_t nHeight = pSRV->GetHeight();
 
-		uint32_t nRow = (uint32_t)(vUV.y * (nHeight - 1));
-		uint32_t nCol = (uint32_t)(vUV.x * (nWidth - 1));
+		float fU = vUV.x - std::floor(vUV.x);
+		float fV = vUV.y - std::floor(vUV.y);
+
+		uint32_t nRow = (uint32_t)(fV * (nHeight - 1));
+		uint32_t nCol = (uint32_t)(fU * (nWidth - 1));
 
 		uint32_t color = pData[nRow * nWidth + nCol];
 
