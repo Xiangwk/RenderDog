@@ -492,7 +492,7 @@ namespace RenderDog
 	{
 		//x = w
 		int nOutOfClipPlaneNum = 0;
-		std::vector<VSOutputVertex> vTempNewVerts;
+		std::vector<VSOutputVertex> vCurrClipResultVerts;
 
 		for (uint32_t i = 0; i < m_vClippingVerts.size(); i += 3)
 		{
@@ -506,48 +506,70 @@ namespace RenderDog
 
 			if (nOutOfClipPlaneNum == 0)
 			{
-				break;
+				vCurrClipResultVerts.push_back(vert0);
+				vCurrClipResultVerts.push_back(vert1);
+				vCurrClipResultVerts.push_back(vert2);
 			}
 			else if(nOutOfClipPlaneNum == 3)
 			{
-				m_vClippingVerts.clear();
-				return;
+				continue;
 			}
 			else if(nOutOfClipPlaneNum == 2)
 			{
 				if (fSign * vert0.SVPosition.x < vert0.SVPosition.w)
 				{
-					ClipTwoVertsInTriangle(vert0, vert1, vert2, fSign);
+					float fLerpFactor1 = GetClipLerpFactorX(vert0, vert1, fSign);
+					float fLerpFactor2 = GetClipLerpFactorX(vert0, vert2, fSign);
+					ClipTwoVertsInTriangle(vert0, vert1, vert2, fLerpFactor1, fLerpFactor2);
 				}
 				else if (fSign * vert1.SVPosition.x < vert1.SVPosition.w)
 				{
-					ClipTwoVertsInTriangle(vert1, vert2, vert0, fSign);
+					float fLerpFactor1 = GetClipLerpFactorX(vert1, vert2, fSign);
+					float fLerpFactor2 = GetClipLerpFactorX(vert1, vert0, fSign);
+					ClipTwoVertsInTriangle(vert1, vert2, vert0, fLerpFactor1, fLerpFactor2);
 				}
 				else
 				{
-					ClipTwoVertsInTriangle(vert2, vert0, vert1, fSign);
+					float fLerpFactor1 = GetClipLerpFactorX(vert2, vert0, fSign);
+					float fLerpFactor2 = GetClipLerpFactorX(vert2, vert1, fSign);
+					ClipTwoVertsInTriangle(vert2, vert0, vert1, fLerpFactor1, fLerpFactor2);
 				}
+
+				vCurrClipResultVerts.push_back(vert0);
+				vCurrClipResultVerts.push_back(vert1);
+				vCurrClipResultVerts.push_back(vert2);
 			}
 			else
 			{
 				if (fSign * vert0.SVPosition.x > vert0.SVPosition.w)
 				{
-					ClipOneVertInTriangle(vert0, vert1, vert2, vTempNewVerts, fSign);
+					float fLerpFactor1 = GetClipLerpFactorX(vert1, vert0, fSign);
+					float fLerpFactor2 = GetClipLerpFactorX(vert2, vert0, fSign);
+					ClipOneVertInTriangle(vert0, vert1, vert2, fLerpFactor1, fLerpFactor2, vCurrClipResultVerts);
 				}
 				else if (fSign * vert1.SVPosition.x > vert1.SVPosition.w)
 				{
-					ClipOneVertInTriangle(vert1, vert2, vert0, vTempNewVerts, fSign);
+					float fLerpFactor1 = GetClipLerpFactorX(vert2, vert1, fSign);
+					float fLerpFactor2 = GetClipLerpFactorX(vert0, vert1, fSign);
+					ClipOneVertInTriangle(vert1, vert2, vert0, fLerpFactor1, fLerpFactor2, vCurrClipResultVerts);
 				}
 				else
 				{
-					ClipOneVertInTriangle(vert2, vert0, vert1, vTempNewVerts, fSign);
+					float fLerpFactor1 = GetClipLerpFactorX(vert0, vert2, fSign);
+					float fLerpFactor2 = GetClipLerpFactorX(vert1, vert2, fSign);
+					ClipOneVertInTriangle(vert2, vert0, vert1, fLerpFactor1, fLerpFactor2, vCurrClipResultVerts);
 				}
+
+				vCurrClipResultVerts.push_back(vert0);
+				vCurrClipResultVerts.push_back(vert1);
+				vCurrClipResultVerts.push_back(vert2);
 			}
 		}
 
-		for (uint32_t i = 0; i < vTempNewVerts.size(); ++i)
+		m_vClippingVerts.clear();
+		for (uint32_t i = 0; i < vCurrClipResultVerts.size(); ++i)
 		{
-			m_vClippingVerts.push_back(vTempNewVerts[i]);
+			m_vClippingVerts.push_back(vCurrClipResultVerts[i]);
 		}
 	}
 	
@@ -561,13 +583,11 @@ namespace RenderDog
 
 	}
 
-	void DeviceContext::ClipTwoVertsInTriangle(const VSOutputVertex& vertIn, VSOutputVertex& vertOut1, VSOutputVertex& vertOut2, float fSign)
+	void DeviceContext::ClipTwoVertsInTriangle(const VSOutputVertex& vertIn, VSOutputVertex& vertOut1, VSOutputVertex& vertOut2, float fLerpFactor1, float fLerpFactor2)
 	{
-		float fLerpFactor1 = (vertIn.SVPosition.x - fSign * vertIn.SVPosition.w) / (fSign * vertOut1.SVPosition.w - fSign * vertIn.SVPosition.w - vertOut1.SVPosition.x + vertIn.SVPosition.x);
 		VSOutputVertex vertNew1;
 		LerpVertexParamsInClip(vertIn, vertOut1, vertNew1, fLerpFactor1);
 
-		float fLerpFactor2 = (vertIn.SVPosition.x - fSign * vertIn.SVPosition.w) / (fSign * vertOut2.SVPosition.w - fSign * vertIn.SVPosition.w - vertOut2.SVPosition.x + vertIn.SVPosition.x);
 		VSOutputVertex vertNew2;
 		LerpVertexParamsInClip(vertIn, vertOut2, vertNew2, fLerpFactor2);
 
@@ -575,20 +595,28 @@ namespace RenderDog
 		vertOut2 = vertNew2;
 	}
 
-	void DeviceContext::ClipOneVertInTriangle(VSOutputVertex& vertOut, const VSOutputVertex& vertIn1, const VSOutputVertex& vertIn2, std::vector<VSOutputVertex>& vTempVerts, float fSign)
+	void DeviceContext::ClipOneVertInTriangle(VSOutputVertex& vertOut, const VSOutputVertex& vertIn1, const VSOutputVertex& vertIn2, float fLerpFactor1, float fLerpFactor2, std::vector<VSOutputVertex>& vTempVerts)
 	{
 		VSOutputVertex vertNew1;
-		float fLerpFactor1 = (vertIn1.SVPosition.x - fSign * vertIn1.SVPosition.w) / (fSign * vertOut.SVPosition.w - fSign * vertIn1.SVPosition.w - vertOut.SVPosition.x + vertIn1.SVPosition.x);
 		LerpVertexParamsInClip(vertIn1, vertOut, vertNew1, fLerpFactor1);
 
 		VSOutputVertex vertNew2;
-		float fLerpFactor2 = (vertIn2.SVPosition.x - fSign * vertIn2.SVPosition.w) / (fSign * vertOut.SVPosition.w - fSign * vertIn2.SVPosition.w - vertOut.SVPosition.x + vertIn2.SVPosition.x);
 		LerpVertexParamsInClip(vertIn2, vertOut, vertNew2, fLerpFactor2);
 
 		vertOut = vertNew2;
 		vTempVerts.push_back(vertNew2);
 		vTempVerts.push_back(vertNew1);
 		vTempVerts.push_back(vertIn1);
+	}
+
+	float DeviceContext::GetClipLerpFactorX(const VSOutputVertex& vert0, const VSOutputVertex& vert1, float fSign)
+	{
+		return (vert0.SVPosition.x - fSign * vert0.SVPosition.w) / (fSign * vert1.SVPosition.w - fSign * vert0.SVPosition.w - vert1.SVPosition.x + vert0.SVPosition.x);
+	}
+
+	float DeviceContext::GetClipLerpFactorY(const VSOutputVertex& vert0, const VSOutputVertex& vert1, float fSign)
+	{
+		return (vert0.SVPosition.y - fSign * vert0.SVPosition.w) / (fSign * vert1.SVPosition.w - fSign * vert0.SVPosition.w - vert1.SVPosition.y + vert0.SVPosition.y);
 	}
 
 	void DeviceContext::ShapeAssemble(uint32_t nIndexNum)
