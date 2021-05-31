@@ -73,17 +73,23 @@ namespace RenderDog
 #endif
 	}
 
-	void DeviceContext::IASetVertexBuffer(const VertexBuffer* pVB)
+	void DeviceContext::IASetVertexBuffer(VertexBuffer* pVB)
 	{
 		if (m_pVB != pVB)
 		{
+			if (m_pVSOutputs)
+			{
+				delete[] m_pVSOutputs;
+				m_pVSOutputs = nullptr;
+			}
+
 			uint32_t nVertexNum = pVB->GetNum();
 			m_pVSOutputs = new VSOutputVertex[nVertexNum];
 
 			m_pVB = pVB;
 		}
 	}
-	void DeviceContext::IASetIndexBuffer(const IndexBuffer* pIB)
+	void DeviceContext::IASetIndexBuffer(IndexBuffer* pIB)
 	{
 		if (m_pIB != pIB)
 		{
@@ -467,10 +473,10 @@ namespace RenderDog
 			m_vClippingVerts.push_back(vert1);
 			m_vClippingVerts.push_back(vert2);
 
-			ClipTriangleWithPlaneX(1.0f);
-			ClipTriangleWithPlaneX(-1.0f);
-			ClipTriangleWithPlaneY(1.0f);
-			ClipTriangleWithPlaneY(-1.0f);
+			ClipTriangleWithPlaneX(1);
+			ClipTriangleWithPlaneX(-1);
+			ClipTriangleWithPlaneY(1);
+			ClipTriangleWithPlaneY(-1);
 			ClipTriangleWithPlaneZeroZ();
 			ClipTriangleWithPlanePositiveZ();
 
@@ -878,12 +884,12 @@ namespace RenderDog
 		vTempVerts.push_back(vertIn1);
 	}
 
-	float DeviceContext::GetClipLerpFactorX(const VSOutputVertex& vert0, const VSOutputVertex& vert1, float fSign)
+	float DeviceContext::GetClipLerpFactorX(const VSOutputVertex& vert0, const VSOutputVertex& vert1, int fSign)
 	{
 		return (vert0.SVPosition.x - fSign * vert0.SVPosition.w) / (fSign * vert1.SVPosition.w - fSign * vert0.SVPosition.w - vert1.SVPosition.x + vert0.SVPosition.x);
 	}
 
-	float DeviceContext::GetClipLerpFactorY(const VSOutputVertex& vert0, const VSOutputVertex& vert1, float fSign)
+	float DeviceContext::GetClipLerpFactorY(const VSOutputVertex& vert0, const VSOutputVertex& vert1, int fSign)
 	{
 		return (vert0.SVPosition.y - fSign * vert0.SVPosition.w) / (fSign * vert1.SVPosition.w - fSign * vert0.SVPosition.w - vert1.SVPosition.y + vert0.SVPosition.y);
 	}

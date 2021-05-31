@@ -16,13 +16,12 @@
 #include "Transform.h"
 #include "Viewport.h"
 #include "Camera.h"
+#include "Model.h"
 
-#define CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-//#include <windows.h>
 #include <windowsx.h>
 #include <string>
+
+#include <vld.h>
 
 using RenderDog::Vector2;
 using RenderDog::Vector3;
@@ -50,6 +49,8 @@ RenderDog::Matrix4x4			g_ViewMatrix;
 RenderDog::Matrix4x4			g_PerspProjMatrix;
 
 Vector2							g_LastMousePos;
+
+RenderDog::StaticModel*			g_pStaticModel;
 
 
 int aKeys[512];	// 当前键盘按下状态
@@ -163,7 +164,14 @@ bool InitDevice()
 		return false;
 	}
 
-	Vertex aBoxVertices[] =
+	g_pStaticModel = new RenderDog::StaticModel;
+	g_pStaticModel->LoadFromFile("Models/generator/generator_small.obj");
+	if (!g_pStaticModel->Init(g_pDevice))
+	{
+		return false;
+	}
+
+	/*Vertex aBoxVertices[] =
 	{
 		{Vector3(-1.0f, 1.0f, -1.0f),	Vector3(1.0f, 0.0f, 0.0f),	Vector2(0.0f, 1.0f)},
 		{Vector3(1.0f, 1.0f, -1.0f),	Vector3(1.0f, 0.0f, 0.0f),	Vector2(1.0f, 1.0f)},
@@ -231,7 +239,7 @@ bool InitDevice()
 	if (!g_pDevice->CreateIndexBuffer(ibDesc, &g_pIndexBuffer))
 	{
 		return false;
-	}
+	}*/
 
 	g_pTextureSRV = new RenderDog::ShaderResourceView();
 
@@ -241,16 +249,16 @@ bool InitDevice()
 	}
 
 	RenderDog::CameraDesc camDesc;
-	camDesc.vPosition = Vector3(0, 0, -5);
+	camDesc.vPosition = Vector3(0, 0, -100);
 	camDesc.vDirection = Vector3(0, 0, 1);
 	camDesc.fFov = 45.0f;
 	camDesc.fAspect = (float)g_nWindowWidth / g_nWindowHeight;
 	camDesc.fNear = 0.1f;
-	camDesc.fFar = 100.0f;
+	camDesc.fFar = 1000.0f;
 
 	g_pMainCamera = new RenderDog::FPSCamera(camDesc);
 
-	g_WorldMatrix = RenderDog::GetIdentityMatrix();
+	g_WorldMatrix = RenderDog::GetRotationMatrix(90.0f, Vector3(1.0f, 0.0f, 0.0f));
 	g_ViewMatrix = g_pMainCamera->GetViewMatrix();
 	g_PerspProjMatrix = g_pMainCamera->GetPerspProjectionMatrix();
 
@@ -284,6 +292,14 @@ void CleanupDevice()
 	{
 		delete g_pPixelShader;
 		g_pPixelShader = nullptr;
+	}
+
+	if (g_pStaticModel)
+	{
+		g_pStaticModel->Release();
+
+		delete g_pStaticModel;
+		g_pStaticModel = nullptr;
 	}
 
 	if (g_pVertexBuffer)
@@ -343,7 +359,7 @@ void CleanupDevice()
 
 void Update(float fTime)
 {
-	float fSpeed = 0.01f;
+	float fSpeed = 0.1f;
 	//W
 	if (aKeys[0x57])
 	{
@@ -386,8 +402,8 @@ void Render()
 
 	g_pDeviceContext->ClearDepthStencil(g_pDepthStencilView, 1.0f);
 
-	g_pDeviceContext->IASetVertexBuffer(g_pVertexBuffer);
-	g_pDeviceContext->IASetIndexBuffer(g_pIndexBuffer);
+	/*g_pDeviceContext->IASetVertexBuffer(g_pVertexBuffer);
+	g_pDeviceContext->IASetIndexBuffer(g_pIndexBuffer);*/
 	g_pDeviceContext->IASetPrimitiveTopology(RenderDog::PrimitiveTopology::TRIANGLE_LIST);
 
 	g_pDeviceContext->VSSetShader(g_pVertexShader);
@@ -395,7 +411,9 @@ void Render()
 	g_pDeviceContext->PSSetShader(g_pPixelShader);
 	g_pDeviceContext->PSSetShaderResource(&g_pTextureSRV);
 
-	g_pDeviceContext->DrawIndex(36);
+	//g_pDeviceContext->DrawIndex(36);
+
+	g_pStaticModel->Draw(g_pDeviceContext);
 
 #if DEBUG_RASTERIZATION
 	if (g_pDeviceContext->CheckDrawPixelTiwce())
@@ -494,8 +512,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	}
 
 	CleanupDevice();
-
-	_CrtDumpMemoryLeaks();
 
 	return (int)msg.wParam;
 }

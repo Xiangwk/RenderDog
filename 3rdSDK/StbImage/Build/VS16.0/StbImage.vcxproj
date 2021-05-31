@@ -78,14 +78,14 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\..\..\..\Output\3rdParty\$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>..\..\..\..\Intermediate\3rdParty\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>..\..\..\..\Output\3rdSDK\$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>..\..\..\..\Intermediate\3rdSDK\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)_d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\..\..\Output\3rdParty\$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>..\..\..\..\Intermediate\3rdParty\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>..\..\..\..\Output\3rdSDK\$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>..\..\..\..\Intermediate\3rdSDK\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

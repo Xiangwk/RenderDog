@@ -28,7 +28,7 @@
                                 "y": -584.3333234654536
                             },
                             "layout": null,
-                            "note": "功能随着需要增加即可\n\n日后需要从渲染器中拆分出来"
+                            "note": "1. 功能随着需要增加即可\n\n2. 后面整理引擎架构的时候，将此功能拆分到Platform中；"
                         },
                         "children": [
                             {
@@ -262,8 +262,8 @@
                                                 "y": -49
                                             },
                                             "priority": 1,
-                                            "progress": 3,
-                                            "note": "1. IndexBuffer对VertexBuffer的解析是在运行VS的时候做，还是在进行光栅化的时候做？\n如果在VS时做的话，裁剪操作则无需修改IndexBuffer；但是会有相同顶点多次运行VS；\n是否可以在裁剪的时候做？\n在裁剪时做，可以无需修改IndexBuffer，还可以保持三角形的邻接关系，也无需对相同的顶点运行多次VS；\n应该增加图元装配函数，用来使用IndexBuffer处理各个顶点；图元装配阶段在VS之后，Clip之前；\n\n2. 裁剪顶点时，对于新顶点的计算，运行插值函数时，对于顶点属性，是否应该除w后再插值？\n从View空间经过投影矩阵变换到Clip空间时，所有属性均为线性变换；\n\n3. 如何避免透视除法时的除0问题？"
+                                            "progress": 8,
+                                            "note": "1. IndexBuffer对VertexBuffer的解析是在运行VS的时候做，还是在进行光栅化的时候做？\n如果在VS时做的话，裁剪操作则无需修改IndexBuffer；但是会有相同顶点多次运行VS；\n是否可以在裁剪的时候做？\n在裁剪时做，可以无需修改IndexBuffer，还可以保持三角形的邻接关系，也无需对相同的顶点运行多次VS；\n应该增加图元装配函数，用来使用IndexBuffer处理各个顶点；图元装配阶段在VS之后，Clip之前；\n\n2. 裁剪顶点时，对于新顶点的计算，运行插值函数时，对于顶点属性，是否应该除w后再插值？\n从View空间经过投影矩阵变换到Clip空间时，所有属性均为线性变换；\n\n3. 如何避免透视除法时的除0问题？\n注意：近平面不能设置为0；"
                                         },
                                         "children": []
                                     },
@@ -417,7 +417,22 @@
                             },
                             "priority": 4,
                             "progress": 5,
-                            "note": "日后需要从Renderer中拆出来\n\n1. FPS相机完成"
+                            "note": "1. FPS相机完成\n\n2. 后面整理引擎架构的时候，将此功能拆分到Platform中；"
+                        },
+                        "children": []
+                    },
+                    {
+                        "data": {
+                            "id": "cbkpyp393400",
+                            "created": 1621782634826,
+                            "text": "ModelImporter",
+                            "layout_right_offset": {
+                                "x": 389,
+                                "y": 168
+                            },
+                            "priority": 1,
+                            "progress": 1,
+                            "note": "1. 先使用第三方库加载模型，后面有空改成专门加载FBX的库；\n\n2. 后面整理引擎架构的时候，将此功能拆分到Platform中；"
                         },
                         "children": []
                     }

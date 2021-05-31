@@ -68,6 +68,12 @@
     <ClInclude Include="..\..\Public\Camera.h">
       <Filter>Public</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Public\Model.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Public\Mesh.h">
+      <Filter>Public</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Math\Private\Matrix.cpp">
@@ -110,6 +116,12 @@
       <Filter>Private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Private\Camera.cpp">
+      <Filter>Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Private\Model.cpp">
+      <Filter>Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Private\Mesh.cpp">
       <Filter>Private</Filter>
     </ClCompile>
   </ItemGroup>
