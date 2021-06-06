@@ -28,7 +28,7 @@ namespace RenderDog
 
 		Output.Color = Vector4(inVertex.vColor, 1.0f);
 
-		Output.UV = inVertex.vUV;
+		Output.UV = inVertex.vTexcoord;
 
 		return Output;
 	}

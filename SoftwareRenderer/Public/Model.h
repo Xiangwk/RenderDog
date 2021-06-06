@@ -36,6 +36,8 @@ namespace RenderDog
 		void ProcessNode(const aiNode* pAssimpNode, const aiScene* pAssimpScene);
 		StaticMesh ProcessMesh(const aiMesh* pAssimpMesh, const aiScene* pAssimpScene);
 
+		void CalculateMeshTangents();
+
 	private:
 		std::vector<StaticMesh> m_Meshes;
 	};

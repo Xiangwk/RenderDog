@@ -27,6 +27,8 @@ namespace RenderDog
 
 		Vector4 SVPosition;
 		Vector4 Color;
+		Vector3 Normal;
+		Vector3 Tangent;
 		Vector2 UV;
 	};
 

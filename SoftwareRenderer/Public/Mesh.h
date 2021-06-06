@@ -30,7 +30,12 @@ namespace RenderDog
 
 		void Draw(DeviceContext* pDeviceContext);
 
+		void CalculateTangents();
+
 	private:
+		std::vector<Vertex>		m_RawVertices;
+		std::vector<uint32_t>	m_RawIndices;
+
 		std::vector<Vertex>		m_Vertices;
 		std::vector<uint32_t>	m_Indices;
 

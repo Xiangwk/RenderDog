@@ -20,7 +20,9 @@ namespace RenderDog
 
 		Vector3 vPosition;
 		Vector3 vColor;
-		Vector2 vUV;
+		Vector3 vNormal;
+		Vector4 vTangent;
+		Vector2 vTexcoord;
 	};
 }
 

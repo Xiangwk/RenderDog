@@ -431,10 +431,24 @@
                                 "y": 168
                             },
                             "priority": 1,
-                            "progress": 1,
+                            "progress": 5,
                             "note": "1. 先使用第三方库加载模型，后面有空改成专门加载FBX的库；\n\n2. 后面整理引擎架构的时候，将此功能拆分到Platform中；"
                         },
-                        "children": []
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "cbvip0qi1iw0",
+                                    "created": 1622879288289,
+                                    "text": "支持Normal Map",
+                                    "layout_right_offset": {
+                                        "x": 11,
+                                        "y": -38
+                                    },
+                                    "note": "1. 支持Normal Map的话需要为Vertex添加新的属性Tangent和Normal，并且修改shader，添加光照计算，添加将切线空间的法线转换到世界空间的计算；"
+                                },
+                                "children": []
+                            }
+                        ]
                     }
                 ]
             },

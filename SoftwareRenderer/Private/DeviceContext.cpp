@@ -438,6 +438,8 @@ namespace RenderDog
 
 		vNew.SVPosition = Vector4(fNewX, fNewY, fNewZ, fNewW);
 		vNew.Color = fNewW * ((vStart.Color / vStart.SVPosition.w) * (1.0f - fLerpFactor) + (vEnd.Color / vEnd.SVPosition.w) * fLerpFactor);
+		vNew.Normal = fNewW * ((vStart.Normal / vStart.SVPosition.w) * (1.0f - fLerpFactor) + (vEnd.Normal / vEnd.SVPosition.w) * fLerpFactor);
+		vNew.Tangent = fNewW * ((vStart.Tangent / vStart.SVPosition.w) * (1.0f - fLerpFactor) + (vEnd.Tangent / vEnd.SVPosition.w) * fLerpFactor);
 		vNew.UV = fNewW * ((vStart.UV / vStart.SVPosition.w) * (1.0f - fLerpFactor) + (vEnd.UV / vEnd.SVPosition.w) * fLerpFactor);
 	}
 
@@ -450,6 +452,8 @@ namespace RenderDog
 
 		vNew.SVPosition = Vector4(fNewX, fNewY, fNewZ, fNewW);
 		vNew.Color = vStart.Color * (1.0f - fLerpFactor) + vEnd.Color * fLerpFactor;
+		vNew.Normal = vStart.Normal * (1.0f - fLerpFactor) + vEnd.Normal * fLerpFactor;
+		vNew.Tangent = vStart.Tangent * (1.0f - fLerpFactor) + vEnd.Tangent * fLerpFactor;
 		vNew.UV = vStart.UV * (1.0f - fLerpFactor) + vEnd.UV * fLerpFactor;
 	}
 

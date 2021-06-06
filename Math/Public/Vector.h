@@ -13,7 +13,7 @@ namespace RenderDog
 	class Vector2
 	{
 	public:
-		Vector2() = default;
+		Vector2() { x = 0.0f; y = 0.0f; }
 		~Vector2() = default;
 
 		Vector2(const Vector2&) = default;
@@ -36,7 +36,7 @@ namespace RenderDog
 	class Vector3
 	{
 	public:
-		Vector3() = default;
+		Vector3() { x = 0.0f; y = 0.0f; z = 0.0f; }
 		~Vector3() = default;
 
 		Vector3(const Vector3&) = default;
@@ -89,7 +89,7 @@ namespace RenderDog
 	class Vector4
 	{
 	public:
-		Vector4() = default;
+		Vector4() { x = 0.0f; y = 0.0f; z = 0.0f; w = 0.0f; }
 		~Vector4() = default;
 
 		Vector4(const Vector4&) = default;

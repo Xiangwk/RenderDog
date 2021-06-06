@@ -249,7 +249,7 @@ bool InitDevice()
 	}
 
 	RenderDog::CameraDesc camDesc;
-	camDesc.vPosition = Vector3(0, 0, -100);
+	camDesc.vPosition = Vector3(0, 25, -100);
 	camDesc.vDirection = Vector3(0, 0, 1);
 	camDesc.fFov = 45.0f;
 	camDesc.fAspect = (float)g_nWindowWidth / g_nWindowHeight;
