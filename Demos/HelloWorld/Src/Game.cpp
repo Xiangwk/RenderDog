@@ -243,7 +243,7 @@ bool InitDevice()
 
 	g_pTextureSRV = new RenderDog::ShaderResourceView();
 
-	if (!g_pTextureSRV->LoadFromFile("Textures/ErrorTexture_diff.tga"))
+	if (!g_pTextureSRV->LoadFromFile("Textures/Brick_norm.tga"))
 	{
 		return false;
 	}

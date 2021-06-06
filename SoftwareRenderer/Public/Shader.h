@@ -28,8 +28,8 @@ namespace RenderDog
 		Vector4 SVPosition;
 		Vector4 Color;
 		Vector3 Normal;
-		Vector3 Tangent;
-		Vector2 UV;
+		Vector4 Tangent;
+		Vector2 Texcoord;
 	};
 
 	class VertexShader
