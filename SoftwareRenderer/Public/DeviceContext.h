@@ -11,6 +11,7 @@ namespace RenderDog
 	class IndexBuffer;
 	class VertexShader;
 	class PixelShader;
+	class Vector4;
 	class Matrix4x4;
 	class RenderTargetView;
 	class DepthStencilView;
@@ -44,7 +45,7 @@ namespace RenderDog
 		void RSSetViewport(const Viewport* pVP);
 
 		void OMSetRenderTarget(RenderTargetView* pRenderTarget, DepthStencilView* pDepthStencil);
-		void ClearRenderTarget(RenderTargetView* pRenderTarget, const float* ClearColor);
+		void ClearRenderTarget(RenderTargetView* pRenderTarget, const Vector4& clearColor);
 		void ClearDepthStencil(DepthStencilView* pDepthStencil, float fDepth);
 		void Draw();
 		void DrawIndex(uint32_t nIndexNum);
@@ -54,7 +55,7 @@ namespace RenderDog
 #endif
 
 	private:
-		void DrawLineWithDDA(float fPos1X, float fPos1Y, float fPos2X, float fPos2Y, const float* lineColor);
+		void DrawLineWithDDA(float fPos1X, float fPos1Y, float fPos2X, float fPos2Y, const Vector4& lineColor);
 		void DrawTriangleWithLine(const VSOutputVertex& v0, const VSOutputVertex& v1, const VSOutputVertex& v2);
 		void DrawTriangleWithFlat(const VSOutputVertex& v0, const VSOutputVertex& v1, const VSOutputVertex& v2);
 

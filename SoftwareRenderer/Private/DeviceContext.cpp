@@ -116,10 +116,10 @@ namespace RenderDog
 		m_pDepthBuffer = pDepthStencil->GetView();
 	}
 
-	void DeviceContext::ClearRenderTarget(RenderTargetView* pRenderTarget, const float* ClearColor)
+	void DeviceContext::ClearRenderTarget(RenderTargetView* pRenderTarget, const Vector4& clearColor)
 	{
-		uint32_t nClearColor = 0x0;
-		nClearColor = ConvertFloatColorToUInt32(ClearColor);
+		Vector4 ARGB = ConvertRGBAColorToARGBColor(clearColor);
+		uint32_t nClearColor = ConvertColorToUInt32(ARGB);
 
 		uint32_t rtWidth = pRenderTarget->GetWidth();
 		uint32_t rtHeight = pRenderTarget->GetHeight();
@@ -159,7 +159,7 @@ namespace RenderDog
 
 	void DeviceContext::Draw()
 	{
-		float ClearColor[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
+		Vector4 ClearColor = { 1.0f, 0.0f, 0.0f, 1.0f };
 
 		DrawLineWithDDA(100, 100, 100, 100, ClearColor);
 	}
@@ -218,9 +218,9 @@ namespace RenderDog
 	//------------------------------------------------------------------------------------------------------------------
 	//Private Funtion
 	//------------------------------------------------------------------------------------------------------------------
-	void DeviceContext::DrawLineWithDDA(float fPos1X, float fPos1Y, float fPos2X, float fPos2Y, const float* lineColor)
+	void DeviceContext::DrawLineWithDDA(float fPos1X, float fPos1Y, float fPos2X, float fPos2Y, const Vector4& lineColor)
 	{
-		uint32_t nClearColor = ConvertFloatColorToUInt32(lineColor);
+		uint32_t nClearColor = ConvertColorToUInt32(lineColor);
 
 		float DeltaX = fPos2X - fPos1X;
 		float DeltaY = fPos2Y - fPos1Y;
@@ -265,7 +265,7 @@ namespace RenderDog
 
 	void DeviceContext::DrawTriangleWithLine(const VSOutputVertex& v0, const VSOutputVertex& v1, const VSOutputVertex& v2)
 	{
-		float lineColor[4] = { v0.Color.x, v0.Color.y, v0.Color.z, 1.0f };
+		Vector4 lineColor = { v0.Color.x, v0.Color.y, v0.Color.z, 1.0f };
 		DrawLineWithDDA(v0.SVPosition.x, v0.SVPosition.y, v1.SVPosition.x, v1.SVPosition.y, lineColor);
 		DrawLineWithDDA(v1.SVPosition.x, v1.SVPosition.y, v2.SVPosition.x, v2.SVPosition.y, lineColor);
 		DrawLineWithDDA(v2.SVPosition.x, v2.SVPosition.y, v0.SVPosition.x, v0.SVPosition.y, lineColor);
@@ -367,7 +367,9 @@ namespace RenderDog
 				float fPixelDepth = m_pDepthBuffer[j + i * m_nWidth];
 				if (vCurr.SVPosition.z <= fPixelDepth)
 				{
-					m_pFrameBuffer[j + i * m_nWidth] = m_pPS->PSMain(vCurr, m_pSRV);
+					Vector4 color = m_pPS->PSMain(vCurr, m_pSRV);
+					Vector4 ARGB = ConvertRGBAColorToARGBColor(color);
+					m_pFrameBuffer[j + i * m_nWidth] = ConvertColorToUInt32(ARGB);
 
 					m_pDepthBuffer[j + i * m_nWidth] = vCurr.SVPosition.z;
 				}
@@ -410,7 +412,9 @@ namespace RenderDog
 				float fPixelDepth = m_pDepthBuffer[j + i * m_nWidth];
 				if (vCurr.SVPosition.z <= fPixelDepth)
 				{
-					m_pFrameBuffer[j + i * m_nWidth] = m_pPS->PSMain(vCurr, m_pSRV);
+					Vector4 color = m_pPS->PSMain(vCurr, m_pSRV);
+					Vector4 ARGB = ConvertRGBAColorToARGBColor(color);
+					m_pFrameBuffer[j + i * m_nWidth] = ConvertColorToUInt32(ARGB);
 
 					m_pDepthBuffer[j + i * m_nWidth] = vCurr.SVPosition.z;
 				}

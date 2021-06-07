@@ -46,15 +46,15 @@ namespace RenderDog
 		return Output;
 	}
 
-	uint32_t PixelShader::PSMain(const VSOutputVertex& PSInput, const ShaderResourceView* pSRV) const
+	Vector4 PixelShader::PSMain(const VSOutputVertex& PSInput, const ShaderResourceView* pSRV) const
 	{
 		Vector2 vUV = PSInput.Texcoord;
 
-		uint32_t TextureColor = Sample(pSRV, vUV);
+		Vector4 TextureColor = Sample(pSRV, vUV);
 		
 		//Debug Normal Map
-		float fTangentNormalX = (TextureColor >> 16 & 0x000000ff) / 255.0f;
-		float fTangentNormalY = (TextureColor >> 8 & 0x000000ff) / 255.0f;
+		float fTangentNormalX = TextureColor.x;
+		float fTangentNormalY = TextureColor.y;
 		fTangentNormalX = fTangentNormalX * 2.0f - 1.0f;
 		fTangentNormalY = fTangentNormalY * 2.0f - 1.0f;
 
@@ -62,30 +62,31 @@ namespace RenderDog
 
 		Vector3 vTangentNormal = Normalize(Vector3(fTangentNormalX, fTangentNormalY, fTangentNormalZ));
 		
-		Vector3 vTangent = Vector3(PSInput.Tangent.x, PSInput.Tangent.y, PSInput.Tangent.z);
-		Vector3 vBiTangent = CrossProduct(PSInput.Normal, vTangent) * PSInput.Tangent.w;
+		Vector3 vTangent = Normalize(Vector3(PSInput.Tangent.x, PSInput.Tangent.y, PSInput.Tangent.z));
+		Vector3 vBiTangent = Normalize(CrossProduct(PSInput.Normal, vTangent) * PSInput.Tangent.w);
+		Vector3 vNormal = Normalize(PSInput.Normal);
 
 		Vector4 vT = Vector4(vTangent, 0.0f);
 		Vector4 vB = Vector4(vBiTangent, 0.0f);
-		Vector4 vN = Vector4(PSInput.Normal, 0.0f);
+		Vector4 vN = Vector4(vNormal, 0.0f);
 		
 		Matrix4x4 matTBN(vT, vB, vN, Vector4(0, 0, 0, 1));
 
-		Vector4 vNormal = Vector4(vTangentNormal, 0.0f) * matTBN;
+		Vector4 vTempNormal = Vector4(vTangentNormal, 0.0f) * matTBN;
 
-		Vector3 vWorldNormal = Vector3(vNormal.x, vNormal.y, vNormal.z);
+		Vector3 vWorldNormal = Normalize(Vector3(vTempNormal.x, vTempNormal.y, vTempNormal.z));
 		vWorldNormal.x = vWorldNormal.x * 0.5f + 0.5f;
 		vWorldNormal.y = vWorldNormal.y * 0.5f + 0.5f;
 		vWorldNormal.z = vWorldNormal.z * 0.5f + 0.5f;
 
-		float NormalColor[4] = { vWorldNormal.x, vWorldNormal.y, vWorldNormal.z, 1.0f };
+		Vector4 NormalColor = Vector4(vWorldNormal.x, vWorldNormal.y, vWorldNormal.z, 1.0f);
 
-		return ConvertFloatColorToUInt32(NormalColor);
+		return NormalColor;
 	}
 
-	uint32_t PixelShader::Sample(const ShaderResourceView* pSRV, const Vector2& vUV) const
+	Vector4 PixelShader::Sample(const ShaderResourceView* pSRV, const Vector2& vUV) const
 	{
-		const uint32_t* pData = pSRV->GetView();
+		const Vector4* pData = pSRV->GetView();
 
 		uint32_t nWidth = pSRV->GetWidth();
 		uint32_t nHeight = pSRV->GetHeight();
@@ -96,7 +97,7 @@ namespace RenderDog
 		uint32_t nRow = (uint32_t)(fV * (nHeight - 1));
 		uint32_t nCol = (uint32_t)(fU * (nWidth - 1));
 
-		uint32_t color = pData[nRow * nWidth + nCol];
+		Vector4 color = pData[nRow * nWidth + nCol];
 
 		return color;
 	}

@@ -10,6 +10,8 @@
 
 namespace RenderDog
 {
+	class Vector4;
+
 	class ShaderResourceView
 	{
 	public:
@@ -20,14 +22,14 @@ namespace RenderDog
 
 		void Release();
 
-		uint32_t* GetView() { return m_pView; }
-		const uint32_t* GetView() const { return m_pView; }
+		Vector4* GetView() { return m_pView; }
+		const Vector4* GetView() const { return m_pView; }
 
 		uint32_t GetWidth() const { return m_nWidth; }
 		uint32_t GetHeight() const { return m_nHeight; }
 
 	private:
-		uint32_t* m_pView;
+		Vector4* m_pView;
 
 		uint32_t m_nWidth;
 		uint32_t m_nHeight;

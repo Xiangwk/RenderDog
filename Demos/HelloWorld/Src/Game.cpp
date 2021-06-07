@@ -25,6 +25,7 @@
 
 using RenderDog::Vector2;
 using RenderDog::Vector3;
+using RenderDog::Vector4;
 using RenderDog::Vertex;
 
 HINSTANCE						g_hInst = nullptr;
@@ -243,7 +244,7 @@ bool InitDevice()
 
 	g_pTextureSRV = new RenderDog::ShaderResourceView();
 
-	if (!g_pTextureSRV->LoadFromFile("Textures/Brick_norm.tga"))
+	if (!g_pTextureSRV->LoadFromFile("Textures/PolybumpTangent_DDN.tga"))
 	{
 		return false;
 	}
@@ -359,7 +360,7 @@ void CleanupDevice()
 
 void Update(float fTime)
 {
-	float fSpeed = 0.1f;
+	float fSpeed = 1.0f;
 	//W
 	if (aKeys[0x57])
 	{
@@ -397,7 +398,7 @@ void Update(float fTime)
 void Render()
 {
 	g_pDeviceContext->OMSetRenderTarget(g_pRenderTargetView, g_pDepthStencilView);
-	float ClearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
+	Vector4 ClearColor = { 0.1f, 0.1f, 0.1f, 1.0f };
 	g_pDeviceContext->ClearRenderTarget(g_pRenderTargetView, ClearColor);
 
 	g_pDeviceContext->ClearDepthStencil(g_pDepthStencilView, 1.0f);

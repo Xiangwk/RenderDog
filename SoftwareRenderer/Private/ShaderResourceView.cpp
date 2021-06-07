@@ -1,4 +1,5 @@
 #include "ShaderResourceView.h"
+#include "Vector.h"
 #include "Utility.h"
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -30,7 +31,7 @@ namespace RenderDog
 		m_nHeight = (uint32_t)nTexHeight;
 
 		uint32_t nSize = m_nWidth * m_nHeight;
-		m_pView = new uint32_t[nSize];
+		m_pView = new Vector4[nSize];
 		if (!m_pView)
 		{
 			return false;
@@ -39,19 +40,26 @@ namespace RenderDog
 		unsigned char* pSrc = pTexData;
 		for (uint32_t row = 0; row < m_nHeight; ++row)
 		{
-			pSrc = pTexData + row * 4 * m_nWidth;
+			pSrc = pTexData + row * nChannels * m_nWidth;
 			for (uint32_t col = 0; col < m_nWidth; ++col)
 			{
 				float r = pSrc[0] / 255.0f;
 				float g = pSrc[1] / 255.0f;
 				float b = pSrc[2] / 255.0f;
-				float a = pSrc[3] / 255.0f;
+				float a = 0.0f;
+				if (nChannels == 4)
+				{
+					a = pSrc[3] / 255.0f;
+				}
+				else
+				{
+					a = 1.0f;
+				}
 
-				float fColor[4] = { r, g, b, a };
-				uint32_t pixelColor = ConvertFloatColorToUInt32(fColor);
-				m_pView[row * m_nWidth + col] = pixelColor;
+				Vector4 fColor = { r, g, b, a };
+				m_pView[row * m_nWidth + col] = fColor;
 
-				pSrc += 4;
+				pSrc += nChannels;
 			}
 		}
 

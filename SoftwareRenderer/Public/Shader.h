@@ -47,9 +47,9 @@ namespace RenderDog
 		PixelShader() = default;
 		~PixelShader() = default;
 
-		uint32_t PSMain(const VSOutputVertex& VSOutput, const ShaderResourceView* pSRV) const;
+		Vector4 PSMain(const VSOutputVertex& VSOutput, const ShaderResourceView* pSRV) const;
 
 	private:
-		uint32_t Sample(const ShaderResourceView* pSRV, const Vector2& vUV) const;
+		Vector4 Sample(const ShaderResourceView* pSRV, const Vector2& vUV) const;
 	};
 }
