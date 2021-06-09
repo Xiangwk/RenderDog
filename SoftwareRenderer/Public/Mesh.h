@@ -30,6 +30,8 @@ namespace RenderDog
 
 		void Draw(DeviceContext* pDeviceContext);
 
+		void DrawTangentSpace(DeviceContext* pDeviceContext);
+
 		void CalculateTangents();
 
 	private:

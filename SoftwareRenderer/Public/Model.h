@@ -32,6 +32,8 @@ namespace RenderDog
 
 		void Draw(DeviceContext* pDeviceContext);
 
+		void DrawTangentSpace(DeviceContext* pDeviceContext);
+
 	private:
 		void ProcessNode(const aiNode* pAssimpNode, const aiScene* pAssimpScene);
 		StaticMesh ProcessMesh(const aiMesh* pAssimpMesh, const aiScene* pAssimpScene);

@@ -55,10 +55,10 @@ namespace RenderDog
 		//Debug Normal Map
 		float fTangentNormalX = TextureColor.x;
 		float fTangentNormalY = TextureColor.y;
+		float fTangentNormalZ = TextureColor.z;
 		fTangentNormalX = fTangentNormalX * 2.0f - 1.0f;
 		fTangentNormalY = fTangentNormalY * 2.0f - 1.0f;
-
-		float fTangentNormalZ = sqrt(fTangentNormalX * fTangentNormalX + fTangentNormalY * fTangentNormalY);
+		fTangentNormalZ = fTangentNormalZ * 2.0f - 1.0f;
 
 		Vector3 vTangentNormal = Normalize(Vector3(fTangentNormalX, fTangentNormalY, fTangentNormalZ));
 		
