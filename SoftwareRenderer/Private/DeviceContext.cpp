@@ -948,6 +948,7 @@ namespace RenderDog
 			const Vector4& Pos2 = m_vAssembledVerts[i + 1].SVPosition;
 			const Vector4& Pos3 = m_vAssembledVerts[i + 2].SVPosition;
 
+			//三角形三个顶点若逆时针环绕，则行列式的值为正数，顺时针为负数，等于0则退化为线段
 			if (GetArea2(Vector3(Pos1.x, Pos1.y, Pos1.z), Vector3(Pos2.x, Pos2.y, Pos2.z), Vector3(Pos3.x, Pos3.y, Pos3.z)) < 0.0f)
 			{
 				m_vBackFaceCulledVerts.push_back(m_vAssembledVerts[i]);
