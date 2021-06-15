@@ -88,6 +88,8 @@ namespace RenderDog
 
 		void ShapeAssemble(uint32_t nIndexNum);
 
+		void BackFaceCulling();
+
 		void Rasterization();
 
 	private:
@@ -113,6 +115,7 @@ namespace RenderDog
 
 		VSOutputVertex*				m_pVSOutputs;
 		std::vector<VSOutputVertex> m_vAssembledVerts;
+		std::vector<VSOutputVertex> m_vBackFaceCulledVerts;
 		std::vector<VSOutputVertex>	m_vClipOutputVerts;
 		std::vector<VSOutputVertex> m_vClippingVerts;
 

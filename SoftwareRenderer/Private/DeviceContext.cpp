@@ -177,6 +177,8 @@ namespace RenderDog
 
 		ShapeAssemble(nIndexNum);
 
+		BackFaceCulling();
+
 		//Clip
 		ClipTrianglesInClipSpace();
 
@@ -464,18 +466,18 @@ namespace RenderDog
 	void DeviceContext::ClipTrianglesInClipSpace()
 	{
 		m_vClipOutputVerts.clear();
-		if (m_vClipOutputVerts.capacity() < m_vAssembledVerts.capacity())
+		if (m_vClipOutputVerts.capacity() < m_vBackFaceCulledVerts.capacity())
 		{
-			m_vClipOutputVerts.reserve(m_vAssembledVerts.capacity());
+			m_vClipOutputVerts.reserve(m_vBackFaceCulledVerts.capacity());
 		}
 
-		for (uint32_t i = 0; i < m_vAssembledVerts.size(); i += 3)
+		for (uint32_t i = 0; i < m_vBackFaceCulledVerts.size(); i += 3)
 		{
 			m_vClippingVerts.clear();
 
-			const VSOutputVertex& vert0 = m_vAssembledVerts[i];
-			const VSOutputVertex& vert1 = m_vAssembledVerts[i + 1];
-			const VSOutputVertex& vert2 = m_vAssembledVerts[i + 2];
+			const VSOutputVertex& vert0 = m_vBackFaceCulledVerts[i];
+			const VSOutputVertex& vert1 = m_vBackFaceCulledVerts[i + 1];
+			const VSOutputVertex& vert2 = m_vBackFaceCulledVerts[i + 2];
 
 			m_vClippingVerts.push_back(vert0);
 			m_vClippingVerts.push_back(vert1);
@@ -928,6 +930,29 @@ namespace RenderDog
 				const VSOutputVertex& vert0 = m_pVSOutputs[pIndice[i]];
 
 				m_vAssembledVerts.push_back(vert0);
+			}
+		}
+	}
+
+	void DeviceContext::BackFaceCulling()
+	{
+		m_vBackFaceCulledVerts.clear();
+		if (m_vBackFaceCulledVerts.capacity() < m_vAssembledVerts.size())
+		{
+			m_vBackFaceCulledVerts.reserve(m_vAssembledVerts.size());
+		}
+
+		for (uint32_t i = 0; i < m_vAssembledVerts.size(); i += 3)
+		{
+			const Vector4& Pos1 = m_vAssembledVerts[i].SVPosition;
+			const Vector4& Pos2 = m_vAssembledVerts[i + 1].SVPosition;
+			const Vector4& Pos3 = m_vAssembledVerts[i + 2].SVPosition;
+
+			if (GetArea2(Vector3(Pos1.x, Pos1.y, Pos1.z), Vector3(Pos2.x, Pos2.y, Pos2.z), Vector3(Pos3.x, Pos3.y, Pos3.z)) < 0.0f)
+			{
+				m_vBackFaceCulledVerts.push_back(m_vAssembledVerts[i]);
+				m_vBackFaceCulledVerts.push_back(m_vAssembledVerts[i + 1]);
+				m_vBackFaceCulledVerts.push_back(m_vAssembledVerts[i + 2]);
 			}
 		}
 	}
