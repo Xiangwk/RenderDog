@@ -16,6 +16,7 @@ namespace RenderDog
 	class RenderTargetView;
 	class DepthStencilView;
 	class ShaderResourceView;
+	class DirectionalLight;
 
 	struct Viewport;
 	struct Vertex;
@@ -41,6 +42,7 @@ namespace RenderDog
 		void VSSetTransMats(const Matrix4x4* matWorld, const Matrix4x4* matView, const Matrix4x4* matProj);
 		void PSSetShader(PixelShader* pPS) { m_pPS = pPS; }
 		void PSSetShaderResource(ShaderResourceView* const* pSRV) { m_pSRV = *pSRV; }
+		void PSSetMainLight(DirectionalLight* pLight) { m_pMainLight = pLight; }
 
 		void RSSetViewport(const Viewport* pVP);
 
@@ -122,5 +124,7 @@ namespace RenderDog
 		Matrix4x4*					m_pViewportMat;
 
 		PrimitiveTopology			m_PriTopology;
+
+		DirectionalLight*			m_pMainLight;
 	};
 }

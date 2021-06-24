@@ -33,7 +33,8 @@ namespace RenderDog
 		m_pProjMat(nullptr),
 		m_pVSOutputs(nullptr),
 		m_pViewportMat(nullptr),
-		m_PriTopology(PrimitiveTopology::TRIANGLE_LIST)
+		m_PriTopology(PrimitiveTopology::TRIANGLE_LIST),
+		m_pMainLight(nullptr)
 	{
 #if DEBUG_RASTERIZATION
 		uint32_t nBufferSize = m_nWidth * m_nHeight;
@@ -369,7 +370,7 @@ namespace RenderDog
 				float fPixelDepth = m_pDepthBuffer[j + i * m_nWidth];
 				if (vCurr.SVPosition.z <= fPixelDepth)
 				{
-					Vector4 color = m_pPS->PSMain(vCurr, m_pSRV);
+					Vector4 color = m_pPS->PSMain(vCurr, m_pSRV, m_pMainLight);
 					Vector4 ARGB = ConvertRGBAColorToARGBColor(color);
 					m_pFrameBuffer[j + i * m_nWidth] = ConvertColorToUInt32(ARGB);
 
@@ -414,7 +415,7 @@ namespace RenderDog
 				float fPixelDepth = m_pDepthBuffer[j + i * m_nWidth];
 				if (vCurr.SVPosition.z <= fPixelDepth)
 				{
-					Vector4 color = m_pPS->PSMain(vCurr, m_pSRV);
+					Vector4 color = m_pPS->PSMain(vCurr, m_pSRV, m_pMainLight);
 					Vector4 ARGB = ConvertRGBAColorToARGBColor(color);
 					m_pFrameBuffer[j + i * m_nWidth] = ConvertColorToUInt32(ARGB);
 

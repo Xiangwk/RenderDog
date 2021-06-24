@@ -32,4 +32,20 @@ namespace RenderDog
 		return Pos1.x * Pos2.y * Pos3.z + Pos1.y * Pos2.z * Pos3.x + Pos1.z * Pos2.x * Pos3.y
 			- Pos1.z * Pos2.y * Pos3.x - Pos1.y * Pos2.x * Pos3.z - Pos1.x * Pos2.z * Pos3.y;
 	}
+
+	float Clamp(float fValue, float fMin, float fMax)
+	{
+		if (fValue < fMin)
+		{
+			return fMin;
+		}
+		else if (fValue > fMax)
+		{
+			return fMax;
+		}
+		else
+		{
+			return fValue;
+		}
+	}
 }

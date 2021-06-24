@@ -17,6 +17,7 @@
 #include "Viewport.h"
 #include "Camera.h"
 #include "Model.h"
+#include "Light.h"
 
 #include <windowsx.h>
 #include <string>
@@ -53,6 +54,8 @@ RenderDog::Matrix4x4			g_PerspProjMatrix;
 Vector2							g_LastMousePos;
 
 RenderDog::StaticModel*			g_pStaticModel;
+
+RenderDog::DirectionalLight*	g_pMainLight;
 
 
 int aKeys[512];	// 当前键盘按下状态
@@ -280,6 +283,13 @@ bool InitDevice()
 
 	memset(aKeys, 0, sizeof(int) * 512);
 
+	RenderDog::DirLightDesc dirLightDesc;
+	dirLightDesc.color = Vector3(1.0f, 1.0f, 1.0f);
+	dirLightDesc.luminance = 1.0f;
+	dirLightDesc.fPhi = -3.14 * 0.25f;
+	dirLightDesc.fTheta = 3.14 * 0.25f;
+	g_pMainLight = new RenderDog::DirectionalLight(dirLightDesc);
+
 	return true;
 }
 
@@ -371,6 +381,12 @@ void CleanupDevice()
 		delete g_pMainCamera;
 		g_pMainCamera = nullptr;
 	}
+
+	if (g_pMainLight)
+	{
+		delete g_pMainLight;
+		g_pMainLight = nullptr;
+	}
 }
 
 void Update(float fTime)
@@ -426,6 +442,7 @@ void Render()
 	g_pDeviceContext->VSSetTransMats(&g_WorldMatrix, &g_ViewMatrix, &g_PerspProjMatrix);
 	g_pDeviceContext->PSSetShader(g_pPixelShader);
 	g_pDeviceContext->PSSetShaderResource(&g_pTextureSRV);
+	g_pDeviceContext->PSSetMainLight(g_pMainLight);
 
 	//g_pDeviceContext->DrawIndex(60);
 

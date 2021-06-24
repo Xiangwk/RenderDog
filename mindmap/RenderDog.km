@@ -94,6 +94,21 @@
                                     "note": "随用随加；"
                                 },
                                 "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "ccbyb85je8w0",
+                                    "created": 1624548304403,
+                                    "text": "Coordinate",
+                                    "layout_right_offset": {
+                                        "x": 36,
+                                        "y": 19
+                                    },
+                                    "note": "规范渲染器的各个坐标系，并验证；",
+                                    "priority": 1,
+                                    "progress": 2
+                                },
+                                "children": []
                             }
                         ]
                     },
@@ -347,7 +362,7 @@
                                         "x": 16,
                                         "y": 0
                                     },
-                                    "priority": 3,
+                                    "priority": 2,
                                     "progress": 1
                                 },
                                 "children": []
