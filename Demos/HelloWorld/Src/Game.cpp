@@ -25,6 +25,8 @@
 
 #include <vld.h>
 
+#define DRAW_BOX 0
+
 using RenderDog::Vector2;
 using RenderDog::Vector3;
 using RenderDog::Vector4;
@@ -434,8 +436,10 @@ void Render()
 
 	g_pDeviceContext->ClearDepthStencil(g_pDepthStencilView, 1.0f);
 
-	//g_pDeviceContext->IASetVertexBuffer(g_pVertexBuffer);
-	//g_pDeviceContext->IASetIndexBuffer(g_pIndexBuffer);
+#if DRAW_BOX
+	g_pDeviceContext->IASetVertexBuffer(g_pVertexBuffer);
+	g_pDeviceContext->IASetIndexBuffer(g_pIndexBuffer);
+#endif
 	g_pDeviceContext->IASetPrimitiveTopology(RenderDog::PrimitiveTopology::TRIANGLE_LIST);
 
 	g_pDeviceContext->VSSetShader(g_pVertexShader);
@@ -444,9 +448,11 @@ void Render()
 	g_pDeviceContext->PSSetShaderResource(&g_pTextureSRV);
 	g_pDeviceContext->PSSetMainLight(g_pMainLight);
 
-	//g_pDeviceContext->DrawIndex(60);
-
+#if DRAW_BOX
+	g_pDeviceContext->DrawIndex(60);
+#else
 	g_pStaticModel->Draw(g_pDeviceContext);
+#endif
 
 #if DEBUG_RASTERIZATION
 	if (g_pDeviceContext->CheckDrawPixelTiwce())

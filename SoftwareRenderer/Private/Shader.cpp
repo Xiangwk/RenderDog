@@ -100,8 +100,7 @@ namespace RenderDog
 
 	Vector3 PixelShader::CalcPhongLighing(const DirectionalLight& light, const Vector3& normal, const Vector3& faceColor) const
 	{
-		//Vector3 worldLightDir = Normalize(light.GetDirection());
-		Vector3 worldLightDir = Vector3(1.0f, 1.0f, -1.0f);
+		Vector3 worldLightDir = -Normalize(light.GetDirection());
 		worldLightDir = Normalize(worldLightDir);
 		Vector3 worldNormal = Normalize(normal);
 

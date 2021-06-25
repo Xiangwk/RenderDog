@@ -9,7 +9,7 @@ namespace RenderDog
 		m_fTheta(desc.fTheta)
 	{
 		float fX = cosf(m_fPhi) * cosf(m_fTheta);
-		float fY = cosf(m_fPhi);
+		float fY = sinf(m_fPhi);
 		float fZ = cosf(m_fPhi) * sinf(m_fTheta);
 
 		m_Direction = Vector3(fX, fY, fZ);

@@ -34,7 +34,7 @@ namespace RenderDog
 		void SetLuminance(float fLuma) { m_fLuminance = fLuma; }
 
 	private:
-		Vector3	m_Direction;
+		Vector3	m_Direction;	//从光源发射光线的方向
 		Vector3	m_Color;
 		float	m_fLuminance;
 
