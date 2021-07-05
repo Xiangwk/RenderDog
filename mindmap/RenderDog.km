@@ -105,8 +105,8 @@
                                         "y": 19
                                     },
                                     "note": "规范渲染器的各个坐标系，并验证；",
-                                    "priority": 1,
-                                    "progress": 2
+                                    "priority": null,
+                                    "progress": 9
                                 },
                                 "children": []
                             }
@@ -203,7 +203,11 @@
                                                     "text": "从文件中加载贴图",
                                                     "priority": null,
                                                     "progress": 9,
-                                                    "note": "1. 使用FreeImage库加载贴图资源；目前还有内存泄漏，经过测试发现，内存泄漏应该是发生在FreeImage库中，其官方的例子中亦存在内存泄漏。。。\n\n2. 使用stbImage，或者手写一个TGA加载函数（可以参考DirectXTex)。\n\n3. 若使用DirectXTex的话，需要调用DeCompress函数，可以参考texconv中的保存PPM的程序；\n\n目前使用stbImage，单个头文件即可解决问题；"
+                                                    "note": "1. 使用FreeImage库加载贴图资源；目前还有内存泄漏，经过测试发现，内存泄漏应该是发生在FreeImage库中，其官方的例子中亦存在内存泄漏。。。\n\n2. 使用stbImage，或者手写一个TGA加载函数（可以参考DirectXTex)。\n\n3. 若使用DirectXTex的话，需要调用DeCompress函数，可以参考texconv中的保存PPM的程序；\n\n目前使用stbImage，单个头文件即可解决问题；",
+                                                    "layout_right_offset": {
+                                                        "x": 10,
+                                                        "y": 75
+                                                    }
                                                 },
                                                 "children": []
                                             }
@@ -503,7 +507,32 @@
                             "note": "1. 先增加一个可以用鼠标控制的方向光；\n\n2. 该功能未来要迁移到Platform中；",
                             "progress": 1
                         },
-                        "children": []
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "cclavjriqs00",
+                                    "created": 1625497789889,
+                                    "text": "显示光源方向",
+                                    "layout_right_offset": {
+                                        "x": 116,
+                                        "y": -78
+                                    }
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "cclavr5mamw0",
+                                    "created": 1625497805979,
+                                    "text": "控制光源方向变化",
+                                    "layout_right_offset": {
+                                        "x": 102,
+                                        "y": 42
+                                    }
+                                },
+                                "children": []
+                            }
+                        ]
                     },
                     {
                         "data": {
@@ -516,6 +545,20 @@
                             },
                             "note": "1. Timer用于程序的时间控制，并且可以计算帧率等信息；",
                             "priority": 2
+                        },
+                        "children": []
+                    },
+                    {
+                        "data": {
+                            "id": "cclaw8mr55s0",
+                            "created": 1625497844020,
+                            "text": "重构",
+                            "layout_right_offset": {
+                                "x": 427,
+                                "y": 436
+                            },
+                            "priority": 1,
+                            "note": "1. 使用引用计数来控制资源的释放；\n\n2. 将与渲染器无关的类型放到一个新的sln中；"
                         },
                         "children": []
                     }
