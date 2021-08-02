@@ -10,7 +10,6 @@
 
 namespace RenderDog
 {
-	
 	class Texture2D;
 	class RenderTargetView;
 	class DepthStencilView;
@@ -38,6 +37,4 @@ namespace RenderDog
 		bool CreateVertexShader(VertexShader** ppVertexShader);
 		bool CreatePixelShader(PixelShader** ppPixelShader);
 	};
-
-	
 }
