@@ -8,6 +8,8 @@
 
 #include <cstdint>
 
+#include "Resource.h"
+
 namespace RenderDog
 {
 	class Texture2D;
@@ -23,18 +25,15 @@ namespace RenderDog
 	struct VertexBufferDesc;
 	struct IndexBufferDesc;
 
-	class Device
+	class IDevice : public IResource
 	{
 	public:
-		Device() = default;
-		~Device() = default;
-
-		bool CreateTexture2D(const Texture2DDesc* pDesc, Texture2D** ppTexture);
-		bool CreateRenderTargetView(Texture2D* pTexture, const RenderTargetDesc* pDesc, RenderTargetView** ppRenderTarget);
-		bool CreateDepthStencilView(Texture2D* pTexture, DepthStencilView** ppDepthStencil);
-		bool CreateVertexBuffer(const VertexBufferDesc& vbDesc, VertexBuffer** ppVertexBuffer);
-		bool CreateIndexBuffer(const IndexBufferDesc& ibDesc, IndexBuffer** ppIndexBuffer);
-		bool CreateVertexShader(VertexShader** ppVertexShader);
-		bool CreatePixelShader(PixelShader** ppPixelShader);
+		virtual bool CreateTexture2D(const Texture2DDesc* pDesc, Texture2D** ppTexture) = 0;
+		virtual bool CreateRenderTargetView(Texture2D* pTexture, const RenderTargetDesc* pDesc, RenderTargetView** ppRenderTarget) = 0;
+		virtual bool CreateDepthStencilView(Texture2D* pTexture, DepthStencilView** ppDepthStencil) = 0;
+		virtual bool CreateVertexBuffer(const VertexBufferDesc& vbDesc, VertexBuffer** ppVertexBuffer) = 0;
+		virtual bool CreateIndexBuffer(const IndexBufferDesc& ibDesc, IndexBuffer** ppIndexBuffer) = 0;
+		virtual bool CreateVertexShader(VertexShader** ppVertexShader) = 0;
+		virtual bool CreatePixelShader(PixelShader** ppPixelShader) = 0;
 	};
 }

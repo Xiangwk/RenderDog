@@ -51,7 +51,7 @@ namespace RenderDog
 		}
 	}
 
-	bool StaticMesh::Init(Device* pDevice)
+	bool StaticMesh::Init(IDevice* pDevice)
 	{
 		VertexBufferDesc vbDesc;
 		vbDesc.nVertexNum = (uint32_t)m_Vertices.size();
@@ -91,17 +91,12 @@ namespace RenderDog
 		}
 	}
 
-	void StaticMesh::Draw(DeviceContext* pDeviceContext)
+	void StaticMesh::Draw(IDeviceContext* pDeviceContext)
 	{
 		pDeviceContext->IASetVertexBuffer(m_pVB);
 		pDeviceContext->IASetIndexBuffer(m_pIB);
 
 		pDeviceContext->DrawIndex((uint32_t)m_Indices.size());
-	}
-
-	void StaticMesh::DrawTangentSpace(DeviceContext* pDeviceContext)
-	{
-
 	}
 
 	void StaticMesh::CalculateTangents()

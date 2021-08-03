@@ -6,5 +6,5 @@
 
 namespace RenderDog
 {
-	bool CreateDeviceAndSwapChain(Device** pDevice, DeviceContext** pDeviceContext, SwapChain** ppSwapChain, const SwapChainDesc* pSwapChainDesc);
+	bool CreateDeviceAndSwapChain(IDevice** pDevice, IDeviceContext** pDeviceContext, SwapChain** ppSwapChain, const SwapChainDesc* pSwapChainDesc);
 }

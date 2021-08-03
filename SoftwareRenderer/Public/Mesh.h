@@ -12,8 +12,8 @@
 
 namespace RenderDog
 {
-	class Device;
-	class DeviceContext;
+	class IDevice;
+	class IDeviceContext;
 	class VertexBuffer;
 	class IndexBuffer;
 
@@ -25,12 +25,10 @@ namespace RenderDog
 
 		StaticMesh(const std::vector<Vertex>& Vertices, const std::vector<uint32_t>& Indices);
 
-		bool Init(Device* pDevice);
+		bool Init(IDevice* pDevice);
 		void Release();
 
-		void Draw(DeviceContext* pDeviceContext);
-
-		void DrawTangentSpace(DeviceContext* pDeviceContext);
+		void Draw(IDeviceContext* pDeviceContext);
 
 		void CalculateTangents();
 

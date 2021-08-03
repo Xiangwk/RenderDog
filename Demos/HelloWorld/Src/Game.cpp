@@ -37,8 +37,8 @@ HWND							g_hWnd = nullptr;
 uint32_t						g_nWindowWidth = 1024;
 uint32_t						g_nWindowHeight = 768;
 								
-RenderDog::Device*				g_pDevice = nullptr;
-RenderDog::DeviceContext*		g_pDeviceContext = nullptr;
+RenderDog::IDevice*				g_pDevice = nullptr;
+RenderDog::IDeviceContext*		g_pDeviceContext = nullptr;
 RenderDog::SwapChain*			g_pSwapChain = nullptr;
 RenderDog::RenderTargetView*	g_pRenderTargetView = nullptr;
 RenderDog::VertexBuffer*		g_pVertexBuffer = nullptr;			//用于自定义的顶点数组
@@ -288,8 +288,8 @@ bool InitDevice()
 	RenderDog::DirLightDesc dirLightDesc;
 	dirLightDesc.color = Vector3(1.0f, 1.0f, 1.0f);
 	dirLightDesc.luminance = 1.0f;
-	dirLightDesc.fPhi = -3.14 * 0.25f;
-	dirLightDesc.fTheta = 3.14 * 0.25f;
+	dirLightDesc.fPhi = -3.14f * 0.25f;
+	dirLightDesc.fTheta = 3.14f * 0.25f;
 	g_pMainLight = new RenderDog::DirectionalLight(dirLightDesc);
 
 	return true;
@@ -368,13 +368,13 @@ void CleanupDevice()
 
 	if (g_pDevice)
 	{
-		delete g_pDevice;
+		g_pDevice->Release();
 		g_pDevice = nullptr;
 	}
 
 	if (g_pDeviceContext)
 	{
-		delete g_pDeviceContext;
+		g_pDeviceContext->Release();
 		g_pDeviceContext = nullptr;
 	}
 

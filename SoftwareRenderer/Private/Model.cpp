@@ -89,7 +89,7 @@ namespace RenderDog
 		}
 	}
 
-	bool StaticModel::Init(Device* pDevice)
+	bool StaticModel::Init(IDevice* pDevice)
 	{
 		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
 		{
@@ -110,16 +110,11 @@ namespace RenderDog
 		}
 	}
 
-	void StaticModel::Draw(DeviceContext* pDeviceContext)
+	void StaticModel::Draw(IDeviceContext* pDeviceContext)
 	{
 		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
 		{
 			m_Meshes[i].Draw(pDeviceContext);
 		}
-	}
-
-	void StaticModel::DrawTangentSpace(DeviceContext* pDeviceContext)
-	{
-
 	}
 }

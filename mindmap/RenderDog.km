@@ -560,7 +560,34 @@
                             "priority": 1,
                             "note": "1. 使用引用计数来控制资源的释放；\n\n2. 将与渲染器无关的类型放到一个新的sln中；"
                         },
-                        "children": []
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "cd94mhzw00o0",
+                                    "created": 1627917593064,
+                                    "text": "使用引用计数管理内存的分配",
+                                    "layout_right_offset": {
+                                        "x": 62,
+                                        "y": -46
+                                    },
+                                    "priority": 1,
+                                    "note": "1. 创建一个IResource接口类型\n\n2. 在类的成员函数中delete this是否正确？"
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "cd96b03pcv40",
+                                    "created": 1627922334327,
+                                    "text": "抽出一个Platform工程",
+                                    "layout_right_offset": {
+                                        "x": 94,
+                                        "y": 47
+                                    }
+                                },
+                                "children": []
+                            }
+                        ]
                     }
                 ]
             },

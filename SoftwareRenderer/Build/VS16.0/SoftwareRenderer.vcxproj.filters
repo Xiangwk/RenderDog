@@ -77,6 +77,9 @@
     <ClInclude Include="..\..\Public\Light.h">
       <Filter>Public</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Public\Resource.h">
+      <Filter>Public</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Math\Private\Matrix.cpp">
@@ -92,12 +95,6 @@
       <Filter>Private\Math</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Private\Buffer.cpp">
-      <Filter>Private</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Private\Device.cpp">
-      <Filter>Private</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Private\DeviceContext.cpp">
       <Filter>Private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Private\RenderDog.cpp">

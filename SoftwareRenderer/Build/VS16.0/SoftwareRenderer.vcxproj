@@ -176,6 +176,7 @@ xcopy ..\..\Public\*.* ..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i /s 
     <ClInclude Include="..\..\Public\Model.h" />
     <ClInclude Include="..\..\Public\RenderDog.h" />
     <ClInclude Include="..\..\Public\RenderTargetView.h" />
+    <ClInclude Include="..\..\Public\Resource.h" />
     <ClInclude Include="..\..\Public\Shader.h" />
     <ClInclude Include="..\..\Public\ShaderResourceView.h" />
     <ClInclude Include="..\..\Public\SwapChain.h" />
@@ -190,8 +191,6 @@ xcopy ..\..\Public\*.* ..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i /s 
     <ClCompile Include="..\..\..\Math\Private\Vector.cpp" />
     <ClCompile Include="..\..\Private\Buffer.cpp" />
     <ClCompile Include="..\..\Private\Camera.cpp" />
-    <ClCompile Include="..\..\Private\Device.cpp" />
-    <ClCompile Include="..\..\Private\DeviceContext.cpp" />
     <ClCompile Include="..\..\Private\Light.cpp" />
     <ClCompile Include="..\..\Private\Mesh.cpp" />
     <ClCompile Include="..\..\Private\Model.cpp" />
