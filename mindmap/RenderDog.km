@@ -571,7 +571,7 @@
                                         "y": -46
                                     },
                                     "priority": 1,
-                                    "note": "1. 创建一个IResource接口类型\n\n2. 在类的成员函数中delete this是否正确？"
+                                    "note": "1. 创建一个IResource接口类型\n\n2. 在类的成员函数中delete this是否正确？\n\n3. 什么情况下需要virtual析构函数？"
                                 },
                                 "children": []
                             },

@@ -5,9 +5,8 @@
 ///////////////////////////////////
 
 #include "Mesh.h"
-#include "Device.h"
-#include "DeviceContext.h"
 #include "Buffer.h"
+#include "RenderDog.h"
 
 #include <unordered_map>
 

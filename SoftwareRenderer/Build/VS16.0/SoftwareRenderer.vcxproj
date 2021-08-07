@@ -169,17 +169,13 @@ xcopy ..\..\Public\*.* ..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i /s 
     <ClInclude Include="..\..\Public\Buffer.h" />
     <ClInclude Include="..\..\Public\Camera.h" />
     <ClInclude Include="..\..\Public\DepthStencilView.h" />
-    <ClInclude Include="..\..\Public\Device.h" />
-    <ClInclude Include="..\..\Public\DeviceContext.h" />
     <ClInclude Include="..\..\Public\Light.h" />
     <ClInclude Include="..\..\Public\Mesh.h" />
     <ClInclude Include="..\..\Public\Model.h" />
     <ClInclude Include="..\..\Public\RenderDog.h" />
     <ClInclude Include="..\..\Public\RenderTargetView.h" />
-    <ClInclude Include="..\..\Public\Resource.h" />
     <ClInclude Include="..\..\Public\Shader.h" />
     <ClInclude Include="..\..\Public\ShaderResourceView.h" />
-    <ClInclude Include="..\..\Public\SwapChain.h" />
     <ClInclude Include="..\..\Public\Texture.h" />
     <ClInclude Include="..\..\Public\Vertex.h" />
     <ClInclude Include="..\..\Public\Viewport.h" />
@@ -197,7 +193,6 @@ xcopy ..\..\Public\*.* ..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i /s 
     <ClCompile Include="..\..\Private\RenderDog.cpp" />
     <ClCompile Include="..\..\Private\Shader.cpp" />
     <ClCompile Include="..\..\Private\ShaderResourceView.cpp" />
-    <ClCompile Include="..\..\Private\SwapChain.cpp" />
     <ClCompile Include="..\..\Private\Texture.cpp" />
     <ClCompile Include="..\..\Private\Viewport.cpp" />
   </ItemGroup>

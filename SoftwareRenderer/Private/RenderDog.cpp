@@ -9,41 +9,31 @@
 #include "Viewport.h"
 #include "Utility.h"
 
+#include <vector>
+
 namespace RenderDog
 {
 #pragma region Device
-	//////////////////////////////////////////////////////////////////////////////////////////////////////
-	///////////////////                      Device                 //////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////////////////////////////////
 	class Device : public IDevice
 	{
 	public:
 		Device() = default;
 		~Device() = default;
 
-		virtual void AddRef() { ++m_nRefCnt; }
-		virtual void Release();
+		Device(const Device&) = delete;
+		Device& operator=(const Device&) = delete;
 
-		virtual bool CreateTexture2D(const Texture2DDesc* pDesc, Texture2D** ppTexture);
-		virtual bool CreateRenderTargetView(Texture2D* pTexture, const RenderTargetDesc* pDesc, RenderTargetView** ppRenderTarget);
-		virtual bool CreateDepthStencilView(Texture2D* pTexture, DepthStencilView** ppDepthStencil);
-		virtual bool CreateVertexBuffer(const VertexBufferDesc& vbDesc, VertexBuffer** ppVertexBuffer);
-		virtual bool CreateIndexBuffer(const IndexBufferDesc& ibDesc, IndexBuffer** ppIndexBuffer);
-		virtual bool CreateVertexShader(VertexShader** ppVertexShader);
-		virtual bool CreatePixelShader(PixelShader** ppPixelShader);
+		virtual void AddRef() override {}
+		virtual void Release() override { delete this; }
 
-	private:
-		int m_nRefCnt = 0;
+		virtual bool CreateTexture2D(const Texture2DDesc* pDesc, Texture2D** ppTexture) override;
+		virtual bool CreateRenderTargetView(Texture2D* pTexture, const RenderTargetDesc* pDesc, RenderTargetView** ppRenderTarget) override;
+		virtual bool CreateDepthStencilView(Texture2D* pTexture, DepthStencilView** ppDepthStencil) override;
+		virtual bool CreateVertexBuffer(const VertexBufferDesc& vbDesc, VertexBuffer** ppVertexBuffer) override;
+		virtual bool CreateIndexBuffer(const IndexBufferDesc& ibDesc, IndexBuffer** ppIndexBuffer) override;
+		virtual bool CreateVertexShader(VertexShader** ppVertexShader) override;
+		virtual bool CreatePixelShader(PixelShader** ppPixelShader) override;
 	};
-
-	void Device::Release()
-	{
-		--m_nRefCnt;
-		if (m_nRefCnt == 0)
-		{
-			delete this;
-		}
-	}
 
 
 	bool Device::CreateTexture2D(const Texture2DDesc* pDesc, Texture2D** ppTexture)
@@ -173,44 +163,43 @@ namespace RenderDog
 
 		return true;
 	}
-#pragma endregion
+#pragma endregion Device
 
 #pragma region DeviceContext
-	//////////////////////////////////////////////////////////////////////////////////////////////////////
-	///////////////////                  DeviceContext                 ///////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////////////////////////////////
-
 	class DeviceContext : public IDeviceContext
 	{
 	public:
 		DeviceContext(uint32_t width, uint32_t height);
 		~DeviceContext();
 
-		virtual void AddRef() { ++m_nRefCnt; }
-		virtual void Release();
+		DeviceContext(const DeviceContext&) = delete;
+		DeviceContext& operator=(const DeviceContext&) = delete;
 
-		virtual void IASetVertexBuffer(VertexBuffer* pVB);
-		virtual void IASetIndexBuffer(IndexBuffer* pIB);
-		virtual void IASetPrimitiveTopology(PrimitiveTopology topology) { m_PriTopology = topology; }
+		virtual void AddRef() override {}
+		virtual void Release() override { delete this; }
 
-		virtual void VSSetShader(VertexShader* pVS) { m_pVS = pVS; }
-		virtual void VSSetTransMats(const Matrix4x4* matWorld, const Matrix4x4* matView, const Matrix4x4* matProj);
-		virtual void PSSetShader(PixelShader* pPS) { m_pPS = pPS; }
-		virtual void PSSetShaderResource(ShaderResourceView* const* pSRV) { m_pSRV = *pSRV; }
-		virtual void PSSetMainLight(DirectionalLight* pLight) { m_pMainLight = pLight; }
+		virtual void IASetVertexBuffer(VertexBuffer* pVB) override;
+		virtual void IASetIndexBuffer(IndexBuffer* pIB) override;
+		virtual void IASetPrimitiveTopology(PrimitiveTopology topology) override { m_PriTopology = topology; }
 
-		virtual void RSSetViewport(const Viewport* pVP);
+		virtual void VSSetShader(VertexShader* pVS) override { m_pVS = pVS; }
+		virtual void VSSetTransMats(const Matrix4x4* matWorld, const Matrix4x4* matView, const Matrix4x4* matProj) override;
+		virtual void PSSetShader(PixelShader* pPS) override { m_pPS = pPS; }
+		virtual void PSSetShaderResource(ShaderResourceView* const* pSRV) override { m_pSRV = *pSRV; }
+		virtual void PSSetMainLight(DirectionalLight* pLight) override { m_pMainLight = pLight; }
 
-		virtual void OMSetRenderTarget(RenderTargetView* pRenderTarget, DepthStencilView* pDepthStencil);
-		virtual void ClearRenderTarget(RenderTargetView* pRenderTarget, const Vector4& clearColor);
-		virtual void ClearDepthStencil(DepthStencilView* pDepthStencil, float fDepth);
-		virtual void Draw();
-		virtual void DrawIndex(uint32_t nIndexNum);
+		virtual void RSSetViewport(const Viewport* pVP) override;
+
+		virtual void OMSetRenderTarget(RenderTargetView* pRenderTarget, DepthStencilView* pDepthStencil) override;
+		virtual void ClearRenderTarget(RenderTargetView* pRenderTarget, const Vector4& clearColor) override;
+		virtual void ClearDepthStencil(DepthStencilView* pDepthStencil, float fDepth) override;
+		virtual void Draw() override;
+		virtual void DrawIndex(uint32_t nIndexNum) override;
 
 #if DEBUG_RASTERIZATION
-		virtual bool CheckDrawPixelTiwce();
+		virtual bool CheckDrawPixelTwice() override;
 #endif
-		virtual void DrawLineWithDDA(float fPos1X, float fPos1Y, float fPos2X, float fPos2Y, const Vector4& lineColor);
+		virtual void DrawLineWithDDA(float fPos1X, float fPos1Y, float fPos2X, float fPos2Y, const Vector4& lineColor) override;
 
 	private:
 		void DrawTriangleWithLine(const VSOutputVertex& v0, const VSOutputVertex& v1, const VSOutputVertex& v2);
@@ -219,7 +208,7 @@ namespace RenderDog
 		void SortTriangleVertsByYGrow(VSOutputVertex& v0, VSOutputVertex& v1, VSOutputVertex& v2);
 		void SortScanlineVertsByXGrow(VSOutputVertex& v0, VSOutputVertex& v1);
 
-		//平定三角形和平底三角形
+		//平顶三角形和平底三角形
 		void DrawTopTriangle(VSOutputVertex& v0, VSOutputVertex& v1, VSOutputVertex& v2);
 		void DrawBottomTriangle(VSOutputVertex& v0, VSOutputVertex& v1, VSOutputVertex& v2);
 
@@ -281,8 +270,6 @@ namespace RenderDog
 		PrimitiveTopology			m_PriTopology;
 
 		DirectionalLight* m_pMainLight;
-
-		int m_nRefCnt;
 	};
 
 	extern const float fEpsilon;
@@ -306,8 +293,7 @@ namespace RenderDog
 		m_pVSOutputs(nullptr),
 		m_pViewportMat(nullptr),
 		m_PriTopology(PrimitiveTopology::TRIANGLE_LIST),
-		m_pMainLight(nullptr),
-		m_nRefCnt(0)
+		m_pMainLight(nullptr)
 	{
 #if DEBUG_RASTERIZATION
 		uint32_t nBufferSize = m_nWidth * m_nHeight;
@@ -345,15 +331,6 @@ namespace RenderDog
 			m_pDebugBuffer = nullptr;
 		}
 #endif
-	}
-
-	void DeviceContext::Release()
-	{
-		--m_nRefCnt;
-		if (m_nRefCnt == 0)
-		{
-			delete this;
-		}
 	}
 
 	void DeviceContext::IASetVertexBuffer(VertexBuffer* pVB)
@@ -480,7 +457,7 @@ namespace RenderDog
 	}
 
 #if DEBUG_RASTERIZATION
-	bool DeviceContext::CheckDrawPixelTiwce()
+	bool DeviceContext::CheckDrawPixelTwice()
 	{
 		for (uint32_t i = 0; i < m_nHeight; ++i)
 		{
@@ -1260,28 +1237,145 @@ namespace RenderDog
 		}
 	}
 
-#pragma endregion
+#pragma endregion DeviceContext
 
-	bool CreateDeviceAndSwapChain(IDevice** pDevice, IDeviceContext** pDeviceContext, SwapChain** pSwapChain, const SwapChainDesc* pSwapChainDesc)
+#pragma region SwapChain
+	class SwapChain : public ISwapChain
+	{
+	public:
+		SwapChain() :
+			m_pBackBuffer(nullptr),
+			m_nWidth(0),
+			m_nHeight(0),
+			m_hWnd(nullptr),
+			m_hWndDC(nullptr),
+			m_hBitMap(nullptr),
+			m_hOldBitMap(nullptr)
+		{}
+
+		~SwapChain() = default;
+
+		SwapChain(const SwapChainDesc* pDesc);
+		SwapChain(const SwapChain&) = delete;
+		SwapChain& operator=(const SwapChain&) = delete;
+
+		virtual bool GetBuffer(Texture2D** ppSurface) override;
+		virtual void AddRef() override {}
+		virtual void Release() override;
+		virtual void Present() override;
+
+	private:
+		uint32_t*		m_pBackBuffer;
+		uint32_t		m_nWidth;
+		uint32_t		m_nHeight;
+
+		HWND			m_hWnd;
+		HDC				m_hWndDC;
+		HBITMAP			m_hBitMap;
+		HBITMAP			m_hOldBitMap;
+	};
+
+	SwapChain::SwapChain(const SwapChainDesc* pDesc) :
+		m_hWnd(pDesc->hOutputWindow),
+		m_nWidth(pDesc->nWidth),
+		m_nHeight(pDesc->nHeight)
+	{
+		HDC hDC = GetDC(m_hWnd);
+		m_hWndDC = CreateCompatibleDC(hDC);
+		ReleaseDC(m_hWnd, hDC);
+
+		void* pTempBitMapBuffer;
+		BITMAPINFO BitMapInfo =
+		{
+			{ sizeof(BITMAPINFOHEADER), (int)pDesc->nWidth, -(int)pDesc->nHeight, 1, 32, BI_RGB, pDesc->nWidth * pDesc->nHeight * 4, 0, 0, 0, 0 }
+		};
+		m_hBitMap = CreateDIBSection(m_hWndDC, &BitMapInfo, DIB_RGB_COLORS, &pTempBitMapBuffer, 0, 0);
+		if (m_hBitMap)
+		{
+			m_hOldBitMap = (HBITMAP)SelectObject(m_hWndDC, m_hBitMap);
+		}
+		else
+		{
+			m_hOldBitMap = nullptr;
+		}
+
+		m_pBackBuffer = (uint32_t*)pTempBitMapBuffer;
+
+		memset(m_pBackBuffer, 0, (size_t)m_nWidth * (size_t)m_nHeight * 4);
+	}
+
+	void SwapChain::Release()
+	{
+		if (m_hWndDC)
+		{
+			if (m_hOldBitMap)
+			{
+				SelectObject(m_hWndDC, m_hOldBitMap);
+				m_hOldBitMap = nullptr;
+			}
+			DeleteDC(m_hWndDC);
+			m_hWndDC = nullptr;
+		}
+
+		if (m_hBitMap)
+		{
+			DeleteObject(m_hBitMap);
+			m_hBitMap = nullptr;
+		}
+
+		if (m_hWnd)
+		{
+			CloseWindow(m_hWnd);
+			m_hWnd = nullptr;
+		}
+
+		m_pBackBuffer = nullptr;
+
+		delete this;
+	}
+
+	void SwapChain::Present()
+	{
+		HDC hDC = GetDC(m_hWnd);
+		BitBlt(hDC, 0, 0, m_nWidth, m_nHeight, m_hWndDC, 0, 0, SRCCOPY);
+		ReleaseDC(m_hWnd, hDC);
+	}
+
+	bool SwapChain::GetBuffer(Texture2D** ppSurface)
+	{
+		Texture2D* pTex = new Texture2D();
+		*ppSurface = pTex;
+
+		pTex->GetDataUint32() = m_pBackBuffer;
+		pTex->SetWidth(m_nWidth);
+		pTex->SetHeight(m_nHeight);
+
+		return true;
+	}
+#pragma endregion SwapChain
+
+
+	bool CreateDeviceAndSwapChain(IDevice** pDevice, IDeviceContext** pDeviceContext, ISwapChain** pSwapChain, const SwapChainDesc* pSwapChainDesc)
 	{
 		*pDevice = new Device;
 		if (!pDevice)
 		{
 			return false;
 		}
-		(*pDevice)->AddRef();
 
 		*pDeviceContext = new DeviceContext(pSwapChainDesc->nWidth, pSwapChainDesc->nHeight);
 		if (!pDeviceContext)
 		{
 			return false;
 		}
+		(*pDeviceContext)->AddRef();
 
 		*pSwapChain = new SwapChain(pSwapChainDesc);
 		if (!pSwapChain)
 		{
 			return false;
 		}
+		(*pSwapChain)->AddRef();
 
 		return true;
 	}

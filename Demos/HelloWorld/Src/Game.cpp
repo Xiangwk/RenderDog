@@ -39,7 +39,7 @@ uint32_t						g_nWindowHeight = 768;
 								
 RenderDog::IDevice*				g_pDevice = nullptr;
 RenderDog::IDeviceContext*		g_pDeviceContext = nullptr;
-RenderDog::SwapChain*			g_pSwapChain = nullptr;
+RenderDog::ISwapChain*			g_pSwapChain = nullptr;
 RenderDog::RenderTargetView*	g_pRenderTargetView = nullptr;
 RenderDog::VertexBuffer*		g_pVertexBuffer = nullptr;			//用于自定义的顶点数组
 RenderDog::IndexBuffer*			g_pIndexBuffer = nullptr;			//用于自定义的索引数组
@@ -300,7 +300,6 @@ void CleanupDevice()
 	if (g_pSwapChain)
 	{
 		g_pSwapChain->Release();
-		delete g_pSwapChain;
 		g_pSwapChain = nullptr;
 	}
 	
