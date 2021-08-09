@@ -23,6 +23,12 @@ namespace RenderDog
 	struct IndexBufferDesc;
 	struct Viewport;
 
+	enum RD_FORMAT
+	{
+		RD_FORMAT_UNKNOWN			= 0,
+		RD_FORMAT_R8G8B8A8_UNORM	= 1
+	};
+
 	class IUnknown
 	{
 	public:
@@ -77,18 +83,19 @@ namespace RenderDog
 
 	struct SwapChainDesc
 	{
-		uint32_t	nWidth;
-		uint32_t	nHeight;
-		HWND		hOutputWindow;
+		uint32_t	Width;
+		uint32_t	Height;
+		RD_FORMAT	Format;
+		HWND		OutputWindow;
 	};
 
 	class ISwapChain : public IUnknown
 	{
 	public:
 		virtual bool GetBuffer(Texture2D** ppSurface) = 0;
-
 		virtual void Present() = 0;
 	};
+
 
 	bool CreateDeviceAndSwapChain(IDevice** pDevice, IDeviceContext** pDeviceContext, ISwapChain** ppSwapChain, const SwapChainDesc* pSwapChainDesc);
 }

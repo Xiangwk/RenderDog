@@ -33,9 +33,9 @@ using RenderDog::Vector4;
 using RenderDog::Vertex;
 
 HINSTANCE						g_hInst = nullptr;
-HWND							g_hWnd = nullptr;
-uint32_t						g_nWindowWidth = 1024;
-uint32_t						g_nWindowHeight = 768;
+HWND							g_WndHandle = nullptr;
+uint32_t						g_WindowWidth = 1024;
+uint32_t						g_WindowHeight = 768;
 								
 RenderDog::IDevice*				g_pDevice = nullptr;
 RenderDog::IDeviceContext*		g_pDeviceContext = nullptr;
@@ -98,18 +98,18 @@ HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow)
 
 	// Create window
 	g_hInst = hInstance;
-	RECT rc = { 0, 0, (LONG)g_nWindowWidth, (LONG)g_nWindowHeight };
+	RECT rc = { 0, 0, (LONG)g_WindowWidth, (LONG)g_WindowHeight };
 	AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
-	g_hWnd = CreateWindow(L"GameWindowClass", L"Hello World",
+	g_WndHandle = CreateWindow(L"GameWindowClass", L"Hello World",
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, hInstance,
 		NULL);
-	if (!g_hWnd)
+	if (!g_WndHandle)
 	{
 		return E_FAIL;
 	}
 
-	ShowWindow(g_hWnd, nCmdShow);
+	ShowWindow(g_WndHandle, nCmdShow);
 
 	return S_OK;
 }
@@ -117,9 +117,11 @@ HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow)
 bool InitDevice()
 {
 	RenderDog::SwapChainDesc swapChainDesc;
-	swapChainDesc.nWidth = g_nWindowWidth;
-	swapChainDesc.nHeight = g_nWindowHeight;
-	swapChainDesc.hOutputWindow = g_hWnd;
+	ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
+	swapChainDesc.Width = g_WindowWidth;
+	swapChainDesc.Height = g_WindowHeight;
+	swapChainDesc.Format = RenderDog::RD_FORMAT_R8G8B8A8_UNORM;
+	swapChainDesc.OutputWindow = g_WndHandle;
 
 	if (!RenderDog::CreateDeviceAndSwapChain(&g_pDevice, &g_pDeviceContext, &g_pSwapChain, &swapChainDesc))
 	{
@@ -140,8 +142,8 @@ bool InitDevice()
 	pBackBuffer = nullptr;
 
 	RenderDog::Texture2DDesc depthDesc;
-	depthDesc.width = g_nWindowWidth;
-	depthDesc.height = g_nWindowWidth;
+	depthDesc.width = g_WindowWidth;
+	depthDesc.height = g_WindowWidth;
 	depthDesc.format = RenderDog::TextureFormat::TF_FLOAT32;
 	if (!g_pDevice->CreateTexture2D(&depthDesc, &g_pDepthTexture))
 	{
@@ -154,8 +156,8 @@ bool InitDevice()
 	}
 
 	RenderDog::Viewport vp;
-	vp.fWidth = (float)g_nWindowWidth;
-	vp.fHeight = (float)g_nWindowHeight;
+	vp.fWidth = (float)g_WindowWidth;
+	vp.fHeight = (float)g_WindowHeight;
 	vp.fMinDepth = 0.0f;
 	vp.fMaxDepth = 1.0f;
 	vp.fTopLeftX = 0;
@@ -273,7 +275,7 @@ bool InitDevice()
 	camDesc.vPosition = Vector3(0, 25, -100);
 	camDesc.vDirection = Vector3(0, 0, 1);
 	camDesc.fFov = 45.0f;
-	camDesc.fAspect = (float)g_nWindowWidth / g_nWindowHeight;
+	camDesc.fAspect = (float)g_WindowWidth / g_WindowHeight;
 	camDesc.fNear = 0.1f;
 	camDesc.fFar = 1000.0f;
 
@@ -559,7 +561,7 @@ void OnMouseDown(WPARAM btnState, int x, int y)
 	g_LastMousePos.x = (float)x;
 	g_LastMousePos.y = (float)y;
 
-	SetCapture(g_hWnd);
+	SetCapture(g_WndHandle);
 }
 
 void OnMouseUp(WPARAM btnState, int x, int y)

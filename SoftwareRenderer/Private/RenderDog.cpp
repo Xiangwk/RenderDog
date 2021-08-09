@@ -1276,18 +1276,38 @@ namespace RenderDog
 	};
 
 	SwapChain::SwapChain(const SwapChainDesc* pDesc) :
-		m_hWnd(pDesc->hOutputWindow),
-		m_nWidth(pDesc->nWidth),
-		m_nHeight(pDesc->nHeight)
+		m_hWnd(pDesc->OutputWindow),
+		m_nWidth(pDesc->Width),
+		m_nHeight(pDesc->Height)
 	{
 		HDC hDC = GetDC(m_hWnd);
 		m_hWndDC = CreateCompatibleDC(hDC);
 		ReleaseDC(m_hWnd, hDC);
 
+		uint16_t bitCnt = 0;
+		uint32_t imageSize = 0;
+		switch (pDesc->Format)
+		{
+		case RD_FORMAT_R8G8B8A8_UNORM:
+			bitCnt = 32;
+			imageSize = pDesc->Width * pDesc->Height * 4;
+
+			break;
+
+		case RD_FORMAT_UNKNOWN:
+			bitCnt = 0;
+			imageSize = 0;
+
+			break;
+
+		default:
+				break;
+		}
+
 		void* pTempBitMapBuffer;
 		BITMAPINFO BitMapInfo =
 		{
-			{ sizeof(BITMAPINFOHEADER), (int)pDesc->nWidth, -(int)pDesc->nHeight, 1, 32, BI_RGB, pDesc->nWidth * pDesc->nHeight * 4, 0, 0, 0, 0 }
+			{ sizeof(BITMAPINFOHEADER), (int)pDesc->Width, -(int)pDesc->Height, 1, bitCnt, BI_RGB, imageSize, 0, 0, 0, 0 }
 		};
 		m_hBitMap = CreateDIBSection(m_hWndDC, &BitMapInfo, DIB_RGB_COLORS, &pTempBitMapBuffer, 0, 0);
 		if (m_hBitMap)
@@ -1300,7 +1320,6 @@ namespace RenderDog
 		}
 
 		m_pBackBuffer = (uint32_t*)pTempBitMapBuffer;
-
 		memset(m_pBackBuffer, 0, (size_t)m_nWidth * (size_t)m_nHeight * 4);
 	}
 
@@ -1362,8 +1381,9 @@ namespace RenderDog
 		{
 			return false;
 		}
+		(*pDevice)->AddRef();
 
-		*pDeviceContext = new DeviceContext(pSwapChainDesc->nWidth, pSwapChainDesc->nHeight);
+		*pDeviceContext = new DeviceContext(pSwapChainDesc->Width, pSwapChainDesc->Height);
 		if (!pDeviceContext)
 		{
 			return false;
