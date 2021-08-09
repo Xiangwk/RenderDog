@@ -1,0 +1,638 @@
+{
+    "root": {
+        "data": {
+            "id": "cb5ezzwiw6w0",
+            "created": 1620228305169,
+            "text": "RenderDog"
+        },
+        "children": [
+            {
+                "data": {
+                    "id": "cb5f08vw6ds0",
+                    "created": 1620228324722,
+                    "text": "SoftwareRenderer",
+                    "layout_mind_offset": {
+                        "x": -11.166666501098234,
+                        "y": -423.33332624700364
+                    },
+                    "layout": null
+                },
+                "children": [
+                    {
+                        "data": {
+                            "id": "cb5g5a09ojc0",
+                            "created": 1620231540094,
+                            "text": "Math",
+                            "layout_right_offset": {
+                                "x": 533.6666654083465,
+                                "y": -584.3333234654536
+                            },
+                            "layout": null,
+                            "note": "1. 功能随着需要增加即可\n\n2. 后面整理引擎架构的时候，将此功能拆分到Platform中；"
+                        },
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "cb5g7r89omo0",
+                                    "created": 1620231734312,
+                                    "text": "Vector",
+                                    "layout_right_offset": {
+                                        "x": 29.166665507687412,
+                                        "y": -134.9999946355822
+                                    },
+                                    "progress": 6
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "cb5g7ugtzf40",
+                                    "created": 1620231741360,
+                                    "text": "Matrix",
+                                    "layout_right_offset": {
+                                        "x": 28.333332207467834,
+                                        "y": -94.99999622503924
+                                    },
+                                    "progress": 6
+                                },
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cbekiju16ao0",
+                                            "created": 1621157904269,
+                                            "text": "矩阵乘法",
+                                            "priority": 4,
+                                            "note": "改用更为清晰的实现方式（使用向量相乘）"
+                                        },
+                                        "children": []
+                                    }
+                                ]
+                            },
+                            {
+                                "data": {
+                                    "id": "cb5g82m7uzc0",
+                                    "created": 1620231759100,
+                                    "text": "Quaternion",
+                                    "layout_right_offset": {
+                                        "x": 12.499999503294703,
+                                        "y": -54.99999781449651
+                                    },
+                                    "progress": 1
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "cb5g7yqo01c0",
+                                    "created": 1620231750661,
+                                    "text": "Utility",
+                                    "layout_right_offset": {
+                                        "x": 36.83333131339816,
+                                        "y": -5.166665706369713
+                                    },
+                                    "progress": null,
+                                    "note": "随用随加；"
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "ccbyb85je8w0",
+                                    "created": 1624548304403,
+                                    "text": "Coordinate",
+                                    "layout_right_offset": {
+                                        "x": 36,
+                                        "y": 19
+                                    },
+                                    "note": "规范渲染器的各个坐标系，并验证；",
+                                    "priority": null,
+                                    "progress": 9
+                                },
+                                "children": []
+                            }
+                        ]
+                    },
+                    {
+                        "data": {
+                            "id": "cb5g6dhl3jk0",
+                            "created": 1620231626036,
+                            "text": "Device",
+                            "layout_right_offset": {
+                                "x": 460.6666656070287,
+                                "y": -322.83332813448385
+                            },
+                            "layout": null,
+                            "note": "参考DX11中的Device接口\n\n1. 将所有资源修改为从Resource中继承出来，Resouce中使用引用计数来管理内存的释放，Device使用工厂模式设计；\n"
+                        },
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "cb5g9nispx40",
+                                    "created": 1620231882969,
+                                    "text": "Device",
+                                    "layout_right_offset": {
+                                        "x": 27.833332108127024,
+                                        "y": -72.66666242811425
+                                    },
+                                    "progress": 5,
+                                    "note": "目前Device管理资源的释放有些问题，没有按照DX11那样，使用引用计数；",
+                                    "priority": 3
+                                },
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cb5gjrp4w9k0",
+                                            "created": 1620232675701,
+                                            "text": "RenderTargetView",
+                                            "layout_right_offset": {
+                                                "x": 85,
+                                                "y": -84
+                                            },
+                                            "progress": 5
+                                        },
+                                        "children": []
+                                    },
+                                    {
+                                        "data": {
+                                            "id": "cb5gkcshug00",
+                                            "created": 1620232721617,
+                                            "text": "DepthStencilView",
+                                            "layout_right_offset": {
+                                                "x": 78,
+                                                "y": -52
+                                            },
+                                            "priority": null,
+                                            "progress": 8,
+                                            "note": "边缘处颜色会漏，需要检查一下"
+                                        },
+                                        "children": []
+                                    },
+                                    {
+                                        "data": {
+                                            "id": "cb7ym9cbruw0",
+                                            "created": 1620486770729,
+                                            "text": "Texture2D",
+                                            "layout_right_offset": {
+                                                "x": 78,
+                                                "y": -283
+                                            },
+                                            "progress": 5,
+                                            "note": "1. 暂时使用Release来释放使用CreateTexture2D分配的内存，而不是使用析构函数，后面应将这些资源统一改为使用引用计数管理内存的释放。\n\n2. 增加从文件中加载纹理数据的功能。",
+                                            "priority": 3
+                                        },
+                                        "children": []
+                                    },
+                                    {
+                                        "data": {
+                                            "id": "cb9p75x3lrs0",
+                                            "created": 1620663317740,
+                                            "text": "ShaderResourceView",
+                                            "layout_right_offset": {
+                                                "x": 57,
+                                                "y": -80
+                                            },
+                                            "priority": 3,
+                                            "progress": 8,
+                                            "note": "1. mipmap"
+                                        },
+                                        "children": [
+                                            {
+                                                "data": {
+                                                    "id": "cbdosej531c0",
+                                                    "created": 1621068400851,
+                                                    "text": "从文件中加载贴图",
+                                                    "priority": null,
+                                                    "progress": 9,
+                                                    "note": "1. 使用FreeImage库加载贴图资源；目前还有内存泄漏，经过测试发现，内存泄漏应该是发生在FreeImage库中，其官方的例子中亦存在内存泄漏。。。\n\n2. 使用stbImage，或者手写一个TGA加载函数（可以参考DirectXTex)。\n\n3. 若使用DirectXTex的话，需要调用DeCompress函数，可以参考texconv中的保存PPM的程序；\n\n目前使用stbImage，单个头文件即可解决问题；",
+                                                    "layout_right_offset": {
+                                                        "x": 10,
+                                                        "y": 75
+                                                    }
+                                                },
+                                                "children": []
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "data": {
+                                    "id": "cb5g9r4siaw0",
+                                    "created": 1620231890830,
+                                    "text": "DeviceContext",
+                                    "layout_right_offset": {
+                                        "x": 29.6666666004395,
+                                        "y": 20.666668785942875
+                                    },
+                                    "progress": 5,
+                                    "expandState": "expand"
+                                },
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cb5gcv8bwyo0",
+                                            "created": 1620232134843,
+                                            "text": "Rasterization",
+                                            "layout_right_offset": {
+                                                "x": 84,
+                                                "y": 173
+                                            },
+                                            "progress": 8,
+                                            "note": "1. 检查像素重绘时，发现按照3D游戏编程大师技巧书上的方法时，会出现像素重绘的情况，怀疑问题出在每次扫描线换行时，新的xStart和xEnd由上一行的xStart和xEnd加上DeltaXLeft和DeltaXRight得到，由于浮点数存在一定的误差，导致在累加过程中误差逐渐累积，最终使得两个相邻三角形的共边不再是一条直线，而是两条斜率略有差异的直线，从而导致有些像素点产生重绘，修改为每次根据扫描线的y值以及三角形斜边的斜率以及斜边上的点坐标来计算xStart和xEnd的话，会大大减少重绘情况的发生，但是偶尔还是有，暂时想不清楚原因，只能搁置。如果后面有思路的话再回来测试；\n\n2. 漏绘如何检查？"
+                                        },
+                                        "children": [
+                                            {
+                                                "data": {
+                                                    "id": "cb5gj2vgrvs0",
+                                                    "created": 1620232621665,
+                                                    "text": "检查重绘和漏绘",
+                                                    "layout_right_offset": {
+                                                        "x": 116,
+                                                        "y": -28
+                                                    },
+                                                    "progress": 8,
+                                                    "note": "1. 光栅化时使用Delta增量累加的形式会有像素重绘；\n\n2. 全部改成插值后仍然有个别像素重绘，但是数量大大减少，怀疑是分割上下三角形时，新顶点的位置计算存在一定的误差，导致相邻三角形的共边实际上并不共线；\n\n"
+                                                },
+                                                "children": []
+                                            },
+                                            {
+                                                "data": {
+                                                    "id": "cb5gjd1dkrc0",
+                                                    "created": 1620232643790,
+                                                    "text": "顶点属性插值",
+                                                    "layout_right_offset": {
+                                                        "x": 119,
+                                                        "y": 30
+                                                    },
+                                                    "priority": null,
+                                                    "progress": 9
+                                                },
+                                                "children": []
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "data": {
+                                            "id": "cbdybisk9iw0",
+                                            "created": 1621095289036,
+                                            "text": "三角形的裁剪",
+                                            "layout_right_offset": {
+                                                "x": 68,
+                                                "y": -49
+                                            },
+                                            "priority": 2,
+                                            "progress": 8,
+                                            "note": "1. IndexBuffer对VertexBuffer的解析是在运行VS的时候做，还是在进行光栅化的时候做？\n如果在VS时做的话，裁剪操作则无需修改IndexBuffer；但是会有相同顶点多次运行VS；\n是否可以在裁剪的时候做？\n在裁剪时做，可以无需修改IndexBuffer，还可以保持三角形的邻接关系，也无需对相同的顶点运行多次VS；\n应该增加图元装配函数，用来使用IndexBuffer处理各个顶点；图元装配阶段在VS之后，Clip之前；\n\n2. 裁剪顶点时，对于新顶点的计算，运行插值函数时，对于顶点属性，是否应该除w后再插值？\n从View空间经过投影矩阵变换到Clip空间时，所有属性均为线性变换；\n\n3. 如何避免透视除法时的除0问题？\n注意：近平面不能设置为0；\n\n4. 需要优化一下保存裁剪后剩余顶点的数组，尽量不要每帧都有个清空操作；"
+                                        },
+                                        "children": []
+                                    },
+                                    {
+                                        "data": {
+                                            "id": "cbjsnt3auzk0",
+                                            "created": 1621688684904,
+                                            "text": "Viewport",
+                                            "layout_right_offset": {
+                                                "x": 111,
+                                                "y": -258
+                                            },
+                                            "note": "1. 生成视口变换矩阵时，应将宽和高各减1，以避免裁剪后在裁剪框边缘的点超出Framebuffer的范围；"
+                                        },
+                                        "children": []
+                                    }
+                                ]
+                            },
+                            {
+                                "data": {
+                                    "id": "cb5g9uupeb40",
+                                    "created": 1620231898927,
+                                    "text": "SwapChain",
+                                    "layout_right_offset": {
+                                        "x": 48.33333260483198,
+                                        "y": 126.49999890724825
+                                    },
+                                    "progress": 5,
+                                    "note": "增加双缓存支持",
+                                    "priority": 4
+                                },
+                                "children": []
+                            }
+                        ]
+                    },
+                    {
+                        "data": {
+                            "id": "cb5g6jqqao80",
+                            "created": 1620231639649,
+                            "text": "Buffer",
+                            "layout_right_offset": {
+                                "x": 419.99999960263574,
+                                "y": -41.166665507687526
+                            },
+                            "layout": null,
+                            "note": "增加ContantBuffer"
+                        },
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "cb5gamyj04w0",
+                                    "created": 1620231960108,
+                                    "text": "VertexBuffer",
+                                    "layout_right_offset": {
+                                        "x": 36,
+                                        "y": -72
+                                    },
+                                    "progress": 5
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "cb5gaq9l3xs0",
+                                    "created": 1620231967307,
+                                    "text": "IndexBuffer",
+                                    "layout_right_offset": {
+                                        "x": 38,
+                                        "y": -37
+                                    },
+                                    "progress": 5
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "cb5gb2cbptk0",
+                                    "created": 1620231993594,
+                                    "text": "ConstantBuffer",
+                                    "layout_right_offset": {
+                                        "x": 16,
+                                        "y": 0
+                                    },
+                                    "priority": 2,
+                                    "progress": 1
+                                },
+                                "children": []
+                            }
+                        ]
+                    },
+                    {
+                        "data": {
+                            "id": "cb5g712faso0",
+                            "created": 1620231677362,
+                            "text": "Shader",
+                            "layout_right_offset": {
+                                "x": 416.16666610373386,
+                                "y": 71.1666663024161
+                            },
+                            "note": "暂时写成函数的形式，有机会的话尝试改变形式"
+                        },
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "cb5gbvnw8pc0",
+                                    "created": 1620232057420,
+                                    "text": "VertexShader",
+                                    "layout_right_offset": {
+                                        "x": 49,
+                                        "y": -65
+                                    },
+                                    "progress": 4
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "cb5gbytxenc0",
+                                    "created": 1620232064315,
+                                    "text": "PixelShader",
+                                    "layout_right_offset": {
+                                        "x": 52,
+                                        "y": -4
+                                    },
+                                    "progress": 4
+                                },
+                                "children": []
+                            }
+                        ]
+                    },
+                    {
+                        "data": {
+                            "id": "cb5g7b4d9jc0",
+                            "created": 1620231699247,
+                            "text": "Texture",
+                            "layout_right_offset": {
+                                "x": 407.8333329028553,
+                                "y": 147.16666391823043
+                            }
+                        },
+                        "children": []
+                    },
+                    {
+                        "data": {
+                            "id": "cbekexaf8f40",
+                            "created": 1621157620101,
+                            "text": "Camera",
+                            "layout_right_offset": {
+                                "x": 356,
+                                "y": -636
+                            },
+                            "priority": 4,
+                            "progress": 5,
+                            "note": "1. FPS相机完成\n\n2. 后面整理引擎架构的时候，将此功能拆分到Platform中；"
+                        },
+                        "children": []
+                    },
+                    {
+                        "data": {
+                            "id": "cbkpyp393400",
+                            "created": 1621782634826,
+                            "text": "ModelImporter",
+                            "layout_right_offset": {
+                                "x": 389,
+                                "y": 168
+                            },
+                            "priority": 1,
+                            "progress": 8,
+                            "note": "1. 先使用第三方库加载模型，后面有空改成专门加载FBX的库；\n\n2. 后面整理引擎架构的时候，将此功能拆分到Platform中；"
+                        },
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "cbvip0qi1iw0",
+                                    "created": 1622879288289,
+                                    "text": "支持Normal Map",
+                                    "layout_right_offset": {
+                                        "x": 11,
+                                        "y": -38
+                                    },
+                                    "note": "1. 支持Normal Map的话需要为Vertex添加新的属性Tangent和Normal，并且修改shader，添加光照计算，添加将切线空间的法线转换到世界空间的计算；",
+                                    "progress": 9
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "cbz6cg7gvi80",
+                                    "created": 1623250689740,
+                                    "text": "支持拆分手相性不同的顶点",
+                                    "progress": 9
+                                },
+                                "children": []
+                            }
+                        ]
+                    },
+                    {
+                        "data": {
+                            "id": "cbz6degcu3k0",
+                            "created": 1623250764288,
+                            "text": "背面剔除",
+                            "layout_right_offset": {
+                                "x": 404,
+                                "y": 253
+                            },
+                            "priority": 2,
+                            "note": "1. 计算三角形有向面积，可以判断三角形的三个点的环绕方向；该方法的计算量比使用相机朝向和面法线计算点积要快，因为大部分情况下，模型加载后，只保存了顶点法线，而面法线要通过三角形的两条边叉积进行计算，运算量已经超过了有向面积的计算；\n\n2. 需要优化一下保存剔除后剩余顶点的数组，尽量不要每帧都有个清空操作；",
+                            "progress": 8
+                        },
+                        "children": []
+                    },
+                    {
+                        "data": {
+                            "id": "cc4axcshjuo0",
+                            "created": 1623771412175,
+                            "text": "Light",
+                            "layout_right_offset": {
+                                "x": 419.9999937415122,
+                                "y": 363.2499952130022
+                            },
+                            "priority": 1,
+                            "note": "1. 先增加一个可以用鼠标控制的方向光；\n\n2. 该功能未来要迁移到Platform中；",
+                            "progress": 1
+                        },
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "cclavjriqs00",
+                                    "created": 1625497789889,
+                                    "text": "显示光源方向",
+                                    "layout_right_offset": {
+                                        "x": 116,
+                                        "y": -78
+                                    }
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "cclavr5mamw0",
+                                    "created": 1625497805979,
+                                    "text": "控制光源方向变化",
+                                    "layout_right_offset": {
+                                        "x": 102,
+                                        "y": 42
+                                    }
+                                },
+                                "children": []
+                            }
+                        ]
+                    },
+                    {
+                        "data": {
+                            "id": "cc9dyexuxhk0",
+                            "created": 1624287758330,
+                            "text": "Timer",
+                            "layout_right_offset": {
+                                "x": 426,
+                                "y": -827
+                            },
+                            "note": "1. Timer用于程序的时间控制，并且可以计算帧率等信息；",
+                            "priority": 2
+                        },
+                        "children": []
+                    },
+                    {
+                        "data": {
+                            "id": "cclaw8mr55s0",
+                            "created": 1625497844020,
+                            "text": "重构",
+                            "layout_right_offset": {
+                                "x": 427,
+                                "y": 436
+                            },
+                            "priority": 1,
+                            "note": "1. 使用引用计数来控制资源的释放；\n\n2. 将与渲染器无关的类型放到一个新的sln中；"
+                        },
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "cd94mhzw00o0",
+                                    "created": 1627917593064,
+                                    "text": "使用引用计数管理内存的分配",
+                                    "layout_right_offset": {
+                                        "x": 62,
+                                        "y": -46
+                                    },
+                                    "priority": 1,
+                                    "note": "1. 创建一个IResource接口类型\n\n2. 在类的成员函数中delete this是否正确？\n\n3. 什么情况下需要virtual析构函数？"
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "cd96b03pcv40",
+                                    "created": 1627922334327,
+                                    "text": "抽出一个Platform工程",
+                                    "layout_right_offset": {
+                                        "x": 94,
+                                        "y": 47
+                                    }
+                                },
+                                "children": []
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "data": {
+                    "id": "cb5f0f7lkdc0",
+                    "created": 1620228338491,
+                    "text": "DX11Renderer",
+                    "layout_mind_offset": {
+                        "x": 11,
+                        "y": -73
+                    },
+                    "layout": null
+                },
+                "children": []
+            },
+            {
+                "data": {
+                    "id": "cb5f0khksf40",
+                    "created": 1620228349978,
+                    "text": "DX12Renderer",
+                    "layout_mind_offset": {
+                        "x": 539,
+                        "y": 404
+                    },
+                    "layout": null
+                },
+                "children": []
+            },
+            {
+                "data": {
+                    "id": "cb5f0tkl3og0",
+                    "created": 1620228369751,
+                    "text": "VulkanRenderer",
+                    "layout_mind_offset": {
+                        "x": 529,
+                        "y": 433
+                    },
+                    "layout": null
+                },
+                "children": []
+            }
+        ]
+    },
+    "template": "default",
+    "theme": "fresh-blue",
+    "version": "1.4.43"
+}
