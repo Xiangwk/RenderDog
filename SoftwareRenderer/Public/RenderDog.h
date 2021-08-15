@@ -23,10 +23,10 @@ namespace RenderDog
 	struct IndexBufferDesc;
 	struct Viewport;
 
-	enum RD_FORMAT
+	enum class RD_FORMAT
 	{
-		RD_FORMAT_UNKNOWN			= 0,
-		RD_FORMAT_R8G8B8A8_UNORM	= 1
+		UNKNOWN			= 0,
+		R8G8B8A8_UNORM	= 1
 	};
 
 	class IUnknown

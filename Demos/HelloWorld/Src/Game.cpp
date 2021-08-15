@@ -120,7 +120,7 @@ bool InitDevice()
 	ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
 	swapChainDesc.Width = g_WindowWidth;
 	swapChainDesc.Height = g_WindowHeight;
-	swapChainDesc.Format = RenderDog::RD_FORMAT_R8G8B8A8_UNORM;
+	swapChainDesc.Format = RenderDog::RD_FORMAT::R8G8B8A8_UNORM;
 	swapChainDesc.OutputWindow = g_WndHandle;
 
 	if (!RenderDog::CreateDeviceAndSwapChain(&g_pDevice, &g_pDeviceContext, &g_pSwapChain, &swapChainDesc))

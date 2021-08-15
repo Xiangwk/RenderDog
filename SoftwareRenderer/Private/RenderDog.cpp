@@ -1288,23 +1288,27 @@ namespace RenderDog
 		uint32_t imageSize = 0;
 		switch (pDesc->Format)
 		{
-		case RD_FORMAT_R8G8B8A8_UNORM:
+		case RD_FORMAT::R8G8B8A8_UNORM:
+		{
 			bitCnt = 32;
 			imageSize = pDesc->Width * pDesc->Height * 4;
 
 			break;
-
-		case RD_FORMAT_UNKNOWN:
+		}
+		case RD_FORMAT::UNKNOWN:
+		{
 			bitCnt = 0;
 			imageSize = 0;
 
 			break;
-
+		}
 		default:
-				break;
+		{
+			break;
+		}
 		}
 
-		void* pTempBitMapBuffer;
+		void* pTempBitMapBuffer = nullptr;
 		BITMAPINFO BitMapInfo =
 		{
 			{ sizeof(BITMAPINFOHEADER), (int)pDesc->Width, -(int)pDesc->Height, 1, bitCnt, BI_RGB, imageSize, 0, 0, 0, 0 }
