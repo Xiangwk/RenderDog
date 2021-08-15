@@ -9,7 +9,7 @@ namespace RenderDog
 		m_nHeight(0)
 	{}
 
-	Texture2D::Texture2D(uint32_t width, uint32_t height, TextureFormat format) :
+	Texture2D::Texture2D(uint32_t width, uint32_t height, RD_FORMAT format) :
 		m_pDataUint32(nullptr),
 		m_pDataFloat32(nullptr),
 		m_nWidth(width),
@@ -17,7 +17,7 @@ namespace RenderDog
 	{
 		m_Format = format;
 
-		if (m_Format == TF_UINT32)
+		if (m_Format == RD_FORMAT::R8G8B8A8_UNORM)
 		{
 			uint32_t* pData = new uint32_t[width * height];
 			for (uint32_t i = 0; i < width * height; ++i)
@@ -27,7 +27,7 @@ namespace RenderDog
 
 			m_pDataUint32 = pData;
 		} 
-		else if(m_Format == TF_FLOAT32)
+		else if(m_Format == RD_FORMAT::R32_FLOAT)
 		{
 			float* pData = new float[width * height];
 			for (uint32_t i = 0; i < width * height; ++i)
@@ -44,12 +44,12 @@ namespace RenderDog
 
 	void Texture2D::Release()
 	{	
-		if (m_pDataUint32 && m_Format == TF_UINT32)
+		if (m_pDataUint32 && m_Format == RD_FORMAT::R8G8B8A8_UNORM)
 		{
 			delete[] m_pDataUint32;
 			m_pDataUint32 = nullptr;
 		}
-		else if (m_pDataFloat32 && m_Format == TF_FLOAT32)
+		else if (m_pDataFloat32 && m_Format == RD_FORMAT::R32_FLOAT)
 		{
 			delete[] m_pDataFloat32;
 			m_pDataFloat32 = nullptr;

@@ -10,17 +10,11 @@
 
 namespace RenderDog
 {
-	enum TextureFormat
+	enum class RD_FORMAT
 	{
-		TF_UINT32,
-		TF_FLOAT32
-	};
-
-	struct Texture2DDesc
-	{
-		uint32_t		width;
-		uint32_t		height;
-		TextureFormat	format;
+		UNKNOWN = 0,
+		R8G8B8A8_UNORM = 1,
+		R32_FLOAT = 2
 	};
 
 	class Texture2D
@@ -28,7 +22,7 @@ namespace RenderDog
 	public:
 		Texture2D();
 
-		Texture2D(uint32_t width, uint32_t height, TextureFormat format);
+		Texture2D(uint32_t width, uint32_t height, RD_FORMAT format);
 
 		~Texture2D();
 
@@ -52,6 +46,6 @@ namespace RenderDog
 		uint32_t		m_nWidth;
 		uint32_t		m_nHeight;
 
-		TextureFormat	m_Format;
+		RD_FORMAT		m_Format;
 	};
 }

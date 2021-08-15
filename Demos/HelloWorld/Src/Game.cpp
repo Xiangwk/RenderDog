@@ -144,7 +144,7 @@ bool InitDevice()
 	RenderDog::Texture2DDesc depthDesc;
 	depthDesc.width = g_WindowWidth;
 	depthDesc.height = g_WindowWidth;
-	depthDesc.format = RenderDog::TextureFormat::TF_FLOAT32;
+	depthDesc.format = RenderDog::RD_FORMAT::R32_FLOAT;
 	if (!g_pDevice->CreateTexture2D(&depthDesc, &g_pDepthTexture))
 	{
 		return false;

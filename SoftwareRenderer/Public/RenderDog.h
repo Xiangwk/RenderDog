@@ -3,8 +3,11 @@
 #include <windows.h>
 #include <cstdint>
 
+#include "Texture.h"
+
 namespace RenderDog
 {
+	class IDevice;
 	class Texture2D;
 	class RenderTargetView;
 	class ShaderResourceView;
@@ -23,16 +26,19 @@ namespace RenderDog
 	struct IndexBufferDesc;
 	struct Viewport;
 
-	enum class RD_FORMAT
-	{
-		UNKNOWN			= 0,
-		R8G8B8A8_UNORM	= 1
-	};
-
 	enum class PrimitiveTopology
 	{
 		LINE_LIST,
 		TRIANGLE_LIST
+	};
+
+	enum class RESOURCE_DIMENSION
+	{
+		UNKNOWN = 0,
+		BUFFER = 1,
+		TEXTURE1D = 2,
+		TEXTURE2D = 3,
+		TEXTURE3D = 4
 	};
 
 	struct SwapChainDesc
@@ -67,6 +73,14 @@ namespace RenderDog
 		}
 	};
 
+	struct Texture2DDesc
+	{
+		uint32_t		width;
+		uint32_t		height;
+		uint32_t		mipLevels;
+		RD_FORMAT		format;
+	};
+
 #pragma region Interface
 
 	class IUnknown
@@ -76,6 +90,27 @@ namespace RenderDog
 		virtual void Release() = 0;
 	};
 
+	class IDeviceChild : public IUnknown
+	{
+	public:
+		virtual void GetDevice(IDevice** ppDevice) = 0;
+		virtual void GetPrivateData(uint32_t* pDataSize, void* pData) = 0;
+		virtual void SetPrivateData(uint32_t DataSize, const void* pData) = 0;
+	};
+
+	class IResource : public IDeviceChild
+	{
+	public:
+		virtual void GetType(RESOURCE_DIMENSION* pResDimension) = 0;
+	};
+
+	class ITexture2D : public IResource
+	{
+	public:
+		virtual void GetDesc(Texture2DDesc* pDesc) = 0;
+	};
+
+#pragma region Device
 	class IDevice : public IUnknown
 	{
 	public:
@@ -86,14 +121,6 @@ namespace RenderDog
 		virtual bool CreateIndexBuffer(const IndexBufferDesc& ibDesc, IndexBuffer** ppIndexBuffer) = 0;
 		virtual bool CreateVertexShader(VertexShader** ppVertexShader) = 0;
 		virtual bool CreatePixelShader(PixelShader** ppPixelShader) = 0;
-	};
-
-	class IDeviceChild : public IUnknown
-	{
-	public:
-		virtual void GetDevice(IDevice** ppDevice) = 0;
-		virtual void GetPrivateData(uint32_t* pDataSize, void* pData) = 0;
-		virtual void SetPrivateData(uint32_t DataSize, const void* pData) = 0;
 	};
 
 	class IDeviceContext : public IDeviceChild
@@ -122,6 +149,7 @@ namespace RenderDog
 #endif
 		virtual void DrawLineWithDDA(float fPos1X, float fPos1Y, float fPos2X, float fPos2Y, const Vector4& lineColor) = 0;
 	};
+#pragma endregion Device
 
 	class ISwapChain : public IUnknown
 	{
