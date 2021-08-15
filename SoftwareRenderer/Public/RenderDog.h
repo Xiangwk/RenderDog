@@ -29,6 +29,14 @@ namespace RenderDog
 		R8G8B8A8_UNORM	= 1
 	};
 
+	enum class PrimitiveTopology
+	{
+		LINE_LIST,
+		TRIANGLE_LIST
+	};
+
+#pragma region Interface
+
 	class IUnknown
 	{
 	public:
@@ -46,12 +54,6 @@ namespace RenderDog
 		virtual bool CreateIndexBuffer(const IndexBufferDesc& ibDesc, IndexBuffer** ppIndexBuffer) = 0;
 		virtual bool CreateVertexShader(VertexShader** ppVertexShader) = 0;
 		virtual bool CreatePixelShader(PixelShader** ppPixelShader) = 0;
-	};
-
-	enum class PrimitiveTopology
-	{
-		LINE_LIST,
-		TRIANGLE_LIST
 	};
 
 	class IDeviceContext : public IUnknown
@@ -95,7 +97,7 @@ namespace RenderDog
 		virtual bool GetBuffer(Texture2D** ppSurface) = 0;
 		virtual void Present() = 0;
 	};
-
+#pragma endregion Interface
 
 	bool CreateDeviceAndSwapChain(IDevice** pDevice, IDeviceContext** pDeviceContext, ISwapChain** ppSwapChain, const SwapChainDesc* pSwapChainDesc);
 }

@@ -23,9 +23,6 @@ namespace RenderDog
 		Device(const Device&) = delete;
 		Device& operator=(const Device&) = delete;
 
-		virtual void AddRef() override {}
-		virtual void Release() override { delete this; }
-
 		virtual bool CreateTexture2D(const Texture2DDesc* pDesc, Texture2D** ppTexture) override;
 		virtual bool CreateRenderTargetView(Texture2D* pTexture, const RenderTargetDesc* pDesc, RenderTargetView** ppRenderTarget) override;
 		virtual bool CreateDepthStencilView(Texture2D* pTexture, DepthStencilView** ppDepthStencil) override;
@@ -33,6 +30,9 @@ namespace RenderDog
 		virtual bool CreateIndexBuffer(const IndexBufferDesc& ibDesc, IndexBuffer** ppIndexBuffer) override;
 		virtual bool CreateVertexShader(VertexShader** ppVertexShader) override;
 		virtual bool CreatePixelShader(PixelShader** ppPixelShader) override;
+
+		virtual void AddRef() override {}
+		virtual void Release() override { delete this; }
 	};
 
 
