@@ -573,7 +573,104 @@
                                     "priority": 1,
                                     "note": "1. 创建一个IResource接口类型\n\n2. 在类的成员函数中delete this是否正确？\n\n3. 什么情况下需要virtual析构函数？"
                                 },
-                                "children": []
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cdjujh0qohs0",
+                                            "created": 1629006304271,
+                                            "text": "Device",
+                                            "layout_right_offset": {
+                                                "x": 165,
+                                                "y": -146
+                                            }
+                                        },
+                                        "children": []
+                                    },
+                                    {
+                                        "data": {
+                                            "id": "cdjujq7g8kg0",
+                                            "created": 1629006324267,
+                                            "text": "DeviceContext",
+                                            "layout_right_offset": {
+                                                "x": 146,
+                                                "y": -121
+                                            }
+                                        },
+                                        "children": []
+                                    },
+                                    {
+                                        "data": {
+                                            "id": "cdjujti1zmo0",
+                                            "created": 1629006331439,
+                                            "text": "SwapChain",
+                                            "layout_right_offset": {
+                                                "x": 154,
+                                                "y": -98
+                                            }
+                                        },
+                                        "children": []
+                                    },
+                                    {
+                                        "data": {
+                                            "id": "cdjujxtkp0g0",
+                                            "created": 1629006340843,
+                                            "text": "Texture2D",
+                                            "layout_right_offset": {
+                                                "x": 151,
+                                                "y": -65
+                                            }
+                                        },
+                                        "children": []
+                                    },
+                                    {
+                                        "data": {
+                                            "id": "cdjuk1qefcw0",
+                                            "created": 1629006349358,
+                                            "text": "RenderTargetView",
+                                            "layout_right_offset": {
+                                                "x": 127,
+                                                "y": -22
+                                            }
+                                        },
+                                        "children": []
+                                    },
+                                    {
+                                        "data": {
+                                            "id": "cdjuk54bdps0",
+                                            "created": 1629006356730,
+                                            "text": "ShaderResourceView",
+                                            "layout_right_offset": {
+                                                "x": 136,
+                                                "y": 25
+                                            }
+                                        },
+                                        "children": []
+                                    },
+                                    {
+                                        "data": {
+                                            "id": "cdjuk9qmzfk0",
+                                            "created": 1629006366786,
+                                            "text": "Buffer",
+                                            "layout_right_offset": {
+                                                "x": 171,
+                                                "y": 84
+                                            }
+                                        },
+                                        "children": []
+                                    },
+                                    {
+                                        "data": {
+                                            "id": "cdjykk4ponc0",
+                                            "created": 1629017673845,
+                                            "text": "Shader",
+                                            "layout_right_offset": {
+                                                "x": 167,
+                                                "y": 132
+                                            }
+                                        },
+                                        "children": []
+                                    }
+                                ]
                             },
                             {
                                 "data": {
@@ -610,8 +707,8 @@
                     "created": 1620228349978,
                     "text": "DX12Renderer",
                     "layout_mind_offset": {
-                        "x": 539,
-                        "y": 404
+                        "x": 522,
+                        "y": 437
                     },
                     "layout": null
                 },
