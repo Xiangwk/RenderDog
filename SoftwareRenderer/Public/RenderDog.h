@@ -41,6 +41,30 @@ namespace RenderDog
 		uint32_t	height;
 		RD_FORMAT	format;
 		HWND		hOutputWindow;
+
+		SwapChainDesc() :
+			width(0),
+			height(0),
+			format(RD_FORMAT::UNKNOWN),
+			hOutputWindow(nullptr)
+		{}
+
+		SwapChainDesc(const SwapChainDesc& desc) :
+			width(desc.width),
+			height(desc.height),
+			format(desc.format),
+			hOutputWindow(desc.hOutputWindow)
+		{}
+
+		SwapChainDesc& operator=(const SwapChainDesc& desc)
+		{
+			width = desc.width;
+			height = desc.height;
+			format = desc.format;
+			hOutputWindow = desc.hOutputWindow;
+
+			return *this;
+		}
 	};
 
 #pragma region Interface
@@ -102,7 +126,8 @@ namespace RenderDog
 	class ISwapChain : public IUnknown
 	{
 	public:
-		virtual bool GetBuffer(Texture2D** ppSurface) = 0;
+		virtual bool GetBuffer(void** ppSurface) = 0;
+		virtual void GetDesc(SwapChainDesc* pDesc) = 0;
 		virtual void Present() = 0;
 	};
 #pragma endregion Interface

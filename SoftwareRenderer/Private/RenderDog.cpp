@@ -1270,9 +1270,7 @@ namespace RenderDog
 	public:
 		SwapChain() :
 			m_pBackBuffer(nullptr),
-			m_nWidth(0),
-			m_nHeight(0),
-			m_hWnd(nullptr),
+			m_Desc(),
 			m_hWndDC(nullptr),
 			m_hBitMap(nullptr),
 			m_hOldBitMap(nullptr)
@@ -1280,34 +1278,40 @@ namespace RenderDog
 
 		~SwapChain() = default;
 
-		SwapChain(const SwapChainDesc* pDesc);
 		SwapChain(const SwapChain&) = delete;
 		SwapChain& operator=(const SwapChain&) = delete;
 
-		virtual bool GetBuffer(Texture2D** ppSurface) override;
+		bool Init(const SwapChainDesc* pDesc);
+		
 		virtual void AddRef() override {}
 		virtual void Release() override;
+
+		virtual bool GetBuffer(void** ppSurface) override;
+		virtual void GetDesc(SwapChainDesc* pDesc) override;
 		virtual void Present() override;
 
 	private:
 		uint32_t*		m_pBackBuffer;
-		uint32_t		m_nWidth;
-		uint32_t		m_nHeight;
+		
+		SwapChainDesc   m_Desc;
 
-		HWND			m_hWnd;
 		HDC				m_hWndDC;
 		HBITMAP			m_hBitMap;
 		HBITMAP			m_hOldBitMap;
 	};
 
-	SwapChain::SwapChain(const SwapChainDesc* pDesc) :
-		m_hWnd(pDesc->hOutputWindow),
-		m_nWidth(pDesc->width),
-		m_nHeight(pDesc->height)
+	bool SwapChain::Init(const SwapChainDesc* pDesc)
 	{
-		HDC hDC = GetDC(m_hWnd);
+		if (!pDesc)
+		{
+			return false;
+		}
+
+		m_Desc = *pDesc;
+
+		HDC hDC = GetDC(m_Desc.hOutputWindow);
 		m_hWndDC = CreateCompatibleDC(hDC);
-		ReleaseDC(m_hWnd, hDC);
+		ReleaseDC(m_Desc.hOutputWindow, hDC);
 
 		uint16_t bitCnt = 0;
 		uint32_t imageSize = 0;
@@ -1349,7 +1353,11 @@ namespace RenderDog
 		}
 
 		m_pBackBuffer = (uint32_t*)pTempBitMapBuffer;
-		memset(m_pBackBuffer, 0, (size_t)m_nWidth * (size_t)m_nHeight * 4);
+		memset(m_pBackBuffer, 0, (size_t)m_Desc.width * (size_t)m_Desc.height * 4);
+
+		AddRef();
+
+		return true;
 	}
 
 	void SwapChain::Release()
@@ -1371,10 +1379,10 @@ namespace RenderDog
 			m_hBitMap = nullptr;
 		}
 
-		if (m_hWnd)
+		if (m_Desc.hOutputWindow)
 		{
-			CloseWindow(m_hWnd);
-			m_hWnd = nullptr;
+			CloseWindow(m_Desc.hOutputWindow);
+			m_Desc.hOutputWindow = nullptr;
 		}
 
 		m_pBackBuffer = nullptr;
@@ -1384,26 +1392,31 @@ namespace RenderDog
 
 	void SwapChain::Present()
 	{
-		HDC hDC = GetDC(m_hWnd);
-		BitBlt(hDC, 0, 0, m_nWidth, m_nHeight, m_hWndDC, 0, 0, SRCCOPY);
-		ReleaseDC(m_hWnd, hDC);
+		HDC hDC = GetDC(m_Desc.hOutputWindow);
+		BitBlt(hDC, 0, 0, m_Desc.width, m_Desc.height, m_hWndDC, 0, 0, SRCCOPY);
+		ReleaseDC(m_Desc.hOutputWindow, hDC);
 	}
 
-	bool SwapChain::GetBuffer(Texture2D** ppSurface)
+	bool SwapChain::GetBuffer(void** ppSurface)
 	{
 		Texture2D* pTex = new Texture2D();
 		*ppSurface = pTex;
 
 		pTex->GetDataUint32() = m_pBackBuffer;
-		pTex->SetWidth(m_nWidth);
-		pTex->SetHeight(m_nHeight);
+		pTex->SetWidth(m_Desc.width);
+		pTex->SetHeight(m_Desc.height);
 
 		return true;
+	}
+
+	void SwapChain::GetDesc(SwapChainDesc* pDesc)
+	{
+		pDesc = &m_Desc;
 	}
 #pragma endregion SwapChain
 
 
-	bool CreateDeviceAndSwapChain(IDevice** ppDevice, IDeviceContext** ppDeviceContext, ISwapChain** pSwapChain, const SwapChainDesc* pSwapChainDesc)
+	bool CreateDeviceAndSwapChain(IDevice** ppDevice, IDeviceContext** ppDeviceContext, ISwapChain** ppSwapChain, const SwapChainDesc* pSwapChainDesc)
 	{
 		Device *pDevice = new Device();
 		if (!pDevice)
@@ -1425,12 +1438,16 @@ namespace RenderDog
 		}
 		*ppDeviceContext = pDeviceContext;
 
-		*pSwapChain = new SwapChain(pSwapChainDesc);
+		SwapChain* pSwapChain = new SwapChain();
 		if (!pSwapChain)
 		{
 			return false;
 		}
-		(*pSwapChain)->AddRef();
+		if (!pSwapChain->Init(pSwapChainDesc))
+		{
+			return false;
+		}
+		*ppSwapChain = pSwapChain;
 
 		return true;
 	}

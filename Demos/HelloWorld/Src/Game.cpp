@@ -129,7 +129,7 @@ bool InitDevice()
 	}
 
 	RenderDog::Texture2D* pBackBuffer = nullptr;
-	if (!g_pSwapChain->GetBuffer(&pBackBuffer))
+	if (!g_pSwapChain->GetBuffer((void**)&pBackBuffer))
 	{
 		return false;
 	}
