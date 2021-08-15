@@ -35,6 +35,14 @@ namespace RenderDog
 		TRIANGLE_LIST
 	};
 
+	struct SwapChainDesc
+	{
+		uint32_t	width;
+		uint32_t	height;
+		RD_FORMAT	format;
+		HWND		hOutputWindow;
+	};
+
 #pragma region Interface
 
 	class IUnknown
@@ -56,7 +64,15 @@ namespace RenderDog
 		virtual bool CreatePixelShader(PixelShader** ppPixelShader) = 0;
 	};
 
-	class IDeviceContext : public IUnknown
+	class IDeviceChild : public IUnknown
+	{
+	public:
+		virtual void GetDevice(IDevice** ppDevice) = 0;
+		virtual void GetPrivateData(uint32_t* pDataSize, void* pData) = 0;
+		virtual void SetPrivateData(uint32_t DataSize, const void* pData) = 0;
+	};
+
+	class IDeviceContext : public IDeviceChild
 	{
 	public:
 		virtual void IASetVertexBuffer(VertexBuffer* pVB) = 0;
@@ -81,14 +97,6 @@ namespace RenderDog
 		virtual bool CheckDrawPixelTwice() = 0;
 #endif
 		virtual void DrawLineWithDDA(float fPos1X, float fPos1Y, float fPos2X, float fPos2Y, const Vector4& lineColor) = 0;
-	};
-
-	struct SwapChainDesc
-	{
-		uint32_t	Width;
-		uint32_t	Height;
-		RD_FORMAT	Format;
-		HWND		OutputWindow;
 	};
 
 	class ISwapChain : public IUnknown

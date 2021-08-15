@@ -169,14 +169,20 @@ namespace RenderDog
 	class DeviceContext : public IDeviceContext
 	{
 	public:
-		DeviceContext(uint32_t width, uint32_t height);
+		DeviceContext();
 		~DeviceContext();
 
 		DeviceContext(const DeviceContext&) = delete;
 		DeviceContext& operator=(const DeviceContext&) = delete;
 
+		bool Init(IDevice* pDevice, uint32_t width, uint32_t height);
+
 		virtual void AddRef() override {}
 		virtual void Release() override { delete this; }
+
+		virtual void GetDevice(IDevice** ppDevice) override { *ppDevice = m_pDevice; }
+		virtual void GetPrivateData(uint32_t* pDataSize, void* pData) override {}
+		virtual void SetPrivateData(uint32_t DataSize, const void* pData) override {}
 
 		virtual void IASetVertexBuffer(VertexBuffer* pVB) override;
 		virtual void IASetIndexBuffer(IndexBuffer* pIB) override;
@@ -239,8 +245,9 @@ namespace RenderDog
 		void Rasterization();
 
 	private:
-		uint32_t* m_pFrameBuffer;
-		float* m_pDepthBuffer;
+		IDevice*	m_pDevice;
+		uint32_t*	m_pFrameBuffer;
+		float*		m_pDepthBuffer;
 #if DEBUG_RASTERIZATION
 		uint32_t* m_pDebugBuffer;  //检查是否有重复绘制的像素
 #endif
@@ -274,14 +281,15 @@ namespace RenderDog
 
 	extern const float fEpsilon;
 
-	DeviceContext::DeviceContext(uint32_t width, uint32_t height) :
+	DeviceContext::DeviceContext() :
+		m_pDevice(nullptr),
 		m_pFrameBuffer(nullptr),
 		m_pDepthBuffer(nullptr),
 #if DEBUG_RASTERIZATION
 		m_pDebugBuffer(nullptr),
 #endif
-		m_nWidth(width),
-		m_nHeight(height),
+		m_nWidth(0),
+		m_nHeight(0),
 		m_pVB(nullptr),
 		m_pIB(nullptr),
 		m_pVS(nullptr),
@@ -331,6 +339,23 @@ namespace RenderDog
 			m_pDebugBuffer = nullptr;
 		}
 #endif
+	}
+
+	bool DeviceContext::Init(IDevice* pDevice, uint32_t width, uint32_t height)
+	{
+		if (!pDevice)
+		{
+			return false;
+		}
+
+		m_pDevice = pDevice;
+
+		m_nWidth = width;
+		m_nHeight = height;
+
+		AddRef();
+
+		return true;
 	}
 
 	void DeviceContext::IASetVertexBuffer(VertexBuffer* pVB)
@@ -1276,9 +1301,9 @@ namespace RenderDog
 	};
 
 	SwapChain::SwapChain(const SwapChainDesc* pDesc) :
-		m_hWnd(pDesc->OutputWindow),
-		m_nWidth(pDesc->Width),
-		m_nHeight(pDesc->Height)
+		m_hWnd(pDesc->hOutputWindow),
+		m_nWidth(pDesc->width),
+		m_nHeight(pDesc->height)
 	{
 		HDC hDC = GetDC(m_hWnd);
 		m_hWndDC = CreateCompatibleDC(hDC);
@@ -1286,12 +1311,12 @@ namespace RenderDog
 
 		uint16_t bitCnt = 0;
 		uint32_t imageSize = 0;
-		switch (pDesc->Format)
+		switch (pDesc->format)
 		{
 		case RD_FORMAT::R8G8B8A8_UNORM:
 		{
 			bitCnt = 32;
-			imageSize = pDesc->Width * pDesc->Height * 4;
+			imageSize = pDesc->width * pDesc->height * 4;
 
 			break;
 		}
@@ -1311,7 +1336,7 @@ namespace RenderDog
 		void* pTempBitMapBuffer = nullptr;
 		BITMAPINFO BitMapInfo =
 		{
-			{ sizeof(BITMAPINFOHEADER), (int)pDesc->Width, -(int)pDesc->Height, 1, bitCnt, BI_RGB, imageSize, 0, 0, 0, 0 }
+			{ sizeof(BITMAPINFOHEADER), (int)pDesc->width, -(int)pDesc->height, 1, bitCnt, BI_RGB, imageSize, 0, 0, 0, 0 }
 		};
 		m_hBitMap = CreateDIBSection(m_hWndDC, &BitMapInfo, DIB_RGB_COLORS, &pTempBitMapBuffer, 0, 0);
 		if (m_hBitMap)
@@ -1378,21 +1403,27 @@ namespace RenderDog
 #pragma endregion SwapChain
 
 
-	bool CreateDeviceAndSwapChain(IDevice** pDevice, IDeviceContext** pDeviceContext, ISwapChain** pSwapChain, const SwapChainDesc* pSwapChainDesc)
+	bool CreateDeviceAndSwapChain(IDevice** ppDevice, IDeviceContext** ppDeviceContext, ISwapChain** pSwapChain, const SwapChainDesc* pSwapChainDesc)
 	{
-		*pDevice = new Device;
+		Device *pDevice = new Device();
 		if (!pDevice)
 		{
 			return false;
 		}
-		(*pDevice)->AddRef();
+		pDevice->AddRef();
+		*ppDevice = pDevice;
 
-		*pDeviceContext = new DeviceContext(pSwapChainDesc->Width, pSwapChainDesc->Height);
+		DeviceContext* pDeviceContext = new DeviceContext();
 		if (!pDeviceContext)
 		{
 			return false;
 		}
-		(*pDeviceContext)->AddRef();
+
+		if (!pDeviceContext->Init(*ppDevice, pSwapChainDesc->width, pSwapChainDesc->height))
+		{
+			return false;
+		}
+		*ppDeviceContext = pDeviceContext;
 
 		*pSwapChain = new SwapChain(pSwapChainDesc);
 		if (!pSwapChain)
