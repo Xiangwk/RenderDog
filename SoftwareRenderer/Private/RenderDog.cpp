@@ -1291,7 +1291,7 @@ namespace RenderDog
 		virtual void Present() override;
 
 	private:
-		uint32_t*		m_pBackBuffer;
+		void*			m_pBackBuffer;
 		
 		SwapChainDesc   m_Desc;
 
@@ -1402,7 +1402,7 @@ namespace RenderDog
 		Texture2D* pTex = new Texture2D();
 		*ppSurface = pTex;
 
-		pTex->GetDataUint32() = m_pBackBuffer;
+		pTex->GetDataUint32() = (uint32_t*)m_pBackBuffer;
 		pTex->SetWidth(m_Desc.width);
 		pTex->SetHeight(m_Desc.height);
 
