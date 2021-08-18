@@ -16,38 +16,37 @@ namespace RenderDog
 
 	Texture2D::Texture2D() :
 		m_pData(nullptr),
-		m_nWidth(0),
-		m_nHeight(0),
-		m_Format(RD_FORMAT::UNKNOWN)
+		m_Desc()
 	{}
 
-	Texture2D::Texture2D(uint32_t width, uint32_t height, RD_FORMAT format) :
-		m_pData(nullptr),
-		m_nWidth(width),
-		m_nHeight(height)
+	bool Texture2D::Init(const Texture2DDesc* pDesc)
 	{
-		m_Format = format;
+		m_Desc = *pDesc;
+		uint32_t dataNum = pDesc->width * pDesc->height;
 
-		if (m_Format == RD_FORMAT::R8G8B8A8_UNORM)
+		if (pDesc->format == RD_FORMAT::R8G8B8A8_UNORM)
 		{
-			uint32_t* pData = new uint32_t[width * height];
-			for (uint32_t i = 0; i < width * height; ++i)
+			
+			uint32_t* pData = new uint32_t[dataNum];
+			for (uint32_t i = 0; i < dataNum; ++i)
 			{
 				pData[i] = 0;
 			}
 
 			m_pData = pData;
 		}
-		else if (m_Format == RD_FORMAT::R32_FLOAT)
+		else if (pDesc->format == RD_FORMAT::R32_FLOAT)
 		{
-			float* pData = new float[width * height];
-			for (uint32_t i = 0; i < width * height; ++i)
+			float* pData = new float[dataNum];
+			for (uint32_t i = 0; i < dataNum; ++i)
 			{
 				pData[i] = 0.0f;
 			}
 
 			m_pData = pData;
 		}
+
+		return true;
 	}
 
 	Texture2D::~Texture2D()
@@ -89,8 +88,13 @@ namespace RenderDog
 
 	bool Device::CreateTexture2D(const Texture2DDesc* pDesc, Texture2D** ppTexture)
 	{
-		Texture2D* pTex = new Texture2D(pDesc->width, pDesc->height, pDesc->format);
+		Texture2D* pTex = new Texture2D;
 		if (!pTex)
+		{
+			return false;
+		}
+
+		if (!pTex->Init(pDesc))
 		{
 			return false;
 		}

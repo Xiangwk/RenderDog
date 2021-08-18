@@ -86,6 +86,12 @@ namespace RenderDog
 		uint32_t		width;
 		uint32_t		height;
 		RD_FORMAT		format;
+
+		Texture2DDesc() :
+			width(0),
+			height(0),
+			format(RD_FORMAT::UNKNOWN)
+		{}
 	};
 #pragma endregion Description
 
@@ -123,7 +129,7 @@ namespace RenderDog
 	public:
 		Texture2D();
 
-		Texture2D(uint32_t width, uint32_t height, RD_FORMAT format);
+		bool Init(const Texture2DDesc* pDesc);
 
 		~Texture2D();
 
@@ -132,18 +138,16 @@ namespace RenderDog
 		void*& GetData() { return m_pData; }
 		const void* GetData() const { return m_pData; }
 
-		void SetWidth(uint32_t width) { m_nWidth = width; }
-		void SetHeight(uint32_t Height) { m_nHeight = Height; }
+		void SetWidth(uint32_t width) { m_Desc.width = width; }
+		void SetHeight(uint32_t Height) { m_Desc.height = Height; }
 
-		uint32_t GetWidth() const { return m_nWidth; }
-		uint32_t GetHeight() const { return m_nHeight; }
+		uint32_t GetWidth() const { return m_Desc.width; }
+		uint32_t GetHeight() const { return m_Desc.height; }
 
 	private:
-		void* m_pData;
-		uint32_t		m_nWidth;
-		uint32_t		m_nHeight;
+		void*			m_pData;
 
-		RD_FORMAT		m_Format;
+		Texture2DDesc	m_Desc;
 	};
 
 #pragma region Device
