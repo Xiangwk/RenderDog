@@ -32,9 +32,6 @@
     <ClInclude Include="..\..\Public\Shader.h">
       <Filter>Public</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Public\Texture.h">
-      <Filter>Public</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Public\Vertex.h">
       <Filter>Public</Filter>
     </ClInclude>
@@ -89,9 +86,6 @@
       <Filter>Private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Private\Shader.cpp">
-      <Filter>Private</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Private\Texture.cpp">
       <Filter>Private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Private\Viewport.cpp">

@@ -3,8 +3,6 @@
 #include <windows.h>
 #include <cstdint>
 
-#include "Texture.h"
-
 namespace RenderDog
 {
 	class IDevice;
@@ -40,6 +38,13 @@ namespace RenderDog
 		TEXTURE1D = 2,
 		TEXTURE2D = 3,
 		TEXTURE3D = 4
+	};
+
+	enum class RD_FORMAT
+	{
+		UNKNOWN = 0,
+		R8G8B8A8_UNORM = 1,
+		R32_FLOAT = 2
 	};
 #pragma endregion Enum
 
@@ -111,6 +116,34 @@ namespace RenderDog
 	{
 	public:
 		virtual void GetDesc(Texture2DDesc* pDesc) = 0;
+	};
+
+	class Texture2D
+	{
+	public:
+		Texture2D();
+
+		Texture2D(uint32_t width, uint32_t height, RD_FORMAT format);
+
+		~Texture2D();
+
+		void Release();
+
+		void*& GetData() { return m_pData; }
+		const void* GetData() const { return m_pData; }
+
+		void SetWidth(uint32_t width) { m_nWidth = width; }
+		void SetHeight(uint32_t Height) { m_nHeight = Height; }
+
+		uint32_t GetWidth() const { return m_nWidth; }
+		uint32_t GetHeight() const { return m_nHeight; }
+
+	private:
+		void* m_pData;
+		uint32_t		m_nWidth;
+		uint32_t		m_nHeight;
+
+		RD_FORMAT		m_Format;
 	};
 
 #pragma region Device

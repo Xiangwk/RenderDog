@@ -607,7 +607,8 @@
                                                     "layout_right_offset": {
                                                         "x": 167,
                                                         "y": -79
-                                                    }
+                                                    },
+                                                    "note": "1. 按照DX11的接口来实现Texture2D；\n\n2. 详细修改步骤：\n  1. 将Texture2D的类定义转移至RenderDog.h头文件中；\n  2. 删除Texture2D.h和Texture2D.cpp\n  3. "
                                                 },
                                                 "children": []
                                             },

@@ -9,7 +9,6 @@
 #include "RenderTargetView.h" 
 #include "DepthStencilView.h"
 #include "ShaderResourceView.h"
-#include "Texture.h"
 #include "Buffer.h"
 #include "Shader.h"
 #include "Vertex.h"

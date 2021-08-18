@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "Texture.h"
+#include "RenderDog.h"
 
 namespace RenderDog
 {
