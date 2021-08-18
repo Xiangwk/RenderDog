@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "RenderDog.h"
-
 namespace RenderDog
 {
 	class DepthStencilView
