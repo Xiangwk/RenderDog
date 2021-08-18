@@ -565,10 +565,10 @@
                                 "data": {
                                     "id": "cd94mhzw00o0",
                                     "created": 1627917593064,
-                                    "text": "使用引用计数管理内存的分配",
+                                    "text": "仿照DX11的接口",
                                     "layout_right_offset": {
-                                        "x": 62,
-                                        "y": -46
+                                        "x": 107,
+                                        "y": -34
                                     },
                                     "priority": 1,
                                     "note": "1. 创建一个IResource接口类型\n\n2. 在类的成员函数中delete this是否正确？\n\n3. 什么情况下需要virtual析构函数？"
@@ -576,97 +576,14 @@
                                 "children": [
                                     {
                                         "data": {
-                                            "id": "cdjujh0qohs0",
-                                            "created": 1629006304271,
-                                            "text": "Device",
+                                            "id": "cdmqo9ij0d40",
+                                            "created": 1629300075183,
+                                            "text": "统一Texture2D中的数据成员变量",
                                             "layout_right_offset": {
-                                                "x": 165,
-                                                "y": -146
-                                            }
-                                        },
-                                        "children": []
-                                    },
-                                    {
-                                        "data": {
-                                            "id": "cdjujq7g8kg0",
-                                            "created": 1629006324267,
-                                            "text": "DeviceContext",
-                                            "layout_right_offset": {
-                                                "x": 146,
-                                                "y": -121
-                                            }
-                                        },
-                                        "children": []
-                                    },
-                                    {
-                                        "data": {
-                                            "id": "cdjujti1zmo0",
-                                            "created": 1629006331439,
-                                            "text": "SwapChain",
-                                            "layout_right_offset": {
-                                                "x": 154,
-                                                "y": -98
-                                            }
-                                        },
-                                        "children": []
-                                    },
-                                    {
-                                        "data": {
-                                            "id": "cdjujxtkp0g0",
-                                            "created": 1629006340843,
-                                            "text": "Texture2D",
-                                            "layout_right_offset": {
-                                                "x": 151,
-                                                "y": -65
-                                            }
-                                        },
-                                        "children": []
-                                    },
-                                    {
-                                        "data": {
-                                            "id": "cdjuk1qefcw0",
-                                            "created": 1629006349358,
-                                            "text": "RenderTargetView",
-                                            "layout_right_offset": {
-                                                "x": 127,
-                                                "y": -22
-                                            }
-                                        },
-                                        "children": []
-                                    },
-                                    {
-                                        "data": {
-                                            "id": "cdjuk54bdps0",
-                                            "created": 1629006356730,
-                                            "text": "ShaderResourceView",
-                                            "layout_right_offset": {
-                                                "x": 136,
-                                                "y": 25
-                                            }
-                                        },
-                                        "children": []
-                                    },
-                                    {
-                                        "data": {
-                                            "id": "cdjuk9qmzfk0",
-                                            "created": 1629006366786,
-                                            "text": "Buffer",
-                                            "layout_right_offset": {
-                                                "x": 171,
-                                                "y": 84
-                                            }
-                                        },
-                                        "children": []
-                                    },
-                                    {
-                                        "data": {
-                                            "id": "cdjykk4ponc0",
-                                            "created": 1629017673845,
-                                            "text": "Shader",
-                                            "layout_right_offset": {
-                                                "x": 167,
-                                                "y": 132
-                                            }
+                                                "x": 112,
+                                                "y": -37
+                                            },
+                                            "note": "1. Texture2D中的数据成员变量应该根据创建时传入的类型参数来决定其类型，而不是每种类型都存一个成员变量；"
                                         },
                                         "children": []
                                     }
@@ -678,8 +595,8 @@
                                     "created": 1627922334327,
                                     "text": "抽出一个Platform工程",
                                     "layout_right_offset": {
-                                        "x": 94,
-                                        "y": 47
+                                        "x": 119,
+                                        "y": 75
                                     }
                                 },
                                 "children": []

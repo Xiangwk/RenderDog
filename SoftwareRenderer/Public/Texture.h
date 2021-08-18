@@ -28,11 +28,8 @@ namespace RenderDog
 
 		void Release();
 
-		uint32_t*& GetDataUint32() { return m_pDataUint32; }
-		const uint32_t* GetDataUint32() const { return m_pDataUint32; }
-
-		float*& GetDataFloat32() { return m_pDataFloat32; }
-		const float* GetDataFloat32() const { return m_pDataFloat32; }
+		void*& GetData() { return m_pData; }
+		const void* GetData() const { return m_pData; }
 
 		void SetWidth(uint32_t width) { m_nWidth = width; }
 		void SetHeight(uint32_t Height) { m_nHeight = Height; }
@@ -41,8 +38,7 @@ namespace RenderDog
 		uint32_t GetHeight() const { return m_nHeight; }
 
 	private:
-		uint32_t*		m_pDataUint32;
-		float*			m_pDataFloat32;
+		void*			m_pData;
 		uint32_t		m_nWidth;
 		uint32_t		m_nHeight;
 

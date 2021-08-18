@@ -61,7 +61,7 @@ namespace RenderDog
 
 			*ppRenderTarget = pRT;
 
-			pRT->GetView() = (uint32_t*)pTexture->GetDataUint32();
+			pRT->GetView() = (uint32_t*)pTexture->GetData();
 			pRT->SetWidth(pTexture->GetWidth());
 			pRT->SetHeight(pTexture->GetHeight());
 		}
@@ -83,7 +83,7 @@ namespace RenderDog
 
 		*ppDepthStencil = pDS;
 
-		pDS->GetView() = (float*)pTexture->GetDataFloat32();
+		pDS->GetView() = (float*)pTexture->GetData();
 		pDS->SetWidth(pTexture->GetWidth());
 		pDS->SetHeight(pTexture->GetHeight());
 
@@ -1402,7 +1402,7 @@ namespace RenderDog
 		Texture2D* pTex = new Texture2D();
 		*ppSurface = pTex;
 
-		pTex->GetDataUint32() = (uint32_t*)m_pBackBuffer;
+		pTex->GetData() = m_pBackBuffer;
 		pTex->SetWidth(m_Desc.width);
 		pTex->SetHeight(m_Desc.height);
 
