@@ -26,6 +26,7 @@ namespace RenderDog
 	struct IndexBufferDesc;
 	struct Viewport;
 
+#pragma region Enum
 	enum class PrimitiveTopology
 	{
 		LINE_LIST,
@@ -40,7 +41,9 @@ namespace RenderDog
 		TEXTURE2D = 3,
 		TEXTURE3D = 4
 	};
+#pragma endregion Enum
 
+#pragma region Description
 	struct SwapChainDesc
 	{
 		uint32_t	width;
@@ -77,9 +80,9 @@ namespace RenderDog
 	{
 		uint32_t		width;
 		uint32_t		height;
-		uint32_t		mipLevels;
 		RD_FORMAT		format;
 	};
+#pragma endregion Description
 
 #pragma region Interface
 

@@ -576,14 +576,100 @@
                                 "children": [
                                     {
                                         "data": {
-                                            "id": "cdmqo9ij0d40",
-                                            "created": 1629300075183,
-                                            "text": "统一Texture2D中的数据成员变量",
+                                            "id": "cdmrb1w0k9k0",
+                                            "created": 1629301860960,
+                                            "text": "Texture",
                                             "layout_right_offset": {
-                                                "x": 112,
-                                                "y": -37
+                                                "x": 81,
+                                                "y": -68
+                                            }
+                                        },
+                                        "children": [
+                                            {
+                                                "data": {
+                                                    "id": "cdmqo9ij0d40",
+                                                    "created": 1629300075183,
+                                                    "text": "统一Texture2D中的数据成员变量",
+                                                    "layout_right_offset": {
+                                                        "x": 137,
+                                                        "y": -90
+                                                    },
+                                                    "note": "1. 问题：Texture2D中的数据成员变量应该根据创建时传入的类型参数来决定其类型，而不是每种类型都存一个成员变量；\n\n2. 详细修改方案\n  1. 在Texture2D中的增加一个void指针类型的成员变量；\n  2. 去掉原先的uint32_t指针和float指针类型的成员变量；\n  3. 修改GetData之类的接口；\n  4. 创建Texture2D时根据传入的格式来new不同类型的数组；",
+                                                    "priority": 1
+                                                },
+                                                "children": []
                                             },
-                                            "note": "1. Texture2D中的数据成员变量应该根据创建时传入的类型参数来决定其类型，而不是每种类型都存一个成员变量；"
+                                            {
+                                                "data": {
+                                                    "id": "cdmra4sl11k0",
+                                                    "created": 1629301788919,
+                                                    "text": "Texture2D的创建",
+                                                    "layout_right_offset": {
+                                                        "x": 167,
+                                                        "y": -79
+                                                    }
+                                                },
+                                                "children": []
+                                            },
+                                            {
+                                                "data": {
+                                                    "id": "cdmrakd9au80",
+                                                    "created": 1629301822821,
+                                                    "text": "View的创建",
+                                                    "layout_right_offset": {
+                                                        "x": 169,
+                                                        "y": -65
+                                                    }
+                                                },
+                                                "children": []
+                                            },
+                                            {
+                                                "data": {
+                                                    "id": "cdmrapl9yuo0",
+                                                    "created": 1629301834189,
+                                                    "text": "设置View",
+                                                    "layout_right_offset": {
+                                                        "x": 173,
+                                                        "y": -55
+                                                    }
+                                                },
+                                                "children": []
+                                            },
+                                            {
+                                                "data": {
+                                                    "id": "cdmraudzxzs0",
+                                                    "created": 1629301844633,
+                                                    "text": "写View",
+                                                    "layout_right_offset": {
+                                                        "x": 178,
+                                                        "y": -30
+                                                    }
+                                                },
+                                                "children": []
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "data": {
+                                            "id": "cdmrbatjubc0",
+                                            "created": 1629301880402,
+                                            "text": "Buffer",
+                                            "layout_right_offset": {
+                                                "x": 72,
+                                                "y": -51
+                                            }
+                                        },
+                                        "children": []
+                                    },
+                                    {
+                                        "data": {
+                                            "id": "cdmrbd31jug0",
+                                            "created": 1629301885330,
+                                            "text": "Shader",
+                                            "layout_right_offset": {
+                                                "x": 75,
+                                                "y": 35
+                                            }
                                         },
                                         "children": []
                                     }
@@ -595,8 +681,8 @@
                                     "created": 1627922334327,
                                     "text": "抽出一个Platform工程",
                                     "layout_right_offset": {
-                                        "x": 119,
-                                        "y": 75
+                                        "x": 111,
+                                        "y": 121
                                     }
                                 },
                                 "children": []

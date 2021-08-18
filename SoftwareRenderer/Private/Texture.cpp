@@ -5,7 +5,8 @@ namespace RenderDog
 	Texture2D::Texture2D() :
 		m_pData(nullptr),
 		m_nWidth(0),
-		m_nHeight(0)
+		m_nHeight(0),
+		m_Format(RD_FORMAT::UNKNOWN)
 	{}
 
 	Texture2D::Texture2D(uint32_t width, uint32_t height, RD_FORMAT format) :
