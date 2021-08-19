@@ -104,15 +104,7 @@ namespace RenderDog
 		virtual void Release() = 0;
 	};
 
-	class IDeviceChild : public IUnknown
-	{
-	public:
-		virtual void GetDevice(IDevice** ppDevice) = 0;
-		virtual void GetPrivateData(uint32_t* pDataSize, void* pData) = 0;
-		virtual void SetPrivateData(uint32_t DataSize, const void* pData) = 0;
-	};
-
-	class IResource : public IDeviceChild
+	class IResource : public IUnknown
 	{
 	public:
 		virtual void GetType(RESOURCE_DIMENSION* pResDimension) = 0;
@@ -122,48 +114,26 @@ namespace RenderDog
 	{
 	public:
 		virtual void GetDesc(Texture2DDesc* pDesc) = 0;
-	};
 
-	class Texture2D
-	{
-	public:
-		Texture2D();
-
-		bool Init(const Texture2DDesc* pDesc);
-
-		~Texture2D();
-
-		void Release();
-
-		void*& GetData() { return m_pData; }
-		const void* GetData() const { return m_pData; }
-
-		void SetWidth(uint32_t width) { m_Desc.width = width; }
-		void SetHeight(uint32_t Height) { m_Desc.height = Height; }
-
-		uint32_t GetWidth() const { return m_Desc.width; }
-		uint32_t GetHeight() const { return m_Desc.height; }
-
-	private:
-		void*			m_pData;
-
-		Texture2DDesc	m_Desc;
+		//以下两个接口为临时添加，后续需要删除
+		virtual void*& GetData() = 0;
+		virtual const void* GetData() const = 0;
 	};
 
 #pragma region Device
 	class IDevice : public IUnknown
 	{
 	public:
-		virtual bool CreateTexture2D(const Texture2DDesc* pDesc, Texture2D** ppTexture) = 0;
-		virtual bool CreateRenderTargetView(Texture2D* pTexture, const RenderTargetDesc* pDesc, RenderTargetView** ppRenderTarget) = 0;
-		virtual bool CreateDepthStencilView(Texture2D* pTexture, DepthStencilView** ppDepthStencil) = 0;
+		virtual bool CreateTexture2D(const Texture2DDesc* pDesc, ITexture2D** ppTexture) = 0;
+		virtual bool CreateRenderTargetView(ITexture2D* pTexture, const RenderTargetDesc* pDesc, RenderTargetView** ppRenderTarget) = 0;
+		virtual bool CreateDepthStencilView(ITexture2D* pTexture, DepthStencilView** ppDepthStencil) = 0;
 		virtual bool CreateVertexBuffer(const VertexBufferDesc& vbDesc, VertexBuffer** ppVertexBuffer) = 0;
 		virtual bool CreateIndexBuffer(const IndexBufferDesc& ibDesc, IndexBuffer** ppIndexBuffer) = 0;
 		virtual bool CreateVertexShader(VertexShader** ppVertexShader) = 0;
 		virtual bool CreatePixelShader(PixelShader** ppPixelShader) = 0;
 	};
 
-	class IDeviceContext : public IDeviceChild
+	class IDeviceContext : public IUnknown
 	{
 	public:
 		virtual void IASetVertexBuffer(VertexBuffer* pVB) = 0;

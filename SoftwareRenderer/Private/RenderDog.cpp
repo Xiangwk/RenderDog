@@ -14,49 +14,84 @@ namespace RenderDog
 {
 #pragma region Texture2D
 
+	class Texture2D : public ITexture2D
+	{
+	public:
+		Texture2D();
+		~Texture2D();
+
+		bool Init(const Texture2DDesc* pDesc, void* pInitData, uint32_t dataSize);
+
+		virtual void AddRef() override { ++m_RefCnt; }
+		virtual void Release() override;
+
+		virtual void GetType(RESOURCE_DIMENSION* pResDimension) override { *pResDimension = m_ResDimension; }
+		virtual void GetDesc(Texture2DDesc* pDesc) override { *pDesc = m_Desc; }
+
+		void*& GetData() { return m_pData; }
+		const void* GetData() const { return m_pData; }
+
+		void SetWidth(uint32_t width) { m_Desc.width = width; }
+		void SetHeight(uint32_t Height) { m_Desc.height = Height; }
+
+		uint32_t GetWidth() const { return m_Desc.width; }
+		uint32_t GetHeight() const { return m_Desc.height; }
+
+	private:
+		int						m_RefCnt;
+		void*					m_pData;
+
+		RESOURCE_DIMENSION		m_ResDimension;
+
+		Texture2DDesc			m_Desc;
+	};
+
 	Texture2D::Texture2D() :
+		m_RefCnt(0),
 		m_pData(nullptr),
+		m_ResDimension(RESOURCE_DIMENSION::TEXTURE2D),
 		m_Desc()
 	{}
 
-	bool Texture2D::Init(const Texture2DDesc* pDesc)
+	bool Texture2D::Init(const Texture2DDesc* pDesc, void* pInitData, uint32_t dataSize)
 	{
 		m_Desc = *pDesc;
 		uint32_t dataNum = pDesc->width * pDesc->height;
 
 		if (pDesc->format == RD_FORMAT::R8G8B8A8_UNORM)
 		{
-			
-			uint32_t* pData = new uint32_t[dataNum];
-			for (uint32_t i = 0; i < dataNum; ++i)
-			{
-				pData[i] = 0;
-			}
-
-			m_pData = pData;
+			m_pData = new uint32_t[dataNum];
 		}
 		else if (pDesc->format == RD_FORMAT::R32_FLOAT)
 		{
-			float* pData = new float[dataNum];
-			for (uint32_t i = 0; i < dataNum; ++i)
-			{
-				pData[i] = 0.0f;
-			}
-
-			m_pData = pData;
+			m_pData = new float[dataNum];
 		}
+
+		if (pInitData)
+		{
+			memcpy(m_pData, pInitData, dataSize);
+		}
+
+		AddRef();
 
 		return true;
 	}
 
 	Texture2D::~Texture2D()
-	{}
-
-	void Texture2D::Release()
 	{
 		if (m_pData)
 		{
 			delete[] m_pData;
+			m_pData = nullptr;
+		}
+	}
+
+	void Texture2D::Release()
+	{
+		--m_RefCnt;
+		if (m_RefCnt == 0)
+		{
+			delete this;
 		}
 	}
 
@@ -73,9 +108,9 @@ namespace RenderDog
 		Device(const Device&) = delete;
 		Device& operator=(const Device&) = delete;
 
-		virtual bool CreateTexture2D(const Texture2DDesc* pDesc, Texture2D** ppTexture) override;
-		virtual bool CreateRenderTargetView(Texture2D* pTexture, const RenderTargetDesc* pDesc, RenderTargetView** ppRenderTarget) override;
-		virtual bool CreateDepthStencilView(Texture2D* pTexture, DepthStencilView** ppDepthStencil) override;
+		virtual bool CreateTexture2D(const Texture2DDesc* pDesc, ITexture2D** ppTexture) override;
+		virtual bool CreateRenderTargetView(ITexture2D* pTexture, const RenderTargetDesc* pDesc, RenderTargetView** ppRenderTarget) override;
+		virtual bool CreateDepthStencilView(ITexture2D* pTexture, DepthStencilView** ppDepthStencil) override;
 		virtual bool CreateVertexBuffer(const VertexBufferDesc& vbDesc, VertexBuffer** ppVertexBuffer) override;
 		virtual bool CreateIndexBuffer(const IndexBufferDesc& ibDesc, IndexBuffer** ppIndexBuffer) override;
 		virtual bool CreateVertexShader(VertexShader** ppVertexShader) override;
@@ -86,7 +121,7 @@ namespace RenderDog
 	};
 
 
-	bool Device::CreateTexture2D(const Texture2DDesc* pDesc, Texture2D** ppTexture)
+	bool Device::CreateTexture2D(const Texture2DDesc* pDesc, ITexture2D** ppTexture)
 	{
 		Texture2D* pTex = new Texture2D;
 		if (!pTex)
@@ -94,7 +129,7 @@ namespace RenderDog
 			return false;
 		}
 
-		if (!pTex->Init(pDesc))
+		if (!pTex->Init(pDesc, nullptr, 0))
 		{
 			return false;
 		}
@@ -104,7 +139,7 @@ namespace RenderDog
 		return true;
 	}
 
-	bool Device::CreateRenderTargetView(Texture2D* pTexture, const RenderTargetDesc* pDesc, RenderTargetView** ppRenderTarget)
+	bool Device::CreateRenderTargetView(ITexture2D* pTexture, const RenderTargetDesc* pDesc, RenderTargetView** ppRenderTarget)
 	{
 		if (!pDesc)
 		{
@@ -117,8 +152,11 @@ namespace RenderDog
 			*ppRenderTarget = pRT;
 
 			pRT->GetView() = (uint32_t*)pTexture->GetData();
-			pRT->SetWidth(pTexture->GetWidth());
-			pRT->SetHeight(pTexture->GetHeight());
+
+			Texture2DDesc texDesc;
+			pTexture->GetDesc(&texDesc);
+			pRT->SetWidth(texDesc.width);
+			pRT->SetHeight(texDesc.height);
 		}
 		else
 		{
@@ -128,7 +166,7 @@ namespace RenderDog
 		return true;
 	}
 
-	bool Device::CreateDepthStencilView(Texture2D* pTexture, DepthStencilView** ppDepthStencil)
+	bool Device::CreateDepthStencilView(ITexture2D* pTexture, DepthStencilView** ppDepthStencil)
 	{
 		DepthStencilView* pDS = new DepthStencilView();
 		if (!pDS)
@@ -139,8 +177,11 @@ namespace RenderDog
 		*ppDepthStencil = pDS;
 
 		pDS->GetView() = (float*)pTexture->GetData();
-		pDS->SetWidth(pTexture->GetWidth());
-		pDS->SetHeight(pTexture->GetHeight());
+
+		Texture2DDesc texDesc;
+		pTexture->GetDesc(&texDesc);
+		pDS->SetWidth(texDesc.width);
+		pDS->SetHeight(texDesc.height);
 
 		return true;
 	}
@@ -230,14 +271,10 @@ namespace RenderDog
 		DeviceContext(const DeviceContext&) = delete;
 		DeviceContext& operator=(const DeviceContext&) = delete;
 
-		bool Init(IDevice* pDevice, uint32_t width, uint32_t height);
+		bool Init(uint32_t width, uint32_t height);
 
 		virtual void AddRef() override {}
 		virtual void Release() override { delete this; }
-
-		virtual void GetDevice(IDevice** ppDevice) override { *ppDevice = m_pDevice; }
-		virtual void GetPrivateData(uint32_t* pDataSize, void* pData) override {}
-		virtual void SetPrivateData(uint32_t DataSize, const void* pData) override {}
 
 		virtual void IASetVertexBuffer(VertexBuffer* pVB) override;
 		virtual void IASetIndexBuffer(IndexBuffer* pIB) override;
@@ -300,7 +337,6 @@ namespace RenderDog
 		void Rasterization();
 
 	private:
-		IDevice*	m_pDevice;
 		uint32_t*	m_pFrameBuffer;
 		float*		m_pDepthBuffer;
 #if DEBUG_RASTERIZATION
@@ -337,7 +373,6 @@ namespace RenderDog
 	extern const float fEpsilon;
 
 	DeviceContext::DeviceContext() :
-		m_pDevice(nullptr),
 		m_pFrameBuffer(nullptr),
 		m_pDepthBuffer(nullptr),
 #if DEBUG_RASTERIZATION
@@ -396,15 +431,8 @@ namespace RenderDog
 #endif
 	}
 
-	bool DeviceContext::Init(IDevice* pDevice, uint32_t width, uint32_t height)
+	bool DeviceContext::Init(uint32_t width, uint32_t height)
 	{
-		if (!pDevice)
-		{
-			return false;
-		}
-
-		m_pDevice = pDevice;
-
 		m_nWidth = width;
 		m_nHeight = height;
 
@@ -1346,7 +1374,7 @@ namespace RenderDog
 		virtual void Present() override;
 
 	private:
-		void*			m_pBackBuffer;
+		Texture2D*		m_pBackBuffer;
 		
 		SwapChainDesc   m_Desc;
 
@@ -1363,6 +1391,23 @@ namespace RenderDog
 		}
 
 		m_Desc = *pDesc;
+
+		m_pBackBuffer = new Texture2D();
+		if (!m_pBackBuffer)
+		{
+			return false;
+		}
+
+		Texture2DDesc texDesc;
+		texDesc.width = m_Desc.width;
+		texDesc.height = m_Desc.height;
+		texDesc.format = RD_FORMAT::UNKNOWN;
+		if (!m_pBackBuffer->Init(&texDesc, nullptr, 0))
+		{
+			return false;
+		}
+
+		void*& pTempBitMapBuffer = m_pBackBuffer->GetData();
 
 		HDC hDC = GetDC(m_Desc.hOutputWindow);
 		m_hWndDC = CreateCompatibleDC(hDC);
@@ -1384,6 +1429,7 @@ namespace RenderDog
 			bitCnt = 0;
 			imageSize = 0;
 
+			return false;
 			break;
 		}
 		default:
@@ -1392,7 +1438,7 @@ namespace RenderDog
 		}
 		}
 
-		void* pTempBitMapBuffer = nullptr;
+		
 		BITMAPINFO BitMapInfo =
 		{
 			{ sizeof(BITMAPINFOHEADER), (int)pDesc->width, -(int)pDesc->height, 1, bitCnt, BI_RGB, imageSize, 0, 0, 0, 0 }
@@ -1406,9 +1452,6 @@ namespace RenderDog
 		{
 			m_hOldBitMap = nullptr;
 		}
-
-		m_pBackBuffer = (uint32_t*)pTempBitMapBuffer;
-		memset(m_pBackBuffer, 0, (size_t)m_Desc.width * (size_t)m_Desc.height * 4);
 
 		AddRef();
 
@@ -1432,6 +1475,7 @@ namespace RenderDog
 		{
 			DeleteObject(m_hBitMap);
 			m_hBitMap = nullptr;
+			m_pBackBuffer->GetData() = nullptr;
 		}
 
 		if (m_Desc.hOutputWindow)
@@ -1440,7 +1484,11 @@ namespace RenderDog
 			m_Desc.hOutputWindow = nullptr;
 		}
 
-		m_pBackBuffer = nullptr;
+		if (m_pBackBuffer)
+		{
+			m_pBackBuffer->Release();
+			m_pBackBuffer = nullptr;
+		}
 
 		delete this;
 	}
@@ -1454,12 +1502,8 @@ namespace RenderDog
 
 	bool SwapChain::GetBuffer(void** ppSurface)
 	{
-		Texture2D* pTex = new Texture2D();
-		*ppSurface = pTex;
-
-		pTex->GetData() = m_pBackBuffer;
-		pTex->SetWidth(m_Desc.width);
-		pTex->SetHeight(m_Desc.height);
+		*ppSurface = m_pBackBuffer;
+		m_pBackBuffer->AddRef();
 
 		return true;
 	}
@@ -1487,7 +1531,7 @@ namespace RenderDog
 			return false;
 		}
 
-		if (!pDeviceContext->Init(*ppDevice, pSwapChainDesc->width, pSwapChainDesc->height))
+		if (!pDeviceContext->Init(pSwapChainDesc->width, pSwapChainDesc->height))
 		{
 			return false;
 		}

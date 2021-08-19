@@ -44,7 +44,7 @@ RenderDog::VertexBuffer*		g_pVertexBuffer = nullptr;			//用于自定义的顶点数组
 RenderDog::IndexBuffer*			g_pIndexBuffer = nullptr;			//用于自定义的索引数组
 RenderDog::VertexShader*		g_pVertexShader = nullptr;
 RenderDog::PixelShader*			g_pPixelShader = nullptr;
-RenderDog::Texture2D*			g_pDepthTexture = nullptr;
+RenderDog::ITexture2D*			g_pDepthTexture = nullptr;
 RenderDog::DepthStencilView*	g_pDepthStencilView = nullptr;
 RenderDog::ShaderResourceView*	g_pTextureSRV = nullptr;
 
@@ -127,7 +127,7 @@ bool InitDevice()
 		return false;
 	}
 
-	RenderDog::Texture2D* pBackBuffer = nullptr;
+	RenderDog::ITexture2D* pBackBuffer = nullptr;
 	if (!g_pSwapChain->GetBuffer((void**)&pBackBuffer))
 	{
 		return false;
@@ -137,8 +137,7 @@ bool InitDevice()
 	{
 		return false;
 	}
-	delete pBackBuffer;
-	pBackBuffer = nullptr;
+	pBackBuffer->Release();
 
 	RenderDog::Texture2DDesc depthDesc;
 	depthDesc.width = g_WindowWidth;
@@ -348,7 +347,6 @@ void CleanupDevice()
 	{
 		g_pDepthTexture->Release();
 
-		delete g_pDepthTexture;
 		g_pDepthTexture = nullptr;
 	}
 

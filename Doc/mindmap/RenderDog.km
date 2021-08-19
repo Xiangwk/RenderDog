@@ -608,7 +608,7 @@
                                                         "x": 167,
                                                         "y": -79
                                                     },
-                                                    "note": "1. 按照DX11的接口来实现Texture2D；\n\n2. 详细修改步骤：\n  1. 将Texture2D的类定义转移至RenderDog.h头文件中；\n  2. 删除Texture2D.h和Texture2D.cpp\n  3.  将成员变量中的m_Width，m_Height以及m_Format合并为一个Texture2DDesc成员变量，将接受参数的构造函数修改为Init函数；\n  4. 将Texture2D类型定义放到RenderDog.cpp中，从ITexture2D继承出来，实现继承而来的接口；"
+                                                    "note": "1. 按照DX11的接口来实现Texture2D；\n\n2. 详细修改步骤：\n  1. 将Texture2D的类定义转移至RenderDog.h头文件中；\n  2. 删除Texture2D.h和Texture2D.cpp\n  3.  将成员变量中的m_Width，m_Height以及m_Format合并为一个Texture2DDesc成员变量，将接受参数的构造函数修改为Init函数；\n  4. 将Texture2D类型定义放到RenderDog.cpp中，从ITexture2D继承出来，实现继承而来的接口；\n  5. 将SwapChain中的BackBuffer修改为Texture2D类型，在创建SwapChain时即创建BackBuffer，修改GetBuffer中的实现，在GetBuffer中增加BackBuffer的引用计数；"
                                                 },
                                                 "children": []
                                             },
