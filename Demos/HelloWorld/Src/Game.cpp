@@ -143,7 +143,7 @@ bool InitDevice()
 	depthDesc.width = g_WindowWidth;
 	depthDesc.height = g_WindowWidth;
 	depthDesc.format = RenderDog::RD_FORMAT::R32_FLOAT;
-	if (!g_pDevice->CreateTexture2D(&depthDesc, &g_pDepthTexture))
+	if (!g_pDevice->CreateTexture2D(&depthDesc, nullptr, &g_pDepthTexture))
 	{
 		return false;
 	}

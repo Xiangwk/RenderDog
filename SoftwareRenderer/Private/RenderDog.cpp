@@ -20,7 +20,7 @@ namespace RenderDog
 		Texture2D();
 		~Texture2D();
 
-		bool Init(const Texture2DDesc* pDesc, void* pInitData, uint32_t dataSize);
+		bool Init(const Texture2DDesc* pDesc, const SubResourceData* pInitData);
 
 		virtual void AddRef() override { ++m_RefCnt; }
 		virtual void Release() override;
@@ -53,7 +53,7 @@ namespace RenderDog
 		m_Desc()
 	{}
 
-	bool Texture2D::Init(const Texture2DDesc* pDesc, void* pInitData, uint32_t dataSize)
+	bool Texture2D::Init(const Texture2DDesc* pDesc, const SubResourceData* pInitData)
 	{
 		m_Desc = *pDesc;
 		uint32_t dataNum = pDesc->width * pDesc->height;
@@ -66,10 +66,14 @@ namespace RenderDog
 		{
 			m_pData = new float[dataNum];
 		}
+		else
+		{
+			m_pData = nullptr;
+		}
 
 		if (pInitData)
 		{
-			memcpy(m_pData, pInitData, dataSize);
+			memcpy(m_pData, pInitData->pSysMem, pInitData->sysMemPitch * pDesc->width);
 		}
 
 		AddRef();
@@ -108,7 +112,7 @@ namespace RenderDog
 		Device(const Device&) = delete;
 		Device& operator=(const Device&) = delete;
 
-		virtual bool CreateTexture2D(const Texture2DDesc* pDesc, ITexture2D** ppTexture) override;
+		virtual bool CreateTexture2D(const Texture2DDesc* pDesc, const SubResourceData* pInitData, ITexture2D** ppTexture) override;
 		virtual bool CreateRenderTargetView(ITexture2D* pTexture, const RenderTargetDesc* pDesc, RenderTargetView** ppRenderTarget) override;
 		virtual bool CreateDepthStencilView(ITexture2D* pTexture, DepthStencilView** ppDepthStencil) override;
 		virtual bool CreateVertexBuffer(const VertexBufferDesc& vbDesc, VertexBuffer** ppVertexBuffer) override;
@@ -121,7 +125,7 @@ namespace RenderDog
 	};
 
 
-	bool Device::CreateTexture2D(const Texture2DDesc* pDesc, ITexture2D** ppTexture)
+	bool Device::CreateTexture2D(const Texture2DDesc* pDesc, const SubResourceData* pInitData, ITexture2D** ppTexture)
 	{
 		Texture2D* pTex = new Texture2D;
 		if (!pTex)
@@ -129,7 +133,7 @@ namespace RenderDog
 			return false;
 		}
 
-		if (!pTex->Init(pDesc, nullptr, 0))
+		if (!pTex->Init(pDesc, pInitData))
 		{
 			return false;
 		}
@@ -1402,7 +1406,7 @@ namespace RenderDog
 		texDesc.width = m_Desc.width;
 		texDesc.height = m_Desc.height;
 		texDesc.format = RD_FORMAT::UNKNOWN;
-		if (!m_pBackBuffer->Init(&texDesc, nullptr, 0))
+		if (!m_pBackBuffer->Init(&texDesc, nullptr))
 		{
 			return false;
 		}

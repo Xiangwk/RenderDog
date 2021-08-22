@@ -580,8 +580,8 @@
                                             "created": 1629301860960,
                                             "text": "Texture",
                                             "layout_right_offset": {
-                                                "x": 81,
-                                                "y": -68
+                                                "x": 72,
+                                                "y": 29
                                             }
                                         },
                                         "children": [
@@ -620,7 +620,8 @@
                                                     "layout_right_offset": {
                                                         "x": 169,
                                                         "y": -65
-                                                    }
+                                                    },
+                                                    "note": "1. 添加ViewDesc用于创建View\n\n2. 添加IView接口类型；\n\n3. 添加Init函数用于View的创建；\n\n4. RenderTargetView中的成员变量应该为IResource;"
                                                 },
                                                 "children": []
                                             },
@@ -632,7 +633,8 @@
                                                     "layout_right_offset": {
                                                         "x": 173,
                                                         "y": -55
-                                                    }
+                                                    },
+                                                    "note": "1. 将Device"
                                                 },
                                                 "children": []
                                             },
@@ -670,6 +672,18 @@
                                             "layout_right_offset": {
                                                 "x": 75,
                                                 "y": 35
+                                            }
+                                        },
+                                        "children": []
+                                    },
+                                    {
+                                        "data": {
+                                            "id": "cdozukzv66g0",
+                                            "created": 1629529080264,
+                                            "text": "Device",
+                                            "layout_right_offset": {
+                                                "x": 67,
+                                                "y": -355
                                             }
                                         },
                                         "children": []

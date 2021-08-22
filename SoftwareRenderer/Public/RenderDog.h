@@ -95,6 +95,17 @@ namespace RenderDog
 	};
 #pragma endregion Description
 
+	struct SubResourceData
+	{
+		const void* pSysMem;
+		uint32_t	sysMemPitch;
+
+		SubResourceData() :
+			pSysMem(nullptr),
+			sysMemPitch(0)
+		{}
+	};
+
 #pragma region Interface
 
 	class IUnknown
@@ -124,7 +135,7 @@ namespace RenderDog
 	class IDevice : public IUnknown
 	{
 	public:
-		virtual bool CreateTexture2D(const Texture2DDesc* pDesc, ITexture2D** ppTexture) = 0;
+		virtual bool CreateTexture2D(const Texture2DDesc* pDesc, const SubResourceData* pInitData, ITexture2D** ppTexture) = 0;
 		virtual bool CreateRenderTargetView(ITexture2D* pTexture, const RenderTargetDesc* pDesc, RenderTargetView** ppRenderTarget) = 0;
 		virtual bool CreateDepthStencilView(ITexture2D* pTexture, DepthStencilView** ppDepthStencil) = 0;
 		virtual bool CreateVertexBuffer(const VertexBufferDesc& vbDesc, VertexBuffer** ppVertexBuffer) = 0;
