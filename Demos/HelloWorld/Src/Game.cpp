@@ -150,6 +150,7 @@ bool InitDevice()
 
 	RenderDog::DepthStencilViewDesc dsDesc;
 	dsDesc.format = depthDesc.format;
+	dsDesc.viewDimension = RenderDog::DSV_DIMENSION::TEXTURE2D;
 	if (!g_pDevice->CreateDepthStencilView(g_pDepthTexture, &dsDesc, &g_pDepthStencilView))
 	{
 		return false;

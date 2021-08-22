@@ -35,9 +35,20 @@ namespace RenderDog
 	{
 		UNKNOWN = 0,
 		BUFFER = 1,
-		TEXTURE1D = 2,
-		TEXTURE2D = 3,
-		TEXTURE3D = 4
+		TEXTURE2D = 2,
+	};
+
+	enum class RTV_DIMENSION
+	{
+		UNKNOWN = 0,
+		BUFFER = 1,
+		TEXTURE2D = 2,
+	};
+
+	enum class DSV_DIMENSION
+	{
+		UNKNOWN = 0,
+		TEXTURE2D = 1,
 	};
 
 	enum class RD_FORMAT
@@ -96,19 +107,23 @@ namespace RenderDog
 
 	struct RenderTargetViewDesc
 	{
-		RD_FORMAT format;
+		RD_FORMAT		format;
+		RTV_DIMENSION	viewDimension;
 
 		RenderTargetViewDesc() :
-			format(RD_FORMAT::UNKNOWN)
+			format(RD_FORMAT::UNKNOWN),
+			viewDimension(RTV_DIMENSION::UNKNOWN)
 		{}
 	};
 
 	struct DepthStencilViewDesc
 	{
 		RD_FORMAT format;
+		DSV_DIMENSION viewDimension;
 
 		DepthStencilViewDesc() :
-			format(RD_FORMAT::UNKNOWN)
+			format(RD_FORMAT::UNKNOWN),
+			viewDimension(DSV_DIMENSION::UNKNOWN)
 		{}
 	};
 #pragma endregion Description
@@ -195,9 +210,9 @@ namespace RenderDog
 
 		virtual void RSSetViewport(const Viewport* pVP) = 0;
 
-		virtual void OMSetRenderTarget(IRenderTargetView* pRenderTarget, IDepthStencilView* pDepthStencil) = 0;
-		virtual void ClearRenderTargetView(IRenderTargetView* pRenderTarget, const Vector4& clearColor) = 0;
-		virtual void ClearDepthStencilView(IDepthStencilView* pDepthStencil, float fDepth) = 0;
+		virtual void OMSetRenderTarget(IRenderTargetView* pRenderTargetView, IDepthStencilView* pDepthStencilView) = 0;
+		virtual void ClearRenderTargetView(IRenderTargetView* pRenderTargetView, const Vector4& clearColor) = 0;
+		virtual void ClearDepthStencilView(IDepthStencilView* pDepthStencilView, float fDepth) = 0;
 		virtual void Draw() = 0;
 		virtual void DrawIndex(uint32_t nIndexNum) = 0;
 

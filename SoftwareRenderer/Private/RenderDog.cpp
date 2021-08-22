@@ -21,6 +21,7 @@ namespace RenderDog
 		~Texture2D();
 
 		bool Init(const Texture2DDesc* pDesc, const SubResourceData* pInitData);
+		void SetFormat(RD_FORMAT format) { m_Desc.format = format; }
 
 		virtual void AddRef() override { ++m_RefCnt; }
 		virtual void Release() override;
@@ -257,6 +258,15 @@ namespace RenderDog
 			return false;
 		}
 
+		RESOURCE_DIMENSION resDimension;
+		pResource->GetType(&resDimension);
+		if (resDimension == RESOURCE_DIMENSION::TEXTURE2D)
+		{
+			RenderTargetViewDesc rtvDesc;
+			rtvDesc.viewDimension = RTV_DIMENSION::TEXTURE2D;
+			pDesc = &rtvDesc;
+		}
+
 		if (!pRT->Init(pResource, pDesc))
 		{
 			return false;
@@ -387,9 +397,9 @@ namespace RenderDog
 
 		virtual void RSSetViewport(const Viewport* pVP) override;
 
-		virtual void OMSetRenderTarget(IRenderTargetView* pRenderTarget, IDepthStencilView* pDepthStencil) override;
-		virtual void ClearRenderTargetView(IRenderTargetView* pRenderTarget, const Vector4& clearColor) override;
-		virtual void ClearDepthStencilView(IDepthStencilView* pDepthStencil, float fDepth) override;
+		virtual void OMSetRenderTarget(IRenderTargetView* pRenderTargetView, IDepthStencilView* pDepthStencilVew) override;
+		virtual void ClearRenderTargetView(IRenderTargetView* pRenderTargetView, const Vector4& clearColor) override;
+		virtual void ClearDepthStencilView(IDepthStencilView* pDepthStencilView, float fDepth) override;
 		virtual void Draw() override;
 		virtual void DrawIndex(uint32_t nIndexNum) override;
 
@@ -441,8 +451,8 @@ namespace RenderDog
 #if DEBUG_RASTERIZATION
 		uint32_t* m_pDebugBuffer;  //检查是否有重复绘制的像素
 #endif
-		uint32_t					m_nWidth;
-		uint32_t					m_nHeight;
+		uint32_t					m_BackBufferWidth;
+		uint32_t					m_BackBufferHeight;
 
 		VertexBuffer* m_pVB;
 		IndexBuffer* m_pIB;
@@ -477,8 +487,8 @@ namespace RenderDog
 #if DEBUG_RASTERIZATION
 		m_pDebugBuffer(nullptr),
 #endif
-		m_nWidth(0),
-		m_nHeight(0),
+		m_BackBufferWidth(0),
+		m_BackBufferHeight(0),
 		m_pVB(nullptr),
 		m_pIB(nullptr),
 		m_pVS(nullptr),
@@ -493,7 +503,7 @@ namespace RenderDog
 		m_pMainLight(nullptr)
 	{
 #if DEBUG_RASTERIZATION
-		uint32_t nBufferSize = m_nWidth * m_nHeight;
+		uint32_t nBufferSize = m_BackBufferWidth * m_BackBufferHeight;
 		m_pDebugBuffer = new uint32_t[nBufferSize];
 
 		for (uint32_t i = 0; i < nBufferSize; ++i)
@@ -532,8 +542,8 @@ namespace RenderDog
 
 	bool DeviceContext::Init(uint32_t width, uint32_t height)
 	{
-		m_nWidth = width;
-		m_nHeight = height;
+		m_BackBufferWidth = width;
+		m_BackBufferHeight = height;
 
 		AddRef();
 
@@ -577,38 +587,101 @@ namespace RenderDog
 		m_pViewportMat = new Matrix4x4(matViewport);
 	}
 
-	void DeviceContext::OMSetRenderTarget(IRenderTargetView* pRenderTarget, IDepthStencilView* pDepthStencil)
+	void DeviceContext::OMSetRenderTarget(IRenderTargetView* pRenderTargetView, IDepthStencilView* pDepthStencilView)
 	{
 		IResource* pTex = nullptr;
-		pRenderTarget->GetResource(&pTex);
-		Texture2D* pTex2D = dynamic_cast<Texture2D*>(pTex);
-		m_pFrameBuffer = (uint32_t*)pTex2D->GetData();
+		pRenderTargetView->GetResource(&pTex);
+		
+		RenderTargetViewDesc rtvDesc;
+		pRenderTargetView->GetDesc(&rtvDesc);
 
-		pDepthStencil->GetResource(&pTex);
-		pTex2D = dynamic_cast<Texture2D*>(pTex);
-		m_pDepthBuffer = (float*)pTex2D->GetData();
+		switch (rtvDesc.viewDimension)
+		{
+		case RTV_DIMENSION::UNKNOWN:
+		{
+			m_pFrameBuffer = nullptr;
+			break;
+		}
+		case RTV_DIMENSION::BUFFER:
+		{
+			break;
+		}
+		case RTV_DIMENSION::TEXTURE2D:
+		{
+			Texture2D* pTex2D = dynamic_cast<Texture2D*>(pTex);
+
+			//TODO: use format to determine m_pFrameBuffer's type;
+			m_pFrameBuffer = (uint32_t*)pTex2D->GetData();
+			Texture2DDesc desc;
+			pTex2D->GetDesc(&desc);
+
+			m_BackBufferWidth = desc.width;
+			m_BackBufferHeight = desc.height;
+
+			break;
+		}
+		default:
+			break;
+		}
+		
+		
+		pDepthStencilView->GetResource(&pTex);
+		
+		DepthStencilViewDesc dsvDesc;
+		pDepthStencilView->GetDesc(&dsvDesc);
+
+		switch (dsvDesc.viewDimension)
+		{
+		case DSV_DIMENSION::UNKNOWN:
+		{
+			m_pDepthBuffer = nullptr;
+			break;
+		}
+		case DSV_DIMENSION::TEXTURE2D:
+		{
+			Texture2D* pTex2D = dynamic_cast<Texture2D*>(pTex);
+
+			//TODO: use format to determine m_pFrameBuffer's type;
+			m_pDepthBuffer = (float*)pTex2D->GetData();
+
+			break;
+		}
+		default:
+			break;
+		}
 	}
 
-	void DeviceContext::ClearRenderTargetView(IRenderTargetView* pRenderTarget, const Vector4& clearColor)
+	void DeviceContext::ClearRenderTargetView(IRenderTargetView* pRenderTargetView, const Vector4& clearColor)
 	{
-		IResource* pTex = nullptr;
-		pRenderTarget->GetResource(&pTex);
-		Texture2D* pTex2D = dynamic_cast<Texture2D*>(pTex);
-		Texture2DDesc texDesc;
-		pTex2D->GetDesc(&texDesc);
-
 		Vector4 ARGB = ConvertRGBAColorToARGBColor(clearColor);
 		uint32_t nClearColor = ConvertColorToUInt32(ARGB);
 
-		uint32_t rtWidth = texDesc.width;
-		uint32_t rtHeight = texDesc.height;
-		uint32_t* pRT = static_cast<uint32_t*>(pTex2D->GetData());
-		for (uint32_t row = 0; row < rtHeight; ++row)
+		IResource* pTex = nullptr;
+		pRenderTargetView->GetResource(&pTex);
+
+		RenderTargetViewDesc rtvDesc;
+		pRenderTargetView->GetDesc(&rtvDesc);
+		
+		if(rtvDesc.viewDimension == RTV_DIMENSION::TEXTURE2D)
 		{
-			for (uint32_t col = 0; col < rtWidth; ++col)
+			Texture2D* pTex2D = dynamic_cast<Texture2D*>(pTex);
+
+			Texture2DDesc texDesc;
+			pTex2D->GetDesc(&texDesc);
+
+			uint32_t rtWidth = texDesc.width;
+			uint32_t rtHeight = texDesc.height;
+			if (texDesc.format == RD_FORMAT::R8G8B8A8_UNORM)
 			{
-				uint32_t nIndex = row * rtWidth + col;
-				pRT[nIndex] = nClearColor;
+				uint32_t* pRT = static_cast<uint32_t*>(pTex2D->GetData());
+				for (uint32_t row = 0; row < rtHeight; ++row)
+				{
+					for (uint32_t col = 0; col < rtWidth; ++col)
+					{
+						uint32_t nIndex = row * rtWidth + col;
+						pRT[nIndex] = nClearColor;
+					}
+				}
 			}
 		}
 
@@ -625,19 +698,29 @@ namespace RenderDog
 	{
 		IResource* pTex = nullptr;
 		pDepthStencil->GetResource(&pTex);
-		Texture2D* pTex2D = dynamic_cast<Texture2D*>(pTex);
-		Texture2DDesc texDesc;
-		pTex2D->GetDesc(&texDesc);
 
-		float* pDepth = static_cast<float*>(pTex2D->GetData());
-		uint32_t nWidth = texDesc.width;
-		uint32_t nHeight = texDesc.height;
-		for (uint32_t row = 0; row < nHeight; ++row)
+		DepthStencilViewDesc dsvDesc;
+		pDepthStencil->GetDesc(&dsvDesc);
+
+		if (dsvDesc.viewDimension == DSV_DIMENSION::TEXTURE2D)
 		{
-			for (uint32_t col = 0; col < nWidth; ++col)
+			Texture2D* pTex2D = dynamic_cast<Texture2D*>(pTex);
+			Texture2DDesc texDesc;
+			pTex2D->GetDesc(&texDesc);
+
+			if (texDesc.format == RD_FORMAT::R32_FLOAT)
 			{
-				uint32_t nIndex = row * nWidth + col;
-				pDepth[nIndex] = fDepth;
+				float* pDepth = static_cast<float*>(pTex2D->GetData());
+				uint32_t nWidth = texDesc.width;
+				uint32_t nHeight = texDesc.height;
+				for (uint32_t row = 0; row < nHeight; ++row)
+				{
+					for (uint32_t col = 0; col < nWidth; ++col)
+					{
+						uint32_t nIndex = row * nWidth + col;
+						pDepth[nIndex] = fDepth;
+					}
+				}
 			}
 		}
 	}
@@ -684,11 +767,11 @@ namespace RenderDog
 #if DEBUG_RASTERIZATION
 	bool DeviceContext::CheckDrawPixelTwice()
 	{
-		for (uint32_t i = 0; i < m_nHeight; ++i)
+		for (uint32_t i = 0; i < m_BackBufferHeight; ++i)
 		{
-			for (uint32_t j = 0; j < m_nWidth; ++j)
+			for (uint32_t j = 0; j < m_BackBufferWidth; ++j)
 			{
-				uint32_t nDrawCnt = m_pDebugBuffer[i * m_nWidth + j];
+				uint32_t nDrawCnt = m_pDebugBuffer[i * m_BackBufferWidth + j];
 				if (nDrawCnt > 1)
 				{
 					//std::cout << "Pixel: " << i << " " << j << " Draw " << nDrawCnt << std::endl;
@@ -718,7 +801,7 @@ namespace RenderDog
 			float yEnd = std::fmax(fPos1Y, fPos2Y);
 			for (int yStep = (int)yStart; yStep <= (int)yEnd; ++yStep)
 			{
-				m_pFrameBuffer[(int)fPos1X + yStep * m_nWidth] = nClearColor;
+				m_pFrameBuffer[(int)fPos1X + yStep * m_BackBufferWidth] = nClearColor;
 			}
 			return;
 		}
@@ -733,7 +816,7 @@ namespace RenderDog
 			{
 				y += k;
 				int yStep = (int)y;
-				m_pFrameBuffer[xStep + yStep * m_nWidth] = nClearColor;
+				m_pFrameBuffer[xStep + yStep * m_BackBufferWidth] = nClearColor;
 			}
 		}
 		else
@@ -745,7 +828,7 @@ namespace RenderDog
 			{
 				x += 1.0f / k;
 				int xStep = (int)x;
-				m_pFrameBuffer[xStep + yStep * m_nWidth] = nClearColor;
+				m_pFrameBuffer[xStep + yStep * m_BackBufferWidth] = nClearColor;
 			}
 		}
 	}
@@ -851,18 +934,18 @@ namespace RenderDog
 				VSOutputVertex vCurr;
 				LerpVertexParamsInScreen(vStart, vEnd, vCurr, fLerpFactorX);
 
-				float fPixelDepth = m_pDepthBuffer[j + i * m_nWidth];
+				float fPixelDepth = m_pDepthBuffer[j + i * m_BackBufferWidth];
 				if (vCurr.SVPosition.z <= fPixelDepth)
 				{
 					Vector4 color = m_pPS->PSMain(vCurr, m_pSRV, m_pMainLight);
 					Vector4 ARGB = ConvertRGBAColorToARGBColor(color);
-					m_pFrameBuffer[j + i * m_nWidth] = ConvertColorToUInt32(ARGB);
+					m_pFrameBuffer[j + i * m_BackBufferWidth] = ConvertColorToUInt32(ARGB);
 
-					m_pDepthBuffer[j + i * m_nWidth] = vCurr.SVPosition.z;
+					m_pDepthBuffer[j + i * m_BackBufferWidth] = vCurr.SVPosition.z;
 				}
 
 #if DEBUG_RASTERIZATION
-				m_pDebugBuffer[j + i * m_nWidth]++;
+				m_pDebugBuffer[j + i * m_BackBufferWidth]++;
 #endif
 			}
 		}
@@ -896,18 +979,18 @@ namespace RenderDog
 				VSOutputVertex vCurr;
 				LerpVertexParamsInScreen(vStart, vEnd, vCurr, fLerpFactorX);
 
-				float fPixelDepth = m_pDepthBuffer[j + i * m_nWidth];
+				float fPixelDepth = m_pDepthBuffer[j + i * m_BackBufferWidth];
 				if (vCurr.SVPosition.z <= fPixelDepth)
 				{
 					Vector4 color = m_pPS->PSMain(vCurr, m_pSRV, m_pMainLight);
 					Vector4 ARGB = ConvertRGBAColorToARGBColor(color);
-					m_pFrameBuffer[j + i * m_nWidth] = ConvertColorToUInt32(ARGB);
+					m_pFrameBuffer[j + i * m_BackBufferWidth] = ConvertColorToUInt32(ARGB);
 
-					m_pDepthBuffer[j + i * m_nWidth] = vCurr.SVPosition.z;
+					m_pDepthBuffer[j + i * m_BackBufferWidth] = vCurr.SVPosition.z;
 				}
 
 #if DEBUG_RASTERIZATION
-				m_pDebugBuffer[j + i * m_nWidth]++;
+				m_pDebugBuffer[j + i * m_BackBufferWidth]++;
 #endif
 			}
 		}
@@ -1518,7 +1601,7 @@ namespace RenderDog
 		Texture2DDesc texDesc;
 		texDesc.width = m_Desc.width;
 		texDesc.height = m_Desc.height;
-		texDesc.format = RD_FORMAT::UNKNOWN;
+		texDesc.format = RD_FORMAT::UNKNOWN;   //这里不传入pDesc->format是为了Init Texture2D时避免分配内存，SwapChain的backbuffer的内存由CreateDIBSection来分配；
 		if (!m_pBackBuffer->Init(&texDesc, nullptr))
 		{
 			return false;
@@ -1538,6 +1621,8 @@ namespace RenderDog
 		{
 			bitCnt = 32;
 			imageSize = pDesc->width * pDesc->height * 4;
+
+			m_pBackBuffer->SetFormat(RD_FORMAT::R8G8B8A8_UNORM);
 
 			break;
 		}
