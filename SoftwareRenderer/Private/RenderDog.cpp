@@ -102,6 +102,112 @@ namespace RenderDog
 #pragma endregion Texture2D
 
 
+#pragma region View
+	class RenderTargetView : public IRenderTargetView
+	{
+	public:
+		RenderTargetView() :
+			m_RefCnt(0),
+			m_pViewResource(nullptr),
+			m_Desc()
+		{}
+		~RenderTargetView()
+		{
+			m_pViewResource = nullptr;
+		}
+
+		bool Init(IResource* pResource, const RenderTargetViewDesc* pDesc);
+
+		virtual void AddRef() override { ++m_RefCnt; }
+		virtual void Release() override;
+
+		virtual void GetResource(IResource** ppResource) override { *ppResource = m_pViewResource; }
+
+		virtual void GetDesc(RenderTargetViewDesc* pDesc) override { *pDesc = m_Desc; }
+
+	private:
+		int						m_RefCnt;
+
+		IResource*				m_pViewResource;
+		RenderTargetViewDesc	m_Desc;
+	};
+
+	bool RenderTargetView::Init(IResource* pResource, const RenderTargetViewDesc* pDesc)
+	{
+		m_pViewResource = pResource;
+
+		if (pDesc)
+		{
+			m_Desc = *pDesc;
+		}
+
+		AddRef();
+
+		return true;
+	}
+
+	void RenderTargetView::Release()
+	{
+		--m_RefCnt;
+		if (m_RefCnt == 0)
+		{
+			delete this;
+		}
+	}
+
+	class DepthStencilView : public IDepthStencilView
+	{
+	public:
+		DepthStencilView() :
+			m_RefCnt(0),
+			m_pViewResource(nullptr),
+			m_Desc()
+		{}
+		~DepthStencilView()
+		{
+			m_pViewResource = nullptr;
+		}
+
+		bool Init(IResource* pResource, const DepthStencilViewDesc* pDesc);
+
+		virtual void AddRef() override { ++m_RefCnt; }
+		virtual void Release() override;
+
+		virtual void GetResource(IResource** ppResource) override { *ppResource = m_pViewResource; }
+
+		virtual void GetDesc(DepthStencilViewDesc* pDesc) override { *pDesc = m_Desc; }
+
+	private:
+		int						m_RefCnt;
+
+		IResource*				m_pViewResource;
+		DepthStencilViewDesc	m_Desc;
+	};
+
+	bool DepthStencilView::Init(IResource* pResource, const DepthStencilViewDesc* pDesc)
+	{
+		m_pViewResource = pResource;
+
+		if (pDesc)
+		{
+			m_Desc = *pDesc;
+		}
+
+		AddRef();
+
+		return true;
+	}
+
+	void DepthStencilView::Release()
+	{
+		--m_RefCnt;
+		if (m_RefCnt == 0)
+		{
+			delete this;
+		}
+	}
+#pragma endregion View
+
 #pragma region Device
 	class Device : public IDevice
 	{
@@ -113,8 +219,8 @@ namespace RenderDog
 		Device& operator=(const Device&) = delete;
 
 		virtual bool CreateTexture2D(const Texture2DDesc* pDesc, const SubResourceData* pInitData, ITexture2D** ppTexture) override;
-		virtual bool CreateRenderTargetView(ITexture2D* pTexture, const RenderTargetDesc* pDesc, RenderTargetView** ppRenderTarget) override;
-		virtual bool CreateDepthStencilView(ITexture2D* pTexture, DepthStencilView** ppDepthStencil) override;
+		virtual bool CreateRenderTargetView(IResource* pResource, const RenderTargetViewDesc* pDesc, IRenderTargetView** ppRenderTarget) override;
+		virtual bool CreateDepthStencilView(IResource* pResource, const DepthStencilViewDesc* pDesc, IDepthStencilView** ppDepthStencil) override;
 		virtual bool CreateVertexBuffer(const VertexBufferDesc& vbDesc, VertexBuffer** ppVertexBuffer) override;
 		virtual bool CreateIndexBuffer(const IndexBufferDesc& ibDesc, IndexBuffer** ppIndexBuffer) override;
 		virtual bool CreateVertexShader(VertexShader** ppVertexShader) override;
@@ -143,34 +249,25 @@ namespace RenderDog
 		return true;
 	}
 
-	bool Device::CreateRenderTargetView(ITexture2D* pTexture, const RenderTargetDesc* pDesc, RenderTargetView** ppRenderTarget)
+	bool Device::CreateRenderTargetView(IResource* pResource, const RenderTargetViewDesc* pDesc, IRenderTargetView** ppRenderTarget)
 	{
-		if (!pDesc)
+		RenderTargetView* pRT = new RenderTargetView();
+		if (!pRT)
 		{
-			RenderTargetView* pRT = new RenderTargetView();
-			if (!pRT)
-			{
-				return false;
-			}
-
-			*ppRenderTarget = pRT;
-
-			pRT->GetView() = (uint32_t*)pTexture->GetData();
-
-			Texture2DDesc texDesc;
-			pTexture->GetDesc(&texDesc);
-			pRT->SetWidth(texDesc.width);
-			pRT->SetHeight(texDesc.height);
+			return false;
 		}
-		else
+
+		if (!pRT->Init(pResource, pDesc))
 		{
-			//ToDo: Create RenderTargetView by Desc
+			return false;
 		}
+
+		*ppRenderTarget = pRT;
 
 		return true;
 	}
 
-	bool Device::CreateDepthStencilView(ITexture2D* pTexture, DepthStencilView** ppDepthStencil)
+	bool Device::CreateDepthStencilView(IResource* pResource, const DepthStencilViewDesc* pDesc, IDepthStencilView** ppDepthStencil)
 	{
 		DepthStencilView* pDS = new DepthStencilView();
 		if (!pDS)
@@ -178,14 +275,12 @@ namespace RenderDog
 			return false;
 		}
 
+		if (!pDS->Init(pResource, pDesc))
+		{
+			return false;
+		}
+
 		*ppDepthStencil = pDS;
-
-		pDS->GetView() = (float*)pTexture->GetData();
-
-		Texture2DDesc texDesc;
-		pTexture->GetDesc(&texDesc);
-		pDS->SetWidth(texDesc.width);
-		pDS->SetHeight(texDesc.height);
 
 		return true;
 	}
@@ -292,9 +387,9 @@ namespace RenderDog
 
 		virtual void RSSetViewport(const Viewport* pVP) override;
 
-		virtual void OMSetRenderTarget(RenderTargetView* pRenderTarget, DepthStencilView* pDepthStencil) override;
-		virtual void ClearRenderTarget(RenderTargetView* pRenderTarget, const Vector4& clearColor) override;
-		virtual void ClearDepthStencil(DepthStencilView* pDepthStencil, float fDepth) override;
+		virtual void OMSetRenderTarget(IRenderTargetView* pRenderTarget, IDepthStencilView* pDepthStencil) override;
+		virtual void ClearRenderTargetView(IRenderTargetView* pRenderTarget, const Vector4& clearColor) override;
+		virtual void ClearDepthStencilView(IDepthStencilView* pDepthStencil, float fDepth) override;
 		virtual void Draw() override;
 		virtual void DrawIndex(uint32_t nIndexNum) override;
 
@@ -482,20 +577,32 @@ namespace RenderDog
 		m_pViewportMat = new Matrix4x4(matViewport);
 	}
 
-	void DeviceContext::OMSetRenderTarget(RenderTargetView* pRenderTarget, DepthStencilView* pDepthStencil)
+	void DeviceContext::OMSetRenderTarget(IRenderTargetView* pRenderTarget, IDepthStencilView* pDepthStencil)
 	{
-		m_pFrameBuffer = pRenderTarget->GetView();
-		m_pDepthBuffer = pDepthStencil->GetView();
+		IResource* pTex = nullptr;
+		pRenderTarget->GetResource(&pTex);
+		Texture2D* pTex2D = dynamic_cast<Texture2D*>(pTex);
+		m_pFrameBuffer = (uint32_t*)pTex2D->GetData();
+
+		pDepthStencil->GetResource(&pTex);
+		pTex2D = dynamic_cast<Texture2D*>(pTex);
+		m_pDepthBuffer = (float*)pTex2D->GetData();
 	}
 
-	void DeviceContext::ClearRenderTarget(RenderTargetView* pRenderTarget, const Vector4& clearColor)
+	void DeviceContext::ClearRenderTargetView(IRenderTargetView* pRenderTarget, const Vector4& clearColor)
 	{
+		IResource* pTex = nullptr;
+		pRenderTarget->GetResource(&pTex);
+		Texture2D* pTex2D = dynamic_cast<Texture2D*>(pTex);
+		Texture2DDesc texDesc;
+		pTex2D->GetDesc(&texDesc);
+
 		Vector4 ARGB = ConvertRGBAColorToARGBColor(clearColor);
 		uint32_t nClearColor = ConvertColorToUInt32(ARGB);
 
-		uint32_t rtWidth = pRenderTarget->GetWidth();
-		uint32_t rtHeight = pRenderTarget->GetHeight();
-		uint32_t* pRT = pRenderTarget->GetView();
+		uint32_t rtWidth = texDesc.width;
+		uint32_t rtHeight = texDesc.height;
+		uint32_t* pRT = static_cast<uint32_t*>(pTex2D->GetData());
 		for (uint32_t row = 0; row < rtHeight; ++row)
 		{
 			for (uint32_t col = 0; col < rtWidth; ++col)
@@ -514,11 +621,17 @@ namespace RenderDog
 #endif
 	}
 
-	void DeviceContext::ClearDepthStencil(DepthStencilView* pDepthStencil, float fDepth)
+	void DeviceContext::ClearDepthStencilView(IDepthStencilView* pDepthStencil, float fDepth)
 	{
-		float* pDepth = pDepthStencil->GetView();
-		uint32_t nWidth = pDepthStencil->GetWidth();
-		uint32_t nHeight = pDepthStencil->GetHeight();
+		IResource* pTex = nullptr;
+		pDepthStencil->GetResource(&pTex);
+		Texture2D* pTex2D = dynamic_cast<Texture2D*>(pTex);
+		Texture2DDesc texDesc;
+		pTex2D->GetDesc(&texDesc);
+
+		float* pDepth = static_cast<float*>(pTex2D->GetData());
+		uint32_t nWidth = texDesc.width;
+		uint32_t nHeight = texDesc.height;
 		for (uint32_t row = 0; row < nHeight; ++row)
 		{
 			for (uint32_t col = 0; col < nWidth; ++col)

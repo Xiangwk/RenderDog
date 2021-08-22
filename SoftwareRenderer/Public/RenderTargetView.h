@@ -10,7 +10,7 @@
 
 namespace RenderDog
 {
-	struct RenderTargetDesc
+	/*struct RenderTargetDesc
 	{
 		uint32_t	width;
 		uint32_t	height;
@@ -46,5 +46,5 @@ namespace RenderDog
 		uint32_t*	m_pView;
 		uint32_t	m_nWidth;
 		uint32_t	m_nHeight;
-	};
+	};*/
 }

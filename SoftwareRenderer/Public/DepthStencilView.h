@@ -8,7 +8,7 @@
 
 namespace RenderDog
 {
-	class DepthStencilView
+	/*class DepthStencilView
 	{
 	public:
 		DepthStencilView():
@@ -37,5 +37,5 @@ namespace RenderDog
 		float*		m_pView;
 		uint32_t	m_nWidth;
 		uint32_t	m_nHeight;
-	};
+	};*/
 }

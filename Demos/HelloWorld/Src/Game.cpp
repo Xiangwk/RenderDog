@@ -39,13 +39,13 @@ uint32_t						g_WindowHeight = 768;
 RenderDog::IDevice*				g_pDevice = nullptr;
 RenderDog::IDeviceContext*		g_pDeviceContext = nullptr;
 RenderDog::ISwapChain*			g_pSwapChain = nullptr;
-RenderDog::RenderTargetView*	g_pRenderTargetView = nullptr;
+RenderDog::IRenderTargetView*	g_pRenderTargetView = nullptr;
 RenderDog::VertexBuffer*		g_pVertexBuffer = nullptr;			//用于自定义的顶点数组
 RenderDog::IndexBuffer*			g_pIndexBuffer = nullptr;			//用于自定义的索引数组
 RenderDog::VertexShader*		g_pVertexShader = nullptr;
 RenderDog::PixelShader*			g_pPixelShader = nullptr;
 RenderDog::ITexture2D*			g_pDepthTexture = nullptr;
-RenderDog::DepthStencilView*	g_pDepthStencilView = nullptr;
+RenderDog::IDepthStencilView*	g_pDepthStencilView = nullptr;
 RenderDog::ShaderResourceView*	g_pTextureSRV = nullptr;
 
 RenderDog::Matrix4x4			g_WorldMatrix;
@@ -148,7 +148,9 @@ bool InitDevice()
 		return false;
 	}
 
-	if (!g_pDevice->CreateDepthStencilView(g_pDepthTexture, &g_pDepthStencilView))
+	RenderDog::DepthStencilViewDesc dsDesc;
+	dsDesc.format = depthDesc.format;
+	if (!g_pDevice->CreateDepthStencilView(g_pDepthTexture, &dsDesc, &g_pDepthStencilView))
 	{
 		return false;
 	}
@@ -305,7 +307,7 @@ void CleanupDevice()
 	
 	if (g_pRenderTargetView)
 	{
-		delete g_pRenderTargetView;
+		g_pRenderTargetView->Release();
 		g_pRenderTargetView = nullptr;
 	}
 
@@ -346,13 +348,12 @@ void CleanupDevice()
 	if (g_pDepthTexture)
 	{
 		g_pDepthTexture->Release();
-
 		g_pDepthTexture = nullptr;
 	}
 
 	if (g_pDepthStencilView)
 	{
-		delete g_pDepthStencilView;
+		g_pDepthStencilView->Release();
 		g_pDepthStencilView = nullptr;
 	}
 
@@ -430,9 +431,9 @@ void Render()
 {
 	g_pDeviceContext->OMSetRenderTarget(g_pRenderTargetView, g_pDepthStencilView);
 	Vector4 ClearColor = { 0.1f, 0.1f, 0.1f, 1.0f };
-	g_pDeviceContext->ClearRenderTarget(g_pRenderTargetView, ClearColor);
+	g_pDeviceContext->ClearRenderTargetView(g_pRenderTargetView, ClearColor);
 
-	g_pDeviceContext->ClearDepthStencil(g_pDepthStencilView, 1.0f);
+	g_pDeviceContext->ClearDepthStencilView(g_pDepthStencilView, 1.0f);
 
 #if DRAW_BOX
 	g_pDeviceContext->IASetVertexBuffer(g_pVertexBuffer);

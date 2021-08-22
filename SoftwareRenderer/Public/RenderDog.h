@@ -93,6 +93,24 @@ namespace RenderDog
 			format(RD_FORMAT::UNKNOWN)
 		{}
 	};
+
+	struct RenderTargetViewDesc
+	{
+		RD_FORMAT format;
+
+		RenderTargetViewDesc() :
+			format(RD_FORMAT::UNKNOWN)
+		{}
+	};
+
+	struct DepthStencilViewDesc
+	{
+		RD_FORMAT format;
+
+		DepthStencilViewDesc() :
+			format(RD_FORMAT::UNKNOWN)
+		{}
+	};
 #pragma endregion Description
 
 	struct SubResourceData
@@ -131,13 +149,31 @@ namespace RenderDog
 		virtual const void* GetData() const = 0;
 	};
 
+	class IView : public IUnknown
+	{
+	public:
+		virtual void GetResource(IResource** ppResource) = 0;
+	};
+
+	class IRenderTargetView : public IView
+	{
+	public:
+		virtual void GetDesc(RenderTargetViewDesc* pDesc) = 0;
+	};
+
+	class IDepthStencilView : public IView
+	{
+	public:
+		virtual void GetDesc(DepthStencilViewDesc* pDesc) = 0;
+	};
+
 #pragma region Device
 	class IDevice : public IUnknown
 	{
 	public:
 		virtual bool CreateTexture2D(const Texture2DDesc* pDesc, const SubResourceData* pInitData, ITexture2D** ppTexture) = 0;
-		virtual bool CreateRenderTargetView(ITexture2D* pTexture, const RenderTargetDesc* pDesc, RenderTargetView** ppRenderTarget) = 0;
-		virtual bool CreateDepthStencilView(ITexture2D* pTexture, DepthStencilView** ppDepthStencil) = 0;
+		virtual bool CreateRenderTargetView(IResource* pResource, const RenderTargetViewDesc* pDesc, IRenderTargetView** ppRenderTarget) = 0;
+		virtual bool CreateDepthStencilView(IResource* pResource, const DepthStencilViewDesc* pDesc, IDepthStencilView** ppDepthStencil) = 0;
 		virtual bool CreateVertexBuffer(const VertexBufferDesc& vbDesc, VertexBuffer** ppVertexBuffer) = 0;
 		virtual bool CreateIndexBuffer(const IndexBufferDesc& ibDesc, IndexBuffer** ppIndexBuffer) = 0;
 		virtual bool CreateVertexShader(VertexShader** ppVertexShader) = 0;
@@ -159,9 +195,9 @@ namespace RenderDog
 
 		virtual void RSSetViewport(const Viewport* pVP) = 0;
 
-		virtual void OMSetRenderTarget(RenderTargetView* pRenderTarget, DepthStencilView* pDepthStencil) = 0;
-		virtual void ClearRenderTarget(RenderTargetView* pRenderTarget, const Vector4& clearColor) = 0;
-		virtual void ClearDepthStencil(DepthStencilView* pDepthStencil, float fDepth) = 0;
+		virtual void OMSetRenderTarget(IRenderTargetView* pRenderTarget, IDepthStencilView* pDepthStencil) = 0;
+		virtual void ClearRenderTargetView(IRenderTargetView* pRenderTarget, const Vector4& clearColor) = 0;
+		virtual void ClearDepthStencilView(IDepthStencilView* pDepthStencil, float fDepth) = 0;
 		virtual void Draw() = 0;
 		virtual void DrawIndex(uint32_t nIndexNum) = 0;
 
