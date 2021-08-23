@@ -6,14 +6,11 @@
 ///////////////////////////////////
 
 #include "RenderDog.h"
-#include "RenderTargetView.h" 
-#include "DepthStencilView.h"
 #include "ShaderResourceView.h"
 #include "Buffer.h"
 #include "Shader.h"
 #include "Vertex.h"
 #include "Transform.h"
-#include "Viewport.h"
 #include "Camera.h"
 #include "Model.h"
 #include "Light.h"
@@ -157,12 +154,12 @@ bool InitDevice()
 	}
 
 	RenderDog::Viewport vp;
-	vp.fWidth = (float)g_WindowWidth;
-	vp.fHeight = (float)g_WindowHeight;
-	vp.fMinDepth = 0.0f;
-	vp.fMaxDepth = 1.0f;
-	vp.fTopLeftX = 0;
-	vp.fTopLeftY = 0;
+	vp.width = (float)g_WindowWidth;
+	vp.height = (float)g_WindowHeight;
+	vp.minDepth = 0.0f;
+	vp.maxDepth = 1.0f;
+	vp.topLeftX = 0;
+	vp.topLeftY = 0;
 	g_pDeviceContext->RSSetViewport(&vp);
 
 	if (!g_pDevice->CreateVertexShader(&g_pVertexShader))

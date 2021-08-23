@@ -139,6 +139,16 @@ namespace RenderDog
 		{}
 	};
 
+	struct Viewport
+	{
+		float topLeftX;
+		float topLeftY;
+		float width;
+		float height;
+		float minDepth;
+		float maxDepth;
+	};
+
 #pragma region Interface
 
 	class IUnknown
@@ -208,7 +218,7 @@ namespace RenderDog
 		virtual void PSSetShaderResource(ShaderResourceView* const* pSRV) = 0;
 		virtual void PSSetMainLight(DirectionalLight* pLight) = 0;
 
-		virtual void RSSetViewport(const Viewport* pVP) = 0;
+		virtual void RSSetViewport(const Viewport* pViewport) = 0;
 
 		virtual void OMSetRenderTarget(IRenderTargetView* pRenderTargetView, IDepthStencilView* pDepthStencilView) = 0;
 		virtual void ClearRenderTargetView(IRenderTargetView* pRenderTargetView, const Vector4& clearColor) = 0;

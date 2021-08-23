@@ -128,7 +128,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy $(TargetDir)*.lib ..\..\..\EngineSDK\Renderer\Libs\$(ProjectName)\ /i /s /y
+      <Command>del /s /q /f ..\..\..\EngineSDK\Renderer\Libs\$(ProjectName)\*.*
+del /s /q /f ..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\*.*
+
+xcopy $(TargetDir)*.lib ..\..\..\EngineSDK\Renderer\Libs\$(ProjectName)\ /i /s /y
 xcopy ..\..\Public\*.* ..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i /s /y</Command>
     </PostBuildEvent>
     <Lib>
@@ -153,7 +156,10 @@ xcopy ..\..\Public\*.* ..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i /s 
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy $(TargetDir)*.lib ..\..\..\EngineSDK\Renderer\Libs\$(ProjectName)\ /i /s /y
+      <Command>del /s /q /f ..\..\..\EngineSDK\Renderer\Libs\$(ProjectName)\*.*
+del /s /q /f ..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\*.*
+
+xcopy $(TargetDir)*.lib ..\..\..\EngineSDK\Renderer\Libs\$(ProjectName)\ /i /s /y
 xcopy ..\..\Public\*.* ..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i /s /y</Command>
     </PostBuildEvent>
     <Lib>
@@ -168,16 +174,13 @@ xcopy ..\..\Public\*.* ..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i /s 
     <ClInclude Include="..\..\..\Math\Public\Vector.h" />
     <ClInclude Include="..\..\Public\Buffer.h" />
     <ClInclude Include="..\..\Public\Camera.h" />
-    <ClInclude Include="..\..\Public\DepthStencilView.h" />
     <ClInclude Include="..\..\Public\Light.h" />
     <ClInclude Include="..\..\Public\Mesh.h" />
     <ClInclude Include="..\..\Public\Model.h" />
     <ClInclude Include="..\..\Public\RenderDog.h" />
-    <ClInclude Include="..\..\Public\RenderTargetView.h" />
     <ClInclude Include="..\..\Public\Shader.h" />
     <ClInclude Include="..\..\Public\ShaderResourceView.h" />
     <ClInclude Include="..\..\Public\Vertex.h" />
-    <ClInclude Include="..\..\Public\Viewport.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Math\Private\Matrix.cpp" />
@@ -192,7 +195,6 @@ xcopy ..\..\Public\*.* ..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i /s 
     <ClCompile Include="..\..\Private\RenderDog.cpp" />
     <ClCompile Include="..\..\Private\Shader.cpp" />
     <ClCompile Include="..\..\Private\ShaderResourceView.cpp" />
-    <ClCompile Include="..\..\Private\Viewport.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

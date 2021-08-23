@@ -20,22 +20,13 @@
     <ClInclude Include="..\..\Public\Buffer.h">
       <Filter>Public</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Public\DepthStencilView.h">
-      <Filter>Public</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Public\RenderDog.h">
-      <Filter>Public</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Public\RenderTargetView.h">
       <Filter>Public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Public\Shader.h">
       <Filter>Public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Public\Vertex.h">
-      <Filter>Public</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Public\Viewport.h">
       <Filter>Public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Math\Public\Matrix.h">
@@ -86,9 +77,6 @@
       <Filter>Private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Private\Shader.cpp">
-      <Filter>Private</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Private\Viewport.cpp">
       <Filter>Private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Private\ShaderResourceView.cpp">

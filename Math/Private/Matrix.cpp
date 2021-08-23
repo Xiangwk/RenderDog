@@ -2,6 +2,30 @@
 
 namespace RenderDog
 {
+	void Matrix4x4::Identity()
+	{
+		m_fData[0][0] = 1.0f;
+		m_fData[1][1] = 1.0f;
+		m_fData[2][2] = 1.0f;
+		m_fData[3][3] = 1.0f;
+
+		m_fData[0][1] = 0.0f;
+		m_fData[0][2] = 0.0f;
+		m_fData[0][3] = 0.0f;
+
+		m_fData[1][0] = 0.0f;
+		m_fData[1][2] = 0.0f;
+		m_fData[1][3] = 0.0f;
+
+		m_fData[2][0] = 0.0f;
+		m_fData[2][1] = 0.0f;
+		m_fData[2][3] = 0.0f;
+
+		m_fData[3][0] = 0.0f;
+		m_fData[3][1] = 0.0f;
+		m_fData[3][2] = 0.0f;
+	}
+
 	Vector4 operator*(const Vector4& vec, const Matrix4x4& mat)
 	{
 		Vector4 result;

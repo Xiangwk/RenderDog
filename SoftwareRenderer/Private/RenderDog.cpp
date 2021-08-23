@@ -1,11 +1,8 @@
 #include "RenderDog.h"
-#include "RenderTargetView.h"
-#include "DepthStencilView.h"
 #include "Buffer.h"
 #include "Shader.h"
 #include "Vertex.h"
 #include "Matrix.h"
-#include "Viewport.h"
 #include "Utility.h"
 
 #include <vector>
@@ -472,7 +469,7 @@ namespace RenderDog
 		std::vector<VSOutputVertex>	m_vClipOutputVerts;
 		std::vector<VSOutputVertex> m_vClippingVerts;
 
-		Matrix4x4* m_pViewportMat;
+		Matrix4x4					m_ViewportMatrix;
 
 		PrimitiveTopology			m_PriTopology;
 
@@ -498,10 +495,10 @@ namespace RenderDog
 		m_pViewMat(nullptr),
 		m_pProjMat(nullptr),
 		m_pVSOutputs(nullptr),
-		m_pViewportMat(nullptr),
 		m_PriTopology(PrimitiveTopology::TRIANGLE_LIST),
 		m_pMainLight(nullptr)
 	{
+		m_ViewportMatrix.Identity();
 #if DEBUG_RASTERIZATION
 		uint32_t nBufferSize = m_BackBufferWidth * m_BackBufferHeight;
 		m_pDebugBuffer = new uint32_t[nBufferSize];
@@ -523,12 +520,6 @@ namespace RenderDog
 		{
 			delete[] m_pVSOutputs;
 			m_pVSOutputs = nullptr;
-		}
-
-		if (m_pViewportMat)
-		{
-			delete m_pViewportMat;
-			m_pViewportMat = nullptr;
 		}
 
 #if DEBUG_RASTERIZATION
@@ -581,10 +572,14 @@ namespace RenderDog
 		m_pProjMat = matProj;
 	}
 
-	void DeviceContext::RSSetViewport(const Viewport* pVP)
+	void DeviceContext::RSSetViewport(const Viewport* pViewport)
 	{
-		Matrix4x4 matViewport = pVP->GetViewportMatrix();
-		m_pViewportMat = new Matrix4x4(matViewport);
+		m_ViewportMatrix(0, 0) = (pViewport->width - 1) / 2.0f;
+		m_ViewportMatrix(3, 0) = (pViewport->width - 1) / 2.0f + pViewport->topLeftX;
+		m_ViewportMatrix(1, 1) = -(pViewport->height - 1) / 2.0f;
+		m_ViewportMatrix(3, 1) = (pViewport->height - 1) / 2.0f + pViewport->topLeftY;
+		m_ViewportMatrix(2, 2) = (pViewport->maxDepth - pViewport->minDepth);
+		m_ViewportMatrix(3, 2) = pViewport->minDepth;
 	}
 
 	void DeviceContext::OMSetRenderTarget(IRenderTargetView* pRenderTargetView, IDepthStencilView* pDepthStencilView)
@@ -755,7 +750,7 @@ namespace RenderDog
 		{
 			VSOutputVertex& vsOutput = m_vClipOutputVerts[i];
 			Vector4 vScreenPos(vsOutput.SVPosition.x, vsOutput.SVPosition.y, vsOutput.SVPosition.z, 1.0f);
-			vScreenPos = vScreenPos * (*m_pViewportMat);
+			vScreenPos = vScreenPos * m_ViewportMatrix;
 			vsOutput.SVPosition.x = vScreenPos.x;
 			vsOutput.SVPosition.y = vScreenPos.y;
 			vsOutput.SVPosition.z = vScreenPos.z;
