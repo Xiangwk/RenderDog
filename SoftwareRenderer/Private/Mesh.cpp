@@ -52,10 +52,13 @@ namespace RenderDog
 
 	bool StaticMesh::Init(IDevice* pDevice)
 	{
-		VertexBufferDesc vbDesc;
-		vbDesc.nVertexNum = (uint32_t)m_Vertices.size();
-		vbDesc.pInitData = &m_Vertices[0];
-		if (!pDevice->CreateVertexBuffer(vbDesc, &m_pVB))
+		BufferDesc vbDesc;
+		vbDesc.byteWidth = (uint32_t)m_Vertices.size() * sizeof(Vertex);
+		vbDesc.bindFlag = RD_BIND_FLAG::BIND_VERTEX_BUFFER;
+		SubResourceData initData;
+		initData.pSysMem = &m_Vertices[0];
+		initData.sysMemPitch = vbDesc.byteWidth;
+		if (!pDevice->CreateBuffer(&vbDesc, &initData, &m_pVB))
 		{
 			return false;
 		}
@@ -77,7 +80,6 @@ namespace RenderDog
 		{
 			m_pVB->Release();
 
-			delete m_pVB;
 			m_pVB = nullptr;
 		}
 

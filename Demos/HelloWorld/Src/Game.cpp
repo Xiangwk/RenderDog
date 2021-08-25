@@ -37,8 +37,8 @@ RenderDog::IDevice*				g_pDevice = nullptr;
 RenderDog::IDeviceContext*		g_pDeviceContext = nullptr;
 RenderDog::ISwapChain*			g_pSwapChain = nullptr;
 RenderDog::IRenderTargetView*	g_pRenderTargetView = nullptr;
-RenderDog::VertexBuffer*		g_pVertexBuffer = nullptr;			//用于自定义的顶点数组
-RenderDog::IndexBuffer*			g_pIndexBuffer = nullptr;			//用于自定义的索引数组
+RenderDog::IBuffer*				g_pVertexBuffer = nullptr;
+RenderDog::IndexBuffer*			g_pIndexBuffer = nullptr;
 RenderDog::VertexShader*		g_pVertexShader = nullptr;
 RenderDog::PixelShader*			g_pPixelShader = nullptr;
 RenderDog::ITexture2D*			g_pDepthTexture = nullptr;
@@ -147,7 +147,7 @@ bool InitDevice()
 
 	RenderDog::DepthStencilViewDesc dsDesc;
 	dsDesc.format = depthDesc.format;
-	dsDesc.viewDimension = RenderDog::DSV_DIMENSION::TEXTURE2D;
+	dsDesc.viewDimension = RenderDog::RD_DSV_DIMENSION::TEXTURE2D;
 	if (!g_pDevice->CreateDepthStencilView(g_pDepthTexture, &dsDesc, &g_pDepthStencilView))
 	{
 		return false;
@@ -246,10 +246,13 @@ bool InitDevice()
 
 	CalculateTangents(RawBoxVertices, RawBoxIndices, aBoxVertices, aBoxIndices);
 
-	RenderDog::VertexBufferDesc vbDesc;
-	vbDesc.nVertexNum = (uint32_t)aBoxVertices.size();
-	vbDesc.pInitData = &aBoxVertices[0];
-	if (!g_pDevice->CreateVertexBuffer(vbDesc, &g_pVertexBuffer))
+	RenderDog::BufferDesc vbDesc;
+	vbDesc.byteWidth = (uint32_t)aBoxVertices.size() * sizeof(Vertex);
+	vbDesc.bindFlag = RenderDog::RD_BIND_FLAG::BIND_VERTEX_BUFFER;
+	RenderDog::SubResourceData initData;
+	initData.pSysMem = &aBoxVertices[0];
+	initData.sysMemPitch = vbDesc.byteWidth;
+	if (!g_pDevice->CreateBuffer(&vbDesc, &initData, &g_pVertexBuffer))
 	{
 		return false;
 	}
@@ -332,7 +335,6 @@ void CleanupDevice()
 	if (g_pVertexBuffer)
 	{
 		g_pVertexBuffer->Release();
-		delete g_pVertexBuffer;
 		g_pVertexBuffer = nullptr;
 	}
 
@@ -437,7 +439,7 @@ void Render()
 	g_pDeviceContext->IASetVertexBuffer(g_pVertexBuffer);
 	g_pDeviceContext->IASetIndexBuffer(g_pIndexBuffer);
 #endif
-	g_pDeviceContext->IASetPrimitiveTopology(RenderDog::PrimitiveTopology::TRIANGLE_LIST);
+	g_pDeviceContext->IASetPrimitiveTopology(RenderDog::RD_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST);
 
 	g_pDeviceContext->VSSetShader(g_pVertexShader);
 	g_pDeviceContext->VSSetTransMats(&g_WorldMatrix, &g_ViewMatrix, &g_PerspProjMatrix);

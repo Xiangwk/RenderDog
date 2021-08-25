@@ -9,7 +9,7 @@
 
 namespace RenderDog
 {
-	VertexBuffer::VertexBuffer(const VertexBufferDesc& vbDesc)
+	/*VertexBuffer::VertexBuffer(const VertexBufferDesc& vbDesc)
 	{
 		m_nVertsNum = vbDesc.nVertexNum;
 
@@ -31,7 +31,7 @@ namespace RenderDog
 			delete[] m_pData;
 			m_pData = nullptr;
 		}
-	}
+	}*/
 
 	IndexBuffer::IndexBuffer(const IndexBufferDesc& ibDesc)
 	{

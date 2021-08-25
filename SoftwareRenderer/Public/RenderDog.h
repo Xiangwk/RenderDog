@@ -3,6 +3,8 @@
 #include <windows.h>
 #include <cstdint>
 
+#include "Buffer.h"
+
 namespace RenderDog
 {
 	class IDevice;
@@ -18,34 +20,31 @@ namespace RenderDog
 	class Matrix4x4;
 	class DirectionalLight;
 
-	struct Texture2DDesc;
-	struct RenderTargetDesc;
-	struct VertexBufferDesc;
-	struct IndexBufferDesc;
+	struct Vertex;
 	struct Viewport;
 
 #pragma region Enum
-	enum class PrimitiveTopology
+	enum class RD_PRIMITIVE_TOPOLOGY
 	{
 		LINE_LIST,
 		TRIANGLE_LIST
 	};
 
-	enum class RESOURCE_DIMENSION
+	enum class RD_RESOURCE_DIMENSION
 	{
 		UNKNOWN = 0,
 		BUFFER = 1,
 		TEXTURE2D = 2,
 	};
 
-	enum class RTV_DIMENSION
+	enum class RD_RTV_DIMENSION
 	{
 		UNKNOWN = 0,
 		BUFFER = 1,
 		TEXTURE2D = 2,
 	};
 
-	enum class DSV_DIMENSION
+	enum class RD_DSV_DIMENSION
 	{
 		UNKNOWN = 0,
 		TEXTURE2D = 1,
@@ -56,6 +55,17 @@ namespace RenderDog
 		UNKNOWN = 0,
 		R8G8B8A8_UNORM = 1,
 		R32_FLOAT = 2
+	};
+
+	enum class RD_BIND_FLAG
+	{
+		BIND_UNKNOWN = 0,
+		BIND_VERTEX_BUFFER = 1,
+		BIND_INDEX_BUFFER = 2,
+		BIND_CONSTANT_BUFFER = 3,
+		BIND_SHADER_RESOURCE = 4,
+		BIND_RENDER_TARGET = 5,
+		BIND_DEPTH_STENCIL = 6
 	};
 #pragma endregion Enum
 
@@ -92,6 +102,17 @@ namespace RenderDog
 		}
 	};
 
+	struct BufferDesc
+	{
+		uint32_t		byteWidth;
+		RD_BIND_FLAG	bindFlag;
+
+		BufferDesc() :
+			byteWidth(0),
+			bindFlag(RD_BIND_FLAG::BIND_UNKNOWN)
+		{}
+	};
+
 	struct Texture2DDesc
 	{
 		uint32_t		width;
@@ -108,22 +129,22 @@ namespace RenderDog
 	struct RenderTargetViewDesc
 	{
 		RD_FORMAT		format;
-		RTV_DIMENSION	viewDimension;
+		RD_RTV_DIMENSION	viewDimension;
 
 		RenderTargetViewDesc() :
 			format(RD_FORMAT::UNKNOWN),
-			viewDimension(RTV_DIMENSION::UNKNOWN)
+			viewDimension(RD_RTV_DIMENSION::UNKNOWN)
 		{}
 	};
 
 	struct DepthStencilViewDesc
 	{
 		RD_FORMAT format;
-		DSV_DIMENSION viewDimension;
+		RD_DSV_DIMENSION viewDimension;
 
 		DepthStencilViewDesc() :
 			format(RD_FORMAT::UNKNOWN),
-			viewDimension(DSV_DIMENSION::UNKNOWN)
+			viewDimension(RD_DSV_DIMENSION::UNKNOWN)
 		{}
 	};
 #pragma endregion Description
@@ -161,7 +182,13 @@ namespace RenderDog
 	class IResource : public IUnknown
 	{
 	public:
-		virtual void GetType(RESOURCE_DIMENSION* pResDimension) = 0;
+		virtual void GetType(RD_RESOURCE_DIMENSION* pResDimension) = 0;
+	};
+
+	class IBuffer : public IResource
+	{
+	public:
+		virtual void GetDesc(BufferDesc* pDesc) = 0;
 	};
 
 	class ITexture2D : public IResource
@@ -199,7 +226,7 @@ namespace RenderDog
 		virtual bool CreateTexture2D(const Texture2DDesc* pDesc, const SubResourceData* pInitData, ITexture2D** ppTexture) = 0;
 		virtual bool CreateRenderTargetView(IResource* pResource, const RenderTargetViewDesc* pDesc, IRenderTargetView** ppRenderTarget) = 0;
 		virtual bool CreateDepthStencilView(IResource* pResource, const DepthStencilViewDesc* pDesc, IDepthStencilView** ppDepthStencil) = 0;
-		virtual bool CreateVertexBuffer(const VertexBufferDesc& vbDesc, VertexBuffer** ppVertexBuffer) = 0;
+		virtual bool CreateBuffer(const BufferDesc* pDesc, const SubResourceData* pInitData, IBuffer** ppBuffer) = 0;
 		virtual bool CreateIndexBuffer(const IndexBufferDesc& ibDesc, IndexBuffer** ppIndexBuffer) = 0;
 		virtual bool CreateVertexShader(VertexShader** ppVertexShader) = 0;
 		virtual bool CreatePixelShader(PixelShader** ppPixelShader) = 0;
@@ -208,9 +235,9 @@ namespace RenderDog
 	class IDeviceContext : public IUnknown
 	{
 	public:
-		virtual void IASetVertexBuffer(VertexBuffer* pVB) = 0;
+		virtual void IASetVertexBuffer(IBuffer* pVB) = 0;
 		virtual void IASetIndexBuffer(IndexBuffer* pIB) = 0;
-		virtual void IASetPrimitiveTopology(PrimitiveTopology topology) = 0;
+		virtual void IASetPrimitiveTopology(RD_PRIMITIVE_TOPOLOGY topology) = 0;
 
 		virtual void VSSetShader(VertexShader* pVS) = 0;
 		virtual void VSSetTransMats(const Matrix4x4* matWorld, const Matrix4x4* matView, const Matrix4x4* matProj) = 0;

@@ -10,16 +10,14 @@
 
 namespace RenderDog
 {
-	struct Vertex;
-
-	struct VertexBufferDesc
+	/*struct VertexBufferDesc
 	{
 		uint32_t	nVertexNum;
 		Vertex*		pInitData;
-	};
+	};*/
 
 
-	class VertexBuffer
+	/*class VertexBuffer
 	{
 	public:
 		VertexBuffer(const VertexBufferDesc& vbDesc);
@@ -34,7 +32,7 @@ namespace RenderDog
 	private:
 		Vertex*		m_pData;
 		uint32_t	m_nVertsNum;
-	};
+	};*/
 
 
 	struct IndexBufferDesc

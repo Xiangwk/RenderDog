@@ -23,7 +23,7 @@ namespace RenderDog
 		virtual void AddRef() override { ++m_RefCnt; }
 		virtual void Release() override;
 
-		virtual void GetType(RESOURCE_DIMENSION* pResDimension) override { *pResDimension = m_ResDimension; }
+		virtual void GetType(RD_RESOURCE_DIMENSION* pResDimension) override { *pResDimension = RD_RESOURCE_DIMENSION::TEXTURE2D; }
 		virtual void GetDesc(Texture2DDesc* pDesc) override { *pDesc = m_Desc; }
 
 		void*& GetData() { return m_pData; }
@@ -39,15 +39,12 @@ namespace RenderDog
 		int						m_RefCnt;
 		void*					m_pData;
 
-		RESOURCE_DIMENSION		m_ResDimension;
-
 		Texture2DDesc			m_Desc;
 	};
 
 	Texture2D::Texture2D() :
 		m_RefCnt(0),
 		m_pData(nullptr),
-		m_ResDimension(RESOURCE_DIMENSION::TEXTURE2D),
 		m_Desc()
 	{}
 
@@ -206,6 +203,79 @@ namespace RenderDog
 	}
 #pragma endregion View
 
+#pragma region Buffer
+	class VertexBuffer : public IBuffer
+	{
+	public:
+		VertexBuffer() :
+			m_RefCnt(0),
+			m_Desc(),
+			m_pData(nullptr),
+			m_nVertsNum(0)
+		{}
+
+		~VertexBuffer()
+		{}
+
+		bool Init(const BufferDesc* pDesc, const SubResourceData* pInitData);
+
+		virtual void AddRef() override { ++m_RefCnt; }
+		virtual void Release() override;
+
+		virtual void GetType(RD_RESOURCE_DIMENSION* pResDimension) override { *pResDimension = RD_RESOURCE_DIMENSION::BUFFER; }
+
+		virtual void GetDesc(BufferDesc* pDesc) override { *pDesc = m_Desc; }
+
+		const Vertex* GetData() const { return m_pData; }
+		const uint32_t GetNum() const { return m_nVertsNum; }
+
+	private:
+		int			m_RefCnt;
+		BufferDesc	m_Desc;
+
+		Vertex*		m_pData;
+		uint32_t	m_nVertsNum;
+	};
+
+	bool VertexBuffer::Init(const BufferDesc* pDesc, const SubResourceData* pInitData)
+	{
+		if (!pDesc)
+		{
+			return false;
+		}
+
+		m_Desc = *pDesc;
+
+		m_nVertsNum = pDesc->byteWidth / sizeof(Vertex);
+		m_pData = new Vertex[m_nVertsNum];
+		if (!m_pData)
+		{
+			return false;
+		}
+
+		if (pInitData)
+		{
+			memcpy(m_pData, pInitData->pSysMem, pInitData->sysMemPitch);
+		}
+
+		AddRef();
+
+		return true;
+	}
+
+	void VertexBuffer::Release()
+	{
+		--m_RefCnt;
+		if (m_RefCnt == 0 && m_pData)
+		{
+			delete[] m_pData;
+			m_pData = nullptr;
+
+			delete this;
+		}
+	}
+#pragma endregion Buffer
+
 #pragma region Device
 	class Device : public IDevice
 	{
@@ -219,13 +289,16 @@ namespace RenderDog
 		virtual bool CreateTexture2D(const Texture2DDesc* pDesc, const SubResourceData* pInitData, ITexture2D** ppTexture) override;
 		virtual bool CreateRenderTargetView(IResource* pResource, const RenderTargetViewDesc* pDesc, IRenderTargetView** ppRenderTarget) override;
 		virtual bool CreateDepthStencilView(IResource* pResource, const DepthStencilViewDesc* pDesc, IDepthStencilView** ppDepthStencil) override;
-		virtual bool CreateVertexBuffer(const VertexBufferDesc& vbDesc, VertexBuffer** ppVertexBuffer) override;
+		virtual bool CreateBuffer(const BufferDesc* pDesc, const SubResourceData* pInitData, IBuffer** ppBuffer) override;
 		virtual bool CreateIndexBuffer(const IndexBufferDesc& ibDesc, IndexBuffer** ppIndexBuffer) override;
 		virtual bool CreateVertexShader(VertexShader** ppVertexShader) override;
 		virtual bool CreatePixelShader(PixelShader** ppPixelShader) override;
 
 		virtual void AddRef() override {}
 		virtual void Release() override { delete this; }
+
+	private:
+		bool CreateVertexBuffer(const BufferDesc* pDesc, const SubResourceData* pInitData, IBuffer** ppBuffer);
 	};
 
 
@@ -255,12 +328,12 @@ namespace RenderDog
 			return false;
 		}
 
-		RESOURCE_DIMENSION resDimension;
+		RD_RESOURCE_DIMENSION resDimension;
 		pResource->GetType(&resDimension);
-		if (resDimension == RESOURCE_DIMENSION::TEXTURE2D)
+		if (resDimension == RD_RESOURCE_DIMENSION::TEXTURE2D)
 		{
 			RenderTargetViewDesc rtvDesc;
-			rtvDesc.viewDimension = RTV_DIMENSION::TEXTURE2D;
+			rtvDesc.viewDimension = RD_RTV_DIMENSION::TEXTURE2D;
 			pDesc = &rtvDesc;
 		}
 
@@ -292,23 +365,24 @@ namespace RenderDog
 		return true;
 	}
 
-	bool Device::CreateVertexBuffer(const VertexBufferDesc& vbDesc, VertexBuffer** ppVertexBuffer)
+	bool Device::CreateBuffer(const BufferDesc* pDesc, const SubResourceData* pInitData, IBuffer** ppBuffer)
 	{
-		if (*ppVertexBuffer)
-		{
-			(*ppVertexBuffer)->Release();
-			*ppVertexBuffer = nullptr;
-		}
-
-		VertexBuffer* pVB = new VertexBuffer(vbDesc);
-		if (!pVB)
+		if (!pDesc)
 		{
 			return false;
 		}
 
-		*ppVertexBuffer = pVB;
-
-		return true;
+		switch (pDesc->bindFlag)
+		{
+		case RD_BIND_FLAG::BIND_VERTEX_BUFFER:
+		{
+			return CreateVertexBuffer(pDesc, pInitData, ppBuffer);
+		}
+		default:
+			break;
+		}
+		
+		return false;
 	}
 
 	bool Device::CreateIndexBuffer(const IndexBufferDesc& ibDesc, IndexBuffer** ppIndexBuffer)
@@ -365,6 +439,24 @@ namespace RenderDog
 
 		return true;
 	}
+
+	bool Device::CreateVertexBuffer(const BufferDesc* pDesc, const SubResourceData* pInitData, IBuffer** ppBuffer)
+	{
+		VertexBuffer* pVB = new VertexBuffer();
+		if (!pVB)
+		{
+			return false;
+		}
+
+		if (!pVB->Init(pDesc, pInitData))
+		{
+			return false;
+		}
+
+		*ppBuffer = pVB;
+
+		return true;
+	}
 #pragma endregion Device
 
 #pragma region DeviceContext
@@ -382,9 +474,9 @@ namespace RenderDog
 		virtual void AddRef() override {}
 		virtual void Release() override { delete this; }
 
-		virtual void IASetVertexBuffer(VertexBuffer* pVB) override;
+		virtual void IASetVertexBuffer(IBuffer* pVB) override;
 		virtual void IASetIndexBuffer(IndexBuffer* pIB) override;
-		virtual void IASetPrimitiveTopology(PrimitiveTopology topology) override { m_PriTopology = topology; }
+		virtual void IASetPrimitiveTopology(RD_PRIMITIVE_TOPOLOGY topology) override { m_PriTopology = topology; }
 
 		virtual void VSSetShader(VertexShader* pVS) override { m_pVS = pVS; }
 		virtual void VSSetTransMats(const Matrix4x4* matWorld, const Matrix4x4* matView, const Matrix4x4* matProj) override;
@@ -471,7 +563,7 @@ namespace RenderDog
 
 		Matrix4x4					m_ViewportMatrix;
 
-		PrimitiveTopology			m_PriTopology;
+		RD_PRIMITIVE_TOPOLOGY			m_PriTopology;
 
 		DirectionalLight* m_pMainLight;
 	};
@@ -495,7 +587,7 @@ namespace RenderDog
 		m_pViewMat(nullptr),
 		m_pProjMat(nullptr),
 		m_pVSOutputs(nullptr),
-		m_PriTopology(PrimitiveTopology::TRIANGLE_LIST),
+		m_PriTopology(RD_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST),
 		m_pMainLight(nullptr)
 	{
 		m_ViewportMatrix.Identity();
@@ -541,7 +633,7 @@ namespace RenderDog
 		return true;
 	}
 
-	void DeviceContext::IASetVertexBuffer(VertexBuffer* pVB)
+	void DeviceContext::IASetVertexBuffer(IBuffer* pVB)
 	{
 		if (m_pVB != pVB)
 		{
@@ -551,10 +643,11 @@ namespace RenderDog
 				m_pVSOutputs = nullptr;
 			}
 
-			uint32_t nVertexNum = pVB->GetNum();
+			m_pVB = dynamic_cast<VertexBuffer*>(pVB);
+
+			uint32_t nVertexNum = m_pVB->GetNum();
 			m_pVSOutputs = new VSOutputVertex[nVertexNum];
 
-			m_pVB = pVB;
 		}
 	}
 	void DeviceContext::IASetIndexBuffer(IndexBuffer* pIB)
@@ -592,16 +685,16 @@ namespace RenderDog
 
 		switch (rtvDesc.viewDimension)
 		{
-		case RTV_DIMENSION::UNKNOWN:
+		case RD_RTV_DIMENSION::UNKNOWN:
 		{
 			m_pFrameBuffer = nullptr;
 			break;
 		}
-		case RTV_DIMENSION::BUFFER:
+		case RD_RTV_DIMENSION::BUFFER:
 		{
 			break;
 		}
-		case RTV_DIMENSION::TEXTURE2D:
+		case RD_RTV_DIMENSION::TEXTURE2D:
 		{
 			Texture2D* pTex2D = dynamic_cast<Texture2D*>(pTex);
 
@@ -627,12 +720,12 @@ namespace RenderDog
 
 		switch (dsvDesc.viewDimension)
 		{
-		case DSV_DIMENSION::UNKNOWN:
+		case RD_DSV_DIMENSION::UNKNOWN:
 		{
 			m_pDepthBuffer = nullptr;
 			break;
 		}
-		case DSV_DIMENSION::TEXTURE2D:
+		case RD_DSV_DIMENSION::TEXTURE2D:
 		{
 			Texture2D* pTex2D = dynamic_cast<Texture2D*>(pTex);
 
@@ -657,7 +750,7 @@ namespace RenderDog
 		RenderTargetViewDesc rtvDesc;
 		pRenderTargetView->GetDesc(&rtvDesc);
 		
-		if(rtvDesc.viewDimension == RTV_DIMENSION::TEXTURE2D)
+		if(rtvDesc.viewDimension == RD_RTV_DIMENSION::TEXTURE2D)
 		{
 			Texture2D* pTex2D = dynamic_cast<Texture2D*>(pTex);
 
@@ -697,7 +790,7 @@ namespace RenderDog
 		DepthStencilViewDesc dsvDesc;
 		pDepthStencil->GetDesc(&dsvDesc);
 
-		if (dsvDesc.viewDimension == DSV_DIMENSION::TEXTURE2D)
+		if (dsvDesc.viewDimension == RD_DSV_DIMENSION::TEXTURE2D)
 		{
 			Texture2D* pTex2D = dynamic_cast<Texture2D*>(pTex);
 			Texture2DDesc texDesc;
@@ -1485,7 +1578,7 @@ namespace RenderDog
 			m_vAssembledVerts.reserve(nIndexNum);
 		}
 
-		if (m_PriTopology == PrimitiveTopology::LINE_LIST || m_PriTopology == PrimitiveTopology::TRIANGLE_LIST)
+		if (m_PriTopology == RD_PRIMITIVE_TOPOLOGY::LINE_LIST || m_PriTopology == RD_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST)
 		{
 			const uint32_t* pIndice = m_pIB->GetData();
 			for (uint32_t i = 0; i < nIndexNum; ++i)
@@ -1529,11 +1622,11 @@ namespace RenderDog
 			const VSOutputVertex& vert1 = m_vClipOutputVerts[i + 1];
 			const VSOutputVertex& vert2 = m_vClipOutputVerts[i + 2];
 
-			if (m_PriTopology == PrimitiveTopology::LINE_LIST)
+			if (m_PriTopology == RD_PRIMITIVE_TOPOLOGY::LINE_LIST)
 			{
 				DrawTriangleWithLine(vert0, vert1, vert2);
 			}
-			else if (m_PriTopology == PrimitiveTopology::TRIANGLE_LIST)
+			else if (m_PriTopology == RD_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST)
 			{
 				DrawTriangleWithFlat(vert0, vert1, vert2);
 			}
