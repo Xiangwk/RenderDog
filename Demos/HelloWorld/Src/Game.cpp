@@ -7,7 +7,6 @@
 
 #include "RenderDog.h"
 #include "ShaderResourceView.h"
-#include "Buffer.h"
 #include "Shader.h"
 #include "Vertex.h"
 #include "Transform.h"

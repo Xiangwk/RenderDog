@@ -172,7 +172,6 @@ xcopy ..\..\Public\*.* ..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i /s 
     <ClInclude Include="..\..\..\Math\Public\Transform.h" />
     <ClInclude Include="..\..\..\Math\Public\Utility.h" />
     <ClInclude Include="..\..\..\Math\Public\Vector.h" />
-    <ClInclude Include="..\..\Public\Buffer.h" />
     <ClInclude Include="..\..\Public\Camera.h" />
     <ClInclude Include="..\..\Public\Light.h" />
     <ClInclude Include="..\..\Public\Mesh.h" />
@@ -187,7 +186,6 @@ xcopy ..\..\Public\*.* ..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i /s 
     <ClCompile Include="..\..\..\Math\Private\Transform.cpp" />
     <ClCompile Include="..\..\..\Math\Private\Utility.cpp" />
     <ClCompile Include="..\..\..\Math\Private\Vector.cpp" />
-    <ClCompile Include="..\..\Private\Buffer.cpp" />
     <ClCompile Include="..\..\Private\Camera.cpp" />
     <ClCompile Include="..\..\Private\Light.cpp" />
     <ClCompile Include="..\..\Private\Mesh.cpp" />

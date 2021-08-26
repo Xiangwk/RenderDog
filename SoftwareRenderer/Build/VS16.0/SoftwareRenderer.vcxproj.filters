@@ -17,9 +17,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Public\Buffer.h">
-      <Filter>Public</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Public\RenderDog.h">
       <Filter>Public</Filter>
     </ClInclude>
@@ -69,9 +66,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Math\Private\Vector.cpp">
       <Filter>Private\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Private\Buffer.cpp">
-      <Filter>Private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Private\RenderDog.cpp">
       <Filter>Private</Filter>
