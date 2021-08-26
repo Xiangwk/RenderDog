@@ -3,8 +3,6 @@
 #include <windows.h>
 #include <cstdint>
 
-#include "Buffer.h"
-
 namespace RenderDog
 {
 	class IDevice;
@@ -12,8 +10,6 @@ namespace RenderDog
 	class RenderTargetView;
 	class ShaderResourceView;
 	class DepthStencilView;
-	class VertexBuffer;
-	class IndexBuffer;
 	class VertexShader;
 	class PixelShader;
 	class Vector4;
@@ -227,7 +223,6 @@ namespace RenderDog
 		virtual bool CreateRenderTargetView(IResource* pResource, const RenderTargetViewDesc* pDesc, IRenderTargetView** ppRenderTarget) = 0;
 		virtual bool CreateDepthStencilView(IResource* pResource, const DepthStencilViewDesc* pDesc, IDepthStencilView** ppDepthStencil) = 0;
 		virtual bool CreateBuffer(const BufferDesc* pDesc, const SubResourceData* pInitData, IBuffer** ppBuffer) = 0;
-		virtual bool CreateIndexBuffer(const IndexBufferDesc& ibDesc, IndexBuffer** ppIndexBuffer) = 0;
 		virtual bool CreateVertexShader(VertexShader** ppVertexShader) = 0;
 		virtual bool CreatePixelShader(PixelShader** ppPixelShader) = 0;
 	};
@@ -236,7 +231,7 @@ namespace RenderDog
 	{
 	public:
 		virtual void IASetVertexBuffer(IBuffer* pVB) = 0;
-		virtual void IASetIndexBuffer(IndexBuffer* pIB) = 0;
+		virtual void IASetIndexBuffer(IBuffer* pIB) = 0;
 		virtual void IASetPrimitiveTopology(RD_PRIMITIVE_TOPOLOGY topology) = 0;
 
 		virtual void VSSetShader(VertexShader* pVS) = 0;

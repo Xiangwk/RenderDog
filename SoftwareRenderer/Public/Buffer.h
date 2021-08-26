@@ -35,7 +35,7 @@ namespace RenderDog
 	};*/
 
 
-	struct IndexBufferDesc
+	/*struct IndexBufferDesc
 	{
 		uint32_t	nIndexNum;
 		uint32_t*	pInitData;
@@ -54,5 +54,5 @@ namespace RenderDog
 
 	private:
 		uint32_t* m_pData;
-	};
+	};*/
 }

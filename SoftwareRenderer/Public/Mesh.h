@@ -40,6 +40,6 @@ namespace RenderDog
 		std::vector<uint32_t>	m_Indices;
 
 		IBuffer*				m_pVB;
-		IndexBuffer*			m_pIB;
+		IBuffer*				m_pIB;
 	};
 }

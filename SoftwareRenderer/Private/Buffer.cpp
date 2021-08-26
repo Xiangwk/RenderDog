@@ -33,7 +33,7 @@ namespace RenderDog
 		}
 	}*/
 
-	IndexBuffer::IndexBuffer(const IndexBufferDesc& ibDesc)
+	/*IndexBuffer::IndexBuffer(const IndexBufferDesc& ibDesc)
 	{
 		m_pData = new uint32_t[ibDesc.nIndexNum];
 		for (uint32_t i = 0; i < ibDesc.nIndexNum; ++i)
@@ -53,5 +53,5 @@ namespace RenderDog
 			delete[] m_pData;
 			m_pData = nullptr;
 		}
-	}
+	}*/
 }

@@ -21,13 +21,13 @@ namespace RenderDog
 	{
 		if (m_pVB)
 		{
-			delete m_pVB;
+			m_pVB->Release();
 			m_pVB = nullptr;
 		}
 
 		if (m_pIB)
 		{
-			delete m_pIB;
+			m_pIB->Release();
 			m_pIB = nullptr;
 		}
 	}
@@ -55,18 +55,21 @@ namespace RenderDog
 		BufferDesc vbDesc;
 		vbDesc.byteWidth = (uint32_t)m_Vertices.size() * sizeof(Vertex);
 		vbDesc.bindFlag = RD_BIND_FLAG::BIND_VERTEX_BUFFER;
-		SubResourceData initData;
-		initData.pSysMem = &m_Vertices[0];
-		initData.sysMemPitch = vbDesc.byteWidth;
-		if (!pDevice->CreateBuffer(&vbDesc, &initData, &m_pVB))
+		SubResourceData initVBData;
+		initVBData.pSysMem = &m_Vertices[0];
+		initVBData.sysMemPitch = vbDesc.byteWidth;
+		if (!pDevice->CreateBuffer(&vbDesc, &initVBData, &m_pVB))
 		{
 			return false;
 		}
 
-		IndexBufferDesc ibDesc;
-		ibDesc.nIndexNum = (uint32_t)m_Indices.size();
-		ibDesc.pInitData = &m_Indices[0];
-		if (!pDevice->CreateIndexBuffer(ibDesc, &m_pIB))
+		BufferDesc ibDesc;
+		ibDesc.byteWidth = (uint32_t)m_Indices.size() * sizeof(uint32_t);
+		ibDesc.bindFlag = RD_BIND_FLAG::BIND_INDEX_BUFFER;
+		SubResourceData initIBData;
+		initIBData.pSysMem = &m_Indices[0];
+		initIBData.sysMemPitch = ibDesc.byteWidth;
+		if (!pDevice->CreateBuffer(&ibDesc, &initIBData, &m_pIB))
 		{
 			return false;
 		}
@@ -79,15 +82,12 @@ namespace RenderDog
 		if (m_pVB)
 		{
 			m_pVB->Release();
-
 			m_pVB = nullptr;
 		}
 
 		if (m_pIB)
 		{
 			m_pIB->Release();
-
-			delete m_pIB;
 			m_pIB = nullptr;
 		}
 	}

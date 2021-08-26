@@ -274,6 +274,74 @@ namespace RenderDog
 			delete this;
 		}
 	}
+
+	class IndexBuffer : public IBuffer
+	{
+	public:
+		IndexBuffer() :
+			m_RefCnt(0),
+			m_Desc(),
+			m_pData(nullptr)
+		{}
+
+		~IndexBuffer()
+		{}
+
+		bool Init(const BufferDesc* pDesc, const SubResourceData* pInitData);
+
+		virtual void AddRef() override { ++m_RefCnt; }
+		virtual void Release() override;
+
+		virtual void GetType(RD_RESOURCE_DIMENSION* pResDimension) override { *pResDimension = RD_RESOURCE_DIMENSION::BUFFER; }
+
+		virtual void GetDesc(BufferDesc* pDesc) override { *pDesc = m_Desc; }
+
+		const uint32_t* GetData() const { return m_pData; }
+
+	private:
+		int			m_RefCnt;
+		BufferDesc	m_Desc;
+
+		uint32_t*	m_pData;
+	};
+
+	bool IndexBuffer::Init(const BufferDesc* pDesc, const SubResourceData* pInitData)
+	{
+		if (!pDesc)
+		{
+			return false;
+		}
+
+		m_Desc = *pDesc;
+
+		uint32_t indexNum = pDesc->byteWidth / sizeof(uint32_t);
+		m_pData = new uint32_t[indexNum];
+		if (!m_pData)
+		{
+			return false;
+		}
+
+		if (pInitData)
+		{
+			memcpy(m_pData, pInitData->pSysMem, pInitData->sysMemPitch);
+		}
+
+		AddRef();
+
+		return true;
+	}
+
+	void IndexBuffer::Release()
+	{
+		--m_RefCnt;
+		if (m_RefCnt == 0 && m_pData)
+		{
+			delete[] m_pData;
+			m_pData = nullptr;
+
+			delete this;
+		}
+	}
 #pragma endregion Buffer
 
 #pragma region Device
@@ -290,7 +358,6 @@ namespace RenderDog
 		virtual bool CreateRenderTargetView(IResource* pResource, const RenderTargetViewDesc* pDesc, IRenderTargetView** ppRenderTarget) override;
 		virtual bool CreateDepthStencilView(IResource* pResource, const DepthStencilViewDesc* pDesc, IDepthStencilView** ppDepthStencil) override;
 		virtual bool CreateBuffer(const BufferDesc* pDesc, const SubResourceData* pInitData, IBuffer** ppBuffer) override;
-		virtual bool CreateIndexBuffer(const IndexBufferDesc& ibDesc, IndexBuffer** ppIndexBuffer) override;
 		virtual bool CreateVertexShader(VertexShader** ppVertexShader) override;
 		virtual bool CreatePixelShader(PixelShader** ppPixelShader) override;
 
@@ -299,6 +366,7 @@ namespace RenderDog
 
 	private:
 		bool CreateVertexBuffer(const BufferDesc* pDesc, const SubResourceData* pInitData, IBuffer** ppBuffer);
+		bool CreateIndexBuffer(const BufferDesc* pDesc, const SubResourceData* pInitData, IBuffer** ppBuffer);
 	};
 
 
@@ -378,30 +446,15 @@ namespace RenderDog
 		{
 			return CreateVertexBuffer(pDesc, pInitData, ppBuffer);
 		}
+		case RD_BIND_FLAG::BIND_INDEX_BUFFER:
+		{
+			return CreateIndexBuffer(pDesc, pInitData, ppBuffer);
+		}
 		default:
 			break;
 		}
 		
 		return false;
-	}
-
-	bool Device::CreateIndexBuffer(const IndexBufferDesc& ibDesc, IndexBuffer** ppIndexBuffer)
-	{
-		if (*ppIndexBuffer)
-		{
-			(*ppIndexBuffer)->Release();
-			*ppIndexBuffer = nullptr;
-		}
-
-		IndexBuffer* pIB = new IndexBuffer(ibDesc);
-		if (!pIB)
-		{
-			return false;
-		}
-
-		*ppIndexBuffer = pIB;
-
-		return true;
 	}
 
 	bool Device::CreateVertexShader(VertexShader** ppVertexShader)
@@ -457,6 +510,24 @@ namespace RenderDog
 
 		return true;
 	}
+
+	bool Device::CreateIndexBuffer(const BufferDesc* pDesc, const SubResourceData* pInitData, IBuffer** ppBuffer)
+	{
+		IndexBuffer* pIB = new IndexBuffer();
+		if (!pIB)
+		{
+			return false;
+		}
+
+		if (!pIB->Init(pDesc, pInitData))
+		{
+			return false;
+		}
+
+		*ppBuffer = pIB;
+
+		return true;
+	}
 #pragma endregion Device
 
 #pragma region DeviceContext
@@ -475,7 +546,7 @@ namespace RenderDog
 		virtual void Release() override { delete this; }
 
 		virtual void IASetVertexBuffer(IBuffer* pVB) override;
-		virtual void IASetIndexBuffer(IndexBuffer* pIB) override;
+		virtual void IASetIndexBuffer(IBuffer* pIB) override;
 		virtual void IASetPrimitiveTopology(RD_PRIMITIVE_TOPOLOGY topology) override { m_PriTopology = topology; }
 
 		virtual void VSSetShader(VertexShader* pVS) override { m_pVS = pVS; }
@@ -650,11 +721,11 @@ namespace RenderDog
 
 		}
 	}
-	void DeviceContext::IASetIndexBuffer(IndexBuffer* pIB)
+	void DeviceContext::IASetIndexBuffer(IBuffer* pIB)
 	{
 		if (m_pIB != pIB)
 		{
-			m_pIB = pIB;
+			m_pIB = dynamic_cast<IndexBuffer*>(pIB);
 		}
 	}
 

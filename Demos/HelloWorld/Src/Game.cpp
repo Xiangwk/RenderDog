@@ -38,7 +38,7 @@ RenderDog::IDeviceContext*		g_pDeviceContext = nullptr;
 RenderDog::ISwapChain*			g_pSwapChain = nullptr;
 RenderDog::IRenderTargetView*	g_pRenderTargetView = nullptr;
 RenderDog::IBuffer*				g_pVertexBuffer = nullptr;
-RenderDog::IndexBuffer*			g_pIndexBuffer = nullptr;
+RenderDog::IBuffer*				g_pIndexBuffer = nullptr;
 RenderDog::VertexShader*		g_pVertexShader = nullptr;
 RenderDog::PixelShader*			g_pPixelShader = nullptr;
 RenderDog::ITexture2D*			g_pDepthTexture = nullptr;
@@ -257,10 +257,12 @@ bool InitDevice()
 		return false;
 	}
 
-	RenderDog::IndexBufferDesc ibDesc;
-	ibDesc.nIndexNum = (uint32_t)aBoxIndices.size();
-	ibDesc.pInitData = &aBoxIndices[0];
-	if (!g_pDevice->CreateIndexBuffer(ibDesc, &g_pIndexBuffer))
+	RenderDog::BufferDesc ibDesc;
+	ibDesc.byteWidth = (uint32_t)aBoxIndices.size() * sizeof(uint32_t);
+	ibDesc.bindFlag = RenderDog::RD_BIND_FLAG::BIND_INDEX_BUFFER;
+	initData.pSysMem = &aBoxIndices[0];
+	initData.sysMemPitch = ibDesc.byteWidth;
+	if (!g_pDevice->CreateBuffer(&ibDesc, &initData, &g_pIndexBuffer))
 	{
 		return false;
 	}
@@ -341,7 +343,6 @@ void CleanupDevice()
 	if (g_pIndexBuffer)
 	{
 		g_pIndexBuffer->Release();
-		delete g_pIndexBuffer;
 		g_pIndexBuffer = nullptr;
 	}
 
