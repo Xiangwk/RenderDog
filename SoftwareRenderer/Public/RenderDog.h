@@ -234,8 +234,11 @@ namespace RenderDog
 		virtual void IASetIndexBuffer(IBuffer* pIB) = 0;
 		virtual void IASetPrimitiveTopology(RD_PRIMITIVE_TOPOLOGY topology) = 0;
 
+		virtual	void UpdateSubresource(IResource* pDstResource, const void* pSrcData, uint32_t srcRowPitch, uint32_t srcDepthPitch) = 0;
+
 		virtual void VSSetShader(VertexShader* pVS) = 0;
-		virtual void VSSetTransMats(const Matrix4x4* matWorld, const Matrix4x4* matView, const Matrix4x4* matProj) = 0;
+		//virtual void VSSetTransMats(const Matrix4x4* matWorld, const Matrix4x4* matView, const Matrix4x4* matProj) = 0;
+		virtual void VSSetConstantBuffer(IBuffer* const* ppConstantBuffer) = 0;
 		virtual void PSSetShader(PixelShader* pPS) = 0;
 		virtual void PSSetShaderResource(ShaderResourceView* const* pSRV) = 0;
 		virtual void PSSetMainLight(DirectionalLight* pLight) = 0;

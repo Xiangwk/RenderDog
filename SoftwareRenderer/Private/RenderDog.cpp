@@ -341,6 +341,74 @@ namespace RenderDog
 			delete this;
 		}
 	}
+
+	class ConstantBuffer : public IBuffer
+	{
+	public:
+		ConstantBuffer() :
+			m_RefCnt(0),
+			m_Desc(),
+			m_pData(nullptr)
+		{}
+		~ConstantBuffer()
+		{}
+
+		bool Init(const BufferDesc* pDesc, const SubResourceData* pInitData);
+
+		virtual void AddRef() override { ++m_RefCnt; }
+		virtual void Release() override;
+
+		virtual void GetType(RD_RESOURCE_DIMENSION* pResDimension) override { *pResDimension = RD_RESOURCE_DIMENSION::BUFFER; }
+
+		virtual void GetDesc(BufferDesc* pDesc) override { *pDesc = m_Desc; }
+
+		const void* GetData() const { return m_pData; }
+		void* GetData() { return m_pData; }
+
+	private:
+		int							m_RefCnt;
+
+		BufferDesc					m_Desc;
+
+		void*						m_pData;
+	};
+
+	bool ConstantBuffer::Init(const BufferDesc* pDesc, const SubResourceData* pInitData)
+	{
+		if (!pDesc)
+		{
+			return false;
+		}
+
+		m_pData = malloc(pDesc->byteWidth);
+		if (!m_pData)
+		{
+			return false;
+		}
+
+		m_Desc = *pDesc;
+
+		if (pInitData)
+		{
+			memcpy(m_pData, pInitData->pSysMem, pInitData->sysMemPitch);
+		}
+
+		AddRef();
+
+		return true;
+	}
+
+	void ConstantBuffer::Release()
+	{
+		--m_RefCnt;
+		if (m_RefCnt == 0)
+		{
+			delete m_pData;
+
+			delete this;
+		}
+	}
+
 #pragma endregion Buffer
 
 #pragma region Device
@@ -366,6 +434,7 @@ namespace RenderDog
 	private:
 		bool CreateVertexBuffer(const BufferDesc* pDesc, const SubResourceData* pInitData, IBuffer** ppBuffer);
 		bool CreateIndexBuffer(const BufferDesc* pDesc, const SubResourceData* pInitData, IBuffer** ppBuffer);
+		bool CreateConstantBuffer(const BufferDesc* pDesc, const SubResourceData* pInitData, IBuffer** ppBuffer);
 	};
 
 
@@ -449,6 +518,10 @@ namespace RenderDog
 		{
 			return CreateIndexBuffer(pDesc, pInitData, ppBuffer);
 		}
+		case RD_BIND_FLAG::BIND_CONSTANT_BUFFER:
+		{
+			return CreateConstantBuffer(pDesc, pInitData, ppBuffer);
+		}
 		default:
 			break;
 		}
@@ -527,6 +600,24 @@ namespace RenderDog
 
 		return true;
 	}
+
+	bool Device::CreateConstantBuffer(const BufferDesc* pDesc, const SubResourceData* pInitData, IBuffer** ppBuffer)
+	{
+		ConstantBuffer* pCB = new ConstantBuffer();
+		if (!pCB)
+		{
+			return false;
+		}
+
+		if (!pCB->Init(pDesc, pInitData))
+		{
+			return false;
+		}
+
+		*ppBuffer = pCB;
+
+		return true;
+	}
 #pragma endregion Device
 
 #pragma region DeviceContext
@@ -548,8 +639,11 @@ namespace RenderDog
 		virtual void IASetIndexBuffer(IBuffer* pIB) override;
 		virtual void IASetPrimitiveTopology(RD_PRIMITIVE_TOPOLOGY topology) override { m_PriTopology = topology; }
 
+		virtual	void UpdateSubresource(IResource* pDstResource, const void* pSrcData, uint32_t srcRowPitch, uint32_t srcDepthPitch) override;
+
 		virtual void VSSetShader(VertexShader* pVS) override { m_pVS = pVS; }
-		virtual void VSSetTransMats(const Matrix4x4* matWorld, const Matrix4x4* matView, const Matrix4x4* matProj) override;
+		//virtual void VSSetTransMats(const Matrix4x4* matWorld, const Matrix4x4* matView, const Matrix4x4* matProj) override;
+		virtual void VSSetConstantBuffer(IBuffer* const* ppConstantBuffer) override;
 		virtual void PSSetShader(PixelShader* pPS) override { m_pPS = pPS; }
 		virtual void PSSetShaderResource(ShaderResourceView* const* pSRV) override { m_pSRV = *pSRV; }
 		virtual void PSSetMainLight(DirectionalLight* pLight) override { m_pMainLight = pLight; }
@@ -621,9 +715,10 @@ namespace RenderDog
 
 		ShaderResourceView* m_pSRV;
 
-		const Matrix4x4* m_pWorldMat;
+		/*const Matrix4x4* m_pWorldMat;
 		const Matrix4x4* m_pViewMat;
-		const Matrix4x4* m_pProjMat;
+		const Matrix4x4* m_pProjMat;*/
+		ConstantBuffer* m_pCB;
 
 		VSOutputVertex* m_pVSOutputs;
 		std::vector<VSOutputVertex> m_vAssembledVerts;
@@ -653,9 +748,9 @@ namespace RenderDog
 		m_pVS(nullptr),
 		m_pPS(nullptr),
 		m_pSRV(nullptr),
-		m_pWorldMat(nullptr),
-		m_pViewMat(nullptr),
-		m_pProjMat(nullptr),
+		//m_pWorldMat(nullptr),
+		//m_pViewMat(nullptr),
+		//m_pProjMat(nullptr),
 		m_pVSOutputs(nullptr),
 		m_PriTopology(RD_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST),
 		m_pMainLight(nullptr)
@@ -728,11 +823,50 @@ namespace RenderDog
 		}
 	}
 
-	void DeviceContext::VSSetTransMats(const Matrix4x4* matWorld, const Matrix4x4* matView, const Matrix4x4* matProj)
+	void DeviceContext::UpdateSubresource(IResource* pDstResource, const void* pSrcData, uint32_t srcRowPitch, uint32_t srcDepthPitch)
+	{
+		RD_RESOURCE_DIMENSION resDimension;
+		pDstResource->GetType(&resDimension);
+
+		switch (resDimension)
+		{
+		case RenderDog::RD_RESOURCE_DIMENSION::UNKNOWN:
+		{
+			return;
+			break;
+		}
+		case RenderDog::RD_RESOURCE_DIMENSION::BUFFER:
+		{
+			IBuffer* pBuffer = dynamic_cast<IBuffer*>(pDstResource);
+			BufferDesc bufferDesc;
+			pBuffer->GetDesc(&bufferDesc);
+			if (bufferDesc.bindFlag == RD_BIND_FLAG::BIND_CONSTANT_BUFFER)
+			{
+				ConstantBuffer* pCB = dynamic_cast<ConstantBuffer*>(pBuffer);
+				memcpy(pCB->GetData(), pSrcData, bufferDesc.byteWidth);
+			}
+			
+			break;
+		}
+		case RenderDog::RD_RESOURCE_DIMENSION::TEXTURE2D:
+		{
+			break;
+		}
+		default:
+			break;
+		}
+	}
+
+	/*void DeviceContext::VSSetTransMats(const Matrix4x4* matWorld, const Matrix4x4* matView, const Matrix4x4* matProj)
 	{
 		m_pWorldMat = matWorld;
 		m_pViewMat = matView;
 		m_pProjMat = matProj;
+	}*/
+
+	void DeviceContext::VSSetConstantBuffer(IBuffer* const* ppConstantBuffer)
+	{
+		m_pCB = dynamic_cast<ConstantBuffer*>(*ppConstantBuffer);
 	}
 
 	void DeviceContext::RSSetViewport(const Viewport* pViewport)
@@ -898,7 +1032,10 @@ namespace RenderDog
 		{
 			const Vertex& vert = pVerts[i];
 
-			m_pVSOutputs[i] = m_pVS->VSMain(vert, *m_pWorldMat, *m_pViewMat, *m_pProjMat);
+			Matrix4x4* pWorldMatrix = (Matrix4x4*)m_pCB->GetData();
+			Matrix4x4* pViewMatrix = (Matrix4x4*)m_pCB->GetData() + 1;
+			Matrix4x4* pProjMatrix = (Matrix4x4*)m_pCB->GetData() + 2;
+			m_pVSOutputs[i] = m_pVS->VSMain(vert, *pWorldMatrix, *pViewMatrix, *pProjMatrix);
 		}
 
 		ShapeAssemble(nIndexNum);

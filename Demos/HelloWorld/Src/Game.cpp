@@ -1,7 +1,7 @@
 ///////////////////////////////////
 //RenderDog <·,·>
 //FileName: Game.cpp
-//Hello World Demo, Clear RenderTarget with Red Color
+//Hello World Demo
 //Written by Xiang Weikang
 ///////////////////////////////////
 
@@ -38,6 +38,7 @@ RenderDog::ISwapChain*			g_pSwapChain = nullptr;
 RenderDog::IRenderTargetView*	g_pRenderTargetView = nullptr;
 RenderDog::IBuffer*				g_pVertexBuffer = nullptr;
 RenderDog::IBuffer*				g_pIndexBuffer = nullptr;
+RenderDog::IBuffer*				g_pMVPMatrixConstantBuffer = nullptr;
 RenderDog::VertexShader*		g_pVertexShader = nullptr;
 RenderDog::PixelShader*			g_pPixelShader = nullptr;
 RenderDog::ITexture2D*			g_pDepthTexture = nullptr;
@@ -58,6 +59,13 @@ RenderDog::DirectionalLight*	g_pMainLight;
 int aKeys[512];	// 当前键盘按下状态
 
 RenderDog::FPSCamera*			g_pMainCamera;
+
+struct ConstantBufferMVPMatrix
+{
+	RenderDog::Matrix4x4 worldMatrix;
+	RenderDog::Matrix4x4 viewMatrix;
+	RenderDog::Matrix4x4 projMatrix;
+};
 
 HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow);
 bool InitDevice();
@@ -266,6 +274,14 @@ bool InitDevice()
 		return false;
 	}
 
+	RenderDog::BufferDesc cbDesc;
+	cbDesc.byteWidth = sizeof(ConstantBufferMVPMatrix);
+	cbDesc.bindFlag = RenderDog::RD_BIND_FLAG::BIND_CONSTANT_BUFFER;
+	if (!g_pDevice->CreateBuffer(&cbDesc, nullptr, &g_pMVPMatrixConstantBuffer))
+	{
+		return false;
+	}
+
 	g_pTextureSRV = new RenderDog::ShaderResourceView();
 
 	if (!g_pTextureSRV->LoadFromFile("Textures/PolybumpTangent_DDN.tga"))
@@ -343,6 +359,12 @@ void CleanupDevice()
 	{
 		g_pIndexBuffer->Release();
 		g_pIndexBuffer = nullptr;
+	}
+
+	if (g_pMVPMatrixConstantBuffer)
+	{
+		g_pMVPMatrixConstantBuffer->Release();
+		g_pMVPMatrixConstantBuffer = nullptr;
 	}
 
 	if (g_pDepthTexture)
@@ -425,6 +447,13 @@ void Update(float fTime)
 	}
 	
 	g_ViewMatrix = g_pMainCamera->GetViewMatrix();
+
+	ConstantBufferMVPMatrix mvpCB;
+	mvpCB.worldMatrix = g_WorldMatrix;
+	mvpCB.viewMatrix = g_ViewMatrix;
+	mvpCB.projMatrix = g_PerspProjMatrix;
+
+	g_pDeviceContext->UpdateSubresource(g_pMVPMatrixConstantBuffer, &mvpCB, 0, 0);
 }
 
 void Render()
@@ -442,7 +471,8 @@ void Render()
 	g_pDeviceContext->IASetPrimitiveTopology(RenderDog::RD_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST);
 
 	g_pDeviceContext->VSSetShader(g_pVertexShader);
-	g_pDeviceContext->VSSetTransMats(&g_WorldMatrix, &g_ViewMatrix, &g_PerspProjMatrix);
+	//g_pDeviceContext->VSSetTransMats(&g_WorldMatrix, &g_ViewMatrix, &g_PerspProjMatrix);
+	g_pDeviceContext->VSSetConstantBuffer(&g_pMVPMatrixConstantBuffer);
 	g_pDeviceContext->PSSetShader(g_pPixelShader);
 	g_pDeviceContext->PSSetShaderResource(&g_pTextureSRV);
 	g_pDeviceContext->PSSetMainLight(g_pMainLight);
