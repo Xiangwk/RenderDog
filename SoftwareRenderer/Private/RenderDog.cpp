@@ -2,7 +2,6 @@
 #include "Vertex.h"
 #include "Matrix.h"
 #include "Utility.h"
-#include "Light.h"
 
 #include <vector>
 
@@ -50,20 +49,61 @@ namespace RenderDog
 
 	class PixelShader : public IPixelShader
 	{
+	private:
+		struct MainLight
+		{
+			Vector3	direction;	//从光源发射光线的方向
+			Vector3	color;
+			float	luminance;
+
+			MainLight() :
+				direction(),
+				color(),
+				luminance(0)
+			{}
+		};
 	public:
-		PixelShader() = default;
-		~PixelShader() = default;
+		PixelShader() :
+			m_pMainLight(nullptr)
+		{
+			m_pMainLight = new MainLight;
+		}
+		~PixelShader()
+		{}
 
 		virtual void AddRef() override {}
-		virtual void Release() override { delete this; }
+		virtual void Release() override;
 
-		Vector4 PSMain(const VSOutputVertex& VSOutput, const ShaderResourceTexture* pSRTexture, DirectionalLight* pDirLight) const;
+		void SetMainLight(const Vector3& direction, const Vector3& color, float luma);
+
+		Vector4 PSMain(const VSOutputVertex& VSOutput, const ShaderResourceTexture* pSRTexture) const;
 
 	private:
 		Vector4 Sample(const ShaderResourceTexture* pSRTexture, const Vector2& vUV) const;
 
-		Vector3 CalcPhongLighing(const DirectionalLight& light, const Vector3& normal, const Vector3& faceColor) const;
+		Vector3 CalcPhongLighing(const MainLight* light, const Vector3& normal, const Vector3& faceColor) const;
+
+	private:
+		MainLight* m_pMainLight;
 	};
+
+	void PixelShader::Release()
+	{ 
+		if (m_pMainLight)
+		{
+			delete m_pMainLight;
+			m_pMainLight = nullptr;
+		}
+
+		delete this; 
+	}
+
+	void PixelShader::SetMainLight(const Vector3& direction, const Vector3& color, float luma)
+	{
+		m_pMainLight->direction = direction;
+		m_pMainLight->color = color;
+		m_pMainLight->luminance = luma;
+	}
 #pragma endregion Shader
 
 #pragma region Texture2D
@@ -523,7 +563,7 @@ namespace RenderDog
 		--m_RefCnt;
 		if (m_RefCnt == 0)
 		{
-			delete m_pData;
+			free(m_pData);
 
 			delete this;
 		}
@@ -771,10 +811,10 @@ namespace RenderDog
 		virtual	void UpdateSubresource(IResource* pDstResource, const void* pSrcData, uint32_t srcRowPitch, uint32_t srcDepthPitch) override;
 
 		virtual void VSSetShader(IVertexShader* pVS) override { m_pVS = dynamic_cast<VertexShader*>(pVS); }
-		virtual void VSSetConstantBuffer(IBuffer* const* ppConstantBuffer) override;
+		virtual void VSSetConstantBuffer(uint32_t startSlot, IBuffer* const* ppConstantBuffer) override;
+		virtual void PSSetConstantBuffer(uint32_t startSlot, IBuffer* const* ppConstantBuffer) override;
 		virtual void PSSetShader(IPixelShader* pPS) override { m_pPS = dynamic_cast<PixelShader*>(pPS); }
 		virtual void PSSetShaderResource(IShaderResourceView* const* ppShaderResourceView) override;
-		virtual void PSSetMainLight(DirectionalLight* pLight) override { m_pMainLight = pLight; }
 
 		virtual void RSSetViewport(const Viewport* pVP) override;
 
@@ -837,7 +877,7 @@ namespace RenderDog
 
 		VertexBuffer* m_pVB;
 		IndexBuffer* m_pIB;
-		ConstantBuffer* m_pCB;
+		ConstantBuffer* m_pCB[2];
 
 		VertexShader* m_pVS;
 		PixelShader* m_pPS;
@@ -853,8 +893,6 @@ namespace RenderDog
 		Matrix4x4					m_ViewportMatrix;
 
 		RD_PRIMITIVE_TOPOLOGY			m_PriTopology;
-
-		DirectionalLight* m_pMainLight;
 	};
 
 	extern const float fEpsilon;
@@ -873,8 +911,7 @@ namespace RenderDog
 		m_pPS(nullptr),
 		m_SRTexture(),
 		m_pVSOutputs(nullptr),
-		m_PriTopology(RD_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST),
-		m_pMainLight(nullptr)
+		m_PriTopology(RD_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST)
 	{
 		m_ViewportMatrix.Identity();
 #if DEBUG_RASTERIZATION
@@ -978,9 +1015,21 @@ namespace RenderDog
 		}
 	}
 
-	void DeviceContext::VSSetConstantBuffer(IBuffer* const* ppConstantBuffer)
+	void DeviceContext::VSSetConstantBuffer(uint32_t startSlot, IBuffer* const* ppConstantBuffer)
 	{
-		m_pCB = dynamic_cast<ConstantBuffer*>(*ppConstantBuffer);
+		m_pCB[startSlot] = dynamic_cast<ConstantBuffer*>(*ppConstantBuffer);
+	}
+
+	void DeviceContext::PSSetConstantBuffer(uint32_t startSlot, IBuffer* const* ppConstantBuffer)
+	{
+		m_pCB[startSlot] = dynamic_cast<ConstantBuffer*>(*ppConstantBuffer);
+
+		float* pData = static_cast<float*>(m_pCB[startSlot]->GetData());
+		Vector3 mainLightDir(pData[0], pData[1], pData[2]);
+		Vector3 mainLightColor(pData[3], pData[4], pData[5]);
+		float mainLightLuma = pData[6];
+
+		m_pPS->SetMainLight(mainLightDir, mainLightColor, mainLightLuma);
 	}
 
 	void DeviceContext::PSSetShaderResource(IShaderResourceView* const* ppShaderResourceView)
@@ -1172,9 +1221,9 @@ namespace RenderDog
 		{
 			const Vertex& vert = pVerts[i];
 
-			Matrix4x4* pWorldMatrix = (Matrix4x4*)m_pCB->GetData();
-			Matrix4x4* pViewMatrix = (Matrix4x4*)m_pCB->GetData() + 1;
-			Matrix4x4* pProjMatrix = (Matrix4x4*)m_pCB->GetData() + 2;
+			Matrix4x4* pWorldMatrix = (Matrix4x4*)m_pCB[0]->GetData();
+			Matrix4x4* pViewMatrix = (Matrix4x4*)m_pCB[0]->GetData() + 1;
+			Matrix4x4* pProjMatrix = (Matrix4x4*)m_pCB[0]->GetData() + 2;
 			m_pVSOutputs[i] = m_pVS->VSMain(vert, *pWorldMatrix, *pViewMatrix, *pProjMatrix);
 		}
 
@@ -1373,7 +1422,7 @@ namespace RenderDog
 				float fPixelDepth = m_pDepthBuffer[j + i * m_BackBufferWidth];
 				if (vCurr.SVPosition.z <= fPixelDepth)
 				{
-					Vector4 color = m_pPS->PSMain(vCurr, &m_SRTexture, m_pMainLight);
+					Vector4 color = m_pPS->PSMain(vCurr, &m_SRTexture);
 					Vector4 ARGB = ConvertRGBAColorToARGBColor(color);
 					m_pFrameBuffer[j + i * m_BackBufferWidth] = ConvertColorToUInt32(ARGB);
 
@@ -1418,7 +1467,7 @@ namespace RenderDog
 				float fPixelDepth = m_pDepthBuffer[j + i * m_BackBufferWidth];
 				if (vCurr.SVPosition.z <= fPixelDepth)
 				{
-					Vector4 color = m_pPS->PSMain(vCurr, &m_SRTexture, m_pMainLight);
+					Vector4 color = m_pPS->PSMain(vCurr, &m_SRTexture);
 					Vector4 ARGB = ConvertRGBAColorToARGBColor(color);
 					m_pFrameBuffer[j + i * m_BackBufferWidth] = ConvertColorToUInt32(ARGB);
 
@@ -2223,7 +2272,7 @@ namespace RenderDog
 		return Output;
 	}
 
-	Vector4 PixelShader::PSMain(const VSOutputVertex& PSInput, const ShaderResourceTexture* pSRTexture, DirectionalLight* pDirLight) const
+	Vector4 PixelShader::PSMain(const VSOutputVertex& PSInput, const ShaderResourceTexture* pSRTexture) const
 	{
 		Vector2 vUV = PSInput.Texcoord;
 
@@ -2251,7 +2300,7 @@ namespace RenderDog
 
 		Vector4 WorldNormal = Vector4(TangentNormal, 0.0f) * matTBN;
 
-		Vector3 DiffuseColor = CalcPhongLighing(*pDirLight, Vector3(WorldNormal.x, WorldNormal.y, WorldNormal.z), Vector3(1.0f, 1.0f, 1.0f));
+		Vector3 DiffuseColor = CalcPhongLighing(m_pMainLight, Vector3(WorldNormal.x, WorldNormal.y, WorldNormal.z), Vector3(1.0f, 1.0f, 1.0f));
 
 		return Vector4(DiffuseColor, 1.0f);
 	}
@@ -2274,9 +2323,9 @@ namespace RenderDog
 		return color;
 	}
 
-	Vector3 PixelShader::CalcPhongLighing(const DirectionalLight& light, const Vector3& normal, const Vector3& faceColor) const
+	Vector3 PixelShader::CalcPhongLighing(const MainLight* light, const Vector3& normal, const Vector3& faceColor) const
 	{
-		Vector3 worldLightDir = -Normalize(light.GetDirection());
+		Vector3 worldLightDir = -Normalize(light->direction);
 		worldLightDir = Normalize(worldLightDir);
 		Vector3 worldNormal = Normalize(normal);
 
@@ -2284,8 +2333,7 @@ namespace RenderDog
 
 		fDiffuse = Clamp(fDiffuse, 0.0f, 1.0f);
 
-		//return fDiffuse * light.GetColor() * light.GetLuminance() * faceColor;
-		return Vector3(fDiffuse);
+		return fDiffuse * light->color * light->luminance * faceColor;
 	}
 #pragma endregion Shader
 }

@@ -5,15 +5,6 @@
 
 namespace RenderDog
 {
-	class IDevice;
-	class VertexShader;
-	class PixelShader;
-	class DirectionalLight;
-
-	struct Vertex;
-	struct Viewport;
-	struct ShaderResourceTexture;
-
 #pragma region Enum
 	enum class RD_PRIMITIVE_TOPOLOGY
 	{
@@ -263,10 +254,10 @@ namespace RenderDog
 		virtual	void UpdateSubresource(IResource* pDstResource, const void* pSrcData, uint32_t srcRowPitch, uint32_t srcDepthPitch) = 0;
 
 		virtual void VSSetShader(IVertexShader* pVS) = 0;
-		virtual void VSSetConstantBuffer(IBuffer* const* ppConstantBuffer) = 0;
+		virtual void VSSetConstantBuffer(uint32_t startSlot, IBuffer* const* ppConstantBuffer) = 0;
+		virtual void PSSetConstantBuffer(uint32_t startSlot, IBuffer* const* ppConstantBuffer) = 0;
 		virtual void PSSetShader(IPixelShader* pPS) = 0;
 		virtual void PSSetShaderResource(IShaderResourceView* const* ppShaderResourceView) = 0;
-		virtual void PSSetMainLight(DirectionalLight* pLight) = 0;
 
 		virtual void RSSetViewport(const Viewport* pViewport) = 0;
 

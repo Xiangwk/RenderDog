@@ -38,6 +38,7 @@ RenderDog::IRenderTargetView*	g_pRenderTargetView = nullptr;
 RenderDog::IBuffer*				g_pVertexBuffer = nullptr;
 RenderDog::IBuffer*				g_pIndexBuffer = nullptr;
 RenderDog::IBuffer*				g_pMVPMatrixConstantBuffer = nullptr;
+RenderDog::IBuffer*				g_pMainLightConstantBuffer = nullptr;
 RenderDog::IVertexShader*		g_pVertexShader = nullptr;
 RenderDog::IPixelShader*		g_pPixelShader = nullptr;
 RenderDog::ITexture2D*			g_pDepthTexture = nullptr;
@@ -59,12 +60,21 @@ int aKeys[512];	// 当前键盘按下状态
 
 RenderDog::FPSCamera*			g_pMainCamera;
 
+#pragma region ConstantBufferStruct
 struct ConstantBufferMVPMatrix
 {
 	RenderDog::Matrix4x4 worldMatrix;
 	RenderDog::Matrix4x4 viewMatrix;
 	RenderDog::Matrix4x4 projMatrix;
 };
+
+struct ConstantBufferMainLight
+{
+	Vector3	direction;	//从光源发射光线的方向
+	Vector3	color;
+	float	luminance;
+};
+#pragma endregion ConstantBufferStruct
 
 HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow);
 bool InitDevice();
@@ -281,6 +291,12 @@ bool InitDevice()
 		return false;
 	}
 
+	cbDesc.byteWidth = sizeof(ConstantBufferMainLight);
+	if (!g_pDevice->CreateBuffer(&cbDesc, nullptr, &g_pMainLightConstantBuffer))
+	{
+		return false;
+	}
+
 	if (!RenderDog::CreateShaderResourceViewFromFile(g_pDevice, "Textures/PolybumpTangent_DDN.tga", &g_pTextureSRV))
 	{
 		return false;
@@ -362,6 +378,12 @@ void CleanupDevice()
 	{
 		g_pMVPMatrixConstantBuffer->Release();
 		g_pMVPMatrixConstantBuffer = nullptr;
+	}
+
+	if (g_pMainLightConstantBuffer)
+	{
+		g_pMainLightConstantBuffer->Release();
+		g_pMainLightConstantBuffer = nullptr;
 	}
 
 	if (g_pDepthTexture)
@@ -448,8 +470,13 @@ void Update(float fTime)
 	mvpCB.worldMatrix = g_WorldMatrix;
 	mvpCB.viewMatrix = g_ViewMatrix;
 	mvpCB.projMatrix = g_PerspProjMatrix;
-
 	g_pDeviceContext->UpdateSubresource(g_pMVPMatrixConstantBuffer, &mvpCB, 0, 0);
+
+	ConstantBufferMainLight mainLightCB;
+	mainLightCB.direction = g_pMainLight->GetDirection();
+	mainLightCB.color = g_pMainLight->GetColor();
+	mainLightCB.luminance = g_pMainLight->GetLuminance();
+	g_pDeviceContext->UpdateSubresource(g_pMainLightConstantBuffer, &mainLightCB, 0, 0);
 }
 
 void Render()
@@ -467,10 +494,12 @@ void Render()
 	g_pDeviceContext->IASetPrimitiveTopology(RenderDog::RD_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST);
 
 	g_pDeviceContext->VSSetShader(g_pVertexShader);
-	g_pDeviceContext->VSSetConstantBuffer(&g_pMVPMatrixConstantBuffer);
+	//FIXME!!! 这里暂时将slot0固定设置为MVP矩阵，不能修改
+	g_pDeviceContext->VSSetConstantBuffer(0, &g_pMVPMatrixConstantBuffer);
 	g_pDeviceContext->PSSetShader(g_pPixelShader);
 	g_pDeviceContext->PSSetShaderResource(&g_pTextureSRV);
-	g_pDeviceContext->PSSetMainLight(g_pMainLight);
+	//FIXME!!! 这里暂时将slot1固定设置为主光，不能修改
+	g_pDeviceContext->PSSetConstantBuffer(1, &g_pMainLightConstantBuffer);
 
 #if DRAW_BOX
 	g_pDeviceContext->DrawIndex(60);
