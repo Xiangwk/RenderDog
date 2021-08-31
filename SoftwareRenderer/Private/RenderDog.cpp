@@ -1,13 +1,29 @@
 #include "RenderDog.h"
 #include "Shader.h"
 #include "Vertex.h"
+#include "Vector.h"
 #include "Matrix.h"
 #include "Utility.h"
+#include "Light.h"
 
 #include <vector>
 
 namespace RenderDog
 {
+	struct ShaderResourceTexture
+	{
+		Vector4* pColor;
+
+		uint32_t width;
+		uint32_t height;
+
+		ShaderResourceTexture() :
+			pColor(nullptr),
+			width(0),
+			height(0)
+		{}
+	};
+
 #pragma region Texture2D
 
 	class Texture2D : public ITexture2D
@@ -60,14 +76,18 @@ namespace RenderDog
 		{
 			m_pData = new float[dataNum];
 		}
+		else if (pDesc->format == RD_FORMAT::R32G32B32A32_FLOAT)
+		{
+			m_pData = new Vector4[dataNum];
+		}
 		else
 		{
 			m_pData = nullptr;
 		}
 
-		if (pInitData)
+		if (pInitData && m_pData)
 		{
-			memcpy(m_pData, pInitData->pSysMem, pInitData->sysMemPitch * pDesc->width);
+			memcpy(m_pData, pInitData->pSysMem, pInitData->sysMemPitch);
 		}
 
 		AddRef();
@@ -106,9 +126,7 @@ namespace RenderDog
 			m_Desc()
 		{}
 		~RenderTargetView()
-		{
-			m_pViewResource = nullptr;
-		}
+		{}
 
 		bool Init(IResource* pResource, const RenderTargetViewDesc* pDesc);
 
@@ -129,6 +147,7 @@ namespace RenderDog
 	bool RenderTargetView::Init(IResource* pResource, const RenderTargetViewDesc* pDesc)
 	{
 		m_pViewResource = pResource;
+		m_pViewResource->AddRef();
 
 		if (pDesc)
 		{
@@ -142,6 +161,8 @@ namespace RenderDog
 
 	void RenderTargetView::Release()
 	{
+		m_pViewResource->Release();
+
 		--m_RefCnt;
 		if (m_RefCnt == 0)
 		{
@@ -158,9 +179,7 @@ namespace RenderDog
 			m_Desc()
 		{}
 		~DepthStencilView()
-		{
-			m_pViewResource = nullptr;
-		}
+		{}
 
 		bool Init(IResource* pResource, const DepthStencilViewDesc* pDesc);
 
@@ -181,6 +200,7 @@ namespace RenderDog
 	bool DepthStencilView::Init(IResource* pResource, const DepthStencilViewDesc* pDesc)
 	{
 		m_pViewResource = pResource;
+		m_pViewResource->AddRef();
 
 		if (pDesc)
 		{
@@ -194,12 +214,70 @@ namespace RenderDog
 
 	void DepthStencilView::Release()
 	{
+		m_pViewResource->Release();
+
 		--m_RefCnt;
 		if (m_RefCnt == 0)
 		{
 			delete this;
 		}
 	}
+
+	class ShaderResourceView : public IShaderResourceView
+	{
+	public:
+		ShaderResourceView() :
+			m_RefCnt(0),
+			m_pViewResource(nullptr),
+			m_Desc()
+		{}
+
+		~ShaderResourceView()
+		{}
+
+		bool Init(IResource* pResource, const ShaderResourceViewDesc* pDesc);
+
+		virtual void AddRef() override { ++m_RefCnt; }
+		virtual void Release() override;
+
+		virtual void GetResource(IResource** ppResource) override { *ppResource = m_pViewResource; }
+
+		virtual void GetDesc(ShaderResourceViewDesc* pDesc) override { *pDesc = m_Desc; }
+
+	private:
+		int						m_RefCnt;
+
+		IResource*				m_pViewResource;
+		ShaderResourceViewDesc	m_Desc;
+	};
+
+	bool ShaderResourceView::Init(IResource* pResource, const ShaderResourceViewDesc* pDesc)
+	{
+		m_pViewResource = pResource;
+
+		m_pViewResource->AddRef();
+
+		if (pDesc)
+		{
+			m_Desc = *pDesc;
+		}
+
+		AddRef();
+
+		return true;
+	}
+
+	void ShaderResourceView::Release()
+	{
+		m_pViewResource->Release();
+
+		--m_RefCnt;
+		if (m_RefCnt == 0)
+		{
+			delete this;
+		}
+	}
+
 #pragma endregion View
 
 #pragma region Buffer
@@ -422,8 +500,9 @@ namespace RenderDog
 		Device& operator=(const Device&) = delete;
 
 		virtual bool CreateTexture2D(const Texture2DDesc* pDesc, const SubResourceData* pInitData, ITexture2D** ppTexture) override;
-		virtual bool CreateRenderTargetView(IResource* pResource, const RenderTargetViewDesc* pDesc, IRenderTargetView** ppRenderTarget) override;
-		virtual bool CreateDepthStencilView(IResource* pResource, const DepthStencilViewDesc* pDesc, IDepthStencilView** ppDepthStencil) override;
+		virtual bool CreateRenderTargetView(IResource* pResource, const RenderTargetViewDesc* pDesc, IRenderTargetView** ppRenderTargetView) override;
+		virtual bool CreateDepthStencilView(IResource* pResource, const DepthStencilViewDesc* pDesc, IDepthStencilView** ppDepthStencilView) override;
+		virtual bool CreateShaderResourceView(IResource* pResource, const ShaderResourceViewDesc* pDesc, IShaderResourceView** ppShaderResourceView) override;
 		virtual bool CreateBuffer(const BufferDesc* pDesc, const SubResourceData* pInitData, IBuffer** ppBuffer) override;
 		virtual bool CreateVertexShader(VertexShader** ppVertexShader) override;
 		virtual bool CreatePixelShader(PixelShader** ppPixelShader) override;
@@ -456,10 +535,10 @@ namespace RenderDog
 		return true;
 	}
 
-	bool Device::CreateRenderTargetView(IResource* pResource, const RenderTargetViewDesc* pDesc, IRenderTargetView** ppRenderTarget)
+	bool Device::CreateRenderTargetView(IResource* pResource, const RenderTargetViewDesc* pDesc, IRenderTargetView** ppRenderTargetView)
 	{
-		RenderTargetView* pRT = new RenderTargetView();
-		if (!pRT)
+		RenderTargetView* pRTV = new RenderTargetView();
+		if (!pRTV)
 		{
 			return false;
 		}
@@ -473,30 +552,48 @@ namespace RenderDog
 			pDesc = &rtvDesc;
 		}
 
-		if (!pRT->Init(pResource, pDesc))
+		if (!pRTV->Init(pResource, pDesc))
 		{
 			return false;
 		}
 
-		*ppRenderTarget = pRT;
+		*ppRenderTargetView = pRTV;
 
 		return true;
 	}
 
-	bool Device::CreateDepthStencilView(IResource* pResource, const DepthStencilViewDesc* pDesc, IDepthStencilView** ppDepthStencil)
+	bool Device::CreateDepthStencilView(IResource* pResource, const DepthStencilViewDesc* pDesc, IDepthStencilView** ppDepthStencilView)
 	{
-		DepthStencilView* pDS = new DepthStencilView();
-		if (!pDS)
+		DepthStencilView* pDSV = new DepthStencilView();
+		if (!pDSV)
 		{
 			return false;
 		}
 
-		if (!pDS->Init(pResource, pDesc))
+		if (!pDSV->Init(pResource, pDesc))
 		{
 			return false;
 		}
 
-		*ppDepthStencil = pDS;
+		*ppDepthStencilView = pDSV;
+
+		return true;
+	}
+
+	bool Device::CreateShaderResourceView(IResource* pResource, const ShaderResourceViewDesc* pDesc, IShaderResourceView** ppShaderResourceView)
+	{
+		ShaderResourceView* pSRV = new ShaderResourceView();
+		if (!pSRV)
+		{
+			return false;
+		}
+
+		if (!pSRV->Init(pResource, pDesc))
+		{
+			return false;
+		}
+
+		*ppShaderResourceView = pSRV;
 
 		return true;
 	}
@@ -642,10 +739,9 @@ namespace RenderDog
 		virtual	void UpdateSubresource(IResource* pDstResource, const void* pSrcData, uint32_t srcRowPitch, uint32_t srcDepthPitch) override;
 
 		virtual void VSSetShader(VertexShader* pVS) override { m_pVS = pVS; }
-		//virtual void VSSetTransMats(const Matrix4x4* matWorld, const Matrix4x4* matView, const Matrix4x4* matProj) override;
 		virtual void VSSetConstantBuffer(IBuffer* const* ppConstantBuffer) override;
 		virtual void PSSetShader(PixelShader* pPS) override { m_pPS = pPS; }
-		virtual void PSSetShaderResource(ShaderResourceView* const* pSRV) override { m_pSRV = *pSRV; }
+		virtual void PSSetShaderResource(IShaderResourceView* const* ppShaderResourceView) override;
 		virtual void PSSetMainLight(DirectionalLight* pLight) override { m_pMainLight = pLight; }
 
 		virtual void RSSetViewport(const Viewport* pVP) override;
@@ -709,16 +805,12 @@ namespace RenderDog
 
 		VertexBuffer* m_pVB;
 		IndexBuffer* m_pIB;
+		ConstantBuffer* m_pCB;
 
 		VertexShader* m_pVS;
 		PixelShader* m_pPS;
 
-		ShaderResourceView* m_pSRV;
-
-		/*const Matrix4x4* m_pWorldMat;
-		const Matrix4x4* m_pViewMat;
-		const Matrix4x4* m_pProjMat;*/
-		ConstantBuffer* m_pCB;
+		ShaderResourceTexture m_SRTexture;
 
 		VSOutputVertex* m_pVSOutputs;
 		std::vector<VSOutputVertex> m_vAssembledVerts;
@@ -747,10 +839,7 @@ namespace RenderDog
 		m_pIB(nullptr),
 		m_pVS(nullptr),
 		m_pPS(nullptr),
-		m_pSRV(nullptr),
-		//m_pWorldMat(nullptr),
-		//m_pViewMat(nullptr),
-		//m_pProjMat(nullptr),
+		m_SRTexture(),
 		m_pVSOutputs(nullptr),
 		m_PriTopology(RD_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST),
 		m_pMainLight(nullptr)
@@ -857,16 +946,34 @@ namespace RenderDog
 		}
 	}
 
-	/*void DeviceContext::VSSetTransMats(const Matrix4x4* matWorld, const Matrix4x4* matView, const Matrix4x4* matProj)
-	{
-		m_pWorldMat = matWorld;
-		m_pViewMat = matView;
-		m_pProjMat = matProj;
-	}*/
-
 	void DeviceContext::VSSetConstantBuffer(IBuffer* const* ppConstantBuffer)
 	{
 		m_pCB = dynamic_cast<ConstantBuffer*>(*ppConstantBuffer);
+	}
+
+	void DeviceContext::PSSetShaderResource(IShaderResourceView* const* ppShaderResourceView)
+	{ 
+		IResource* pRes = nullptr;
+		(*ppShaderResourceView)->GetResource(&pRes);
+
+		ShaderResourceViewDesc srvDesc;
+		(*ppShaderResourceView)->GetDesc(&srvDesc);
+
+		switch (srvDesc.viewDimension)
+		{
+		case RD_SRV_DIMENSION::TEXTURE2D:
+		{
+			Texture2D* pTex2D = dynamic_cast<Texture2D*>(pRes);
+			Texture2DDesc texDesc;
+			pTex2D->GetDesc(&texDesc);
+
+			m_SRTexture.pColor = static_cast<Vector4*>(pTex2D->GetData());
+			m_SRTexture.width = texDesc.width;
+			m_SRTexture.height = texDesc.height;
+		}
+		default:
+			break;
+		}
 	}
 
 	void DeviceContext::RSSetViewport(const Viewport* pViewport)
@@ -1232,7 +1339,7 @@ namespace RenderDog
 				float fPixelDepth = m_pDepthBuffer[j + i * m_BackBufferWidth];
 				if (vCurr.SVPosition.z <= fPixelDepth)
 				{
-					Vector4 color = m_pPS->PSMain(vCurr, m_pSRV, m_pMainLight);
+					Vector4 color = m_pPS->PSMain(vCurr, &m_SRTexture, m_pMainLight);
 					Vector4 ARGB = ConvertRGBAColorToARGBColor(color);
 					m_pFrameBuffer[j + i * m_BackBufferWidth] = ConvertColorToUInt32(ARGB);
 
@@ -1277,7 +1384,7 @@ namespace RenderDog
 				float fPixelDepth = m_pDepthBuffer[j + i * m_BackBufferWidth];
 				if (vCurr.SVPosition.z <= fPixelDepth)
 				{
-					Vector4 color = m_pPS->PSMain(vCurr, m_pSRV, m_pMainLight);
+					Vector4 color = m_pPS->PSMain(vCurr, &m_SRTexture, m_pMainLight);
 					Vector4 ARGB = ConvertRGBAColorToARGBColor(color);
 					m_pFrameBuffer[j + i * m_BackBufferWidth] = ConvertColorToUInt32(ARGB);
 
@@ -2047,4 +2154,104 @@ namespace RenderDog
 
 		return true;
 	}
+
+#pragma region Shader
+	VSOutputVertex VertexShader::VSMain(const Vertex& inVertex, const Matrix4x4& matWorld, const Matrix4x4& matView, const Matrix4x4& matProj) const
+	{
+		VSOutputVertex Output = {};
+		Vector4 vInPos = Vector4(inVertex.vPosition, 1.0f);
+		vInPos = vInPos * matWorld;
+		vInPos = vInPos * matView;
+		vInPos = vInPos * matProj;
+
+		Output.SVPosition.x = vInPos.x;
+		Output.SVPosition.y = vInPos.y;
+		Output.SVPosition.z = vInPos.z;
+		Output.SVPosition.w = vInPos.w;
+
+		Output.Color = Vector4(inVertex.vColor, 1.0f);
+
+		Vector4 vNormal = Vector4(inVertex.vNormal, 0.0f);
+		vNormal = vNormal * matWorld;
+		Output.Normal.x = vNormal.x;
+		Output.Normal.y = vNormal.y;
+		Output.Normal.z = vNormal.z;
+
+		Vector4 vTangent = Vector4(inVertex.vTangent.x, inVertex.vTangent.y, inVertex.vTangent.z, 0.0f);
+		vTangent = vTangent * matWorld;
+		Output.Tangent.x = vTangent.x;
+		Output.Tangent.y = vTangent.y;
+		Output.Tangent.z = vTangent.z;
+		Output.Tangent.w = inVertex.vTangent.w;
+
+		Output.Texcoord = inVertex.vTexcoord;
+
+		return Output;
+	}
+
+	Vector4 PixelShader::PSMain(const VSOutputVertex& PSInput, const ShaderResourceTexture* pSRTexture, DirectionalLight* pDirLight) const
+	{
+		Vector2 vUV = PSInput.Texcoord;
+
+		Vector4 TextureColor = Sample(pSRTexture, vUV);
+
+		//Debug Normal Map
+		float fTangentNormalX = TextureColor.x;
+		float fTangentNormalY = TextureColor.y;
+		float fTangentNormalZ = TextureColor.z;
+		fTangentNormalX = fTangentNormalX * 2.0f - 1.0f;
+		fTangentNormalY = fTangentNormalY * 2.0f - 1.0f;
+		fTangentNormalZ = fTangentNormalZ * 2.0f - 1.0f;
+
+		Vector3 TangentNormal = Normalize(Vector3(fTangentNormalX, fTangentNormalY, fTangentNormalZ));
+
+		Vector3 Tangent = Normalize(Vector3(PSInput.Tangent.x, PSInput.Tangent.y, PSInput.Tangent.z));
+		Vector3 BiTangent = Normalize(CrossProduct(PSInput.Normal, Tangent) * PSInput.Tangent.w);
+		Vector3 VertexNormal = Normalize(PSInput.Normal);
+
+		Vector4 vT = Vector4(Tangent, 0.0f);
+		Vector4 vB = Vector4(BiTangent, 0.0f);
+		Vector4 vN = Vector4(VertexNormal, 0.0f);
+
+		Matrix4x4 matTBN(vT, vB, vN, Vector4(0, 0, 0, 1));
+
+		Vector4 WorldNormal = Vector4(TangentNormal, 0.0f) * matTBN;
+
+		Vector3 DiffuseColor = CalcPhongLighing(*pDirLight, Vector3(WorldNormal.x, WorldNormal.y, WorldNormal.z), Vector3(1.0f, 1.0f, 1.0f));
+
+		return Vector4(DiffuseColor, 1.0f);
+	}
+
+	Vector4 PixelShader::Sample(const ShaderResourceTexture* pSRTexture, const Vector2& vUV) const
+	{
+		const Vector4* pColorData = pSRTexture->pColor;
+
+		uint32_t nWidth = pSRTexture->width;
+		uint32_t nHeight = pSRTexture->height;
+
+		float fU = vUV.x - std::floor(vUV.x);
+		float fV = vUV.y - std::floor(vUV.y);
+
+		uint32_t nRow = (uint32_t)(fV * (nHeight - 1));
+		uint32_t nCol = (uint32_t)(fU * (nWidth - 1));
+
+		Vector4 color = pColorData[nRow * nWidth + nCol];
+
+		return color;
+	}
+
+	Vector3 PixelShader::CalcPhongLighing(const DirectionalLight& light, const Vector3& normal, const Vector3& faceColor) const
+	{
+		Vector3 worldLightDir = -Normalize(light.GetDirection());
+		worldLightDir = Normalize(worldLightDir);
+		Vector3 worldNormal = Normalize(normal);
+
+		float fDiffuse = DotProduct(worldLightDir, worldNormal);
+
+		fDiffuse = Clamp(fDiffuse, 0.0f, 1.0f);
+
+		//return fDiffuse * light.GetColor() * light.GetLuminance() * faceColor;
+		return Vector3(fDiffuse);
+	}
+#pragma endregion Shader
 }

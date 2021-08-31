@@ -178,7 +178,7 @@ xcopy ..\..\Public\*.* ..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i /s 
     <ClInclude Include="..\..\Public\Model.h" />
     <ClInclude Include="..\..\Public\RenderDog.h" />
     <ClInclude Include="..\..\Public\Shader.h" />
-    <ClInclude Include="..\..\Public\ShaderResourceView.h" />
+    <ClInclude Include="..\..\Public\ShaderResourceUtility.h" />
     <ClInclude Include="..\..\Public\Vertex.h" />
   </ItemGroup>
   <ItemGroup>
@@ -192,7 +192,7 @@ xcopy ..\..\Public\*.* ..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i /s 
     <ClCompile Include="..\..\Private\Model.cpp" />
     <ClCompile Include="..\..\Private\RenderDog.cpp" />
     <ClCompile Include="..\..\Private\Shader.cpp" />
-    <ClCompile Include="..\..\Private\ShaderResourceView.cpp" />
+    <ClCompile Include="..\..\Private\ShaderResourceUtility.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

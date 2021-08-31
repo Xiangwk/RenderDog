@@ -6,7 +6,7 @@
 ///////////////////////////////////
 
 #include "RenderDog.h"
-#include "ShaderResourceView.h"
+#include "ShaderResourceUtility.h"
 #include "Shader.h"
 #include "Vertex.h"
 #include "Transform.h"
@@ -43,7 +43,7 @@ RenderDog::VertexShader*		g_pVertexShader = nullptr;
 RenderDog::PixelShader*			g_pPixelShader = nullptr;
 RenderDog::ITexture2D*			g_pDepthTexture = nullptr;
 RenderDog::IDepthStencilView*	g_pDepthStencilView = nullptr;
-RenderDog::ShaderResourceView*	g_pTextureSRV = nullptr;
+RenderDog::IShaderResourceView*	g_pTextureSRV = nullptr;
 
 RenderDog::Matrix4x4			g_WorldMatrix;
 RenderDog::Matrix4x4			g_ViewMatrix;
@@ -282,9 +282,7 @@ bool InitDevice()
 		return false;
 	}
 
-	g_pTextureSRV = new RenderDog::ShaderResourceView();
-
-	if (!g_pTextureSRV->LoadFromFile("Textures/PolybumpTangent_DDN.tga"))
+	if (!RenderDog::CreateShaderResourceViewFromFile(g_pDevice, "Textures/PolybumpTangent_DDN.tga", &g_pTextureSRV))
 	{
 		return false;
 	}
@@ -383,7 +381,6 @@ void CleanupDevice()
 	{
 		g_pTextureSRV->Release();
 
-		delete g_pTextureSRV;
 		g_pTextureSRV = nullptr;
 	}
 

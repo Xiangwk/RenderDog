@@ -20,7 +20,7 @@ namespace RenderDog
 	class ShaderResourceView;
 	class DirectionalLight;
 
-	struct VSOutputVertex
+	/*struct VSOutputVertex
 	{
 		VSOutputVertex() = default;
 		VSOutputVertex(const VSOutputVertex & v) = default;
@@ -54,5 +54,5 @@ namespace RenderDog
 		Vector4 Sample(const ShaderResourceView* pSRV, const Vector2& vUV) const;
 
 		Vector3 CalcPhongLighing(const DirectionalLight& light, const Vector3& normal, const Vector3& faceColor) const;
-	};
+	};*/
 }

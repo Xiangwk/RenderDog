@@ -3,21 +3,19 @@
 #include <windows.h>
 #include <cstdint>
 
+#include "Vector.h"
+#include "Matrix.h"
+
 namespace RenderDog
 {
 	class IDevice;
-	class Texture2D;
-	class RenderTargetView;
-	class ShaderResourceView;
-	class DepthStencilView;
 	class VertexShader;
 	class PixelShader;
-	class Vector4;
-	class Matrix4x4;
 	class DirectionalLight;
 
 	struct Vertex;
 	struct Viewport;
+	struct ShaderResourceTexture;
 
 #pragma region Enum
 	enum class RD_PRIMITIVE_TOPOLOGY
@@ -46,11 +44,19 @@ namespace RenderDog
 		TEXTURE2D = 1,
 	};
 
+	enum class RD_SRV_DIMENSION
+	{
+		UNKNOWN = 0,
+		BUFFER = 1,
+		TEXTURE2D = 2,
+	};
+
 	enum class RD_FORMAT
 	{
 		UNKNOWN = 0,
 		R8G8B8A8_UNORM = 1,
-		R32_FLOAT = 2
+		R32G32B32A32_FLOAT = 2,
+		R32_FLOAT = 3
 	};
 
 	enum class RD_BIND_FLAG
@@ -143,6 +149,12 @@ namespace RenderDog
 			viewDimension(RD_DSV_DIMENSION::UNKNOWN)
 		{}
 	};
+
+	struct ShaderResourceViewDesc
+	{
+		RD_FORMAT format;
+		RD_SRV_DIMENSION viewDimension;
+	};
 #pragma endregion Description
 
 	struct SubResourceData
@@ -215,13 +227,20 @@ namespace RenderDog
 		virtual void GetDesc(DepthStencilViewDesc* pDesc) = 0;
 	};
 
+	class IShaderResourceView : public IView
+	{
+	public:
+		virtual void GetDesc(ShaderResourceViewDesc* pDesc) = 0;
+	};
+
 #pragma region Device
 	class IDevice : public IUnknown
 	{
 	public:
 		virtual bool CreateTexture2D(const Texture2DDesc* pDesc, const SubResourceData* pInitData, ITexture2D** ppTexture) = 0;
-		virtual bool CreateRenderTargetView(IResource* pResource, const RenderTargetViewDesc* pDesc, IRenderTargetView** ppRenderTarget) = 0;
-		virtual bool CreateDepthStencilView(IResource* pResource, const DepthStencilViewDesc* pDesc, IDepthStencilView** ppDepthStencil) = 0;
+		virtual bool CreateRenderTargetView(IResource* pResource, const RenderTargetViewDesc* pDesc, IRenderTargetView** ppRenderTargetView) = 0;
+		virtual bool CreateDepthStencilView(IResource* pResource, const DepthStencilViewDesc* pDesc, IDepthStencilView** ppDepthStencilView) = 0;
+		virtual bool CreateShaderResourceView(IResource* pResource, const ShaderResourceViewDesc* pDesc, IShaderResourceView** ppShaderResourceView) = 0;
 		virtual bool CreateBuffer(const BufferDesc* pDesc, const SubResourceData* pInitData, IBuffer** ppBuffer) = 0;
 		virtual bool CreateVertexShader(VertexShader** ppVertexShader) = 0;
 		virtual bool CreatePixelShader(PixelShader** ppPixelShader) = 0;
@@ -237,10 +256,9 @@ namespace RenderDog
 		virtual	void UpdateSubresource(IResource* pDstResource, const void* pSrcData, uint32_t srcRowPitch, uint32_t srcDepthPitch) = 0;
 
 		virtual void VSSetShader(VertexShader* pVS) = 0;
-		//virtual void VSSetTransMats(const Matrix4x4* matWorld, const Matrix4x4* matView, const Matrix4x4* matProj) = 0;
 		virtual void VSSetConstantBuffer(IBuffer* const* ppConstantBuffer) = 0;
 		virtual void PSSetShader(PixelShader* pPS) = 0;
-		virtual void PSSetShaderResource(ShaderResourceView* const* pSRV) = 0;
+		virtual void PSSetShaderResource(IShaderResourceView* const* ppShaderResourceView) = 0;
 		virtual void PSSetMainLight(DirectionalLight* pLight) = 0;
 
 		virtual void RSSetViewport(const Viewport* pViewport) = 0;
@@ -266,6 +284,44 @@ namespace RenderDog
 		virtual void Present() = 0;
 	};
 #pragma endregion Interface
+
+#pragma region Shader
+	struct VSOutputVertex
+	{
+		VSOutputVertex() = default;
+		VSOutputVertex(const VSOutputVertex& v) = default;
+		VSOutputVertex& operator=(const VSOutputVertex& v) = default;
+
+		Vector4 SVPosition;
+		Vector4 Color;
+		Vector3 Normal;
+		Vector4 Tangent;
+		Vector2 Texcoord;
+	};
+
+	class VertexShader
+	{
+	public:
+		VertexShader() = default;
+		~VertexShader() = default;
+
+		VSOutputVertex VSMain(const Vertex& inVertex, const Matrix4x4& matWorld, const Matrix4x4& matView, const Matrix4x4& matProj) const;
+	};
+
+	class PixelShader
+	{
+	public:
+		PixelShader() = default;
+		~PixelShader() = default;
+
+		Vector4 PSMain(const VSOutputVertex& VSOutput, const ShaderResourceTexture* pSRTexture, DirectionalLight* pDirLight) const;
+
+	private:
+		Vector4 Sample(const ShaderResourceTexture* pSRTexture, const Vector2& vUV) const;
+
+		Vector3 CalcPhongLighing(const DirectionalLight& light, const Vector3& normal, const Vector3& faceColor) const;
+	};
+#pragma endregion Shader
 
 	bool CreateDeviceAndSwapChain(IDevice** pDevice, IDeviceContext** pDeviceContext, ISwapChain** ppSwapChain, const SwapChainDesc* pSwapChainDesc);
 }

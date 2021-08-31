@@ -38,7 +38,7 @@
     <ClInclude Include="..\..\..\Math\Public\Vector.h">
       <Filter>Public\Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Public\ShaderResourceView.h">
+    <ClInclude Include="..\..\Public\ShaderResourceUtility.h">
       <Filter>Public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Public\Camera.h">
@@ -73,7 +73,7 @@
     <ClCompile Include="..\..\Private\Shader.cpp">
       <Filter>Private</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Private\ShaderResourceView.cpp">
+    <ClCompile Include="..\..\Private\ShaderResourceUtility.cpp">
       <Filter>Private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Private\Camera.cpp">
