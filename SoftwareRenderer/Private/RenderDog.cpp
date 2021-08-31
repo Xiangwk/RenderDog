@@ -1,7 +1,5 @@
 #include "RenderDog.h"
-#include "Shader.h"
 #include "Vertex.h"
-#include "Vector.h"
 #include "Matrix.h"
 #include "Utility.h"
 #include "Light.h"
@@ -23,6 +21,50 @@ namespace RenderDog
 			height(0)
 		{}
 	};
+
+#pragma region Shader
+	struct VSOutputVertex
+	{
+		VSOutputVertex() = default;
+		VSOutputVertex(const VSOutputVertex& v) = default;
+		VSOutputVertex& operator=(const VSOutputVertex& v) = default;
+
+		Vector4 SVPosition;
+		Vector4 Color;
+		Vector3 Normal;
+		Vector4 Tangent;
+		Vector2 Texcoord;
+	};
+
+	class VertexShader : public IVertexShader
+	{
+	public:
+		VertexShader() = default;
+		~VertexShader() = default;
+
+		virtual void AddRef() override {}
+		virtual void Release() override { delete this; }
+
+		VSOutputVertex VSMain(const Vertex& inVertex, const Matrix4x4& matWorld, const Matrix4x4& matView, const Matrix4x4& matProj) const;
+	};
+
+	class PixelShader : public IPixelShader
+	{
+	public:
+		PixelShader() = default;
+		~PixelShader() = default;
+
+		virtual void AddRef() override {}
+		virtual void Release() override { delete this; }
+
+		Vector4 PSMain(const VSOutputVertex& VSOutput, const ShaderResourceTexture* pSRTexture, DirectionalLight* pDirLight) const;
+
+	private:
+		Vector4 Sample(const ShaderResourceTexture* pSRTexture, const Vector2& vUV) const;
+
+		Vector3 CalcPhongLighing(const DirectionalLight& light, const Vector3& normal, const Vector3& faceColor) const;
+	};
+#pragma endregion Shader
 
 #pragma region Texture2D
 
@@ -504,8 +546,8 @@ namespace RenderDog
 		virtual bool CreateDepthStencilView(IResource* pResource, const DepthStencilViewDesc* pDesc, IDepthStencilView** ppDepthStencilView) override;
 		virtual bool CreateShaderResourceView(IResource* pResource, const ShaderResourceViewDesc* pDesc, IShaderResourceView** ppShaderResourceView) override;
 		virtual bool CreateBuffer(const BufferDesc* pDesc, const SubResourceData* pInitData, IBuffer** ppBuffer) override;
-		virtual bool CreateVertexShader(VertexShader** ppVertexShader) override;
-		virtual bool CreatePixelShader(PixelShader** ppPixelShader) override;
+		virtual bool CreateVertexShader(IVertexShader** ppVertexShader) override;
+		virtual bool CreatePixelShader(IPixelShader** ppPixelShader) override;
 
 		virtual void AddRef() override {}
 		virtual void Release() override { delete this; }
@@ -626,13 +668,8 @@ namespace RenderDog
 		return false;
 	}
 
-	bool Device::CreateVertexShader(VertexShader** ppVertexShader)
+	bool Device::CreateVertexShader(IVertexShader** ppVertexShader)
 	{
-		if (*ppVertexShader)
-		{
-			delete* ppVertexShader;
-		}
-
 		VertexShader* pVS = new VertexShader();
 		if (!pVS)
 		{
@@ -644,13 +681,8 @@ namespace RenderDog
 		return true;
 	}
 
-	bool Device::CreatePixelShader(PixelShader** ppPixelShader)
+	bool Device::CreatePixelShader(IPixelShader** ppPixelShader)
 	{
-		if (*ppPixelShader)
-		{
-			delete* ppPixelShader;
-		}
-
 		PixelShader* pPS = new PixelShader();
 		if (!pPS)
 		{
@@ -738,16 +770,16 @@ namespace RenderDog
 
 		virtual	void UpdateSubresource(IResource* pDstResource, const void* pSrcData, uint32_t srcRowPitch, uint32_t srcDepthPitch) override;
 
-		virtual void VSSetShader(VertexShader* pVS) override { m_pVS = pVS; }
+		virtual void VSSetShader(IVertexShader* pVS) override { m_pVS = dynamic_cast<VertexShader*>(pVS); }
 		virtual void VSSetConstantBuffer(IBuffer* const* ppConstantBuffer) override;
-		virtual void PSSetShader(PixelShader* pPS) override { m_pPS = pPS; }
+		virtual void PSSetShader(IPixelShader* pPS) override { m_pPS = dynamic_cast<PixelShader*>(pPS); }
 		virtual void PSSetShaderResource(IShaderResourceView* const* ppShaderResourceView) override;
 		virtual void PSSetMainLight(DirectionalLight* pLight) override { m_pMainLight = pLight; }
 
 		virtual void RSSetViewport(const Viewport* pVP) override;
 
 		virtual void OMSetRenderTarget(IRenderTargetView* pRenderTargetView, IDepthStencilView* pDepthStencilVew) override;
-		virtual void ClearRenderTargetView(IRenderTargetView* pRenderTargetView, const Vector4& clearColor) override;
+		virtual void ClearRenderTargetView(IRenderTargetView* pRenderTargetView, const float* clearColor) override;
 		virtual void ClearDepthStencilView(IDepthStencilView* pDepthStencilView, float fDepth) override;
 		virtual void Draw() override;
 		virtual void DrawIndex(uint32_t nIndexNum) override;
@@ -755,7 +787,7 @@ namespace RenderDog
 #if DEBUG_RASTERIZATION
 		virtual bool CheckDrawPixelTwice() override;
 #endif
-		virtual void DrawLineWithDDA(float fPos1X, float fPos1Y, float fPos2X, float fPos2Y, const Vector4& lineColor) override;
+		virtual void DrawLineWithDDA(float fPos1X, float fPos1Y, float fPos2X, float fPos2Y, const float* lineColor) override;
 
 	private:
 		void DrawTriangleWithLine(const VSOutputVertex& v0, const VSOutputVertex& v1, const VSOutputVertex& v2);
@@ -1050,9 +1082,10 @@ namespace RenderDog
 		}
 	}
 
-	void DeviceContext::ClearRenderTargetView(IRenderTargetView* pRenderTargetView, const Vector4& clearColor)
+	void DeviceContext::ClearRenderTargetView(IRenderTargetView* pRenderTargetView, const float* clearColor)
 	{
-		Vector4 ARGB = ConvertRGBAColorToARGBColor(clearColor);
+		Vector4 colorVector(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
+		Vector4 ARGB = ConvertRGBAColorToARGBColor(colorVector);
 		uint32_t nClearColor = ConvertColorToUInt32(ARGB);
 
 		IResource* pTex = nullptr;
@@ -1126,9 +1159,9 @@ namespace RenderDog
 
 	void DeviceContext::Draw()
 	{
-		Vector4 ClearColor = { 1.0f, 0.0f, 0.0f, 1.0f };
+		float clearColor[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
 
-		DrawLineWithDDA(100, 100, 100, 100, ClearColor);
+		DrawLineWithDDA(100, 100, 100, 100, clearColor);
 	}
 
 	void DeviceContext::DrawIndex(uint32_t nIndexNum)
@@ -1190,9 +1223,10 @@ namespace RenderDog
 	//------------------------------------------------------------------------------------------------------------------
 	//Private Funtion
 	//------------------------------------------------------------------------------------------------------------------
-	void DeviceContext::DrawLineWithDDA(float fPos1X, float fPos1Y, float fPos2X, float fPos2Y, const Vector4& lineColor)
+	void DeviceContext::DrawLineWithDDA(float fPos1X, float fPos1Y, float fPos2X, float fPos2Y, const float* lineColor)
 	{
-		uint32_t nClearColor = ConvertColorToUInt32(lineColor);
+		Vector4 lineColorVector(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
+		uint32_t nClearColor = ConvertColorToUInt32(lineColorVector);
 
 		float DeltaX = fPos2X - fPos1X;
 		float DeltaY = fPos2Y - fPos1Y;
@@ -1237,7 +1271,7 @@ namespace RenderDog
 
 	void DeviceContext::DrawTriangleWithLine(const VSOutputVertex& v0, const VSOutputVertex& v1, const VSOutputVertex& v2)
 	{
-		Vector4 lineColor = { v0.Color.x, v0.Color.y, v0.Color.z, 1.0f };
+		float lineColor[4] = { v0.Color.x, v0.Color.y, v0.Color.z, 1.0f };
 		DrawLineWithDDA(v0.SVPosition.x, v0.SVPosition.y, v1.SVPosition.x, v1.SVPosition.y, lineColor);
 		DrawLineWithDDA(v1.SVPosition.x, v1.SVPosition.y, v2.SVPosition.x, v2.SVPosition.y, lineColor);
 		DrawLineWithDDA(v2.SVPosition.x, v2.SVPosition.y, v0.SVPosition.x, v0.SVPosition.y, lineColor);

@@ -3,9 +3,6 @@
 #include <windows.h>
 #include <cstdint>
 
-#include "Vector.h"
-#include "Matrix.h"
-
 namespace RenderDog
 {
 	class IDevice;
@@ -187,6 +184,16 @@ namespace RenderDog
 		virtual void Release() = 0;
 	};
 
+	class IVertexShader : public IUnknown
+	{
+	public:
+	};
+
+	class IPixelShader : public IUnknown
+	{
+	public:
+	};
+
 	class IResource : public IUnknown
 	{
 	public:
@@ -242,8 +249,8 @@ namespace RenderDog
 		virtual bool CreateDepthStencilView(IResource* pResource, const DepthStencilViewDesc* pDesc, IDepthStencilView** ppDepthStencilView) = 0;
 		virtual bool CreateShaderResourceView(IResource* pResource, const ShaderResourceViewDesc* pDesc, IShaderResourceView** ppShaderResourceView) = 0;
 		virtual bool CreateBuffer(const BufferDesc* pDesc, const SubResourceData* pInitData, IBuffer** ppBuffer) = 0;
-		virtual bool CreateVertexShader(VertexShader** ppVertexShader) = 0;
-		virtual bool CreatePixelShader(PixelShader** ppPixelShader) = 0;
+		virtual bool CreateVertexShader(IVertexShader** ppVertexShader) = 0;
+		virtual bool CreatePixelShader(IPixelShader** ppPixelShader) = 0;
 	};
 
 	class IDeviceContext : public IUnknown
@@ -255,16 +262,16 @@ namespace RenderDog
 
 		virtual	void UpdateSubresource(IResource* pDstResource, const void* pSrcData, uint32_t srcRowPitch, uint32_t srcDepthPitch) = 0;
 
-		virtual void VSSetShader(VertexShader* pVS) = 0;
+		virtual void VSSetShader(IVertexShader* pVS) = 0;
 		virtual void VSSetConstantBuffer(IBuffer* const* ppConstantBuffer) = 0;
-		virtual void PSSetShader(PixelShader* pPS) = 0;
+		virtual void PSSetShader(IPixelShader* pPS) = 0;
 		virtual void PSSetShaderResource(IShaderResourceView* const* ppShaderResourceView) = 0;
 		virtual void PSSetMainLight(DirectionalLight* pLight) = 0;
 
 		virtual void RSSetViewport(const Viewport* pViewport) = 0;
 
 		virtual void OMSetRenderTarget(IRenderTargetView* pRenderTargetView, IDepthStencilView* pDepthStencilView) = 0;
-		virtual void ClearRenderTargetView(IRenderTargetView* pRenderTargetView, const Vector4& clearColor) = 0;
+		virtual void ClearRenderTargetView(IRenderTargetView* pRenderTargetView, const float* clearColor) = 0;
 		virtual void ClearDepthStencilView(IDepthStencilView* pDepthStencilView, float fDepth) = 0;
 		virtual void Draw() = 0;
 		virtual void DrawIndex(uint32_t nIndexNum) = 0;
@@ -272,7 +279,7 @@ namespace RenderDog
 #if DEBUG_RASTERIZATION
 		virtual bool CheckDrawPixelTwice() = 0;
 #endif
-		virtual void DrawLineWithDDA(float fPos1X, float fPos1Y, float fPos2X, float fPos2Y, const Vector4& lineColor) = 0;
+		virtual void DrawLineWithDDA(float fPos1X, float fPos1Y, float fPos2X, float fPos2Y, const float* lineColor) = 0;
 	};
 #pragma endregion Device
 
@@ -284,44 +291,6 @@ namespace RenderDog
 		virtual void Present() = 0;
 	};
 #pragma endregion Interface
-
-#pragma region Shader
-	struct VSOutputVertex
-	{
-		VSOutputVertex() = default;
-		VSOutputVertex(const VSOutputVertex& v) = default;
-		VSOutputVertex& operator=(const VSOutputVertex& v) = default;
-
-		Vector4 SVPosition;
-		Vector4 Color;
-		Vector3 Normal;
-		Vector4 Tangent;
-		Vector2 Texcoord;
-	};
-
-	class VertexShader
-	{
-	public:
-		VertexShader() = default;
-		~VertexShader() = default;
-
-		VSOutputVertex VSMain(const Vertex& inVertex, const Matrix4x4& matWorld, const Matrix4x4& matView, const Matrix4x4& matProj) const;
-	};
-
-	class PixelShader
-	{
-	public:
-		PixelShader() = default;
-		~PixelShader() = default;
-
-		Vector4 PSMain(const VSOutputVertex& VSOutput, const ShaderResourceTexture* pSRTexture, DirectionalLight* pDirLight) const;
-
-	private:
-		Vector4 Sample(const ShaderResourceTexture* pSRTexture, const Vector2& vUV) const;
-
-		Vector3 CalcPhongLighing(const DirectionalLight& light, const Vector3& normal, const Vector3& faceColor) const;
-	};
-#pragma endregion Shader
 
 	bool CreateDeviceAndSwapChain(IDevice** pDevice, IDeviceContext** pDeviceContext, ISwapChain** ppSwapChain, const SwapChainDesc* pSwapChainDesc);
 }

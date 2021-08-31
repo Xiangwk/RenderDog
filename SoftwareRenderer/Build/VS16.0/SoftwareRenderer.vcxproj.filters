@@ -20,9 +20,6 @@
     <ClInclude Include="..\..\Public\RenderDog.h">
       <Filter>Public</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Public\Shader.h">
-      <Filter>Public</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Public\Vertex.h">
       <Filter>Public</Filter>
     </ClInclude>
@@ -68,9 +65,6 @@
       <Filter>Private\Math</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Private\RenderDog.cpp">
-      <Filter>Private</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Private\Shader.cpp">
       <Filter>Private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Private\ShaderResourceUtility.cpp">

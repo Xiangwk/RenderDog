@@ -7,7 +7,6 @@
 
 #include "RenderDog.h"
 #include "ShaderResourceUtility.h"
-#include "Shader.h"
 #include "Vertex.h"
 #include "Transform.h"
 #include "Camera.h"
@@ -39,8 +38,8 @@ RenderDog::IRenderTargetView*	g_pRenderTargetView = nullptr;
 RenderDog::IBuffer*				g_pVertexBuffer = nullptr;
 RenderDog::IBuffer*				g_pIndexBuffer = nullptr;
 RenderDog::IBuffer*				g_pMVPMatrixConstantBuffer = nullptr;
-RenderDog::VertexShader*		g_pVertexShader = nullptr;
-RenderDog::PixelShader*			g_pPixelShader = nullptr;
+RenderDog::IVertexShader*		g_pVertexShader = nullptr;
+RenderDog::IPixelShader*		g_pPixelShader = nullptr;
 RenderDog::ITexture2D*			g_pDepthTexture = nullptr;
 RenderDog::IDepthStencilView*	g_pDepthStencilView = nullptr;
 RenderDog::IShaderResourceView*	g_pTextureSRV = nullptr;
@@ -329,13 +328,13 @@ void CleanupDevice()
 
 	if (g_pVertexShader)
 	{
-		delete g_pVertexShader;
+		g_pVertexShader->Release();
 		g_pVertexShader = nullptr;
 	}
 
 	if (g_pPixelShader)
 	{
-		delete g_pPixelShader;
+		g_pPixelShader->Release();
 		g_pPixelShader = nullptr;
 	}
 
@@ -456,8 +455,8 @@ void Update(float fTime)
 void Render()
 {
 	g_pDeviceContext->OMSetRenderTarget(g_pRenderTargetView, g_pDepthStencilView);
-	Vector4 ClearColor = { 0.1f, 0.1f, 0.1f, 1.0f };
-	g_pDeviceContext->ClearRenderTargetView(g_pRenderTargetView, ClearColor);
+	float clearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
+	g_pDeviceContext->ClearRenderTargetView(g_pRenderTargetView, clearColor);
 
 	g_pDeviceContext->ClearDepthStencilView(g_pDepthStencilView, 1.0f);
 
@@ -468,7 +467,6 @@ void Render()
 	g_pDeviceContext->IASetPrimitiveTopology(RenderDog::RD_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST);
 
 	g_pDeviceContext->VSSetShader(g_pVertexShader);
-	//g_pDeviceContext->VSSetTransMats(&g_WorldMatrix, &g_ViewMatrix, &g_PerspProjMatrix);
 	g_pDeviceContext->VSSetConstantBuffer(&g_pMVPMatrixConstantBuffer);
 	g_pDeviceContext->PSSetShader(g_pPixelShader);
 	g_pDeviceContext->PSSetShaderResource(&g_pTextureSRV);
