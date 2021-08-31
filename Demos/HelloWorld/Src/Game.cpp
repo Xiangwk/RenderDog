@@ -35,8 +35,6 @@ RenderDog::IDevice*				g_pDevice = nullptr;
 RenderDog::IDeviceContext*		g_pDeviceContext = nullptr;
 RenderDog::ISwapChain*			g_pSwapChain = nullptr;
 RenderDog::IRenderTargetView*	g_pRenderTargetView = nullptr;
-RenderDog::IBuffer*				g_pVertexBuffer = nullptr;
-RenderDog::IBuffer*				g_pIndexBuffer = nullptr;
 RenderDog::IBuffer*				g_pMVPMatrixConstantBuffer = nullptr;
 RenderDog::IBuffer*				g_pMainLightConstantBuffer = nullptr;
 RenderDog::IVertexShader*		g_pVertexShader = nullptr;
@@ -44,6 +42,11 @@ RenderDog::IPixelShader*		g_pPixelShader = nullptr;
 RenderDog::ITexture2D*			g_pDepthTexture = nullptr;
 RenderDog::IDepthStencilView*	g_pDepthStencilView = nullptr;
 RenderDog::IShaderResourceView*	g_pTextureSRV = nullptr;
+
+#if DRAW_BOX
+RenderDog::IBuffer* g_pVertexBuffer = nullptr;
+RenderDog::IBuffer* g_pIndexBuffer = nullptr;
+#endif //DRAW_BOX
 
 RenderDog::Matrix4x4			g_WorldMatrix;
 RenderDog::Matrix4x4			g_ViewMatrix;
@@ -87,7 +90,10 @@ void    OnMouseDown(WPARAM btnState, int x, int y);
 void    OnMouseUp(WPARAM btnState, int x, int y);
 void    OnMouseMove(WPARAM btnState, int x, int y);
 void    OnMouseWheelMove(WPARAM btnState);
+
+#if DRAW_BOX
 void	CalculateTangents(const std::vector<Vertex>& RawVertices, const std::vector<uint32_t>& RawIndices, std::vector<Vertex>& OutputVertices, std::vector<uint32_t>& OutputIndices);
+#endif //DRAW_BOX
 
 HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow)
 {
@@ -195,6 +201,7 @@ bool InitDevice()
 		return false;
 	}
 
+#if DRAW_BOX
 	std::vector<Vertex> RawBoxVertices =
 	{
 		//Left Box
@@ -282,6 +289,7 @@ bool InitDevice()
 	{
 		return false;
 	}
+#endif //DRAW_BOX
 
 	RenderDog::BufferDesc cbDesc;
 	cbDesc.byteWidth = sizeof(ConstantBufferMVPMatrix);
@@ -303,7 +311,11 @@ bool InitDevice()
 	}
 
 	RenderDog::CameraDesc camDesc;
+#if DRAW_BOX
+	camDesc.vPosition = Vector3(0, 0, -5);
+#else
 	camDesc.vPosition = Vector3(0, 25, -100);
+#endif //DRAW_BOX
 	camDesc.vDirection = Vector3(0, 0, 1);
 	camDesc.fFov = 45.0f;
 	camDesc.fAspect = (float)g_WindowWidth / g_WindowHeight;
@@ -362,6 +374,7 @@ void CleanupDevice()
 		g_pStaticModel = nullptr;
 	}
 
+#if DRAW_BOX
 	if (g_pVertexBuffer)
 	{
 		g_pVertexBuffer->Release();
@@ -373,6 +386,7 @@ void CleanupDevice()
 		g_pIndexBuffer->Release();
 		g_pIndexBuffer = nullptr;
 	}
+#endif //DRAW_BOX
 
 	if (g_pMVPMatrixConstantBuffer)
 	{
@@ -646,6 +660,7 @@ void OnMouseWheelMove(WPARAM btnState)
 	return;
 }
 
+#if DRAW_BOX
 void CalculateTangents(const std::vector<Vertex>& RawVertices, const std::vector<uint32_t>& RawIndices, std::vector<Vertex>& OutputVertices, std::vector<uint32_t>& OutputIndices)
 {
 	OutputVertices.resize(RawVertices.size());
@@ -860,3 +875,4 @@ void CalculateTangents(const std::vector<Vertex>& RawVertices, const std::vector
 		OutputVertices[i] = { vPos, vColor, vNormal, Vector4(vTangent.x, vTangent.y, vTangent.z, fHandParty), vTexcoord };
 	}
 }
+#endif //DRAW_BOX
