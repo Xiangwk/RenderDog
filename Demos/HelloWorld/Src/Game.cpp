@@ -12,9 +12,11 @@
 #include "Camera.h"
 #include "Model.h"
 #include "Light.h"
+#include "GameTimer.h"
 
 #include <windowsx.h>
 #include <string>
+#include <sstream>
 #include <unordered_map>
 
 #include <vld.h>
@@ -42,6 +44,8 @@ RenderDog::IPixelShader*		g_pPixelShader = nullptr;
 RenderDog::ITexture2D*			g_pDepthTexture = nullptr;
 RenderDog::IDepthStencilView*	g_pDepthStencilView = nullptr;
 RenderDog::IShaderResourceView*	g_pTextureSRV = nullptr;
+
+RenderDog::GameTimer*			g_pGameTimer = nullptr;
 
 #if DRAW_BOX
 RenderDog::IBuffer* g_pVertexBuffer = nullptr;
@@ -91,6 +95,8 @@ void    OnMouseUp(WPARAM btnState, int x, int y);
 void    OnMouseMove(WPARAM btnState, int x, int y);
 void    OnMouseWheelMove(WPARAM btnState);
 
+void CalculateFrameStats();
+
 #if DRAW_BOX
 void	CalculateTangents(const std::vector<Vertex>& RawVertices, const std::vector<uint32_t>& RawIndices, std::vector<Vertex>& OutputVertices, std::vector<uint32_t>& OutputIndices);
 #endif //DRAW_BOX
@@ -134,6 +140,9 @@ HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow)
 
 bool InitDevice()
 {
+	g_pGameTimer = new RenderDog::GameTimer();
+	g_pGameTimer->Reset();
+
 	RenderDog::SwapChainDesc swapChainDesc;
 	ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
 	swapChainDesc.width = g_WindowWidth;
@@ -610,10 +619,11 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		}
 		else
 		{
-			static float fTime = 0.0f;
-			Update(fTime);
+			g_pGameTimer->Tick();
+			CalculateFrameStats();
+
+			Update((float)g_pGameTimer->GetDeltaTime());
 			Render();
-			fTime += 0.5f;
 		}
 	}
 
@@ -876,3 +886,26 @@ void CalculateTangents(const std::vector<Vertex>& RawVertices, const std::vector
 	}
 }
 #endif //DRAW_BOX
+
+void CalculateFrameStats()
+{
+	static int frameCnt = 0;
+	static double timeElapsed = 0.0;
+
+	++frameCnt;
+	//当统计时间大于1s时，统计framecnt以计算fps
+	if ((g_pGameTimer->GetTotalTime() - timeElapsed) >= 1.0f)
+	{
+		float framePerSecond = static_cast<float>(frameCnt);
+		float millisecondsPerFrame = 1000.0f / framePerSecond;
+
+		std::ostringstream outs;
+		outs.precision(6);
+		outs << "FPS: " << framePerSecond << "    "
+			<< "Frame Time: " << millisecondsPerFrame << " (ms)";
+		SetWindowTextA(g_WndHandle, outs.str().c_str());
+
+		frameCnt = 0;
+		timeElapsed += 1.0;
+	}
+}

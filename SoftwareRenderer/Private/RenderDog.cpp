@@ -1231,10 +1231,8 @@ namespace RenderDog
 
 		BackFaceCulling();
 
-		//Clip
 		ClipTrianglesInClipSpace();
 
-		//ClipSpace to ScreenSpace
 		for (uint32_t i = 0; i < m_vClipOutputVerts.size(); ++i)
 		{
 			VSOutputVertex& vsOutput = m_vClipOutputVerts[i];

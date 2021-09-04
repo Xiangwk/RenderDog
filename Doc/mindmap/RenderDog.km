@@ -449,7 +449,7 @@
                                 "x": 389,
                                 "y": 168
                             },
-                            "priority": 1,
+                            "priority": 2,
                             "progress": 8,
                             "note": "1. 先使用第三方库加载模型，后面有空改成专门加载FBX的库；\n\n2. 后面整理引擎架构的时候，将此功能拆分到Platform中；"
                         },
@@ -503,8 +503,8 @@
                                 "x": 419.9999937415122,
                                 "y": 363.2499952130022
                             },
-                            "priority": 1,
-                            "note": "1. 先增加一个可以用鼠标控制的方向光；\n\n2. 该功能未来要迁移到Platform中；",
+                            "priority": 2,
+                            "note": "1. 先增加一个可以用鼠标控制的方向光；\n\n2. 该功能未来要迁移到Platform中；\n\n3. 迁移到Platform中之后完成光源应有的操作；",
                             "progress": 1
                         },
                         "children": [
@@ -543,8 +543,8 @@
                                 "x": 426,
                                 "y": -827
                             },
-                            "note": "1. Timer用于程序的时间控制，并且可以计算帧率等信息；",
-                            "priority": 2
+                            "note": "1. Timer用于程序的时间控制，并且可以计算帧率等信息；\n\n2. 如何让相机的速度不受帧率影响，只与时间有关；",
+                            "priority": 1
                         },
                         "children": []
                     },
@@ -570,8 +570,9 @@
                                         "x": 107,
                                         "y": -34
                                     },
-                                    "priority": 1,
-                                    "note": "1. 创建一个IResource接口类型\n\n2. 在类的成员函数中delete this是否正确？\n\n3. 什么情况下需要virtual析构函数？"
+                                    "priority": null,
+                                    "note": "1. 创建一个IResource接口类型\n\n2. 在类的成员函数中delete this是否正确？\n\n3. 什么情况下需要virtual析构函数？",
+                                    "progress": 9
                                 },
                                 "children": [
                                     {
@@ -595,7 +596,7 @@
                                                         "y": -90
                                                     },
                                                     "note": "1. 问题：Texture2D中的数据成员变量应该根据创建时传入的类型参数来决定其类型，而不是每种类型都存一个成员变量；\n\n2. 详细修改方案\n  1. 在Texture2D中的增加一个void指针类型的成员变量；\n  2. 去掉原先的uint32_t指针和float指针类型的成员变量；\n  3. 修改GetData之类的接口；\n  4. 创建Texture2D时根据传入的格式来new不同类型的数组；",
-                                                    "priority": 1
+                                                    "priority": null
                                                 },
                                                 "children": []
                                             },
@@ -712,8 +713,8 @@
                     "created": 1620228338491,
                     "text": "DX11Renderer",
                     "layout_mind_offset": {
-                        "x": 11,
-                        "y": -73
+                        "x": 17,
+                        "y": -261
                     },
                     "layout": null
                 },
@@ -739,7 +740,7 @@
                     "text": "VulkanRenderer",
                     "layout_mind_offset": {
                         "x": 529,
-                        "y": 433
+                        "y": 567
                     },
                     "layout": null
                 },
