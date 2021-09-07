@@ -10,6 +10,10 @@
 
 namespace RenderDog
 {
+	///////////////////////////////////////////////////////////////////////////////////
+	// ----------------------       Vector2         ---------------------------------//
+	///////////////////////////////////////////////////////////////////////////////////
+#pragma region Vector2
 	struct Vector2
 	{
 		float x;
@@ -91,7 +95,12 @@ namespace RenderDog
 	Vector2 operator*(const Vector2& v, float f);
 	Vector2 operator*(float f, const Vector2& v);
 	Vector2 operator/(const Vector2& v, float f);
+#pragma endregion Vector2
 
+	///////////////////////////////////////////////////////////////////////////////////
+	// ----------------------       Vector3         ---------------------------------//
+	///////////////////////////////////////////////////////////////////////////////////
+#pragma region Vector3
 	struct Vector3
 	{
 		float x;
@@ -192,7 +201,12 @@ namespace RenderDog
 	Vector3 Normalize(const Vector3& v);
 	float	DotProduct(const Vector3& lhs, const Vector3& rhs);
 	Vector3 CrossProduct(const Vector3& lhs, const Vector3& rhs);
+#pragma endregion Vector3
 
+	///////////////////////////////////////////////////////////////////////////////////
+	// ----------------------       Vector4         ---------------------------------//
+	///////////////////////////////////////////////////////////////////////////////////
+#pragma region Vector4
 	struct Vector4
 	{
 		float x;
@@ -243,4 +257,6 @@ namespace RenderDog
 	Vector4 operator*(const Vector4& lhs, float f);
 	Vector4 operator*(float f, const Vector4& rhs);
 	Vector4 operator/(const Vector4& lhs, float rhs);
-}
+#pragma endregion Vector4
+
+} // End namespace RenderDog
