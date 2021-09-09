@@ -1,14 +1,15 @@
 #include "Utility.h"
+#include "Vector.h"
 
 #include <cmath>
 
 namespace RenderDog
 {
-	const float fEpsilon = 0.000001f;
+	const float RD_FLT_EPSILON = 1e-6f;
 
-	bool floatEqual(float lhs, float rhs, float epsilon)
+	bool FloatEqual(float lhs, float rhs, float epsilon)
 	{
-		return std::abs(lhs - rhs) < epsilon;
+		return std::abs(lhs - rhs) <= epsilon;
 	}
 
 	uint32_t ConvertColorToUInt32(const Vector4& color)

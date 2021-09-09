@@ -1,3 +1,9 @@
+///////////////////////////////////
+//RenderDog <¡¤,¡¤>
+//FileName: Vector.cpp
+//Written by Xiang Weikang
+///////////////////////////////////
+
 #include "Vector.h"
 
 namespace RenderDog

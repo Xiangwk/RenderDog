@@ -16,25 +16,20 @@ namespace RenderDog
 		Matrix4x4() = default;
 		~Matrix4x4() = default;
 
-		Matrix4x4(const Matrix4x4& mat)
-		{
-			for (int i = 0; i < 4; ++i)
-			{
-				for (int j = 0; j < 4; ++j)
-				{
-					m_fData[i][j] = mat.m_fData[i][j];
-				}
-			}
-		}
+		Matrix4x4(const Matrix4x4&) = default;
+		Matrix4x4& operator=(const Matrix4x4&) = default;
+
+		Matrix4x4(Matrix4x4&&) = default;
+		Matrix4x4& operator=(Matrix4x4&&) = default;
 
 		Matrix4x4(float f00, float f01, float f02, float f03,
-			float f10, float f11, float f12, float f13,
-			float f20, float f21, float f22, float f23,
-			float f30, float f31, float f32, float f33) :
-			m00(f00), m01(f01), m02(f02), m03(f03),
-			m10(f10), m11(f11), m12(f12), m13(f13),
-			m20(f20), m21(f21), m22(f22), m23(f23),
-			m30(f30), m31(f31), m32(f32), m33(f33)
+				  float f10, float f11, float f12, float f13,
+				  float f20, float f21, float f22, float f23,
+				  float f30, float f31, float f32, float f33) :
+					m00(f00), m01(f01), m02(f02), m03(f03),
+					m10(f10), m11(f11), m12(f12), m13(f13),
+					m20(f20), m21(f21), m22(f22), m23(f23),
+					m30(f30), m31(f31), m32(f32), m33(f33)
 		{}
 
 		Matrix4x4(const Vector4& v0, const Vector4& v1, const Vector4& v2, const Vector4& v3) :
@@ -44,8 +39,8 @@ namespace RenderDog
 			m30(v3.x), m31(v3.y), m32(v3.z), m33(v3.w)
 		{}
 
-		float operator()(int r, int c) const { return m_fData[r][c]; }
-		float& operator()(int r, int c) { return m_fData[r][c]; }
+		float	operator()(int r, int c) const { return m_fData[r][c]; }
+		float&	operator()(int r, int c) { return m_fData[r][c]; }
 		Vector4 GetRow(int r) const { return Vector4(m_fData[r][0], m_fData[r][1], m_fData[r][2], m_fData[r][3]); }
 
 		void Identity();
@@ -64,10 +59,8 @@ namespace RenderDog
 		};
 	};
 
-	Vector4 operator*(const Vector4& vec, const Matrix4x4& mat);
-
-	Matrix4x4 operator*(const Matrix4x4& matLHS, const Matrix4x4& matRHS);
-
-	Matrix4x4 GetIdentityMatrix();
+	Vector4		operator*(const Vector4& vec, const Matrix4x4& mat);
+	Matrix4x4	operator*(const Matrix4x4& matLHS, const Matrix4x4& matRHS);
+	Matrix4x4	GetIdentityMatrix();
 
 } // End namespace RenderDog

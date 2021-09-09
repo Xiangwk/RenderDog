@@ -895,8 +895,6 @@ namespace RenderDog
 		RD_PRIMITIVE_TOPOLOGY			m_PriTopology;
 	};
 
-	extern const float fEpsilon;
-
 	DeviceContext::DeviceContext() :
 		m_pFrameBuffer(nullptr),
 		m_pDepthBuffer(nullptr),
@@ -1326,8 +1324,8 @@ namespace RenderDog
 
 	void DeviceContext::DrawTriangleWithFlat(const VSOutputVertex& v0, const VSOutputVertex& v1, const VSOutputVertex& v2)
 	{
-		if (floatEqual(v0.SVPosition.y, v1.SVPosition.y, fEpsilon) && floatEqual(v0.SVPosition.y, v2.SVPosition.y, fEpsilon) ||
-			floatEqual(v0.SVPosition.x, v1.SVPosition.x, fEpsilon) && floatEqual(v0.SVPosition.x, v2.SVPosition.x, fEpsilon))
+		if (FloatEqual(v0.SVPosition.y, v1.SVPosition.y, RD_FLT_EPSILON) && FloatEqual(v0.SVPosition.y, v2.SVPosition.y, RD_FLT_EPSILON) ||
+			FloatEqual(v0.SVPosition.x, v1.SVPosition.x, RD_FLT_EPSILON) && FloatEqual(v0.SVPosition.x, v2.SVPosition.x, RD_FLT_EPSILON))
 		{
 			return;
 		}
@@ -1337,11 +1335,11 @@ namespace RenderDog
 		VSOutputVertex vert2(v2);
 		SortTriangleVertsByYGrow(vert0, vert1, vert2);
 
-		if (floatEqual(vert0.SVPosition.y, vert1.SVPosition.y, fEpsilon))
+		if (FloatEqual(vert0.SVPosition.y, vert1.SVPosition.y, RD_FLT_EPSILON))
 		{
 			DrawTopTriangle(vert0, vert1, vert2);
 		}
-		else if (floatEqual(vert1.SVPosition.y, vert2.SVPosition.y, fEpsilon))
+		else if (FloatEqual(vert1.SVPosition.y, vert2.SVPosition.y, RD_FLT_EPSILON))
 		{
 			DrawBottomTriangle(vert0, vert1, vert2);
 		}

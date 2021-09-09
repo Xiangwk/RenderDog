@@ -1,3 +1,9 @@
+///////////////////////////////////
+//RenderDog <¡¤,¡¤>
+//FileName: Matrix.cpp
+//Written by Xiang Weikang
+///////////////////////////////////
+
 #include "Matrix.h"
 
 namespace RenderDog

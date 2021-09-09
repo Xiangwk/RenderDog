@@ -1,49 +1,61 @@
+///////////////////////////////////
+//RenderDog <¡¤,¡¤>
+//FileName: Transform.cpp
+//Written by Xiang Weikang
+///////////////////////////////////
+
 #include "Transform.h"
 
 namespace RenderDog
 {
 	Matrix4x4 GetTranslationMatrix(float xOffset, float yOffset, float zOffset)
 	{
-		Matrix4x4 translateMat = GetIdentityMatrix();
-		translateMat(3, 0) = xOffset;
-		translateMat(3, 1) = yOffset;
-		translateMat(3, 2) = zOffset;
+		Matrix4x4 translateMatrix;
+		translateMatrix.Identity();
 
-		return translateMat;
+		translateMatrix(3, 0) = xOffset;
+		translateMatrix(3, 1) = yOffset;
+		translateMatrix(3, 2) = zOffset;
+
+		return translateMatrix;
 	}
 
 	Matrix4x4 GetScaleMatrix(float xScale, float yScale, float zScale)
 	{
-		Matrix4x4 scaleMat = GetIdentityMatrix();
-		scaleMat(0, 0) = xScale;
-		scaleMat(1, 1) = yScale;
-		scaleMat(2, 2) = zScale;
+		Matrix4x4 scaleMatrix;
+		scaleMatrix.Identity();
 
-		return scaleMat;
+		scaleMatrix(0, 0) = xScale;
+		scaleMatrix(1, 1) = yScale;
+		scaleMatrix(2, 2) = zScale;
+
+		return scaleMatrix;
 	}
 
-	Matrix4x4 GetRotationMatrix(float fAngle, const Vector3& vRotAxis)
+	Matrix4x4 GetRotationMatrix(float fAngle, const Vector3& rotAxis)
 	{
-		float fRadian = fAngle / 180.0f * 3.1415926f;
-		float fSinA = std::sinf(fRadian);
-		float fCosA = std::cosf(fRadian);
+		float radian = fAngle / 180.0f * 3.1415926f;
+		float sinA = std::sinf(radian);
+		float cosA = std::cosf(radian);
 
-		Vector3 vNormRotAxis = Normalize(vRotAxis);
+		Vector3 normRotAxis = Normalize(rotAxis);
 
-		Matrix4x4 Result = GetIdentityMatrix();
-		Result(0, 0) = fCosA + (1.0f - fCosA) * vNormRotAxis.x * vNormRotAxis.x;
-		Result(1, 0) = (1.0f - fCosA) * vNormRotAxis.x * vNormRotAxis.y - fSinA * vNormRotAxis.z;
-		Result(2, 0) = (1.0f - fCosA) * vNormRotAxis.x * vNormRotAxis.z + fSinA * vNormRotAxis.y;
+		Matrix4x4 rotateMatrix;
+		rotateMatrix.Identity();
 
-		Result(0, 1) = (1.0f - fCosA) * vNormRotAxis.x * vNormRotAxis.y + fSinA * vNormRotAxis.z;
-		Result(1, 1) = fCosA + (1.0f - fCosA) * vNormRotAxis.y * vNormRotAxis.y;
-		Result(2, 1) = (1.0f - fCosA) * vNormRotAxis.y * vNormRotAxis.z - fSinA * vNormRotAxis.x;
+		rotateMatrix(0, 0) = cosA + (1.0f - cosA) * normRotAxis.x * normRotAxis.x;
+		rotateMatrix(1, 0) = (1.0f - cosA) * normRotAxis.x * normRotAxis.y - sinA * normRotAxis.z;
+		rotateMatrix(2, 0) = (1.0f - cosA) * normRotAxis.x * normRotAxis.z + sinA * normRotAxis.y;
+
+		rotateMatrix(0, 1) = (1.0f - cosA) * normRotAxis.x * normRotAxis.y + sinA * normRotAxis.z;
+		rotateMatrix(1, 1) = cosA + (1.0f - cosA) * normRotAxis.y * normRotAxis.y;
+		rotateMatrix(2, 1) = (1.0f - cosA) * normRotAxis.y * normRotAxis.z - sinA * normRotAxis.x;
 		
-		Result(0, 2) = (1.0f - fCosA) * vNormRotAxis.x * vNormRotAxis.z - fSinA * vNormRotAxis.y;
-		Result(1, 2) = (1.0f - fCosA) * vNormRotAxis.y * vNormRotAxis.z + fSinA * vNormRotAxis.x;
-		Result(2, 2) = fCosA + (1.0f - fCosA) * vNormRotAxis.z * vNormRotAxis.z;
+		rotateMatrix(0, 2) = (1.0f - cosA) * normRotAxis.x * normRotAxis.z - sinA * normRotAxis.y;
+		rotateMatrix(1, 2) = (1.0f - cosA) * normRotAxis.y * normRotAxis.z + sinA * normRotAxis.x;
+		rotateMatrix(2, 2) = cosA + (1.0f - cosA) * normRotAxis.z * normRotAxis.z;
 
-		return Result;
+		return rotateMatrix;
 	}
 
 	Matrix4x4 GetLookAtMatrixLH(const Vector3& eyePos, const Vector3& focusPos, const Vector3& upDir)
@@ -64,37 +76,37 @@ namespace RenderDog
 		return Matrix4x4(vec0, vec1, vec2, vec3);
 	}
 
-	Matrix4x4 GetPerspProjectionMatrixLH(float Fov, float AspectRatio, float Near, float Far)
+	Matrix4x4 GetPerspProjectionMatrixLH(float fov, float aspectRatio, float near, float far)
 	{
-		float RadianHalfFov = 0.5f * Fov / 180.0f * 3.1415926f;
-		float SinHalfFov = std::sinf(RadianHalfFov);
-		float CosHalfFov = std::cosf(RadianHalfFov);
+		float radianHalfFov = 0.5f * fov / 180.0f * 3.1415926f;
+		float sinHalfFov = std::sinf(radianHalfFov);
+		float cosHalfFov = std::cosf(radianHalfFov);
 
-		float HeightRatio = CosHalfFov / SinHalfFov;
-		float WidthRatio = HeightRatio / AspectRatio;
-		float RangeRatio = Far / (Far - Near);
+		float heightRatio = cosHalfFov / sinHalfFov;
+		float widthRatio = heightRatio / aspectRatio;
+		float rangeRatio = far / (far - near);
 
-		Matrix4x4 Result;
-		Result(0, 0) = WidthRatio;
-		Result(0, 1) = 0.0f;
-		Result(0, 2) = 0.0f;
-		Result(0, 3) = 0.0f;
+		Matrix4x4 perspectiveMatrix;
+		perspectiveMatrix(0, 0) = widthRatio;
+		perspectiveMatrix(0, 1) = 0.0f;
+		perspectiveMatrix(0, 2) = 0.0f;
+		perspectiveMatrix(0, 3) = 0.0f;
 
-		Result(1, 0) = 0.0f;
-		Result(1, 1) = HeightRatio;
-		Result(1, 2) = 0.0f;
-		Result(1, 3) = 0.0f;
+		perspectiveMatrix(1, 0) = 0.0f;
+		perspectiveMatrix(1, 1) = heightRatio;
+		perspectiveMatrix(1, 2) = 0.0f;
+		perspectiveMatrix(1, 3) = 0.0f;
 
-		Result(2, 0) = 0.0f;
-		Result(2, 1) = 0.0f;
-		Result(2, 2) = RangeRatio;
-		Result(2, 3) = 1.0f;
+		perspectiveMatrix(2, 0) = 0.0f;
+		perspectiveMatrix(2, 1) = 0.0f;
+		perspectiveMatrix(2, 2) = rangeRatio;
+		perspectiveMatrix(2, 3) = 1.0f;
 
-		Result(3, 0) = 0.0f;
-		Result(3, 1) = 0.0f;
-		Result(3, 2) = -RangeRatio * Near;
-		Result(3, 3) = 0.0f;
+		perspectiveMatrix(3, 0) = 0.0f;
+		perspectiveMatrix(3, 1) = 0.0f;
+		perspectiveMatrix(3, 2) = -rangeRatio * near;
+		perspectiveMatrix(3, 3) = 0.0f;
 
-		return Result;
+		return perspectiveMatrix;
 	}
 }

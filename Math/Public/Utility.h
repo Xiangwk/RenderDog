@@ -1,17 +1,26 @@
+///////////////////////////////////
+//RenderDog <¡¤,¡¤>
+//FileName: Utility.h
+//Written by Xiang Weikang
+///////////////////////////////////
+
 #pragma once
 
 #include <cstdint>
-#include "Vector.h"
 
 namespace RenderDog
 {
-	extern const float fEpsilon;
+	struct Vector3;
+	struct Vector4;
 
-	bool floatEqual(float lhs, float rhs, float epsilon);
+	extern const float RD_FLT_EPSILON;
 
-	uint32_t ConvertColorToUInt32(const Vector4& color);
-	Vector4 ConvertRGBAColorToARGBColor(const Vector4& RGBA);
-	float GetArea2(const Vector3& Pos1, const Vector3& Pos2, const Vector3& Pos3);
+	bool		FloatEqual(float lhs, float rhs, float epsilon);
 
-	float Clamp(float fValue, float fMin, float fMax);
+	uint32_t	ConvertColorToUInt32(const Vector4& color);
+	Vector4		ConvertRGBAColorToARGBColor(const Vector4& RGBA);
+
+	float		GetArea2(const Vector3& Pos1, const Vector3& Pos2, const Vector3& Pos3);
+
+	float		Clamp(float fValue, float fMin, float fMax);
 }
