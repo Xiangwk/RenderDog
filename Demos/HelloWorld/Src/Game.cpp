@@ -451,6 +451,12 @@ void CleanupDevice()
 		delete g_pMainLight;
 		g_pMainLight = nullptr;
 	}
+
+	if (g_pGameTimer)
+	{
+		delete g_pGameTimer;
+		g_pGameTimer = nullptr;
+	}
 }
 
 void Update(float fTime)

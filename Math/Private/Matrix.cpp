@@ -8,6 +8,55 @@
 
 namespace RenderDog
 {
+	Matrix4x4::Matrix4x4(float f00, float f01, float f02, float f03,
+		float f10, float f11, float f12, float f13,
+		float f20, float f21, float f22, float f23,
+		float f30, float f31, float f32, float f33)
+	{
+		m_fData[0][0] = f00;
+		m_fData[0][1] = f01;
+		m_fData[0][2] = f02;
+		m_fData[0][3] = f03;
+
+		m_fData[1][0] = f10;
+		m_fData[1][1] = f11;
+		m_fData[1][2] = f12;
+		m_fData[1][3] = f13;
+
+		m_fData[2][0] = f20;
+		m_fData[2][1] = f21;
+		m_fData[2][2] = f22;
+		m_fData[2][3] = f23;
+
+		m_fData[3][0] = f30;
+		m_fData[3][1] = f31;
+		m_fData[3][2] = f32;
+		m_fData[3][3] = f33;
+	}
+
+	Matrix4x4::Matrix4x4(const Vector4& v0, const Vector4& v1, const Vector4& v2, const Vector4& v3)
+	{
+		m_fData[0][0] = v0.x;
+		m_fData[0][1] = v0.y;
+		m_fData[0][2] = v0.z;
+		m_fData[0][3] = v0.w;
+
+		m_fData[1][0] = v1.x;
+		m_fData[1][1] = v1.y;
+		m_fData[1][2] = v1.z;
+		m_fData[1][3] = v1.w;
+
+		m_fData[2][0] = v2.x;
+		m_fData[2][1] = v2.y;
+		m_fData[2][2] = v2.z;
+		m_fData[2][3] = v2.w;
+
+		m_fData[3][0] = v3.x;
+		m_fData[3][1] = v3.y;
+		m_fData[3][2] = v3.z;
+		m_fData[3][3] = v3.w;
+	}
+
 	void Matrix4x4::Identity()
 	{
 		m_fData[0][0] = 1.0f;

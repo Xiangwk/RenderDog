@@ -911,6 +911,9 @@ namespace RenderDog
 		m_pVSOutputs(nullptr),
 		m_PriTopology(RD_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST)
 	{
+		m_pCB[0] = nullptr;
+		m_pCB[1] = nullptr;
+
 		m_ViewportMatrix.Identity();
 #if DEBUG_RASTERIZATION
 		uint32_t nBufferSize = m_BackBufferWidth * m_BackBufferHeight;
