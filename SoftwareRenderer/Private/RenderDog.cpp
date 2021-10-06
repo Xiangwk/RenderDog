@@ -884,11 +884,11 @@ namespace RenderDog
 
 		ShaderResourceTexture		m_SRTexture;
 
-		VSOutputVertex*				m_pVSOutputs;
-		std::vector<VSOutputVertex> m_vAssembledVerts;
-		std::vector<VSOutputVertex> m_vBackFaceCulledVerts;
-		std::vector<VSOutputVertex>	m_vClipOutputVerts;
-		std::vector<VSOutputVertex> m_vClippingVerts;
+		std::vector<VSOutputVertex>	m_VSOutputs;
+		std::vector<VSOutputVertex> m_AssembledVerts;
+		std::vector<VSOutputVertex> m_BackFaceCulledVerts;
+		std::vector<VSOutputVertex>	m_ClipOutputVerts;
+		std::vector<VSOutputVertex> m_ClippingVerts;
 
 		Matrix4x4					m_ViewportMatrix;
 
@@ -908,7 +908,6 @@ namespace RenderDog
 		m_pVS(nullptr),
 		m_pPS(nullptr),
 		m_SRTexture(),
-		m_pVSOutputs(nullptr),
 		m_PriTopology(RD_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST)
 	{
 		m_pCB[0] = nullptr;
@@ -928,15 +927,10 @@ namespace RenderDog
 
 	DeviceContext::~DeviceContext()
 	{
-		m_vClipOutputVerts.clear();
-		m_vAssembledVerts.clear();
-		m_vClippingVerts.clear();
-
-		if (m_pVSOutputs)
-		{
-			delete[] m_pVSOutputs;
-			m_pVSOutputs = nullptr;
-		}
+		m_VSOutputs.clear();
+		m_ClipOutputVerts.clear();
+		m_AssembledVerts.clear();
+		m_ClippingVerts.clear();
 
 #if DEBUG_RASTERIZATION
 		if (m_pDebugBuffer)
@@ -961,17 +955,12 @@ namespace RenderDog
 	{
 		if (m_pVB != pVB)
 		{
-			if (m_pVSOutputs)
-			{
-				delete[] m_pVSOutputs;
-				m_pVSOutputs = nullptr;
-			}
+			m_VSOutputs.clear();
 
 			m_pVB = dynamic_cast<VertexBuffer*>(pVB);
 
 			uint32_t nVertexNum = m_pVB->GetNum();
-			m_pVSOutputs = new VSOutputVertex[nVertexNum];
-
+			m_VSOutputs.resize(nVertexNum);
 		}
 	}
 	void DeviceContext::IASetIndexBuffer(IBuffer* pIB)
@@ -1225,7 +1214,7 @@ namespace RenderDog
 			Matrix4x4* pWorldMatrix = (Matrix4x4*)m_pCB[0]->GetData();
 			Matrix4x4* pViewMatrix = (Matrix4x4*)m_pCB[0]->GetData() + 1;
 			Matrix4x4* pProjMatrix = (Matrix4x4*)m_pCB[0]->GetData() + 2;
-			m_pVSOutputs[i] = m_pVS->VSMain(vert, *pWorldMatrix, *pViewMatrix, *pProjMatrix);
+			m_VSOutputs[i] = m_pVS->VSMain(vert, *pWorldMatrix, *pViewMatrix, *pProjMatrix);
 		}
 
 		ShapeAssemble(nIndexNum);
@@ -1234,9 +1223,9 @@ namespace RenderDog
 
 		ClipTrianglesInClipSpace();
 
-		for (uint32_t i = 0; i < m_vClipOutputVerts.size(); ++i)
+		for (uint32_t i = 0; i < m_ClipOutputVerts.size(); ++i)
 		{
-			VSOutputVertex& vsOutput = m_vClipOutputVerts[i];
+			VSOutputVertex& vsOutput = m_ClipOutputVerts[i];
 			Vector4 vScreenPos(vsOutput.SVPosition.x, vsOutput.SVPosition.y, vsOutput.SVPosition.z, 1.0f);
 			vScreenPos = vScreenPos * m_ViewportMatrix;
 			vsOutput.SVPosition.x = vScreenPos.x;
@@ -1517,23 +1506,23 @@ namespace RenderDog
 
 	void DeviceContext::ClipTrianglesInClipSpace()
 	{
-		m_vClipOutputVerts.clear();
-		if (m_vClipOutputVerts.capacity() < m_vBackFaceCulledVerts.capacity())
+		m_ClipOutputVerts.clear();
+		if (m_ClipOutputVerts.capacity() < m_BackFaceCulledVerts.capacity())
 		{
-			m_vClipOutputVerts.reserve(m_vBackFaceCulledVerts.capacity());
+			m_ClipOutputVerts.reserve(m_BackFaceCulledVerts.capacity());
 		}
 
-		for (uint32_t i = 0; i < m_vBackFaceCulledVerts.size(); i += 3)
+		for (uint32_t i = 0; i < m_BackFaceCulledVerts.size(); i += 3)
 		{
-			m_vClippingVerts.clear();
+			m_ClippingVerts.clear();
 
-			const VSOutputVertex& vert0 = m_vBackFaceCulledVerts[i];
-			const VSOutputVertex& vert1 = m_vBackFaceCulledVerts[i + 1];
-			const VSOutputVertex& vert2 = m_vBackFaceCulledVerts[i + 2];
+			const VSOutputVertex& vert0 = m_BackFaceCulledVerts[i];
+			const VSOutputVertex& vert1 = m_BackFaceCulledVerts[i + 1];
+			const VSOutputVertex& vert2 = m_BackFaceCulledVerts[i + 2];
 
-			m_vClippingVerts.push_back(vert0);
-			m_vClippingVerts.push_back(vert1);
-			m_vClippingVerts.push_back(vert2);
+			m_ClippingVerts.push_back(vert0);
+			m_ClippingVerts.push_back(vert1);
+			m_ClippingVerts.push_back(vert2);
 
 			ClipTriangleWithPlaneX(1);
 			ClipTriangleWithPlaneX(-1);
@@ -1542,17 +1531,17 @@ namespace RenderDog
 			ClipTriangleWithPlaneZeroZ();
 			ClipTriangleWithPlanePositiveZ();
 
-			for (uint32_t i = 0; i < m_vClippingVerts.size(); ++i)
+			for (uint32_t i = 0; i < m_ClippingVerts.size(); ++i)
 			{
-				m_vClipOutputVerts.push_back(m_vClippingVerts[i]);
+				m_ClipOutputVerts.push_back(m_ClippingVerts[i]);
 			}
 		}
 
-		for (uint32_t i = 0; i < m_vClipOutputVerts.size(); ++i)
+		for (uint32_t i = 0; i < m_ClipOutputVerts.size(); ++i)
 		{
-			m_vClipOutputVerts[i].SVPosition.x /= m_vClipOutputVerts[i].SVPosition.w;
-			m_vClipOutputVerts[i].SVPosition.y /= m_vClipOutputVerts[i].SVPosition.w;
-			m_vClipOutputVerts[i].SVPosition.z /= m_vClipOutputVerts[i].SVPosition.w;
+			m_ClipOutputVerts[i].SVPosition.x /= m_ClipOutputVerts[i].SVPosition.w;
+			m_ClipOutputVerts[i].SVPosition.y /= m_ClipOutputVerts[i].SVPosition.w;
+			m_ClipOutputVerts[i].SVPosition.z /= m_ClipOutputVerts[i].SVPosition.w;
 		}
 	}
 
@@ -1560,13 +1549,13 @@ namespace RenderDog
 	{
 		std::vector<VSOutputVertex> vCurrClipResultVerts = {};
 
-		for (uint32_t i = 0; i < m_vClippingVerts.size(); i += 3)
+		for (uint32_t i = 0; i < m_ClippingVerts.size(); i += 3)
 		{
 			int nOutOfClipPlaneNum = 0;
 
-			VSOutputVertex& vert0 = m_vClippingVerts[i];
-			VSOutputVertex& vert1 = m_vClippingVerts[i + 1];
-			VSOutputVertex& vert2 = m_vClippingVerts[i + 2];
+			VSOutputVertex& vert0 = m_ClippingVerts[i];
+			VSOutputVertex& vert1 = m_ClippingVerts[i + 1];
+			VSOutputVertex& vert2 = m_ClippingVerts[i + 2];
 
 			nSign* vert0.SVPosition.x > vert0.SVPosition.w ? ++nOutOfClipPlaneNum : nOutOfClipPlaneNum;
 			nSign* vert1.SVPosition.x > vert1.SVPosition.w ? ++nOutOfClipPlaneNum : nOutOfClipPlaneNum;
@@ -1640,10 +1629,10 @@ namespace RenderDog
 			}
 		}
 
-		m_vClippingVerts.clear();
+		m_ClippingVerts.clear();
 		for (uint32_t i = 0; i < vCurrClipResultVerts.size(); ++i)
 		{
-			m_vClippingVerts.push_back(vCurrClipResultVerts[i]);
+			m_ClippingVerts.push_back(vCurrClipResultVerts[i]);
 		}
 	}
 
@@ -1651,13 +1640,13 @@ namespace RenderDog
 	{
 		std::vector<VSOutputVertex> vCurrClipResultVerts = {};
 
-		for (uint32_t i = 0; i < m_vClippingVerts.size(); i += 3)
+		for (uint32_t i = 0; i < m_ClippingVerts.size(); i += 3)
 		{
 			int nOutOfClipPlaneNum = 0;
 
-			VSOutputVertex& vert0 = m_vClippingVerts[i];
-			VSOutputVertex& vert1 = m_vClippingVerts[i + 1];
-			VSOutputVertex& vert2 = m_vClippingVerts[i + 2];
+			VSOutputVertex& vert0 = m_ClippingVerts[i];
+			VSOutputVertex& vert1 = m_ClippingVerts[i + 1];
+			VSOutputVertex& vert2 = m_ClippingVerts[i + 2];
 
 			nSign* vert0.SVPosition.y > vert0.SVPosition.w ? ++nOutOfClipPlaneNum : nOutOfClipPlaneNum;
 			nSign* vert1.SVPosition.y > vert1.SVPosition.w ? ++nOutOfClipPlaneNum : nOutOfClipPlaneNum;
@@ -1731,10 +1720,10 @@ namespace RenderDog
 			}
 		}
 
-		m_vClippingVerts.clear();
+		m_ClippingVerts.clear();
 		for (uint32_t i = 0; i < vCurrClipResultVerts.size(); ++i)
 		{
-			m_vClippingVerts.push_back(vCurrClipResultVerts[i]);
+			m_ClippingVerts.push_back(vCurrClipResultVerts[i]);
 		}
 	}
 
@@ -1742,13 +1731,13 @@ namespace RenderDog
 	{
 		std::vector<VSOutputVertex> vCurrClipResultVerts = {};
 
-		for (uint32_t i = 0; i < m_vClippingVerts.size(); i += 3)
+		for (uint32_t i = 0; i < m_ClippingVerts.size(); i += 3)
 		{
 			int nOutOfClipPlaneNum = 0;
 
-			VSOutputVertex& vert0 = m_vClippingVerts[i];
-			VSOutputVertex& vert1 = m_vClippingVerts[i + 1];
-			VSOutputVertex& vert2 = m_vClippingVerts[i + 2];
+			VSOutputVertex& vert0 = m_ClippingVerts[i];
+			VSOutputVertex& vert1 = m_ClippingVerts[i + 1];
+			VSOutputVertex& vert2 = m_ClippingVerts[i + 2];
 
 			vert0.SVPosition.z < 0.0f ? ++nOutOfClipPlaneNum : nOutOfClipPlaneNum;
 			vert1.SVPosition.z < 0.0f ? ++nOutOfClipPlaneNum : nOutOfClipPlaneNum;
@@ -1822,10 +1811,10 @@ namespace RenderDog
 			}
 		}
 
-		m_vClippingVerts.clear();
+		m_ClippingVerts.clear();
 		for (uint32_t i = 0; i < vCurrClipResultVerts.size(); ++i)
 		{
-			m_vClippingVerts.push_back(vCurrClipResultVerts[i]);
+			m_ClippingVerts.push_back(vCurrClipResultVerts[i]);
 		}
 	}
 
@@ -1833,13 +1822,13 @@ namespace RenderDog
 	{
 		std::vector<VSOutputVertex> vCurrClipResultVerts = {};
 
-		for (uint32_t i = 0; i < m_vClippingVerts.size(); i += 3)
+		for (uint32_t i = 0; i < m_ClippingVerts.size(); i += 3)
 		{
 			int nOutOfClipPlaneNum = 0;
 
-			VSOutputVertex& vert0 = m_vClippingVerts[i];
-			VSOutputVertex& vert1 = m_vClippingVerts[i + 1];
-			VSOutputVertex& vert2 = m_vClippingVerts[i + 2];
+			VSOutputVertex& vert0 = m_ClippingVerts[i];
+			VSOutputVertex& vert1 = m_ClippingVerts[i + 1];
+			VSOutputVertex& vert2 = m_ClippingVerts[i + 2];
 
 			vert0.SVPosition.z > vert0.SVPosition.w ? ++nOutOfClipPlaneNum : nOutOfClipPlaneNum;
 			vert1.SVPosition.z > vert1.SVPosition.w ? ++nOutOfClipPlaneNum : nOutOfClipPlaneNum;
@@ -1913,10 +1902,10 @@ namespace RenderDog
 			}
 		}
 
-		m_vClippingVerts.clear();
+		m_ClippingVerts.clear();
 		for (uint32_t i = 0; i < vCurrClipResultVerts.size(); ++i)
 		{
-			m_vClippingVerts.push_back(vCurrClipResultVerts[i]);
+			m_ClippingVerts.push_back(vCurrClipResultVerts[i]);
 		}
 	}
 
@@ -1968,10 +1957,10 @@ namespace RenderDog
 
 	void DeviceContext::ShapeAssemble(uint32_t nIndexNum)
 	{
-		m_vAssembledVerts.clear();
-		if (m_vAssembledVerts.capacity() < nIndexNum)
+		m_AssembledVerts.clear();
+		if (m_AssembledVerts.capacity() < nIndexNum)
 		{
-			m_vAssembledVerts.reserve(nIndexNum);
+			m_AssembledVerts.reserve(nIndexNum);
 		}
 
 		if (m_PriTopology == RD_PRIMITIVE_TOPOLOGY::LINE_LIST || m_PriTopology == RD_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST)
@@ -1979,44 +1968,44 @@ namespace RenderDog
 			const uint32_t* pIndice = m_pIB->GetData();
 			for (uint32_t i = 0; i < nIndexNum; ++i)
 			{
-				const VSOutputVertex& vert0 = m_pVSOutputs[pIndice[i]];
+				const VSOutputVertex& vert0 = m_VSOutputs[pIndice[i]];
 
-				m_vAssembledVerts.push_back(vert0);
+				m_AssembledVerts.push_back(vert0);
 			}
 		}
 	}
 
 	void DeviceContext::BackFaceCulling()
 	{
-		m_vBackFaceCulledVerts.clear();
-		if (m_vBackFaceCulledVerts.capacity() < m_vAssembledVerts.size())
+		m_BackFaceCulledVerts.clear();
+		if (m_BackFaceCulledVerts.capacity() < m_AssembledVerts.size())
 		{
-			m_vBackFaceCulledVerts.reserve(m_vAssembledVerts.size());
+			m_BackFaceCulledVerts.reserve(m_AssembledVerts.size());
 		}
 
-		for (uint32_t i = 0; i < m_vAssembledVerts.size(); i += 3)
+		for (uint32_t i = 0; i < m_AssembledVerts.size(); i += 3)
 		{
-			const Vector4& Pos1 = m_vAssembledVerts[i].SVPosition;
-			const Vector4& Pos2 = m_vAssembledVerts[i + 1].SVPosition;
-			const Vector4& Pos3 = m_vAssembledVerts[i + 2].SVPosition;
+			const Vector4& Pos1 = m_AssembledVerts[i].SVPosition;
+			const Vector4& Pos2 = m_AssembledVerts[i + 1].SVPosition;
+			const Vector4& Pos3 = m_AssembledVerts[i + 2].SVPosition;
 
 			//三角形三个顶点若逆时针环绕，则行列式的值为正数，顺时针为负数，等于0则退化为线段
 			if (GetArea2(Vector3(Pos1.x, Pos1.y, Pos1.z), Vector3(Pos2.x, Pos2.y, Pos2.z), Vector3(Pos3.x, Pos3.y, Pos3.z)) < 0.0f)
 			{
-				m_vBackFaceCulledVerts.push_back(m_vAssembledVerts[i]);
-				m_vBackFaceCulledVerts.push_back(m_vAssembledVerts[i + 1]);
-				m_vBackFaceCulledVerts.push_back(m_vAssembledVerts[i + 2]);
+				m_BackFaceCulledVerts.push_back(m_AssembledVerts[i]);
+				m_BackFaceCulledVerts.push_back(m_AssembledVerts[i + 1]);
+				m_BackFaceCulledVerts.push_back(m_AssembledVerts[i + 2]);
 			}
 		}
 	}
 
 	void DeviceContext::Rasterization()
 	{
-		for (uint32_t i = 0; i < m_vClipOutputVerts.size(); i += 3)
+		for (uint32_t i = 0; i < m_ClipOutputVerts.size(); i += 3)
 		{
-			const VSOutputVertex& vert0 = m_vClipOutputVerts[i];
-			const VSOutputVertex& vert1 = m_vClipOutputVerts[i + 1];
-			const VSOutputVertex& vert2 = m_vClipOutputVerts[i + 2];
+			const VSOutputVertex& vert0 = m_ClipOutputVerts[i];
+			const VSOutputVertex& vert1 = m_ClipOutputVerts[i + 1];
+			const VSOutputVertex& vert2 = m_ClipOutputVerts[i + 2];
 
 			if (m_PriTopology == RD_PRIMITIVE_TOPOLOGY::LINE_LIST)
 			{
