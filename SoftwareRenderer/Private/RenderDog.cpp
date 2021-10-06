@@ -867,24 +867,24 @@ namespace RenderDog
 		void Rasterization();
 
 	private:
-		uint32_t*	m_pFrameBuffer;
-		float*		m_pDepthBuffer;
+		uint32_t*					m_pFrameBuffer;
+		float*						m_pDepthBuffer;
 #if DEBUG_RASTERIZATION
-		uint32_t* m_pDebugBuffer;  //检查是否有重复绘制的像素
+		uint32_t*					m_pDebugBuffer;  //检查是否有重复绘制的像素
 #endif
 		uint32_t					m_BackBufferWidth;
 		uint32_t					m_BackBufferHeight;
 
-		VertexBuffer* m_pVB;
-		IndexBuffer* m_pIB;
-		ConstantBuffer* m_pCB[2];
+		VertexBuffer*				m_pVB;
+		IndexBuffer*				m_pIB;
+		ConstantBuffer*				m_pCB[2];
 
-		VertexShader* m_pVS;
-		PixelShader* m_pPS;
+		VertexShader*				m_pVS;
+		PixelShader*				m_pPS;
 
-		ShaderResourceTexture m_SRTexture;
+		ShaderResourceTexture		m_SRTexture;
 
-		VSOutputVertex* m_pVSOutputs;
+		VSOutputVertex*				m_pVSOutputs;
 		std::vector<VSOutputVertex> m_vAssembledVerts;
 		std::vector<VSOutputVertex> m_vBackFaceCulledVerts;
 		std::vector<VSOutputVertex>	m_vClipOutputVerts;
@@ -892,7 +892,7 @@ namespace RenderDog
 
 		Matrix4x4					m_ViewportMatrix;
 
-		RD_PRIMITIVE_TOPOLOGY			m_PriTopology;
+		RD_PRIMITIVE_TOPOLOGY		m_PriTopology;
 	};
 
 	DeviceContext::DeviceContext() :

@@ -2,10 +2,12 @@
 #include "Vector.h"
 
 #include <cmath>
+#include <float.h>
 
 namespace RenderDog
 {
-	const float RD_FLT_EPSILON = 1e-6f;
+	//const float RD_FLT_EPSILON = 1e-6f;
+	const float RD_FLT_EPSILON = FLT_EPSILON;
 
 	bool FloatEqual(float lhs, float rhs, float epsilon)
 	{
