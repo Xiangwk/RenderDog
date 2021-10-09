@@ -66,6 +66,7 @@ RenderDog::DirectionalLight*	g_pMainLight;
 int aKeys[512];	// 当前键盘按下状态
 
 RenderDog::FPSCamera*			g_pMainCamera;
+const float						g_fCameraSpeed = 1.0f;
 
 #pragma region ConstantBufferStruct
 struct ConstantBufferMVPMatrix
@@ -273,16 +274,16 @@ bool InitDevice()
 		27, 30, 26, 26, 30, 31
 	};
 
-	std::vector<Vertex> aBoxVertices;
-	std::vector<uint32_t> aBoxIndices;
+	std::vector<Vertex> BoxVertices;
+	std::vector<uint32_t> BoxIndices;
 
-	CalculateTangents(RawBoxVertices, RawBoxIndices, aBoxVertices, aBoxIndices);
+	CalculateTangents(RawBoxVertices, RawBoxIndices, BoxVertices, BoxIndices);
 
 	RenderDog::BufferDesc vbDesc;
-	vbDesc.byteWidth = (uint32_t)aBoxVertices.size() * sizeof(Vertex);
+	vbDesc.byteWidth = (uint32_t)BoxVertices.size() * sizeof(Vertex);
 	vbDesc.bindFlag = RenderDog::RD_BIND_FLAG::BIND_VERTEX_BUFFER;
 	RenderDog::SubResourceData initData;
-	initData.pSysMem = &aBoxVertices[0];
+	initData.pSysMem = &BoxVertices[0];
 	initData.sysMemPitch = vbDesc.byteWidth;
 	if (!g_pDevice->CreateBuffer(&vbDesc, &initData, &g_pVertexBuffer))
 	{
@@ -290,9 +291,9 @@ bool InitDevice()
 	}
 
 	RenderDog::BufferDesc ibDesc;
-	ibDesc.byteWidth = (uint32_t)aBoxIndices.size() * sizeof(uint32_t);
+	ibDesc.byteWidth = (uint32_t)BoxIndices.size() * sizeof(uint32_t);
 	ibDesc.bindFlag = RenderDog::RD_BIND_FLAG::BIND_INDEX_BUFFER;
-	initData.pSysMem = &aBoxIndices[0];
+	initData.pSysMem = &BoxIndices[0];
 	initData.sysMemPitch = ibDesc.byteWidth;
 	if (!g_pDevice->CreateBuffer(&ibDesc, &initData, &g_pIndexBuffer))
 	{
@@ -461,36 +462,35 @@ void CleanupDevice()
 
 void Update(float fTime)
 {
-	float fSpeed = 1.0f;
 	//W
 	if (aKeys[0x57])
 	{
-		g_pMainCamera->Move(fSpeed, RenderDog::FPSCamera::MoveMode::FrontAndBack);
+		g_pMainCamera->Move(g_fCameraSpeed, RenderDog::FPSCamera::MoveMode::FrontAndBack);
 	}
 	//S
 	if (aKeys[0x53])
 	{
-		g_pMainCamera->Move(-fSpeed, RenderDog::FPSCamera::MoveMode::FrontAndBack);
+		g_pMainCamera->Move(-g_fCameraSpeed, RenderDog::FPSCamera::MoveMode::FrontAndBack);
 	}
 	//A
 	if (aKeys[0x41])
 	{
-		g_pMainCamera->Move(-fSpeed, RenderDog::FPSCamera::MoveMode::LeftAndRight);
+		g_pMainCamera->Move(-g_fCameraSpeed, RenderDog::FPSCamera::MoveMode::LeftAndRight);
 	}
 	//D
 	if (aKeys[0x44])
 	{
-		g_pMainCamera->Move(fSpeed, RenderDog::FPSCamera::MoveMode::LeftAndRight);
+		g_pMainCamera->Move(g_fCameraSpeed, RenderDog::FPSCamera::MoveMode::LeftAndRight);
 	}
 	//Q
 	if (aKeys[0x51])
 	{
-		g_pMainCamera->Move(fSpeed, RenderDog::FPSCamera::MoveMode::UpAndDown);
+		g_pMainCamera->Move(g_fCameraSpeed, RenderDog::FPSCamera::MoveMode::UpAndDown);
 	}
 	//E
 	if (aKeys[0x45])
 	{
-		g_pMainCamera->Move(-fSpeed, RenderDog::FPSCamera::MoveMode::UpAndDown);
+		g_pMainCamera->Move(-g_fCameraSpeed, RenderDog::FPSCamera::MoveMode::UpAndDown);
 	}
 	
 	g_ViewMatrix = g_pMainCamera->GetViewMatrix();
@@ -534,13 +534,6 @@ void Render()
 	g_pDeviceContext->DrawIndex(60);
 #else
 	g_pStaticModel->Draw(g_pDeviceContext);
-#endif
-
-#if DEBUG_RASTERIZATION
-	if (g_pDeviceContext->CheckDrawPixelTiwce())
-	{
-		return;
-	}
 #endif
 
 	g_pSwapChain->Present();

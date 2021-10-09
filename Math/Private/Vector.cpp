@@ -41,6 +41,16 @@ namespace RenderDog
 	{
 		return Vector2(v.x / f, v.y / f);
 	}
+
+	bool operator==(const Vector2& lhs, const Vector2& rhs)
+	{
+		return (lhs.x == rhs.x && lhs.y == rhs.y);
+	}
+
+	bool operator!=(const Vector2& lhs, const Vector2& rhs)
+	{
+		return !(lhs == rhs);
+	}
 #pragma endregion Vector2
 
 	///////////////////////////////////////////////////////////////////////////////////
@@ -90,6 +100,16 @@ namespace RenderDog
 	Vector3 operator/(const Vector3& lhs, float f)
 	{
 		return Vector3(lhs.x / f, lhs.y / f, lhs.z / f);
+	}
+
+	bool operator==(const Vector3& lhs, const Vector3& rhs)
+	{
+		return (lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z);
+	}
+
+	bool operator!=(const Vector3& lhs, const Vector3& rhs)
+	{
+		return !(lhs == rhs);
 	}
 
 	Vector3 Normalize(const Vector3& v)
@@ -153,6 +173,16 @@ namespace RenderDog
 	Vector4 operator/(const Vector4& lhs, float rhs)
 	{
 		return Vector4(lhs.x / rhs, lhs.y / rhs, lhs.z / rhs, lhs.w / rhs);
+	}
+
+	bool operator==(const Vector4& lhs, const Vector4& rhs)
+	{
+		return (lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z);
+	}
+
+	bool operator!=(const Vector4& lhs, const Vector4& rhs)
+	{
+		return !(lhs == rhs);
 	}
 #pragma endregion Vector4
 

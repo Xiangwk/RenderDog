@@ -101,6 +101,148 @@ namespace RenderDog
 
 	void StaticMesh::CalculateTangents()
 	{
+		
+		//1. 按索引拆分顶点
+		std::vector<Vertex> TempVertices;
+		TempVertices.reserve(m_RawIndices.size());
+
+		for (uint32_t i = 0; i < m_RawIndices.size(); ++i)
+		{
+			TempVertices.push_back(m_RawVertices[m_RawIndices[i]]);
+		}
+
+		//2. 按三角形计算TBN
+		for (uint32_t i = 0; i < TempVertices.size(); i += 3)
+		{
+			Vertex& v0 = TempVertices[i];
+			Vertex& v1 = TempVertices[i + 1];
+			Vertex& v2 = TempVertices[i + 2];
+
+			const Vector3& vPos0 = v0.vPosition;
+			const Vector3& vPos1 = v1.vPosition;
+			const Vector3& vPos2 = v2.vPosition;
+
+			const Vector2& vTex0 = v0.vTexcoord;
+			const Vector2& vTex1 = v1.vTexcoord;
+			const Vector2& vTex2 = v2.vTexcoord;
+
+			float x1 = vPos1.x - vPos0.x;
+			float x2 = vPos2.x - vPos0.x;
+			float y1 = vPos1.y - vPos0.y;
+			float y2 = vPos2.y - vPos0.y;
+			float z1 = vPos1.z - vPos0.z;
+			float z2 = vPos2.z - vPos0.z;
+
+			float s1 = vTex1.x - vTex0.x;
+			float s2 = vTex2.x - vTex0.x;
+			float t1 = vTex1.y - vTex0.y;
+			float t2 = vTex2.y - vTex0.y;
+
+			float fInv = 1.0f / (s1 * t2 - s2 * t1);
+
+			float tx = fInv * (t2 * x1 - t1 * x2);
+			float ty = fInv * (t2 * y1 - t1 * y2);
+			float tz = fInv * (t2 * z1 - t1 * z2);
+
+			float bx = fInv * (s1 * x2 - s2 * x1);
+			float by = fInv * (s1 * y2 - s2 * y1);
+			float bz = fInv * (s1 * z2 - s2 * z1);
+
+			Vector3 faceTangent = Normalize(Vector3(tx, ty, tz));
+			Vector3 faceBiTangent = Normalize(Vector3(bx, by, bz));
+
+			//重新计算法线
+			Vector3 faceNormal0 = CrossProduct(vPos1 - vPos0, vPos2 - vPos0);
+			Vector3 faceNormal1 = CrossProduct(vPos2 - vPos1, vPos0 - vPos1);
+			Vector3 faceNormal2 = CrossProduct(vPos0 - vPos2, vPos1 - vPos2);
+
+			float fRawHandParty = DotProduct(CrossProduct(faceTangent, faceBiTangent), faceNormal0) > 0.0f ? 1.0f : -1.0f;
+
+			v0.vTangent = v1.vTangent = v2.vTangent = Vector4(faceTangent, fRawHandParty);
+			v0.vNormal = faceNormal0;
+			v1.vNormal = faceNormal1;
+			v2.vNormal = faceNormal2;
+		}
+
+		//3. 合并相同的顶点
+		m_Vertices.reserve(m_RawVertices.size());
+		m_Indices.reserve(TempVertices.size());
+
+		if (TempVertices.size() < 3)
+		{
+			return;
+		}
+
+		m_Vertices.push_back(TempVertices[0]);
+		m_Indices.push_back(0);
+
+		m_Vertices.push_back(TempVertices[1]);
+		m_Indices.push_back(1);
+
+		m_Vertices.push_back(TempVertices[2]);
+		m_Indices.push_back(2);
+
+		for (uint32_t i = 3; i < TempVertices.size(); ++i)
+		{
+			Vertex& rawVert = TempVertices[i];
+
+			uint32_t vertNum = (uint32_t)m_Vertices.size();
+			for (uint32_t j = 0; j < vertNum; ++j)
+			{
+				Vertex& vert = m_Vertices[j];
+				if (rawVert.vPosition == vert.vPosition && rawVert.vTexcoord == vert.vTexcoord)
+				{
+					Vector3 weightedAverNormal = rawVert.vNormal + vert.vNormal;
+					vert.vNormal = weightedAverNormal;
+				}
+			}
+
+			bool HasSameVertex = false;
+			for (uint32_t j = 0; j < vertNum; ++j)
+			{
+				Vertex& vert = m_Vertices[j];
+				if (rawVert.vPosition == vert.vPosition && rawVert.vTexcoord == vert.vTexcoord)
+				{
+					if (rawVert.vTangent.w != vert.vTangent.w)
+					{
+						rawVert.vNormal = vert.vNormal;
+						m_Indices.push_back((uint32_t)m_Vertices.size());
+						m_Vertices.push_back(rawVert);
+
+						HasSameVertex = true;
+						break;
+					}
+					else
+					{
+						vert.vTangent = (vert.vTangent) * vert.vNormal.Length() + rawVert.vTangent * rawVert.vNormal.Length();
+						vert.vTangent.w = vert.vTangent.w > 0.0f ? 1.0f : -1.0f;
+						m_Indices.push_back(j);
+
+						HasSameVertex = true;
+						break;
+					}
+				}
+			}
+
+			if (!HasSameVertex)
+			{
+				m_Indices.push_back((uint32_t)m_Vertices.size());
+				m_Vertices.push_back(rawVert);
+			}
+		}
+
+		//4. 将所有顶点的TBN规范正交化
+		for (uint32_t i = 0; i < m_Vertices.size(); ++i)
+		{
+			Vertex& vert = m_Vertices[i];
+			vert.vNormal.Normalize();
+			Vector3 tangent = Vector3(vert.vTangent.x, vert.vTangent.y, vert.vTangent.z);
+			tangent = Normalize(tangent - vert.vNormal * DotProduct(vert.vNormal, tangent));
+			vert.vTangent = Vector4(tangent, vert.vTangent.w);
+		}
+		
+
+		/*
 		m_Vertices.resize(m_RawVertices.size());
 		m_Indices.resize(m_RawIndices.size());
 
@@ -312,5 +454,6 @@ namespace RenderDog
 
 			m_Vertices[i] = { vPos, vColor, vNormal, Vector4(vTangent.x, vTangent.y, vTangent.z, fHandParty), vTexcoord };
 		}
+		*/
 	}
 }

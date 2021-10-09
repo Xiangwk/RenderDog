@@ -823,10 +823,6 @@ namespace RenderDog
 		virtual void ClearDepthStencilView(IDepthStencilView* pDepthStencilView, float fDepth) override;
 		virtual void Draw() override;
 		virtual void DrawIndex(uint32_t nIndexNum) override;
-
-#if DEBUG_RASTERIZATION
-		virtual bool CheckDrawPixelTwice() override;
-#endif
 		virtual void DrawLineWithDDA(float fPos1X, float fPos1Y, float fPos2X, float fPos2Y, const float* lineColor) override;
 
 	private:
@@ -847,6 +843,8 @@ namespace RenderDog
 		void LerpVertexParamsInClip(const VSOutputVertex& vStart, const VSOutputVertex& vEnd, VSOutputVertex& vNew, float fLerpFactor);
 
 		void ClipTrianglesInClipSpace();
+
+		void ViewportTransform();
 
 		void ClipTriangleWithPlaneX(int nSign); //fSign为+1或者-1
 		void ClipTriangleWithPlaneY(int nSign); //fSign为+1或者-1
@@ -869,9 +867,6 @@ namespace RenderDog
 	private:
 		uint32_t*					m_pFrameBuffer;
 		float*						m_pDepthBuffer;
-#if DEBUG_RASTERIZATION
-		uint32_t*					m_pDebugBuffer;  //检查是否有重复绘制的像素
-#endif
 		uint32_t					m_BackBufferWidth;
 		uint32_t					m_BackBufferHeight;
 
@@ -898,9 +893,6 @@ namespace RenderDog
 	DeviceContext::DeviceContext() :
 		m_pFrameBuffer(nullptr),
 		m_pDepthBuffer(nullptr),
-#if DEBUG_RASTERIZATION
-		m_pDebugBuffer(nullptr),
-#endif
 		m_BackBufferWidth(0),
 		m_BackBufferHeight(0),
 		m_pVB(nullptr),
@@ -914,15 +906,6 @@ namespace RenderDog
 		m_pCB[1] = nullptr;
 
 		m_ViewportMatrix.Identity();
-#if DEBUG_RASTERIZATION
-		uint32_t nBufferSize = m_BackBufferWidth * m_BackBufferHeight;
-		m_pDebugBuffer = new uint32_t[nBufferSize];
-
-		for (uint32_t i = 0; i < nBufferSize; ++i)
-		{
-			m_pDebugBuffer[i] = 0;
-		}
-#endif
 	}
 
 	DeviceContext::~DeviceContext()
@@ -931,14 +914,6 @@ namespace RenderDog
 		m_ClipOutputVerts.clear();
 		m_AssembledVerts.clear();
 		m_ClippingVerts.clear();
-
-#if DEBUG_RASTERIZATION
-		if (m_pDebugBuffer)
-		{
-			delete[] m_pDebugBuffer;
-			m_pDebugBuffer = nullptr;
-		}
-#endif
 	}
 
 	bool DeviceContext::Init(uint32_t width, uint32_t height)
@@ -1155,14 +1130,6 @@ namespace RenderDog
 				}
 			}
 		}
-
-#if DEBUG_RASTERIZATION
-		uint32_t nBufferSize = rtWidth * rtHeight;
-		for (uint32_t i = 0; i < nBufferSize; ++i)
-		{
-			m_pDebugBuffer[i] = 0;
-		}
-#endif
 	}
 
 	void DeviceContext::ClearDepthStencilView(IDepthStencilView* pDepthStencil, float fDepth)
@@ -1223,38 +1190,10 @@ namespace RenderDog
 
 		ClipTrianglesInClipSpace();
 
-		for (uint32_t i = 0; i < m_ClipOutputVerts.size(); ++i)
-		{
-			VSOutputVertex& vsOutput = m_ClipOutputVerts[i];
-			Vector4 vScreenPos(vsOutput.SVPosition.x, vsOutput.SVPosition.y, vsOutput.SVPosition.z, 1.0f);
-			vScreenPos = vScreenPos * m_ViewportMatrix;
-			vsOutput.SVPosition.x = vScreenPos.x;
-			vsOutput.SVPosition.y = vScreenPos.y;
-			vsOutput.SVPosition.z = vScreenPos.z;
-		}
+		ViewportTransform();
 
 		Rasterization();
 	}
-
-#if DEBUG_RASTERIZATION
-	bool DeviceContext::CheckDrawPixelTwice()
-	{
-		for (uint32_t i = 0; i < m_BackBufferHeight; ++i)
-		{
-			for (uint32_t j = 0; j < m_BackBufferWidth; ++j)
-			{
-				uint32_t nDrawCnt = m_pDebugBuffer[i * m_BackBufferWidth + j];
-				if (nDrawCnt > 1)
-				{
-					//std::cout << "Pixel: " << i << " " << j << " Draw " << nDrawCnt << std::endl;
-					return true;
-				}
-			}
-		}
-
-		return false;
-	}
-#endif
 
 
 	//------------------------------------------------------------------------------------------------------------------
@@ -1383,26 +1322,26 @@ namespace RenderDog
 	{
 		SortScanlineVertsByXGrow(v0, v1);
 
-		float fYStart = std::ceilf(v0.SVPosition.y);
-		float fYEnd = std::ceilf(v2.SVPosition.y);
+		float fYStart = std::ceilf(v0.SVPosition.y - 0.5f);
+		float fYEnd = std::ceilf(v2.SVPosition.y - 0.5f);
 		float fDeltaY = v2.SVPosition.y - v0.SVPosition.y;
 
 		for (uint32_t i = (uint32_t)fYStart; i < (uint32_t)fYEnd; ++i)
 		{
-			float fLerpFactorY = (i - v0.SVPosition.y) / fDeltaY;
+			float fLerpFactorY = (i + 0.5f - v0.SVPosition.y) / fDeltaY;
 
 			VSOutputVertex vStart;
 			LerpVertexParamsInScreen(v0, v2, vStart, fLerpFactorY);
 			VSOutputVertex vEnd;
 			LerpVertexParamsInScreen(v1, v2, vEnd, fLerpFactorY);
 
-			float fXStart = std::ceil(vStart.SVPosition.x);
-			float fXEnd = std::ceil(vEnd.SVPosition.x);
+			float fXStart = std::ceilf(vStart.SVPosition.x - 0.5f);
+			float fXEnd = std::ceilf(vEnd.SVPosition.x - 0.5f);
 
 			float fDeltaX = vEnd.SVPosition.x - vStart.SVPosition.x;
 			for (uint32_t j = (uint32_t)fXStart; j < (uint32_t)fXEnd; ++j)
 			{
-				float fLerpFactorX = (j - vStart.SVPosition.x) / fDeltaX;
+				float fLerpFactorX = (j + 0.5f - vStart.SVPosition.x) / fDeltaX;
 
 				VSOutputVertex vCurr;
 				LerpVertexParamsInScreen(vStart, vEnd, vCurr, fLerpFactorX);
@@ -1410,16 +1349,25 @@ namespace RenderDog
 				float fPixelDepth = m_pDepthBuffer[j + i * m_BackBufferWidth];
 				if (vCurr.SVPosition.z <= fPixelDepth)
 				{
-					Vector4 color = m_pPS->PSMain(vCurr, &m_SRTexture);
-					Vector4 ARGB = ConvertRGBAColorToARGBColor(color);
+#ifndef RD_DEBUG_RASTERIZATION
+					Vector4 Color = m_pPS->PSMain(vCurr, &m_SRTexture);
+					Vector4 ARGB = ConvertRGBAColorToARGBColor(Color);
 					m_pFrameBuffer[j + i * m_BackBufferWidth] = ConvertColorToUInt32(ARGB);
+#else // defined RD_DEBUG_RASTERIZATION
+					Vector4 Color = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+					Vector4 OverDrawColor = Vector4(0.0f, 1.0f, 0.0f, 1.0f);
+
+					uint32_t ColorARGB = ConvertColorToUInt32(ConvertRGBAColorToARGBColor(Color));
+					
+					uint32_t DrawColor = (m_pFrameBuffer[j + i * m_BackBufferWidth] == ColorARGB) ?
+										ConvertColorToUInt32(ConvertRGBAColorToARGBColor(OverDrawColor)) :
+										ColorARGB;
+					
+					m_pFrameBuffer[j + i * m_BackBufferWidth] = DrawColor;
+#endif // RD_DEBUG_RASTERIZATION
 
 					m_pDepthBuffer[j + i * m_BackBufferWidth] = vCurr.SVPosition.z;
 				}
-
-#if DEBUG_RASTERIZATION
-				m_pDebugBuffer[j + i * m_BackBufferWidth]++;
-#endif
 			}
 		}
 	}
@@ -1428,26 +1376,26 @@ namespace RenderDog
 	{
 		SortScanlineVertsByXGrow(v1, v2);
 
-		float fYStart = std::ceilf(v0.SVPosition.y);
-		float fYEnd = std::ceilf(v1.SVPosition.y);
+		float fYStart = std::ceilf(v0.SVPosition.y - 0.5f);
+		float fYEnd = std::ceilf(v1.SVPosition.y - 0.5f);
 		float fDeltaY = v1.SVPosition.y - v0.SVPosition.y;
 
 		for (uint32_t i = (uint32_t)fYStart; i < (uint32_t)fYEnd; ++i)
 		{
-			float fLerpFactorY = (i - v0.SVPosition.y) / fDeltaY;
+			float fLerpFactorY = (i + 0.5f - v0.SVPosition.y) / fDeltaY;
 
 			VSOutputVertex vStart;
 			LerpVertexParamsInScreen(v0, v1, vStart, fLerpFactorY);
 			VSOutputVertex vEnd;
 			LerpVertexParamsInScreen(v0, v2, vEnd, fLerpFactorY);
 
-			float fXStart = std::ceil(vStart.SVPosition.x);
-			float fXEnd = std::ceil(vEnd.SVPosition.x);
+			float fXStart = std::ceilf(vStart.SVPosition.x - 0.5f);
+			float fXEnd = std::ceilf(vEnd.SVPosition.x - 0.5f);
 
 			float fDeltaX = vEnd.SVPosition.x - vStart.SVPosition.x;
 			for (uint32_t j = (uint32_t)fXStart; j < (uint32_t)fXEnd; ++j)
 			{
-				float fLerpFactorX = (j - vStart.SVPosition.x) / fDeltaX;
+				float fLerpFactorX = (j + 0.5f - vStart.SVPosition.x) / fDeltaX;
 
 				VSOutputVertex vCurr;
 				LerpVertexParamsInScreen(vStart, vEnd, vCurr, fLerpFactorX);
@@ -1455,16 +1403,25 @@ namespace RenderDog
 				float fPixelDepth = m_pDepthBuffer[j + i * m_BackBufferWidth];
 				if (vCurr.SVPosition.z <= fPixelDepth)
 				{
+#ifndef RD_DEBUG_RASTERIZATION
 					Vector4 color = m_pPS->PSMain(vCurr, &m_SRTexture);
 					Vector4 ARGB = ConvertRGBAColorToARGBColor(color);
 					m_pFrameBuffer[j + i * m_BackBufferWidth] = ConvertColorToUInt32(ARGB);
+#else // defined RD_DEBUG_RASTERIZATION
+					Vector4 Color = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+					Vector4 OverDrawColor = Vector4(0.0f, 1.0f, 0.0f, 1.0f);
+
+					uint32_t ColorARGB = ConvertColorToUInt32(ConvertRGBAColorToARGBColor(Color));
+
+					uint32_t DrawColor = (m_pFrameBuffer[j + i * m_BackBufferWidth] == ColorARGB) ? 
+										ConvertColorToUInt32(ConvertRGBAColorToARGBColor(OverDrawColor)) : 
+										ColorARGB;
+
+					m_pFrameBuffer[j + i * m_BackBufferWidth] = DrawColor;
+#endif // RD_DEBUG_RASTERIZATION
 
 					m_pDepthBuffer[j + i * m_BackBufferWidth] = vCurr.SVPosition.z;
 				}
-
-#if DEBUG_RASTERIZATION
-				m_pDebugBuffer[j + i * m_BackBufferWidth]++;
-#endif
 			}
 		}
 	}
@@ -1542,6 +1499,19 @@ namespace RenderDog
 			m_ClipOutputVerts[i].SVPosition.x /= m_ClipOutputVerts[i].SVPosition.w;
 			m_ClipOutputVerts[i].SVPosition.y /= m_ClipOutputVerts[i].SVPosition.w;
 			m_ClipOutputVerts[i].SVPosition.z /= m_ClipOutputVerts[i].SVPosition.w;
+		}
+	}
+
+	void DeviceContext::ViewportTransform()
+	{
+		for (uint32_t i = 0; i < m_ClipOutputVerts.size(); ++i)
+		{
+			VSOutputVertex& vsOutput = m_ClipOutputVerts[i];
+			Vector4 vScreenPos(vsOutput.SVPosition.x, vsOutput.SVPosition.y, vsOutput.SVPosition.z, 1.0f);
+			vScreenPos = vScreenPos * m_ViewportMatrix;
+			vsOutput.SVPosition.x = vScreenPos.x;
+			vsOutput.SVPosition.y = vScreenPos.y;
+			vsOutput.SVPosition.z = vScreenPos.z;
 		}
 	}
 
@@ -1968,7 +1938,8 @@ namespace RenderDog
 			const uint32_t* pIndice = m_pIB->GetData();
 			for (uint32_t i = 0; i < nIndexNum; ++i)
 			{
-				const VSOutputVertex& vert0 = m_VSOutputs[pIndice[i]];
+				uint32_t index = pIndice[i];
+				const VSOutputVertex& vert0 = m_VSOutputs[index];
 
 				m_AssembledVerts.push_back(vert0);
 			}
@@ -1999,6 +1970,7 @@ namespace RenderDog
 		}
 	}
 
+	//这里规定像素的采样点在像素中心点，即对于左上角的第一个像素来说，采样点为(0.5, 0.5)
 	void DeviceContext::Rasterization()
 	{
 		for (uint32_t i = 0; i < m_ClipOutputVerts.size(); i += 3)

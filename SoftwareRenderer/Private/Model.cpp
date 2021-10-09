@@ -25,7 +25,7 @@ namespace RenderDog
 	bool StaticModel::LoadFromFile(const std::string& strFileName)
 	{
 		Assimp::Importer ModelImporter;
-		const aiScene* AssimpModelScene = ModelImporter.ReadFile(strFileName, aiProcess_ConvertToLeftHanded | aiProcess_JoinIdenticalVertices);
+		const aiScene* AssimpModelScene = ModelImporter.ReadFile(strFileName, aiProcess_ConvertToLeftHanded/* | aiProcess_JoinIdenticalVertices*/);
 		if (!AssimpModelScene || AssimpModelScene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !AssimpModelScene->mRootNode)
 		{
 			return false;

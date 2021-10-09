@@ -3,6 +3,8 @@
 #include <windows.h>
 #include <cstdint>
 
+//#define RD_DEBUG_RASTERIZATION
+
 namespace RenderDog
 {
 #pragma region Enum
@@ -266,10 +268,6 @@ namespace RenderDog
 		virtual void ClearDepthStencilView(IDepthStencilView* pDepthStencilView, float fDepth) = 0;
 		virtual void Draw() = 0;
 		virtual void DrawIndex(uint32_t nIndexNum) = 0;
-
-#if DEBUG_RASTERIZATION
-		virtual bool CheckDrawPixelTwice() = 0;
-#endif
 		virtual void DrawLineWithDDA(float fPos1X, float fPos1Y, float fPos2X, float fPos2Y, const float* lineColor) = 0;
 	};
 #pragma endregion Device
