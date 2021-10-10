@@ -5,78 +5,78 @@
 namespace RenderDog
 {
 	FPSCamera::FPSCamera() :
-		m_vPostion(0.0f, 0.0f, -5.0f),
-		m_vDirection(0.0f, 0.0f, 1.0f),
-		m_vRight(1.0f, 0.0f, 0.0f),
-		m_vUp(0.0f, 1.0f, 0.0f),
-		m_fFov(45.0f),
-		m_fAspect(1.333f),
-		m_fNear(0.1f),
-		m_fFar(1000.0f)
+		m_Postion(0.0f, 0.0f, -5.0f),
+		m_Direction(0.0f, 0.0f, 1.0f),
+		m_Right(1.0f, 0.0f, 0.0f),
+		m_Up(0.0f, 1.0f, 0.0f),
+		m_Fov(45.0f),
+		m_Aspect(1.333f),
+		m_Near(0.1f),
+		m_Far(1000.0f)
 	{}
 
 	FPSCamera::~FPSCamera()
 	{}
 
 	FPSCamera::FPSCamera(const CameraDesc& cameraDesc) :
-		m_vPostion(cameraDesc.vPosition),
-		m_vDirection(cameraDesc.vDirection),
-		m_vRight(1.0f, 0.0f, 0.0f),
-		m_vUp(0.0f, 1.0f, 0.0f),
-		m_fFov(cameraDesc.fFov),
-		m_fAspect(cameraDesc.fAspect),
-		m_fNear(cameraDesc.fNear),
-		m_fFar(cameraDesc.fFar)
+		m_Postion(cameraDesc.position),
+		m_Direction(cameraDesc.direction),
+		m_Right(1.0f, 0.0f, 0.0f),
+		m_Up(0.0f, 1.0f, 0.0f),
+		m_Fov(cameraDesc.fov),
+		m_Aspect(cameraDesc.aspectRitio),
+		m_Near(cameraDesc.nearPlane),
+		m_Far(cameraDesc.farPlane)
 	{
-		Matrix4x4 matView = GetLookAtMatrixLH(m_vPostion, m_vPostion + m_vDirection, Vector3(0, 1, 0));
+		Matrix4x4 matView = GetLookAtMatrixLH(m_Postion, m_Postion + m_Direction, Vector3(0, 1, 0));
 
-		m_vRight = Vector3(matView(0, 0), matView(1, 0), matView(2, 0));
-		m_vUp = Vector3(matView(0, 1), matView(1, 1), matView(2, 1));
+		m_Right = Vector3(matView(0, 0), matView(1, 0), matView(2, 0));
+		m_Up = Vector3(matView(0, 1), matView(1, 1), matView(2, 1));
 	}
 
 	Matrix4x4 FPSCamera::GetViewMatrix() const
 	{
-		return GetLookAtMatrixLH(m_vPostion, m_vPostion + m_vDirection, Vector3(0.0f, 1.0f, 0.0f));
+		return GetLookAtMatrixLH(m_Postion, m_Postion + m_Direction, Vector3(0.0f, 1.0f, 0.0f));
 	}
 
 	Matrix4x4 FPSCamera::GetPerspProjectionMatrix() const
 	{
-		return GetPerspProjectionMatrixLH(m_fFov, m_fAspect, m_fNear, m_fFar);
+		return GetPerspProjectionMatrixLH(m_Fov, m_Aspect, m_Near, m_Far);
 	}
 
-	void FPSCamera::Move(float fSpeed, MoveMode moveMode)
+	void FPSCamera::Move(float speed, MoveMode moveMode)
 	{
 		switch (moveMode)
 		{
 		case RenderDog::FPSCamera::FrontAndBack:
-			m_vPostion += fSpeed * m_vDirection;
+			m_Postion += speed * m_Direction;
 			break;
 		case RenderDog::FPSCamera::UpAndDown:
-			m_vPostion += fSpeed * m_vUp;
+			m_Postion += speed * m_Up;
 			break;
 		case RenderDog::FPSCamera::LeftAndRight:
-			m_vPostion += fSpeed * m_vRight;
+			m_Postion += speed * m_Right;
 			break;
 		default:
 			break;
 		}
 	}
 
-	void FPSCamera::Rotate(float fDeltaYaw, float fDeltaPitch, float fSpeed)
+	void FPSCamera::Rotate(float deltaYaw, float deltaPitch, float speed)
 	{
-		Matrix4x4 matRotateY = GetRotationMatrix(fDeltaYaw * fSpeed, Vector3(0, 1, 0));
-		Matrix4x4 matRotateX = GetRotationMatrix(fDeltaPitch * fSpeed, Vector3(1, 0, 0));
+		Matrix4x4 matRotateY = GetRotationMatrix(deltaYaw * speed, Vector3(0, 1, 0));
+		Matrix4x4 matRotateX = GetRotationMatrix(deltaPitch * speed, Vector3(1, 0, 0));
 
-		Vector4 vDir = Vector4(m_vDirection, 0.0f);
-		vDir = vDir * matRotateX * matRotateY;
+		Vector4 direction = Vector4(m_Direction, 0.0f);
+		direction = direction * matRotateX * matRotateY;
 
-		m_vDirection.x = vDir.x;
-		m_vDirection.y = vDir.y;
-		m_vDirection.z = vDir.z;
+		m_Direction.x = direction.x;
+		m_Direction.y = direction.y;
+		m_Direction.z = direction.z;
 
-		Matrix4x4 matView = GetLookAtMatrixLH(m_vPostion, m_vPostion + m_vDirection, Vector3(0, 1, 0));
+		Matrix4x4 matView = GetLookAtMatrixLH(m_Postion, m_Postion + m_Direction, Vector3(0, 1, 0));
 
-		m_vRight = Vector3(matView(0, 0), matView(1, 0), matView(2, 0));
-		m_vUp = Vector3(matView(0, 1), matView(1, 1), matView(2, 1));
+		m_Right = Vector3(matView(0, 0), matView(1, 0), matView(2, 0));
+		m_Up = Vector3(matView(0, 1), matView(1, 1), matView(2, 1));
 	}
 }

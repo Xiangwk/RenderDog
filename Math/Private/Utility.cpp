@@ -30,25 +30,25 @@ namespace RenderDog
 		return ARGB;
 	}
 
-	float GetArea2(const Vector3& Pos1, const Vector3& Pos2, const Vector3& Pos3)
+	float GetArea2(const Vector3& pos1, const Vector3& pos2, const Vector3& pos3)
 	{
-		return Pos1.x * Pos2.y * Pos3.z + Pos1.y * Pos2.z * Pos3.x + Pos1.z * Pos2.x * Pos3.y
-			- Pos1.z * Pos2.y * Pos3.x - Pos1.y * Pos2.x * Pos3.z - Pos1.x * Pos2.z * Pos3.y;
+		return pos1.x * pos2.y * pos3.z + pos1.y * pos2.z * pos3.x + pos1.z * pos2.x * pos3.y
+			- pos1.z * pos2.y * pos3.x - pos1.y * pos2.x * pos3.z - pos1.x * pos2.z * pos3.y;
 	}
 
-	float Clamp(float fValue, float fMin, float fMax)
+	float Clamp(float value, float min, float max)
 	{
-		if (fValue < fMin)
+		if (value < min)
 		{
-			return fMin;
+			return min;
 		}
-		else if (fValue > fMax)
+		else if (value > max)
 		{
-			return fMax;
+			return max;
 		}
 		else
 		{
-			return fValue;
+			return value;
 		}
 	}
 }

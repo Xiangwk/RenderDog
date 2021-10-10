@@ -4,25 +4,25 @@ namespace RenderDog
 {
 	DirectionalLight::DirectionalLight(const DirLightDesc& desc):
 		m_Color(desc.color),
-		m_fLuminance(desc.luminance),
-		m_fPhi(desc.fPhi),
-		m_fTheta(desc.fTheta)
+		m_Luminance(desc.luminance),
+		m_Pitch(desc.pitch),
+		m_Yaw(desc.yaw)
 	{
-		float fX = cosf(m_fPhi) * cosf(m_fTheta);
-		float fY = sinf(m_fPhi);
-		float fZ = cosf(m_fPhi) * sinf(m_fTheta);
+		float fX = cosf(m_Pitch) * cosf(m_Yaw);
+		float fY = sinf(m_Pitch);
+		float fZ = cosf(m_Pitch) * sinf(m_Yaw);
 
 		m_Direction = Vector3(fX, fY, fZ);
 	}
 
-	void DirectionalLight::UpdateDirection(float fDeltaTheta, float fDeltaPhi)
+	void DirectionalLight::UpdateDirection(float deltaYaw, float deltaPitch)
 	{
-		m_fPhi += fDeltaPhi;
-		m_fTheta += fDeltaTheta;
+		m_Pitch += deltaPitch;
+		m_Yaw += deltaYaw;
 
-		float fX = cosf(m_fPhi) * cosf(m_fTheta);
-		float fY = cosf(m_fPhi);
-		float fZ = cosf(m_fPhi) * sinf(m_fTheta);
+		float fX = cosf(m_Pitch) * cosf(m_Yaw);
+		float fY = cosf(m_Pitch);
+		float fZ = cosf(m_Pitch) * sinf(m_Yaw);
 
 		m_Direction = Vector3(fX, fY, fZ);
 	}

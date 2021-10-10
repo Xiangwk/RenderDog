@@ -6,12 +6,12 @@ namespace RenderDog
 {
 	struct CameraDesc
 	{
-		Vector3 vPosition;
-		Vector3 vDirection;
-		float	fFov;
-		float	fAspect;
-		float	fNear;
-		float	fFar;
+		Vector3 position;
+		Vector3 direction;
+		float	fov;
+		float	aspectRitio;
+		float	nearPlane;
+		float	farPlane;
 	};
 
 	class FPSCamera
@@ -33,19 +33,19 @@ namespace RenderDog
 		Matrix4x4 GetViewMatrix() const;
 		Matrix4x4 GetPerspProjectionMatrix() const;
 
-		void Move(float fSpeed, MoveMode moveMode);
-		void Rotate(float fDeltaYaw, float fDeltaPitch, float fSpeed);
+		void Move(float speed, MoveMode moveMode);
+		void Rotate(float deltaYaw, float deltaPitch, float speed);
 
 	private:
-		Vector3	m_vPostion;
-		Vector3	m_vDirection;
+		Vector3	m_Postion;
+		Vector3	m_Direction;
 
-		Vector3 m_vRight;
-		Vector3 m_vUp;
+		Vector3 m_Right;
+		Vector3 m_Up;
 
-		float	m_fFov;		//角度
-		float	m_fAspect;  //宽高比
-		float   m_fNear;
-		float	m_fFar;
+		float	m_Fov;		//角度
+		float	m_Aspect;  //宽高比
+		float   m_Near;
+		float	m_Far;
 	};
 }

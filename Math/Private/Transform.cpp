@@ -76,7 +76,7 @@ namespace RenderDog
 		return Matrix4x4(vec0, vec1, vec2, vec3);
 	}
 
-	Matrix4x4 GetPerspProjectionMatrixLH(float fov, float aspectRatio, float near, float far)
+	Matrix4x4 GetPerspProjectionMatrixLH(float fov, float aspectRatio, float near, float farPlane)
 	{
 		float radianHalfFov = 0.5f * fov / 180.0f * 3.1415926f;
 		float sinHalfFov = std::sinf(radianHalfFov);
@@ -84,7 +84,7 @@ namespace RenderDog
 
 		float heightRatio = cosHalfFov / sinHalfFov;
 		float widthRatio = heightRatio / aspectRatio;
-		float rangeRatio = far / (far - near);
+		float rangeRatio = farPlane / (farPlane - near);
 
 		Matrix4x4 perspectiveMatrix;
 		perspectiveMatrix(0, 0) = widthRatio;

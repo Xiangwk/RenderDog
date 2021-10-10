@@ -324,13 +324,13 @@ bool InitDevice()
 #if DRAW_BOX
 	camDesc.vPosition = Vector3(0, 0, -5);
 #else
-	camDesc.vPosition = Vector3(0, 25, -100);
+	camDesc.position = Vector3(0, 25, -100);
 #endif //DRAW_BOX
-	camDesc.vDirection = Vector3(0, 0, 1);
-	camDesc.fFov = 45.0f;
-	camDesc.fAspect = (float)g_WindowWidth / g_WindowHeight;
-	camDesc.fNear = 0.1f;
-	camDesc.fFar = 1000.0f;
+	camDesc.direction = Vector3(0, 0, 1);
+	camDesc.fov = 45.0f;
+	camDesc.aspectRitio = (float)g_WindowWidth / g_WindowHeight;
+	camDesc.nearPlane = 0.1f;
+	camDesc.farPlane = 1000.0f;
 
 	g_pMainCamera = new RenderDog::FPSCamera(camDesc);
 
@@ -343,8 +343,8 @@ bool InitDevice()
 	RenderDog::DirLightDesc dirLightDesc;
 	dirLightDesc.color = Vector3(1.0f, 1.0f, 1.0f);
 	dirLightDesc.luminance = 1.0f;
-	dirLightDesc.fPhi = -3.14f * 0.25f;
-	dirLightDesc.fTheta = 3.14f * 0.25f;
+	dirLightDesc.pitch = -3.14f * 0.25f;
+	dirLightDesc.yaw = 3.14f * 0.25f;
 	g_pMainLight = new RenderDog::DirectionalLight(dirLightDesc);
 
 	return true;
