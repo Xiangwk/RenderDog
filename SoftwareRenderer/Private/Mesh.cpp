@@ -31,21 +31,21 @@ namespace RenderDog
 		}
 	}
 
-	StaticMesh::StaticMesh(const std::vector<Vertex>& Vertices, const std::vector<uint32_t>& Indices):
+	StaticMesh::StaticMesh(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices):
 		m_pVB(nullptr),
 		m_pIB(nullptr)
 	{
-		m_RawVertices.reserve(Vertices.size());
-		m_RawIndices.reserve(Indices.size());
+		m_RawVertices.reserve(vertices.size());
+		m_RawIndices.reserve(indices.size());
 
-		for (uint32_t i = 0; i < Vertices.size(); ++i)
+		for (uint32_t i = 0; i < vertices.size(); ++i)
 		{
-			m_RawVertices.push_back(Vertices[i]);
+			m_RawVertices.push_back(vertices[i]);
 		}
 
-		for (uint32_t i = 0; i < Indices.size(); ++i)
+		for (uint32_t i = 0; i < indices.size(); ++i)
 		{
-			m_RawIndices.push_back(Indices[i]);
+			m_RawIndices.push_back(indices[i]);
 		}
 	}
 
@@ -101,130 +101,129 @@ namespace RenderDog
 
 	void StaticMesh::CalculateTangents()
 	{
-		
 		//1. 按索引拆分顶点
-		std::vector<Vertex> TempVertices;
-		TempVertices.reserve(m_RawIndices.size());
+		std::vector<Vertex> tempVertices;
+		tempVertices.reserve(m_RawIndices.size());
 
 		for (uint32_t i = 0; i < m_RawIndices.size(); ++i)
 		{
-			TempVertices.push_back(m_RawVertices[m_RawIndices[i]]);
+			tempVertices.push_back(m_RawVertices[m_RawIndices[i]]);
 		}
 
 		//2. 按三角形计算TBN
-		for (uint32_t i = 0; i < TempVertices.size(); i += 3)
+		for (uint32_t i = 0; i < tempVertices.size(); i += 3)
 		{
-			Vertex& v0 = TempVertices[i];
-			Vertex& v1 = TempVertices[i + 1];
-			Vertex& v2 = TempVertices[i + 2];
+			Vertex& v0 = tempVertices[i];
+			Vertex& v1 = tempVertices[i + 1];
+			Vertex& v2 = tempVertices[i + 2];
 
-			const Vector3& vPos0 = v0.vPosition;
-			const Vector3& vPos1 = v1.vPosition;
-			const Vector3& vPos2 = v2.vPosition;
+			const Vector3& pos0 = v0.position;
+			const Vector3& pos1 = v1.position;
+			const Vector3& pos2 = v2.position;
 
-			const Vector2& vTex0 = v0.vTexcoord;
-			const Vector2& vTex1 = v1.vTexcoord;
-			const Vector2& vTex2 = v2.vTexcoord;
+			const Vector2& tex0 = v0.texcoord;
+			const Vector2& tex1 = v1.texcoord;
+			const Vector2& tex2 = v2.texcoord;
 
-			float x1 = vPos1.x - vPos0.x;
-			float x2 = vPos2.x - vPos0.x;
-			float y1 = vPos1.y - vPos0.y;
-			float y2 = vPos2.y - vPos0.y;
-			float z1 = vPos1.z - vPos0.z;
-			float z2 = vPos2.z - vPos0.z;
+			float x1 = pos1.x - pos0.x;
+			float x2 = pos2.x - pos0.x;
+			float y1 = pos1.y - pos0.y;
+			float y2 = pos2.y - pos0.y;
+			float z1 = pos1.z - pos0.z;
+			float z2 = pos2.z - pos0.z;
 
-			float s1 = vTex1.x - vTex0.x;
-			float s2 = vTex2.x - vTex0.x;
-			float t1 = vTex1.y - vTex0.y;
-			float t2 = vTex2.y - vTex0.y;
+			float s1 = tex1.x - tex0.x;
+			float s2 = tex2.x - tex0.x;
+			float t1 = tex1.y - tex0.y;
+			float t2 = tex2.y - tex0.y;
 
-			float fInv = 1.0f / (s1 * t2 - s2 * t1);
+			float inv = 1.0f / (s1 * t2 - s2 * t1);
 
-			float tx = fInv * (t2 * x1 - t1 * x2);
-			float ty = fInv * (t2 * y1 - t1 * y2);
-			float tz = fInv * (t2 * z1 - t1 * z2);
+			float tx = inv * (t2 * x1 - t1 * x2);
+			float ty = inv * (t2 * y1 - t1 * y2);
+			float tz = inv * (t2 * z1 - t1 * z2);
 
-			float bx = fInv * (s1 * x2 - s2 * x1);
-			float by = fInv * (s1 * y2 - s2 * y1);
-			float bz = fInv * (s1 * z2 - s2 * z1);
+			float bx = inv * (s1 * x2 - s2 * x1);
+			float by = inv * (s1 * y2 - s2 * y1);
+			float bz = inv * (s1 * z2 - s2 * z1);
 
 			Vector3 faceTangent = Normalize(Vector3(tx, ty, tz));
 			Vector3 faceBiTangent = Normalize(Vector3(bx, by, bz));
 
 			//重新计算法线
-			Vector3 faceNormal0 = CrossProduct(vPos1 - vPos0, vPos2 - vPos0);
-			Vector3 faceNormal1 = CrossProduct(vPos2 - vPos1, vPos0 - vPos1);
-			Vector3 faceNormal2 = CrossProduct(vPos0 - vPos2, vPos1 - vPos2);
+			Vector3 faceNormal0 = CrossProduct(pos1 - pos0, pos2 - pos0);
+			Vector3 faceNormal1 = CrossProduct(pos2 - pos1, pos0 - pos1);
+			Vector3 faceNormal2 = CrossProduct(pos0 - pos2, pos1 - pos2);
 
-			float fRawHandParty = DotProduct(CrossProduct(faceTangent, faceBiTangent), faceNormal0) > 0.0f ? 1.0f : -1.0f;
+			float rawHandParty = DotProduct(CrossProduct(faceTangent, faceBiTangent), faceNormal0) > 0.0f ? 1.0f : -1.0f;
 
-			v0.vTangent = v1.vTangent = v2.vTangent = Vector4(faceTangent, fRawHandParty);
-			v0.vNormal = faceNormal0;
-			v1.vNormal = faceNormal1;
-			v2.vNormal = faceNormal2;
+			v0.tangent = v1.tangent = v2.tangent = Vector4(faceTangent, rawHandParty);
+			v0.normal = faceNormal0;
+			v1.normal = faceNormal1;
+			v2.normal = faceNormal2;
 		}
 
 		//3. 合并相同的顶点
 		m_Vertices.reserve(m_RawVertices.size());
-		m_Indices.reserve(TempVertices.size());
+		m_Indices.reserve(tempVertices.size());
 
-		if (TempVertices.size() < 3)
+		if (tempVertices.size() < 3)
 		{
 			return;
 		}
 
-		m_Vertices.push_back(TempVertices[0]);
+		m_Vertices.push_back(tempVertices[0]);
 		m_Indices.push_back(0);
 
-		m_Vertices.push_back(TempVertices[1]);
+		m_Vertices.push_back(tempVertices[1]);
 		m_Indices.push_back(1);
 
-		m_Vertices.push_back(TempVertices[2]);
+		m_Vertices.push_back(tempVertices[2]);
 		m_Indices.push_back(2);
 
-		for (uint32_t i = 3; i < TempVertices.size(); ++i)
+		for (uint32_t i = 3; i < tempVertices.size(); ++i)
 		{
-			Vertex& rawVert = TempVertices[i];
+			Vertex& rawVert = tempVertices[i];
 
 			uint32_t vertNum = (uint32_t)m_Vertices.size();
 			for (uint32_t j = 0; j < vertNum; ++j)
 			{
 				Vertex& vert = m_Vertices[j];
-				if (rawVert.vPosition == vert.vPosition && rawVert.vTexcoord == vert.vTexcoord)
+				if (rawVert.position == vert.position && rawVert.texcoord == vert.texcoord)
 				{
-					Vector3 weightedAverNormal = rawVert.vNormal + vert.vNormal;
-					vert.vNormal = weightedAverNormal;
+					Vector3 weightedAverNormal = rawVert.normal + vert.normal;
+					vert.normal = weightedAverNormal;
 				}
 			}
 
-			bool HasSameVertex = false;
+			bool bHasSameVertex = false;
 			for (uint32_t j = 0; j < vertNum; ++j)
 			{
 				Vertex& vert = m_Vertices[j];
-				if (rawVert.vPosition == vert.vPosition && rawVert.vTexcoord == vert.vTexcoord)
+				if (rawVert.position == vert.position && rawVert.texcoord == vert.texcoord)
 				{
-					if (rawVert.vTangent.w != vert.vTangent.w)
+					if (rawVert.tangent.w != vert.tangent.w)
 					{
-						rawVert.vNormal = vert.vNormal;
+						rawVert.normal = vert.normal;
 						m_Indices.push_back((uint32_t)m_Vertices.size());
 						m_Vertices.push_back(rawVert);
 
-						HasSameVertex = true;
+						bHasSameVertex = true;
 						break;
 					}
 					else
 					{
-						vert.vTangent = (vert.vTangent) * vert.vNormal.Length() + rawVert.vTangent * rawVert.vNormal.Length();
-						vert.vTangent.w = vert.vTangent.w > 0.0f ? 1.0f : -1.0f;
+						vert.tangent = (vert.tangent) * vert.normal.Length() + rawVert.tangent * rawVert.normal.Length();
+						vert.tangent.w = vert.tangent.w > 0.0f ? 1.0f : -1.0f;
 						m_Indices.push_back(j);
 
-						HasSameVertex = true;
+						bHasSameVertex = true;
 						break;
 					}
 				}
 			}
 
-			if (!HasSameVertex)
+			if (!bHasSameVertex)
 			{
 				m_Indices.push_back((uint32_t)m_Vertices.size());
 				m_Vertices.push_back(rawVert);
@@ -235,10 +234,10 @@ namespace RenderDog
 		for (uint32_t i = 0; i < m_Vertices.size(); ++i)
 		{
 			Vertex& vert = m_Vertices[i];
-			vert.vNormal.Normalize();
-			Vector3 tangent = Vector3(vert.vTangent.x, vert.vTangent.y, vert.vTangent.z);
-			tangent = Normalize(tangent - vert.vNormal * DotProduct(vert.vNormal, tangent));
-			vert.vTangent = Vector4(tangent, vert.vTangent.w);
+			vert.normal.Normalize();
+			Vector3 tangent = Vector3(vert.tangent.x, vert.tangent.y, vert.tangent.z);
+			tangent = Normalize(tangent - vert.normal * DotProduct(vert.normal, tangent));
+			vert.tangent = Vector4(tangent, vert.tangent.w);
 		}
 		
 

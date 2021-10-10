@@ -18,11 +18,11 @@ namespace RenderDog
 		Vertex(const Vertex& v) = default;
 		Vertex& operator=(const Vertex& v) = default;
 
-		Vector3 vPosition;
-		Vector3 vColor;
-		Vector3 vNormal;
-		Vector4 vTangent;
-		Vector2 vTexcoord;
+		Vector3 position;
+		Vector3 color;
+		Vector3 normal;
+		Vector4 tangent;
+		Vector2 texcoord;
 	};
 }
 

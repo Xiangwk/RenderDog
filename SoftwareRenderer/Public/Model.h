@@ -25,7 +25,7 @@ namespace RenderDog
 		StaticModel();
 		~StaticModel();
 
-		bool LoadFromFile(const std::string& strFileName);
+		bool LoadFromFile(const std::string& fileName);
 
 		bool Init(IDevice* pDevice);
 		void Release();

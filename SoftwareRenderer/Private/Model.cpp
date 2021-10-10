@@ -22,16 +22,16 @@ namespace RenderDog
 		m_Meshes.clear();
 	}
 
-	bool StaticModel::LoadFromFile(const std::string& strFileName)
+	bool StaticModel::LoadFromFile(const std::string& fileName)
 	{
-		Assimp::Importer ModelImporter;
-		const aiScene* AssimpModelScene = ModelImporter.ReadFile(strFileName, aiProcess_ConvertToLeftHanded/* | aiProcess_JoinIdenticalVertices*/);
-		if (!AssimpModelScene || AssimpModelScene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !AssimpModelScene->mRootNode)
+		Assimp::Importer modelImporter;
+		const aiScene* assimpModelScene = modelImporter.ReadFile(fileName, aiProcess_ConvertToLeftHanded/* | aiProcess_JoinIdenticalVertices*/);
+		if (!assimpModelScene || assimpModelScene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !assimpModelScene->mRootNode)
 		{
 			return false;
 		}
 
-		ProcessNode(AssimpModelScene->mRootNode, AssimpModelScene);
+		ProcessNode(assimpModelScene->mRootNode, assimpModelScene);
 
 		CalculateMeshTangents();
 
@@ -54,31 +54,31 @@ namespace RenderDog
 
 	StaticMesh StaticModel::ProcessMesh(const aiMesh* pAssimpMesh, const aiScene* pAssimpScene)
 	{
-		std::vector<Vertex> TempVertices;
-		std::vector<uint32_t> TempIndices;
+		std::vector<Vertex> tempVertices;
+		std::vector<uint32_t> tempIndices;
 
 		for (unsigned int i = 0; i < pAssimpMesh->mNumVertices; ++i)
 		{
 
-			Vector3 Position = Vector3(pAssimpMesh->mVertices[i].x, pAssimpMesh->mVertices[i].y, pAssimpMesh->mVertices[i].z);
-			Vector3 Normal = Vector3(pAssimpMesh->mNormals[i].x, pAssimpMesh->mNormals[i].y, pAssimpMesh->mNormals[i].z);
-			Vector2 TexCoord = Vector2(pAssimpMesh->mTextureCoords[0][i].x, pAssimpMesh->mTextureCoords[0][i].y);
+			Vector3 position = Vector3(pAssimpMesh->mVertices[i].x, pAssimpMesh->mVertices[i].y, pAssimpMesh->mVertices[i].z);
+			Vector3 normal = Vector3(pAssimpMesh->mNormals[i].x, pAssimpMesh->mNormals[i].y, pAssimpMesh->mNormals[i].z);
+			Vector2 texCoord = Vector2(pAssimpMesh->mTextureCoords[0][i].x, pAssimpMesh->mTextureCoords[0][i].y);
 
-			Vertex Vert = { Vector3(Position.x, Position.y, Position.z), Vector3(1.0f, 1.0f, 1.0f), Vector3(Normal.x, Normal.y, Normal.z), Vector4(0.0f, 0.0f, 0.0f, 0.0f), Vector2(TexCoord.x, TexCoord.y) };
+			Vertex vert = { Vector3(position.x, position.y, position.z), Vector3(1.0f, 1.0f, 1.0f), Vector3(normal.x, normal.y, normal.z), Vector4(0.0f, 0.0f, 0.0f, 0.0f), Vector2(texCoord.x, texCoord.y) };
 
-			TempVertices.push_back(Vert);
+			tempVertices.push_back(vert);
 		}
 
 		for (unsigned int i = 0; i < pAssimpMesh->mNumFaces; ++i)
 		{
-			aiFace Face = pAssimpMesh->mFaces[i];
-			for (unsigned int j = 0; j < Face.mNumIndices; ++j)
+			aiFace face = pAssimpMesh->mFaces[i];
+			for (unsigned int j = 0; j < face.mNumIndices; ++j)
 			{
-				TempIndices.push_back(Face.mIndices[j]);
+				tempIndices.push_back(face.mIndices[j]);
 			}
 		}
 
-		return StaticMesh(TempVertices, TempIndices);
+		return StaticMesh(tempVertices, tempIndices);
 	}
 
 	void StaticModel::CalculateMeshTangents()

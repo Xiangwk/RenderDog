@@ -23,7 +23,7 @@ namespace RenderDog
 		StaticMesh();
 		~StaticMesh();
 
-		StaticMesh(const std::vector<Vertex>& Vertices, const std::vector<uint32_t>& Indices);
+		StaticMesh(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices);
 
 		bool Init(IDevice* pDevice);
 		void Release();
