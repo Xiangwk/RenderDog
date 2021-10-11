@@ -212,13 +212,11 @@ namespace RenderDog
 					if (FloatEqual(rawVert.tangent.w, vert.tangent.w))
 					{
 						float w = vert.tangent.w;
-						float rawW = rawVert.tangent.w;
 
 						vert.tangent = vert.tangent + rawVert.tangent;
-						rawVert.tangent = vert.tangent;
-
 						vert.tangent.w = w;
-						rawVert.tangent.w = rawW;
+
+						rawVert.tangent = vert.tangent;
 
 						SameIndex = j;
 
