@@ -141,18 +141,30 @@ namespace RenderDog
 			float t1 = tex1.y - tex0.y;
 			float t2 = tex2.y - tex0.y;
 
-			float inv = 1.0f / (s1 * t2 - s2 * t1);
+			Vector3 faceTangent;
+			Vector3 faceBiTangent;
 
-			float tx = inv * (t2 * x1 - t1 * x2);
-			float ty = inv * (t2 * y1 - t1 * y2);
-			float tz = inv * (t2 * z1 - t1 * z2);
+			float div = s1 * t2 - s2 * t1;
+			if (div == 0)
+			{
+				faceTangent = Vector3(1.0f, 0.0f, 0.0f);
+				faceBiTangent = Vector3(0.0f, 1.0f, 0.0f);
+			}
+			else
+			{
+				float inv = 1.0f / div;
 
-			float bx = inv * (s1 * x2 - s2 * x1);
-			float by = inv * (s1 * y2 - s2 * y1);
-			float bz = inv * (s1 * z2 - s2 * z1);
+				float tx = inv * (t2 * x1 - t1 * x2);
+				float ty = inv * (t2 * y1 - t1 * y2);
+				float tz = inv * (t2 * z1 - t1 * z2);
 
-			Vector3 faceTangent = Normalize(Vector3(tx, ty, tz));
-			Vector3 faceBiTangent = Normalize(Vector3(bx, by, bz));
+				float bx = inv * (s1 * x2 - s2 * x1);
+				float by = inv * (s1 * y2 - s2 * y1);
+				float bz = inv * (s1 * z2 - s2 * z1);
+
+				faceTangent = Normalize(Vector3(tx, ty, tz)) * abs(div);
+				faceBiTangent = Normalize(Vector3(bx, by, bz)) * abs(div);
+			}
 
 			//重新计算法线
 			Vector3 faceNormal0 = CrossProduct(pos1 - pos0, pos2 - pos0);
@@ -162,6 +174,7 @@ namespace RenderDog
 			float rawHandParty = DotProduct(CrossProduct(faceTangent, faceBiTangent), faceNormal0) > 0.0f ? 1.0f : -1.0f;
 
 			v0.tangent = v1.tangent = v2.tangent = Vector4(faceTangent, rawHandParty);
+
 			v0.normal = faceNormal0;
 			v1.normal = faceNormal1;
 			v2.normal = faceNormal2;
@@ -198,10 +211,15 @@ namespace RenderDog
 				{
 					if (FloatEqual(rawVert.tangent.w, vert.tangent.w))
 					{
-						//float w = vert.tangent.w;
-						//vert.tangent = vert.tangent + rawVert.tangent;
-						//vert.tangent.w = w;
-						
+						float w = vert.tangent.w;
+						float rawW = rawVert.tangent.w;
+
+						vert.tangent = vert.tangent + rawVert.tangent;
+						rawVert.tangent = vert.tangent;
+
+						vert.tangent.w = w;
+						rawVert.tangent.w = rawW;
+
 						SameIndex = j;
 
 						bHasSameVertex = true;
@@ -449,5 +467,21 @@ namespace RenderDog
 		}
 #endif // NEW_CODE
 		
+	}
+
+	float StaticMesh::CalcAngleBetween(const Vector3& v0, const Vector3& v1)
+	{
+		float LengthQ = v0.Length() * v1.Length();
+
+		if (LengthQ < 0.0001f)LengthQ = 0.0001f;			// to prevent division by zero
+
+		float f = DotProduct(v0, v1) / LengthQ;
+
+		if (f > 1.0f)f = 1.0f;												// acos need input in the range [-1..1]
+		else if (f < -1.0f)f = -1.0f;							//
+
+		float result = (float)acos(f);								// cosf is not avaiable on every plattform
+
+		return result;
 	}
 }
