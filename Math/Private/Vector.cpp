@@ -5,6 +5,7 @@
 ///////////////////////////////////
 
 #include "Vector.h"
+#include "Utility.h"
 
 namespace RenderDog
 {
@@ -44,7 +45,7 @@ namespace RenderDog
 
 	bool operator==(const Vector2& lhs, const Vector2& rhs)
 	{
-		return (lhs.x == rhs.x && lhs.y == rhs.y);
+		return (FloatEqual(lhs.x, rhs.x) && FloatEqual(lhs.y, rhs.y));
 	}
 
 	bool operator!=(const Vector2& lhs, const Vector2& rhs)
@@ -104,7 +105,7 @@ namespace RenderDog
 
 	bool operator==(const Vector3& lhs, const Vector3& rhs)
 	{
-		return (lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z);
+		return (FloatEqual(lhs.x, rhs.x) && FloatEqual(lhs.y, rhs.y) && FloatEqual(lhs.z, rhs.z));
 	}
 
 	bool operator!=(const Vector3& lhs, const Vector3& rhs)
@@ -177,7 +178,10 @@ namespace RenderDog
 
 	bool operator==(const Vector4& lhs, const Vector4& rhs)
 	{
-		return (lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z);
+		return (FloatEqual(lhs.x, rhs.x) && 
+				FloatEqual(lhs.y, rhs.y) && 
+				FloatEqual(lhs.z, rhs.z) &&
+				FloatEqual(lhs.w, rhs.w));
 	}
 
 	bool operator!=(const Vector4& lhs, const Vector4& rhs)

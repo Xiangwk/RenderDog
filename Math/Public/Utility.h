@@ -15,7 +15,7 @@ namespace RenderDog
 
 	extern const float RD_FLT_EPSILON;
 
-	bool		FloatEqual(float lhs, float rhs, float epsilon);
+	bool		FloatEqual(float lhs, float rhs, float epsilon = RD_FLT_EPSILON);
 
 	uint32_t	ConvertColorToUInt32(const Vector4& color);
 	Vector4		ConvertRGBAColorToARGBColor(const Vector4& RGBA);

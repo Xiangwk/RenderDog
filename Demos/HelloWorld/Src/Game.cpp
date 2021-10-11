@@ -342,7 +342,7 @@ bool InitDevice()
 
 	RenderDog::DirLightDesc dirLightDesc;
 	dirLightDesc.color = Vector3(1.0f, 1.0f, 1.0f);
-	dirLightDesc.luminance = 1.0f;
+	dirLightDesc.luminance = 0.8f;
 	dirLightDesc.pitch = -3.14f * 0.25f;
 	dirLightDesc.yaw = 3.14f * 0.25f;
 	g_pMainLight = new RenderDog::DirectionalLight(dirLightDesc);

@@ -6,8 +6,11 @@
 
 #include "Mesh.h"
 #include "RenderDog.h"
+#include "Utility.h"
 
 #include <unordered_map>
+
+#define NEW_CODE
 
 namespace RenderDog
 {
@@ -101,6 +104,7 @@ namespace RenderDog
 
 	void StaticMesh::CalculateTangents()
 	{
+#if defined NEW_CODE
 		//1. 按索引拆分顶点
 		std::vector<Vertex> tempVertices;
 		tempVertices.reserve(m_RawIndices.size());
@@ -185,41 +189,27 @@ namespace RenderDog
 		{
 			Vertex& rawVert = tempVertices[i];
 
-			uint32_t vertNum = (uint32_t)m_Vertices.size();
-			for (uint32_t j = 0; j < vertNum; ++j)
+			bool bHasSameVertex = false;
+			uint32_t SameIndex = 0;
+			for (uint32_t j = 0; j < (uint32_t)m_Vertices.size(); ++j)
 			{
 				Vertex& vert = m_Vertices[j];
 				if (rawVert.position == vert.position && rawVert.texcoord == vert.texcoord)
 				{
+					if (FloatEqual(rawVert.tangent.w, vert.tangent.w))
+					{
+						//float w = vert.tangent.w;
+						//vert.tangent = vert.tangent + rawVert.tangent;
+						//vert.tangent.w = w;
+						
+						SameIndex = j;
+
+						bHasSameVertex = true;
+					}
+
 					Vector3 weightedAverNormal = rawVert.normal + vert.normal;
 					vert.normal = weightedAverNormal;
-				}
-			}
-
-			bool bHasSameVertex = false;
-			for (uint32_t j = 0; j < vertNum; ++j)
-			{
-				Vertex& vert = m_Vertices[j];
-				if (rawVert.position == vert.position && rawVert.texcoord == vert.texcoord)
-				{
-					if (rawVert.tangent.w != vert.tangent.w)
-					{
-						rawVert.normal = vert.normal;
-						m_Indices.push_back((uint32_t)m_Vertices.size());
-						m_Vertices.push_back(rawVert);
-
-						bHasSameVertex = true;
-						break;
-					}
-					else
-					{
-						vert.tangent = (vert.tangent) * vert.normal.Length() + rawVert.tangent * rawVert.normal.Length();
-						vert.tangent.w = vert.tangent.w > 0.0f ? 1.0f : -1.0f;
-						m_Indices.push_back(j);
-
-						bHasSameVertex = true;
-						break;
-					}
+					rawVert.normal = weightedAverNormal;
 				}
 			}
 
@@ -227,6 +217,10 @@ namespace RenderDog
 			{
 				m_Indices.push_back((uint32_t)m_Vertices.size());
 				m_Vertices.push_back(rawVert);
+			}
+			else
+			{
+				m_Indices.push_back(SameIndex);
 			}
 		}
 
@@ -239,9 +233,9 @@ namespace RenderDog
 			tangent = Normalize(tangent - vert.normal * DotProduct(vert.normal, tangent));
 			vert.tangent = Vector4(tangent, vert.tangent.w);
 		}
-		
+#else //!NEW_CODE
 
-		/*
+		
 		m_Vertices.resize(m_RawVertices.size());
 		m_Indices.resize(m_RawIndices.size());
 
@@ -265,13 +259,13 @@ namespace RenderDog
 			const Vertex& v1 = m_RawVertices[nIndex1];
 			const Vertex& v2 = m_RawVertices[nIndex2];
 
-			const Vector3& vPos0 = v0.vPosition;
-			const Vector3& vPos1 = v1.vPosition;
-			const Vector3& vPos2 = v2.vPosition;
+			const Vector3& vPos0 = v0.position;
+			const Vector3& vPos1 = v1.position;
+			const Vector3& vPos2 = v2.position;
 
-			const Vector2& vTex0 = v0.vTexcoord;
-			const Vector2& vTex1 = v1.vTexcoord;
-			const Vector2& vTex2 = v2.vTexcoord;
+			const Vector2& vTex0 = v0.texcoord;
+			const Vector2& vTex1 = v1.texcoord;
+			const Vector2& vTex2 = v2.texcoord;
 
 			float x1 = vPos1.x - vPos0.x;
 			float x2 = vPos2.x - vPos0.x;
@@ -298,9 +292,9 @@ namespace RenderDog
 			Vector3 vRawTangent = Vector3(tx, ty, tz);
 			Vector3 vRawBiTangent = Vector3(bx, by, bz);
 
-			const Vector3& vRawNormal0 = v0.vNormal;
-			const Vector3& vRawNormal1 = v1.vNormal;
-			const Vector3& vRawNormal2 = v2.vNormal;
+			const Vector3& vRawNormal0 = v0.normal;
+			const Vector3& vRawNormal1 = v1.normal;
+			const Vector3& vRawNormal2 = v2.normal;
 
 			float fRawHandParty0 = vHandPartys[nIndex0];
 			float fRawHandParty1 = vHandPartys[nIndex1];
@@ -326,7 +320,7 @@ namespace RenderDog
 				{
 					//拆分新的顶点
 					vPositions.push_back(vPos0);
-					vColors.push_back(v0.vColor);
+					vColors.push_back(v0.color);
 					vTexcoords.push_back(vTex0);
 					vNormals.push_back(vRawNormal0);
 					vTangents.push_back(vRawTangent);
@@ -342,7 +336,7 @@ namespace RenderDog
 			else
 			{
 				vPositions[nIndex0] = vPos0;
-				vColors[nIndex0] = v0.vColor;
+				vColors[nIndex0] = v0.color;
 				vTexcoords[nIndex0] = vTex0;
 				vNormals[nIndex0] = vRawNormal0;
 				vTangents[nIndex0] += vRawTangent;
@@ -368,7 +362,7 @@ namespace RenderDog
 				{
 					//拆分新的顶点
 					vPositions.push_back(vPos1);
-					vColors.push_back(v1.vColor);
+					vColors.push_back(v1.color);
 					vTexcoords.push_back(vTex1);
 					vNormals.push_back(vRawNormal1);
 					vTangents.push_back(vRawTangent);
@@ -385,7 +379,7 @@ namespace RenderDog
 			else
 			{
 				vPositions[nIndex1] = vPos1;
-				vColors[nIndex1] = v1.vColor;
+				vColors[nIndex1] = v1.color;
 				vTexcoords[nIndex1] = vTex1;
 				vNormals[nIndex1] = vRawNormal1;
 				vTangents[nIndex1] += vRawTangent;
@@ -411,7 +405,7 @@ namespace RenderDog
 				{
 					//拆分新的顶点
 					vPositions.push_back(vPos2);
-					vColors.push_back(v2.vColor);
+					vColors.push_back(v2.color);
 					vTexcoords.push_back(vTex2);
 					vNormals.push_back(vRawNormal2);
 					vTangents.push_back(vRawTangent);
@@ -427,7 +421,7 @@ namespace RenderDog
 			else
 			{
 				vPositions[nIndex2] = vPos2;
-				vColors[nIndex2] = v2.vColor;
+				vColors[nIndex2] = v2.color;
 				vTexcoords[nIndex2] = vTex2;
 				vNormals[nIndex2] = vRawNormal2;
 				vTangents[nIndex2] += vRawTangent;
@@ -442,7 +436,7 @@ namespace RenderDog
 		{
 			Vector3 vPos = vPositions[i];
 			Vector3 vColor = vColors[i];
-			Vector2 vTexcoord = vTexcoords[i];
+			Vector2 texcoord = vTexcoords[i];
 			float fHandParty = vHandPartys[i];
 			//Vector3 vTangent = Normalize(vTangents[i]);
 			//Vector3 vBiTangent = Normalize(vBiTangents[i]);
@@ -451,8 +445,9 @@ namespace RenderDog
 			//Vector3 vTangent = Normalize((vTangents[i] - vNormal * DotProduct(vNormal, vTangents[i])));
 			Vector3 vTangent = Normalize(vTangents[i]);
 
-			m_Vertices[i] = { vPos, vColor, vNormal, Vector4(vTangent.x, vTangent.y, vTangent.z, fHandParty), vTexcoord };
+			m_Vertices[i] = { vPos, vColor, vNormal, Vector4(vTangent.x, vTangent.y, vTangent.z, fHandParty), texcoord };
 		}
-		*/
+#endif // NEW_CODE
+		
 	}
 }
