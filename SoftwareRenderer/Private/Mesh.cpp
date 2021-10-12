@@ -208,7 +208,8 @@ namespace RenderDog
 			for (uint32_t j = 0; j < (uint32_t)m_Vertices.size(); ++j)
 			{
 				Vertex& vert = m_Vertices[j];
-				if (rawVert.position == vert.position && rawVert.texcoord == vert.texcoord)
+				//TEMP!!! 暂时没有光滑组信息，临时增加一个夹角大于45度则不做法线的加权平均的条件
+				if (rawVert.position == vert.position && rawVert.texcoord == vert.texcoord && abs(DotProduct(Normalize(rawVert.normal), Normalize(vert.normal))) > 0.7f )
 				{
 					weightedAverNormal = rawVert.normal + vert.normal;
 					vert.normal = weightedAverNormal;
@@ -219,8 +220,6 @@ namespace RenderDog
 
 						vert.tangent = vert.tangent + rawVert.tangent;
 						vert.tangent.w = w;
-
-						rawVert.tangent = vert.tangent;
 
 						SameIndex = j;
 
