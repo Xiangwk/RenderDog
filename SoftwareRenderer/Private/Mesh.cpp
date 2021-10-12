@@ -201,6 +201,7 @@ namespace RenderDog
 		for (uint32_t i = 3; i < tempVertices.size(); ++i)
 		{
 			Vertex& rawVert = tempVertices[i];
+			Vector3 weightedAverNormal = rawVert.normal;
 
 			bool bHasSameVertex = false;
 			uint32_t SameIndex = 0;
@@ -209,6 +210,9 @@ namespace RenderDog
 				Vertex& vert = m_Vertices[j];
 				if (rawVert.position == vert.position && rawVert.texcoord == vert.texcoord)
 				{
+					weightedAverNormal = rawVert.normal + vert.normal;
+					vert.normal = weightedAverNormal;
+
 					if (FloatEqual(rawVert.tangent.w, vert.tangent.w))
 					{
 						float w = vert.tangent.w;
@@ -222,16 +226,14 @@ namespace RenderDog
 
 						bHasSameVertex = true;
 					}
-
-					Vector3 weightedAverNormal = rawVert.normal + vert.normal;
-					vert.normal = weightedAverNormal;
-					rawVert.normal = weightedAverNormal;
 				}
 			}
 
 			if (!bHasSameVertex)
 			{
 				m_Indices.push_back((uint32_t)m_Vertices.size());
+
+				rawVert.normal = weightedAverNormal;
 				m_Vertices.push_back(rawVert);
 			}
 			else

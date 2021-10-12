@@ -2261,7 +2261,7 @@ namespace RenderDog
 
 		Vector3 diffuseColor = CalcPhongLighing(m_pMainLight, Vector3(worldNormal.x, worldNormal.y, worldNormal.z), Vector3(1.0f, 1.0f, 1.0f));
 
-		Vector3 AmbientColor = Vector3(0.2f, 0.2f, 0.2f);
+		Vector3 AmbientColor = Vector3(0.05f, 0.05f, 0.05f);
 		Vector3 finalColor = diffuseColor + AmbientColor;
 
 		return Vector4(finalColor, 1.0f);
