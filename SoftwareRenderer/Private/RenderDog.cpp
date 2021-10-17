@@ -2246,7 +2246,6 @@ namespace RenderDog
 		tangentNormalZ = tangentNormalZ * 2.0f - 1.0f;
 
 		Vector3 tangentNormal = Normalize(Vector3(tangentNormalX, tangentNormalY, tangentNormalZ));
-		//Vector3 tangentNormal = Vector3(0, 0, 1);
 
 		Vector3 tangent = Normalize(Vector3(psInput.tangent.x, psInput.tangent.y, psInput.tangent.z));
 		Vector3 biTangent = Normalize(CrossProduct(psInput.normal, tangent) * psInput.tangent.w);

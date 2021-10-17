@@ -33,9 +33,6 @@ namespace RenderDog
 		void CalculateTangents();
 
 	private:
-		float CalcAngleBetween(const Vector3& v0, const Vector3& v1);
-
-	private:
 		std::vector<Vertex>		m_RawVertices;
 		std::vector<uint32_t>	m_RawIndices;
 

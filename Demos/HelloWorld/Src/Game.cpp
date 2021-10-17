@@ -21,8 +21,6 @@
 
 #include <vld.h>
 
-#define DRAW_BOX 0
-
 using RenderDog::Vector2;
 using RenderDog::Vector3;
 using RenderDog::Vector4;
@@ -46,11 +44,6 @@ RenderDog::IDepthStencilView*	g_pDepthStencilView = nullptr;
 RenderDog::IShaderResourceView*	g_pTextureSRV = nullptr;
 
 RenderDog::GameTimer*			g_pGameTimer = nullptr;
-
-#if DRAW_BOX
-RenderDog::IBuffer* g_pVertexBuffer = nullptr;
-RenderDog::IBuffer* g_pIndexBuffer = nullptr;
-#endif //DRAW_BOX
 
 RenderDog::Matrix4x4			g_WorldMatrix;
 RenderDog::Matrix4x4			g_ViewMatrix;
@@ -97,10 +90,6 @@ void    OnMouseMove(WPARAM btnState, int x, int y);
 void    OnMouseWheelMove(WPARAM btnState);
 
 void CalculateFrameStats();
-
-#if DRAW_BOX
-void	CalculateTangents(const std::vector<Vertex>& RawVertices, const std::vector<uint32_t>& RawIndices, std::vector<Vertex>& OutputVertices, std::vector<uint32_t>& OutputIndices);
-#endif //DRAW_BOX
 
 HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow)
 {
@@ -211,96 +200,6 @@ bool InitDevice()
 		return false;
 	}
 
-#if DRAW_BOX
-	std::vector<Vertex> RawBoxVertices =
-	{
-		//Left Box
-		//TOP
-		{Vector3(-2.0f, 1.0f, -1.0f),	Vector3(1.0f, 1.0f, 1.0f),  Vector3(0, 1, 0), Vector4(0, 0, 0, 1),	Vector2(1.0f, 1.0f)},
-		{Vector3( 0.0f, 1.0f, -1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector3(0, 1, 0), Vector4(0, 0, 0, 1),	Vector2(0.0f, 1.0f)},
-		{Vector3( 2.0f, 1.0f, -1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector3(0, 1, 0), Vector4(0, 0, 0, 1),	Vector2(1.0f, 1.0f)},
-		{Vector3( 2.0f, 1.0f,  1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector3(0, 1, 0), Vector4(0, 0, 0, 1),	Vector2(1.0f, 0.0f)},
-		{Vector3( 0.0f, 1.0f,  1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector3(0, 1, 0), Vector4(0, 0, 0, 1),	Vector2(0.0f, 0.0f)},
-		{Vector3(-2.0f, 1.0f,  1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector3(0, 1, 0), Vector4(0, 0, 0, 1),	Vector2(1.0f, 0.0f)},
-
-		//BOTTOM
-		{Vector3(-2.0f, -1.0f, -1.0f),	Vector3(1.0f, 1.0f, 1.0f),  Vector3(0, -1, 0), Vector4(0, 0, 0, 1),	Vector2(1.0f, 1.0f)},
-		{Vector3(0.0f, -1.0f, -1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector3(0, -1, 0), Vector4(0, 0, 0, 1),	Vector2(0.0f, 1.0f)},
-		{Vector3(2.0f, -1.0f, -1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector3(0, -1, 0), Vector4(0, 0, 0, 1),	Vector2(1.0f, 1.0f)},
-		{Vector3(2.0f, -1.0f,  1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector3(0, -1, 0), Vector4(0, 0, 0, 1),	Vector2(1.0f, 0.0f)},
-		{Vector3(0.0f, -1.0f,  1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector3(0, -1, 0), Vector4(0, 0, 0, 1),	Vector2(0.0f, 0.0f)},
-		{Vector3(-2.0f, -1.0f,  1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector3(0, -1, 0), Vector4(0, 0, 0, 1),	Vector2(1.0f, 0.0f)},
-
-		//LEFT
-		{Vector3(-2.0f, -1.0f,  1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector3(-1, 0, 0), Vector4(0, 0, 0, 1),	Vector2(1.0f, 1.0f)},
-		{Vector3(-2.0f, -1.0f, -1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector3(-1, 0, 0), Vector4(0, 0, 0, 1),	Vector2(0.0f, 1.0f)},
-		{Vector3(-2.0f,  1.0f, -1.0f), 	Vector3(1.0f, 1.0f, 1.0f),	Vector3(-1, 0, 0), Vector4(0, 0, 0, 1),	Vector2(0.0f, 0.0f)},
-		{Vector3(-2.0f,  1.0f,  1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector3(-1, 0, 0), Vector4(0, 0, 0, 1),	Vector2(1.0f, 0.0f)},
-
-		//RIGHT
-		{Vector3(2.0f, -1.0f,  1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector3(1, 0, 0), Vector4(0, 0, 0, 1),	Vector2(1.0f, 1.0f)},
-		{Vector3(2.0f, -1.0f, -1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector3(1, 0, 0), Vector4(0, 0, 0, 1),	Vector2(0.0f, 1.0f)},
-		{Vector3(2.0f,  1.0f, -1.0f), 	Vector3(1.0f, 1.0f, 1.0f),	Vector3(1, 0, 0), Vector4(0, 0, 0, 1),	Vector2(0.0f, 0.0f)},
-		{Vector3(2.0f,  1.0f,  1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector3(1, 0, 0), Vector4(0, 0, 0, 1),	Vector2(1.0f, 0.0f)},
-
-		//FRONT
-		{Vector3(-2.0f, -1.0f, -1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector3(0, 0, -1), Vector4(0, 0, 0, 1),	Vector2(1.0f, 1.0f)},
-		{Vector3( 0.0f, -1.0f, -1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector3(0, 0, -1), Vector4(0, 0, 0, 1),	Vector2(0.0f, 1.0f)},
-		{Vector3( 2.0f, -1.0f, -1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector3(0, 0, -1), Vector4(0, 0, 0, 1),	Vector2(1.0f, 1.0f)},
-		{Vector3( 2.0f,  1.0f, -1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector3(0, 0, -1), Vector4(0, 0, 0, 1),	Vector2(1.0f, 0.0f)},
-		{Vector3( 0.0f,  1.0f, -1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector3(0, 0, -1), Vector4(0, 0, 0, 1),	Vector2(0.0f, 0.0f)},
-		{Vector3(-2.0f,  1.0f, -1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector3(0, 0, -1), Vector4(0, 0, 0, 1),	Vector2(1.0f, 0.0f)},
-
-		//BACK
-		{Vector3(-2.0f, -1.0f, 1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector3(0, 0, 1), Vector4(0, 0, 0, 1),	Vector2(1.0f, 1.0f)},
-		{Vector3( 0.0f, -1.0f, 1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector3(0, 0, 1), Vector4(0, 0, 0, 1),	Vector2(0.0f, 1.0f)},
-		{Vector3( 2.0f, -1.0f, 1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector3(0, 0, 1), Vector4(0, 0, 0, 1),	Vector2(1.0f, 1.0f)},
-		{Vector3( 2.0f,  1.0f, 1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector3(0, 0, 1), Vector4(0, 0, 0, 1),	Vector2(1.0f, 0.0f)},
-		{Vector3( 0.0f,  1.0f, 1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector3(0, 0, 1), Vector4(0, 0, 0, 1),	Vector2(0.0f, 0.0f)},
-		{Vector3(-2.0f,  1.0f, 1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector3(0, 0, 1), Vector4(0, 0, 0, 1),	Vector2(1.0f, 0.0f)},
-	};
-
-	std::vector<uint32_t> RawBoxIndices =
-	{
-		0, 5, 1, 1, 5, 4,
-		1, 4, 2, 2, 4, 3,
-		11, 6, 10, 10, 6, 7,
-		10, 7, 9, 9, 7, 8,
-		12, 15, 13, 13, 15, 14,
-		17, 18, 16, 16, 18, 19,
-		20, 25, 21, 21, 25, 24,
-		21, 24, 22, 22, 24, 23,
-		28, 29, 27, 27, 29, 30,
-		27, 30, 26, 26, 30, 31
-	};
-
-	std::vector<Vertex> BoxVertices;
-	std::vector<uint32_t> BoxIndices;
-
-	CalculateTangents(RawBoxVertices, RawBoxIndices, BoxVertices, BoxIndices);
-
-	RenderDog::BufferDesc vbDesc;
-	vbDesc.byteWidth = (uint32_t)BoxVertices.size() * sizeof(Vertex);
-	vbDesc.bindFlag = RenderDog::RD_BIND_FLAG::BIND_VERTEX_BUFFER;
-	RenderDog::SubResourceData initData;
-	initData.pSysMem = &BoxVertices[0];
-	initData.sysMemPitch = vbDesc.byteWidth;
-	if (!g_pDevice->CreateBuffer(&vbDesc, &initData, &g_pVertexBuffer))
-	{
-		return false;
-	}
-
-	RenderDog::BufferDesc ibDesc;
-	ibDesc.byteWidth = (uint32_t)BoxIndices.size() * sizeof(uint32_t);
-	ibDesc.bindFlag = RenderDog::RD_BIND_FLAG::BIND_INDEX_BUFFER;
-	initData.pSysMem = &BoxIndices[0];
-	initData.sysMemPitch = ibDesc.byteWidth;
-	if (!g_pDevice->CreateBuffer(&ibDesc, &initData, &g_pIndexBuffer))
-	{
-		return false;
-	}
-#endif //DRAW_BOX
-
 	RenderDog::BufferDesc cbDesc;
 	cbDesc.byteWidth = sizeof(ConstantBufferMVPMatrix);
 	cbDesc.bindFlag = RenderDog::RD_BIND_FLAG::BIND_CONSTANT_BUFFER;
@@ -321,11 +220,7 @@ bool InitDevice()
 	}
 
 	RenderDog::CameraDesc camDesc;
-#if DRAW_BOX
-	camDesc.vPosition = Vector3(0, 0, -5);
-#else
 	camDesc.position = Vector3(0, 25, -100);
-#endif //DRAW_BOX
 	camDesc.direction = Vector3(0, 0, 1);
 	camDesc.fov = 45.0f;
 	camDesc.aspectRitio = (float)g_WindowWidth / g_WindowHeight;
@@ -383,20 +278,6 @@ void CleanupDevice()
 		delete g_pStaticModel;
 		g_pStaticModel = nullptr;
 	}
-
-#if DRAW_BOX
-	if (g_pVertexBuffer)
-	{
-		g_pVertexBuffer->Release();
-		g_pVertexBuffer = nullptr;
-	}
-
-	if (g_pIndexBuffer)
-	{
-		g_pIndexBuffer->Release();
-		g_pIndexBuffer = nullptr;
-	}
-#endif //DRAW_BOX
 
 	if (g_pMVPMatrixConstantBuffer)
 	{
@@ -516,10 +397,6 @@ void Render()
 
 	g_pDeviceContext->ClearDepthStencilView(g_pDepthStencilView, 1.0f);
 
-#if DRAW_BOX
-	g_pDeviceContext->IASetVertexBuffer(g_pVertexBuffer);
-	g_pDeviceContext->IASetIndexBuffer(g_pIndexBuffer);
-#endif
 	g_pDeviceContext->IASetPrimitiveTopology(RenderDog::RD_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST);
 
 	g_pDeviceContext->VSSetShader(g_pVertexShader);
@@ -530,11 +407,7 @@ void Render()
 	//FIXME!!! 这里暂时将slot1固定设置为主光，不能修改
 	g_pDeviceContext->PSSetConstantBuffer(1, &g_pMainLightConstantBuffer);
 
-#if DRAW_BOX
-	g_pDeviceContext->DrawIndex(60);
-#else
 	g_pStaticModel->Draw(g_pDeviceContext);
-#endif
 
 	g_pSwapChain->Present();
 }
@@ -668,223 +541,6 @@ void OnMouseWheelMove(WPARAM btnState)
 {
 	return;
 }
-
-#if DRAW_BOX
-void CalculateTangents(const std::vector<Vertex>& RawVertices, const std::vector<uint32_t>& RawIndices, std::vector<Vertex>& OutputVertices, std::vector<uint32_t>& OutputIndices)
-{
-	OutputVertices.resize(RawVertices.size());
-	OutputIndices.resize(RawIndices.size());
-
-	std::vector<Vector3> vPositions(RawVertices.size(), Vector3());
-	std::vector<Vector3> vColors(RawVertices.size(), Vector3());
-	std::vector<Vector2> vTexcoords(RawVertices.size(), Vector2());
-	std::vector<Vector3> vTangents(RawVertices.size(), Vector3());
-	std::vector<Vector3> vBiTangents(RawVertices.size(), Vector3());
-	std::vector<Vector3> vNormals(RawVertices.size(), Vector3());
-	std::vector<float> vHandPartys(RawVertices.size(), 0.0f);
-
-	std::unordered_map<uint32_t, uint32_t> IndexMap; //用于拆点时做索引映射，key：旧索引，value：新索引
-
-	for (uint32_t i = 0; i < RawIndices.size(); i += 3)
-	{
-		uint32_t nIndex0 = RawIndices[i];
-		uint32_t nIndex1 = RawIndices[i + 1];
-		uint32_t nIndex2 = RawIndices[i + 2];
-
-		const Vertex& v0 = RawVertices[nIndex0];
-		const Vertex& v1 = RawVertices[nIndex1];
-		const Vertex& v2 = RawVertices[nIndex2];
-
-		const Vector3& vPos0 = v0.vPosition;
-		const Vector3& vPos1 = v1.vPosition;
-		const Vector3& vPos2 = v2.vPosition;
-
-		const Vector2& vTex0 = v0.vTexcoord;
-		const Vector2& vTex1 = v1.vTexcoord;
-		const Vector2& vTex2 = v2.vTexcoord;
-
-		float x1 = vPos1.x - vPos0.x;
-		float x2 = vPos2.x - vPos0.x;
-		float y1 = vPos1.y - vPos0.y;
-		float y2 = vPos2.y - vPos0.y;
-		float z1 = vPos1.z - vPos0.z;
-		float z2 = vPos2.z - vPos0.z;
-
-		float s1 = vTex1.x - vTex0.x;
-		float s2 = vTex2.x - vTex0.x;
-		float t1 = vTex1.y - vTex0.y;
-		float t2 = vTex2.y - vTex0.y;
-
-		float fInv = 1.0f / (s1 * t2 - s2 * t1);
-
-		float tx = fInv * (t2 * x1 - t1 * x2);
-		float ty = fInv * (t2 * y1 - t1 * y2);
-		float tz = fInv * (t2 * z1 - t1 * z2);
-
-		float bx = fInv * (s1 * x2 - s2 * x1);
-		float by = fInv * (s1 * y2 - s2 * y1);
-		float bz = fInv * (s1 * z2 - s2 * z1);
-
-		Vector3 vRawTangent = Vector3(tx, ty, tz);
-		Vector3 vRawBiTangent = Vector3(bx, by, bz);
-
-		const Vector3& vRawNormal0 = v0.vNormal;
-		const Vector3& vRawNormal1 = v1.vNormal;
-		const Vector3& vRawNormal2 = v2.vNormal;
-
-		float fRawHandParty0 = vHandPartys[nIndex0];
-		float fRawHandParty1 = vHandPartys[nIndex1];
-		float fRawHandParty2 = vHandPartys[nIndex2];
-
-		float fHandParty0 = DotProduct(CrossProduct(vRawTangent, vRawBiTangent), vRawNormal0) > 0.0f ? 1.0f : -1.0f;
-		float fHandParty1 = DotProduct(CrossProduct(vRawTangent, vRawBiTangent), vRawNormal1) > 0.0f ? 1.0f : -1.0f;
-		float fHandParty2 = DotProduct(CrossProduct(vRawTangent, vRawBiTangent), vRawNormal2) > 0.0f ? 1.0f : -1.0f;
-
-		if (fRawHandParty0 != 0 && fHandParty0 != fRawHandParty0)
-		{
-			if (IndexMap.find(nIndex0) != IndexMap.end())
-			{
-				//与已经拆分过的顶点合并
-				uint32_t nNewIndex = IndexMap[nIndex0];
-				vNormals[nNewIndex] = vRawNormal0;
-				vTangents[nNewIndex] += vRawTangent;
-				vBiTangents[nNewIndex] += vRawBiTangent;
-
-				OutputIndices[i] = nNewIndex;
-			}
-			else
-			{
-				//拆分新的顶点
-				vPositions.push_back(vPos0);
-				vColors.push_back(v0.vColor);
-				vTexcoords.push_back(vTex0);
-				vNormals.push_back(vRawNormal0);
-				vTangents.push_back(vRawTangent);
-				vBiTangents.push_back(vRawBiTangent);
-				vHandPartys.push_back(fHandParty0);
-
-				OutputIndices[i] = ((uint32_t)OutputVertices.size());
-				OutputVertices.push_back(Vertex());
-
-				IndexMap.insert({ nIndex0, OutputIndices[i] });
-			}
-		}
-		else
-		{
-			vPositions[nIndex0] = vPos0;
-			vColors[nIndex0] = v0.vColor;
-			vTexcoords[nIndex0] = vTex0;
-			vNormals[nIndex0] = vRawNormal0;
-			vTangents[nIndex0] += vRawTangent;
-			vBiTangents[nIndex0] += vRawBiTangent;
-			vHandPartys[nIndex0] = fHandParty0;
-
-			OutputIndices[i] = nIndex0;
-		}
-
-		if (fRawHandParty1 != 0 && fHandParty1 != fRawHandParty1)
-		{
-			if (IndexMap.find(nIndex1) != IndexMap.end())
-			{
-				//与已经拆分过的顶点合并
-				uint32_t nNewIndex = IndexMap[nIndex1];
-				vNormals[nNewIndex] = vRawNormal1;
-				vTangents[nNewIndex] += vRawTangent;
-				vBiTangents[nNewIndex] += vRawBiTangent;
-
-				OutputIndices[i + 1] = nNewIndex;
-			}
-			else
-			{
-				//拆分新的顶点
-				vPositions.push_back(vPos1);
-				vColors.push_back(v1.vColor);
-				vTexcoords.push_back(vTex1);
-				vNormals.push_back(vRawNormal1);
-				vTangents.push_back(vRawTangent);
-				vBiTangents.push_back(vRawBiTangent);
-				vHandPartys.push_back(fHandParty1);
-
-				OutputIndices[i + 1] = ((uint32_t)OutputVertices.size());
-				OutputVertices.push_back(Vertex());
-
-
-				IndexMap.insert({ nIndex1, OutputIndices[i + 1] });
-			}
-		}
-		else
-		{
-			vPositions[nIndex1] = vPos1;
-			vColors[nIndex1] = v1.vColor;
-			vTexcoords[nIndex1] = vTex1;
-			vNormals[nIndex1] = vRawNormal1;
-			vTangents[nIndex1] += vRawTangent;
-			vBiTangents[nIndex1] += vRawBiTangent;
-			vHandPartys[nIndex1] = fHandParty1;
-
-			OutputIndices[i + 1] = nIndex1;
-		}
-
-		if (fRawHandParty2 != 0 && fHandParty2 != fRawHandParty2)
-		{
-			if (IndexMap.find(nIndex2) != IndexMap.end())
-			{
-				//与已经拆分过的顶点合并
-				uint32_t nNewIndex = IndexMap[nIndex2];
-				vNormals[nNewIndex] = vRawNormal2;
-				vTangents[nNewIndex] += vRawTangent;
-				vBiTangents[nNewIndex] += vRawBiTangent;
-
-				OutputIndices[i + 2] = nNewIndex;
-			}
-			else
-			{
-				//拆分新的顶点
-				vPositions.push_back(vPos2);
-				vColors.push_back(v2.vColor);
-				vTexcoords.push_back(vTex2);
-				vNormals.push_back(vRawNormal2);
-				vTangents.push_back(vRawTangent);
-				vBiTangents.push_back(vRawBiTangent);
-				vHandPartys.push_back(fHandParty2);
-
-				OutputIndices[i + 2] = ((uint32_t)OutputVertices.size());
-				OutputVertices.push_back(Vertex());
-
-				IndexMap.insert({ nIndex2, OutputIndices[i + 2] });
-			}
-		}
-		else
-		{
-			vPositions[nIndex2] = vPos2;
-			vColors[nIndex2] = v2.vColor;
-			vTexcoords[nIndex2] = vTex2;
-			vNormals[nIndex2] = vRawNormal2;
-			vTangents[nIndex2] += vRawTangent;
-			vBiTangents[nIndex2] += vRawBiTangent;
-			vHandPartys[nIndex2] = fHandParty2;
-
-			OutputIndices[i + 2] = nIndex2;
-		}
-	}
-
-	for (uint32_t i = 0; i < OutputVertices.size(); ++i)
-	{
-		Vector3 vPos = vPositions[i];
-		Vector3 vColor = vColors[i];
-		Vector2 vTexcoord = vTexcoords[i];
-		float fHandParty = vHandPartys[i];
-		//Vector3 vTangent = Normalize(vTangents[i]);
-		//Vector3 vBiTangent = Normalize(vBiTangents[i]);
-		//Vector3 vNormal = CrossProduct(vTangent, vBiTangent) * fHandParty;
-		Vector3 vNormal = Normalize(vNormals[i]);
-		//Vector3 vTangent = Normalize((vTangents[i] - vNormal * DotProduct(vNormal, vTangents[i])));
-		Vector3 vTangent = Normalize(vTangents[i]);
-
-		OutputVertices[i] = { vPos, vColor, vNormal, Vector4(vTangent.x, vTangent.y, vTangent.z, fHandParty), vTexcoord };
-	}
-}
-#endif //DRAW_BOX
 
 void CalculateFrameStats()
 {
