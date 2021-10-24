@@ -2,9 +2,6 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/Bin/Demos/HelloWorld/Models/generator/generator_small.obj
-/Bin/Demos/HelloWorld/Textures/PolybumpTangent_DDN.tga
-/Bin/Demos/HelloWorld
 /Build/VS16.0/.vs/RenderDog/v16
 /Demos/HelloWorld/Build/VS16.0/HelloWorld.vcxproj.user
 /Doc/光栅化演示.pptx
@@ -13,3 +10,7 @@
 /Output
 /SoftwareRenderer/Build/VS16.0/SoftwareRenderer.vcxproj.user
 /Doc/mindmap
+/Bin/Demos/HelloWorld/assimp-vc142-mt.dll
+/Bin/Demos/HelloWorld/assimp-vc142-mtd.dll
+/Bin/Demos/HelloWorld/HelloWorld.exe
+/Bin/Demos/HelloWorld/HelloWorld_d.exe

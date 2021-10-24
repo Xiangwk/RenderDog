@@ -19,8 +19,6 @@
 #include <sstream>
 #include <unordered_map>
 
-#include <vld.h>
-
 using RenderDog::Vector2;
 using RenderDog::Vector3;
 using RenderDog::Vector4;
