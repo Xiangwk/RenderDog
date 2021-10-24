@@ -14,3 +14,5 @@
 /Bin/Demos/HelloWorld/assimp-vc142-mtd.dll
 /Bin/Demos/HelloWorld/HelloWorld.exe
 /Bin/Demos/HelloWorld/HelloWorld_d.exe
+/3rdSDK/Assimp/Build/VS16.0/assimp.vcxproj.user
+/3rdSDK/StbImage/Build/VS16.0/StbImage.vcxproj.user
