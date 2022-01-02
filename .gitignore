@@ -16,3 +16,10 @@
 /Bin/Demos/HelloWorld/HelloWorld_d.exe
 /3rdSDK/Assimp/Build/VS16.0/assimp.vcxproj.user
 /3rdSDK/StbImage/Build/VS16.0/StbImage.vcxproj.user
+*.exe
+*.idb
+*.lib
+*.pdb
+*.user
+/Demos/DirectX11Demo
+/RenderDog/Build/VS16.0/x64

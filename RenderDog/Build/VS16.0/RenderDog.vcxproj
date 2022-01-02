@@ -18,11 +18,23 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Math\Private\Matrix.cpp" />
+    <ClCompile Include="..\..\Math\Private\Transform.cpp" />
+    <ClCompile Include="..\..\Math\Private\Utility.cpp" />
+    <ClCompile Include="..\..\Math\Private\Vector.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Math\Public\Matrix.h" />
+    <ClInclude Include="..\..\Math\Public\Transform.h" />
+    <ClInclude Include="..\..\Math\Public\Utility.h" />
+    <ClInclude Include="..\..\Math\Public\Vector.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{efb94d11-25ff-45ed-98f2-2034b19c8179}</ProjectGuid>
-    <RootNamespace>HelloWorld</RootNamespace>
+    <ProjectGuid>{89ad7527-609c-420d-857a-75b104adc985}</ProjectGuid>
+    <RootNamespace>RenderDog</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -40,13 +52,13 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -78,14 +90,10 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\..\..\..\Output\Demos\$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>..\..\..\..\Intermediate\Libs\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)_d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\..\..\Output\Demos\$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>..\..\..\..\Intermediate\Libs\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -121,18 +129,19 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\..\..\EngineSDK\Renderer\Public\SoftwareRenderer;..\..\..\..\EngineSDK\RenderDog\Public\Math;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <AdditionalIncludeDirectories>..\..\Math\Public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SoftwareRenderer_d.lib;RenderDog_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\..\EngineSDK\Renderer\Libs;..\..\..\..\EngineSDK\RenderDog\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy $(TargetDir)*.exe ..\..\..\..\Bin\Demos\$(ProjectName)\ /i /s /y
-xcopy ..\..\..\..\EngineSDK\3rdSDK\Bin\*.* ..\..\..\..\Bin\Demos\$(ProjectName)\ /i /s /y</Command>
+      <Command>del /s /q /f ..\..\..\EngineSDK\RenderDog\Libs\*.*
+del /s /q /f ..\..\..\EngineSDK\RenderDog\Public\$(ProjectName)\*.*
+
+xcopy $(TargetDir)*.lib ..\..\..\EngineSDK\RenderDog\Libs\ /i /s /y
+xcopy ..\..\Public\*.* ..\..\..\EngineSDK\RenderDog\Public\$(ProjectName)\ /i /s /y
+xcopy ..\..\Math\Public\*.* ..\..\..\EngineSDK\RenderDog\Public\Math\ /i /s /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -143,24 +152,23 @@ xcopy ..\..\..\..\EngineSDK\3rdSDK\Bin\*.* ..\..\..\..\Bin\Demos\$(ProjectName)\
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\..\..\EngineSDK\Renderer\Public\SoftwareRenderer;..\..\..\..\EngineSDK\RenderDog\Public\Math;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <AdditionalIncludeDirectories>..\..\Math\Public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\..\..\EngineSDK\Renderer\Libs;..\..\..\..\EngineSDK\RenderDog\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SoftwareRenderer.lib;RenderDog.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy $(TargetDir)*.exe ..\..\..\..\Bin\Demos\$(ProjectName)\ /i /s /y</Command>
+      <Command>del /s /q /f ..\..\..\EngineSDK\RenderDog\Libs\*.*
+del /s /q /f ..\..\..\EngineSDK\RenderDog\Public\$(ProjectName)\*.*
+
+xcopy $(TargetDir)*.lib ..\..\..\EngineSDK\RenderDog\Libs\ /i /s /y
+xcopy ..\..\Public\*.* ..\..\..\EngineSDK\RenderDog\Public\$(ProjectName)\ /i /s /y
+xcopy ..\..\Math\Public\*.* ..\..\..\EngineSDK\RenderDog\Public\Math\ /i /s /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\Src\Game.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

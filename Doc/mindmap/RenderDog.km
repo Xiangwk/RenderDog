@@ -12,86 +12,12 @@
                     "created": 1620228324722,
                     "text": "SoftwareRenderer",
                     "layout_mind_offset": {
-                        "x": -11.166666501098234,
-                        "y": -423.33332624700364
+                        "x": 225.08332997850255,
+                        "y": -233.33332907822415
                     },
                     "layout": null
                 },
                 "children": [
-                    {
-                        "data": {
-                            "id": "cb5g5a09ojc0",
-                            "created": 1620231540094,
-                            "text": "Math",
-                            "layout_right_offset": {
-                                "x": 533.6666654083465,
-                                "y": -584.3333234654536
-                            },
-                            "layout": null,
-                            "note": "1. 功能随着需要增加即可\n\n2. 后面整理引擎架构的时候，将此功能拆分到Platform中；"
-                        },
-                        "children": [
-                            {
-                                "data": {
-                                    "id": "cb5g7r89omo0",
-                                    "created": 1620231734312,
-                                    "text": "Vector",
-                                    "progress": 6
-                                },
-                                "children": []
-                            },
-                            {
-                                "data": {
-                                    "id": "cb5g7ugtzf40",
-                                    "created": 1620231741360,
-                                    "text": "Matrix",
-                                    "progress": 6
-                                },
-                                "children": [
-                                    {
-                                        "data": {
-                                            "id": "cbekiju16ao0",
-                                            "created": 1621157904269,
-                                            "text": "矩阵乘法",
-                                            "priority": 4,
-                                            "note": "改用更为清晰的实现方式（使用向量相乘）"
-                                        },
-                                        "children": []
-                                    }
-                                ]
-                            },
-                            {
-                                "data": {
-                                    "id": "cb5g82m7uzc0",
-                                    "created": 1620231759100,
-                                    "text": "Quaternion",
-                                    "progress": 1
-                                },
-                                "children": []
-                            },
-                            {
-                                "data": {
-                                    "id": "cb5g7yqo01c0",
-                                    "created": 1620231750661,
-                                    "text": "Utility",
-                                    "progress": null,
-                                    "note": "随用随加；"
-                                },
-                                "children": []
-                            },
-                            {
-                                "data": {
-                                    "id": "ccbyb85je8w0",
-                                    "created": 1624548304403,
-                                    "text": "Coordinate",
-                                    "note": "规范渲染器的各个坐标系，并验证；",
-                                    "priority": null,
-                                    "progress": 9
-                                },
-                                "children": []
-                            }
-                        ]
-                    },
                     {
                         "data": {
                             "id": "cb5g6dhl3jk0",
@@ -594,8 +520,8 @@
                     "created": 1620228338491,
                     "text": "DX11Renderer",
                     "layout_mind_offset": {
-                        "x": 283.24999603256606,
-                        "y": -577.2499952875074
+                        "x": 263.24999633058917,
+                        "y": -679.7499937601384
                     },
                     "layout": null
                 },
@@ -606,8 +532,8 @@
                             "created": 1634742361117,
                             "text": "根据DirectXSample的例子学习基本接口",
                             "layout_right_offset": {
-                                "x": 96.24999856576324,
-                                "y": -88.74999867752234
+                                "x": 126.24999856576324,
+                                "y": -5.749998677522342
                             }
                         },
                         "children": []
@@ -618,35 +544,61 @@
                             "created": 1634743477516,
                             "text": "将DX11的接口封装为一个渲染器",
                             "layout_right_offset": {
-                                "x": 93.74999860301614,
-                                "y": -51.24999923631549
+                                "x": 149.74999860301614,
+                                "y": -20.24999923631549
                             }
                         },
-                        "children": []
-                    },
-                    {
-                        "data": {
-                            "id": "cf4c7o4ol940",
-                            "created": 1634743516928,
-                            "text": "将与渲染器无关的内容提出到Platform中",
-                            "layout_right_offset": {
-                                "x": 88.74999867752183,
-                                "y": -9.999999850988274
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "cgv7okvx9q80",
+                                    "created": 1641129013780,
+                                    "text": "接口",
+                                    "layout_right_offset": {
+                                        "x": 16,
+                                        "y": 0
+                                    }
+                                },
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cgv7sz6w3jc0",
+                                            "created": 1641129358374,
+                                            "text": "Init",
+                                            "layout_right_offset": {
+                                                "x": 50,
+                                                "y": -76
+                                            }
+                                        },
+                                        "children": []
+                                    },
+                                    {
+                                        "data": {
+                                            "id": "cgv7t2uxslk0",
+                                            "created": 1641129366359,
+                                            "text": "Release",
+                                            "layout_right_offset": {
+                                                "x": 38,
+                                                "y": -56
+                                            }
+                                        },
+                                        "children": []
+                                    },
+                                    {
+                                        "data": {
+                                            "id": "cgv7tap3qts0",
+                                            "created": 1641129383420,
+                                            "text": "Render",
+                                            "layout_right_offset": {
+                                                "x": 37,
+                                                "y": -34
+                                            }
+                                        },
+                                        "children": []
+                                    }
+                                ]
                             }
-                        },
-                        "children": []
-                    },
-                    {
-                        "data": {
-                            "id": "cf4c825gyvs0",
-                            "created": 1634743547451,
-                            "text": "添加一个GameFramework",
-                            "layout_right_offset": {
-                                "x": 118.74999823048711,
-                                "y": 46.249999310821295
-                            }
-                        },
-                        "children": []
+                        ]
                     }
                 ]
             },
@@ -656,8 +608,8 @@
                     "created": 1620228349978,
                     "text": "DX12Renderer",
                     "layout_mind_offset": {
-                        "x": 635.7499983049929,
-                        "y": 464.49999959021795
+                        "x": 293,
+                        "y": -496
                     },
                     "layout": null
                 },
@@ -669,12 +621,350 @@
                     "created": 1620228369751,
                     "text": "VulkanRenderer",
                     "layout_mind_offset": {
-                        "x": 625.2499985657632,
-                        "y": 682.7500006891786
+                        "x": 285,
+                        "y": -409
                     },
                     "layout": null
                 },
                 "children": []
+            },
+            {
+                "data": {
+                    "id": "cgv88n2hfi00",
+                    "created": 1641130585813,
+                    "text": "Timer",
+                    "layout_mind_offset": {
+                        "x": 772,
+                        "y": 627
+                    }
+                },
+                "children": []
+            },
+            {
+                "data": {
+                    "id": "cgv89i4dxwg0",
+                    "created": 1641130653409,
+                    "text": "Profiler",
+                    "layout_mind_offset": {
+                        "x": 876,
+                        "y": 711
+                    }
+                },
+                "children": [
+                    {
+                        "data": {
+                            "id": "cgv8a9c7t5s0",
+                            "created": 1641130712655,
+                            "text": "显示帧率",
+                            "layout_right_offset": {
+                                "x": 63,
+                                "y": -15
+                            }
+                        },
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "data": {
+                    "id": "cgv9vu6eqw80",
+                    "created": 1641135224774,
+                    "text": "RenderDog",
+                    "layout_mind_offset": {
+                        "x": 791,
+                        "y": 729
+                    }
+                },
+                "children": [
+                    {
+                        "data": {
+                            "id": "cgv7o85i1o00",
+                            "created": 1641128986061,
+                            "text": "Framework",
+                            "layout_mind_offset": {
+                                "x": 1358,
+                                "y": 1158
+                            },
+                            "layout_right_offset": {
+                                "x": 457.4999991431831,
+                                "y": 282.99999664723885
+                            }
+                        },
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "cgv7q203bxc0",
+                                    "created": 1641129129401,
+                                    "text": "Init",
+                                    "layout_right_offset": {
+                                        "x": 374.5000004842875,
+                                        "y": 34.49999914318323
+                                    }
+                                },
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cgv86trtrg00",
+                                            "created": 1641130443678,
+                                            "text": "负责创建并初始化App需要的对象",
+                                            "layout_right_offset": {
+                                                "x": 449,
+                                                "y": -1
+                                            }
+                                        },
+                                        "children": []
+                                    }
+                                ]
+                            },
+                            {
+                                "data": {
+                                    "id": "cgv7q4t9tbk0",
+                                    "created": 1641129135519,
+                                    "text": "Release",
+                                    "layout_right_offset": {
+                                        "x": 387.5000004842875,
+                                        "y": 28.49999914318323
+                                    }
+                                },
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cgv876cq1uo0",
+                                            "created": 1641130471063,
+                                            "text": "负责释放App初始化时创建的对象",
+                                            "layout_right_offset": {
+                                                "x": 461,
+                                                "y": -2
+                                            }
+                                        },
+                                        "children": []
+                                    }
+                                ]
+                            },
+                            {
+                                "data": {
+                                    "id": "cgv7r4ibfk00",
+                                    "created": 1641129213221,
+                                    "text": "Frame",
+                                    "layout_right_offset": {
+                                        "x": 382.5000004842875,
+                                        "y": 26.49999914318323
+                                    }
+                                },
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cgv87fuzrxk0",
+                                            "created": 1641130491759,
+                                            "text": "完成一帧中所需要完成的工作",
+                                            "layout_right_offset": {
+                                                "x": 410,
+                                                "y": -1
+                                            }
+                                        },
+                                        "children": []
+                                    }
+                                ]
+                            },
+                            {
+                                "data": {
+                                    "id": "cgv7s48lsxk0",
+                                    "created": 1641129290998,
+                                    "text": "MsgProc",
+                                    "layout_right_offset": {
+                                        "x": 394.5000004842875,
+                                        "y": 25.49999914318323
+                                    }
+                                },
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cgv87pdyrkw0",
+                                            "created": 1641130512497,
+                                            "text": "处理消息",
+                                            "layout_right_offset": {
+                                                "x": 355,
+                                                "y": -2
+                                            }
+                                        },
+                                        "children": []
+                                    }
+                                ]
+                            },
+                            {
+                                "data": {
+                                    "id": "cgv7w2h8ss80",
+                                    "created": 1641129600623,
+                                    "text": "OnResize",
+                                    "layout_right_offset": {
+                                        "x": 404.5000004842875,
+                                        "y": 32.49999914318323
+                                    }
+                                },
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cgv87ta7ej40",
+                                            "created": 1641130520977,
+                                            "text": "处理当App的窗口尺寸发生变化时需要做的工作",
+                                            "layout_right_offset": {
+                                                "x": 519,
+                                                "y": 0
+                                            }
+                                        },
+                                        "children": []
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "data": {
+                            "id": "cgv9xdpcupk0",
+                            "created": 1641135345642,
+                            "text": "Window",
+                            "layout_right_offset": {
+                                "x": 450.9999988824129,
+                                "y": 312.9999952316284
+                            }
+                        },
+                        "children": []
+                    },
+                    {
+                        "data": {
+                            "id": "cgv9ye6690o0",
+                            "created": 1641135425023,
+                            "text": "Math",
+                            "layout_right_offset": {
+                                "x": 376.499999962747,
+                                "y": -375.9999985843896
+                            }
+                        },
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "cb5g7r89omo0",
+                                    "created": 1620231734312,
+                                    "text": "Vector",
+                                    "progress": 6,
+                                    "layout_right_offset": {
+                                        "x": 371.2499944679439,
+                                        "y": -23.74999964609742
+                                    }
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "cbekiju16ao0",
+                                    "created": 1621157904269,
+                                    "text": "矩阵乘法",
+                                    "priority": 4,
+                                    "note": "改用更为清晰的实现方式（使用向量相乘）",
+                                    "layout_right_offset": {
+                                        "x": 382.49999430030584,
+                                        "y": -28.749999571591502
+                                    }
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "cb5g7ugtzf40",
+                                    "created": 1620231741360,
+                                    "text": "Matrix",
+                                    "progress": 6,
+                                    "layout_right_offset": {
+                                        "x": 386.2499942444265,
+                                        "y": -36.24999945983279
+                                    }
+                                },
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cbekiju16ao0",
+                                            "created": 1621157904269,
+                                            "text": "矩阵乘法",
+                                            "priority": 4,
+                                            "note": "改用更为清晰的实现方式（使用向量相乘）",
+                                            "layout_right_offset": {
+                                                "x": 303.7499954737725,
+                                                "y": -2.499999962747097
+                                            }
+                                        },
+                                        "children": []
+                                    }
+                                ]
+                            },
+                            {
+                                "data": {
+                                    "id": "cb5g82m7uzc0",
+                                    "created": 1620231759100,
+                                    "text": "Quaternion",
+                                    "progress": 1,
+                                    "layout_right_offset": {
+                                        "x": 393.74999413266755,
+                                        "y": -31.2499995343386
+                                    }
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "cb5g7yqo01c0",
+                                    "created": 1620231750661,
+                                    "text": "Utility",
+                                    "progress": null,
+                                    "note": "随用随加；",
+                                    "layout_right_offset": {
+                                        "x": 389.9999941885469,
+                                        "y": -21.249999683350325
+                                    }
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "ccbyb85je8w0",
+                                    "created": 1624548304403,
+                                    "text": "Coordinate",
+                                    "note": "规范渲染器的各个坐标系，并验证；",
+                                    "priority": null,
+                                    "progress": 9,
+                                    "layout_right_offset": {
+                                        "x": 417.499993778765,
+                                        "y": -27.49999959021818
+                                    }
+                                },
+                                "children": []
+                            }
+                        ]
+                    },
+                    {
+                        "data": {
+                            "id": "cgv9z2ama400",
+                            "created": 1641135477535,
+                            "text": "Camera",
+                            "layout_right_offset": {
+                                "x": 440.4999990686774,
+                                "y": 37.99999940395378
+                            }
+                        },
+                        "children": []
+                    },
+                    {
+                        "data": {
+                            "id": "cgv9z6smn1s0",
+                            "created": 1641135487331,
+                            "text": "StaticModel",
+                            "layout_right_offset": {
+                                "x": 453.9999990314245,
+                                "y": 144.9999987334013
+                            }
+                        },
+                        "children": []
+                    }
+                ]
             }
         ]
     },

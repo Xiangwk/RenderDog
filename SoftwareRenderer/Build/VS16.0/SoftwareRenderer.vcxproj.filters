@@ -5,15 +5,9 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="Public\Math">
-      <UniqueIdentifier>{3bb642e7-777f-4cce-9798-76469f52d9d9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Private">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Private\Math">
-      <UniqueIdentifier>{2af3f66f-3a73-4f38-85a3-e07f0e029113}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -22,18 +16,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Public\Vertex.h">
       <Filter>Public</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Math\Public\Matrix.h">
-      <Filter>Public\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Math\Public\Transform.h">
-      <Filter>Public\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Math\Public\Utility.h">
-      <Filter>Public\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Math\Public\Vector.h">
-      <Filter>Public\Math</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Public\ShaderResourceUtility.h">
       <Filter>Public</Filter>
@@ -55,18 +37,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\Math\Private\Matrix.cpp">
-      <Filter>Private\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Math\Private\Transform.cpp">
-      <Filter>Private\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Math\Private\Utility.cpp">
-      <Filter>Private\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Math\Private\Vector.cpp">
-      <Filter>Private\Math</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Private\RenderDog.cpp">
       <Filter>Private</Filter>
     </ClCompile>

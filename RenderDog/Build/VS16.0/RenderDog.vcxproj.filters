@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Math">
+      <UniqueIdentifier>{2571482e-0903-481e-ae58-670fef87dcbd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math\Public">
+      <UniqueIdentifier>{ab5e7c5b-1bf9-4a7c-b652-cc451889ffe1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math\Private">
+      <UniqueIdentifier>{af9bca78-3651-4edc-8432-5cf3ce8d9c31}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Math\Private\Matrix.cpp">
+      <Filter>Math\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Math\Private\Transform.cpp">
+      <Filter>Math\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Math\Private\Utility.cpp">
+      <Filter>Math\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Math\Private\Vector.cpp">
+      <Filter>Math\Private</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Math\Public\Matrix.h">
+      <Filter>Math\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Math\Public\Transform.h">
+      <Filter>Math\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Math\Public\Utility.h">
+      <Filter>Math\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Math\Public\Vector.h">
+      <Filter>Math\Public</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

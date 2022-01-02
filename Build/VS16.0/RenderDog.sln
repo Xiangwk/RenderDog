@@ -5,6 +5,7 @@ VisualStudioVersion = 16.0.31005.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SoftwareRenderer", "..\..\SoftwareRenderer\Build\VS16.0\SoftwareRenderer.vcxproj", "{3DF59058-DED5-4A65-A9E9-A8F90D56D61E}"
 	ProjectSection(ProjectDependencies) = postProject
+		{89AD7527-609C-420D-857A-75B104ADC985} = {89AD7527-609C-420D-857A-75B104ADC985}
 		{E1F07E48-2265-44D7-8E12-513D23AF5537} = {E1F07E48-2265-44D7-8E12-513D23AF5537}
 	EndProjectSection
 EndProject
@@ -20,6 +21,10 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StbImage", "..\..\3rdSDK\StbImage\Build\VS16.0\StbImage.vcxproj", "{E1F07E48-2265-44D7-8E12-513D23AF5537}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "assimp", "..\..\3rdSDK\Assimp\Build\VS16.0\assimp.vcxproj", "{775254E1-9C91-39B6-99C7-4E5C1701C121}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectX11Demo", "..\..\Demos\DirectX11Demo\Build\VS16.0\DirectX11Demo.vcxproj", "{ACF77FFC-9A69-47CD-A11D-C664BEA7D17A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RenderDog", "..\..\RenderDog\Build\VS16.0\RenderDog.vcxproj", "{89AD7527-609C-420D-857A-75B104ADC985}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,6 +64,22 @@ Global
 		{775254E1-9C91-39B6-99C7-4E5C1701C121}.Release|x64.ActiveCfg = Release|x64
 		{775254E1-9C91-39B6-99C7-4E5C1701C121}.Release|x64.Build.0 = Release|x64
 		{775254E1-9C91-39B6-99C7-4E5C1701C121}.Release|x86.ActiveCfg = Release|x64
+		{ACF77FFC-9A69-47CD-A11D-C664BEA7D17A}.Debug|x64.ActiveCfg = Debug|x64
+		{ACF77FFC-9A69-47CD-A11D-C664BEA7D17A}.Debug|x64.Build.0 = Debug|x64
+		{ACF77FFC-9A69-47CD-A11D-C664BEA7D17A}.Debug|x86.ActiveCfg = Debug|Win32
+		{ACF77FFC-9A69-47CD-A11D-C664BEA7D17A}.Debug|x86.Build.0 = Debug|Win32
+		{ACF77FFC-9A69-47CD-A11D-C664BEA7D17A}.Release|x64.ActiveCfg = Release|x64
+		{ACF77FFC-9A69-47CD-A11D-C664BEA7D17A}.Release|x64.Build.0 = Release|x64
+		{ACF77FFC-9A69-47CD-A11D-C664BEA7D17A}.Release|x86.ActiveCfg = Release|Win32
+		{ACF77FFC-9A69-47CD-A11D-C664BEA7D17A}.Release|x86.Build.0 = Release|Win32
+		{89AD7527-609C-420D-857A-75B104ADC985}.Debug|x64.ActiveCfg = Debug|x64
+		{89AD7527-609C-420D-857A-75B104ADC985}.Debug|x64.Build.0 = Debug|x64
+		{89AD7527-609C-420D-857A-75B104ADC985}.Debug|x86.ActiveCfg = Debug|Win32
+		{89AD7527-609C-420D-857A-75B104ADC985}.Debug|x86.Build.0 = Debug|Win32
+		{89AD7527-609C-420D-857A-75B104ADC985}.Release|x64.ActiveCfg = Release|x64
+		{89AD7527-609C-420D-857A-75B104ADC985}.Release|x64.Build.0 = Release|x64
+		{89AD7527-609C-420D-857A-75B104ADC985}.Release|x86.ActiveCfg = Release|Win32
+		{89AD7527-609C-420D-857A-75B104ADC985}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,6 +88,7 @@ Global
 		{EFB94D11-25FF-45ED-98F2-2034B19C8179} = {F912CF4E-74F6-4303-A7E4-45A3B67BB252}
 		{E1F07E48-2265-44D7-8E12-513D23AF5537} = {F86212ED-5261-440F-ABA5-57D28412DA9D}
 		{775254E1-9C91-39B6-99C7-4E5C1701C121} = {F86212ED-5261-440F-ABA5-57D28412DA9D}
+		{ACF77FFC-9A69-47CD-A11D-C664BEA7D17A} = {F912CF4E-74F6-4303-A7E4-45A3B67BB252}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F0D4812D-BB41-4D52-A8A3-B2C006F5E15E}
