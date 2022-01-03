@@ -686,8 +686,8 @@
                                 "y": 1158
                             },
                             "layout_right_offset": {
-                                "x": 457.4999991431831,
-                                "y": 282.99999664723885
+                                "x": 525.4999991431831,
+                                "y": 438.99999664723885
                             }
                         },
                         "children": [
@@ -758,33 +758,8 @@
                                             "created": 1641130491759,
                                             "text": "完成一帧中所需要完成的工作",
                                             "layout_right_offset": {
-                                                "x": 410,
+                                                "x": 450,
                                                 "y": -1
-                                            }
-                                        },
-                                        "children": []
-                                    }
-                                ]
-                            },
-                            {
-                                "data": {
-                                    "id": "cgv7s48lsxk0",
-                                    "created": 1641129290998,
-                                    "text": "MsgProc",
-                                    "layout_right_offset": {
-                                        "x": 394.5000004842875,
-                                        "y": 25.49999914318323
-                                    }
-                                },
-                                "children": [
-                                    {
-                                        "data": {
-                                            "id": "cgv87pdyrkw0",
-                                            "created": 1641130512497,
-                                            "text": "处理消息",
-                                            "layout_right_offset": {
-                                                "x": 355,
-                                                "y": -2
                                             }
                                         },
                                         "children": []
@@ -797,8 +772,8 @@
                                     "created": 1641129600623,
                                     "text": "OnResize",
                                     "layout_right_offset": {
-                                        "x": 404.5000004842875,
-                                        "y": 32.49999914318323
+                                        "x": 400.5000004842875,
+                                        "y": 27.49999914318323
                                     }
                                 },
                                 "children": [
@@ -812,7 +787,20 @@
                                                 "y": 0
                                             }
                                         },
-                                        "children": []
+                                        "children": [
+                                            {
+                                                "data": {
+                                                    "id": "cgvz9up85k00",
+                                                    "created": 1641206850757,
+                                                    "text": "重建资源",
+                                                    "layout_right_offset": {
+                                                        "x": 460,
+                                                        "y": 26
+                                                    }
+                                                },
+                                                "children": []
+                                            }
+                                        ]
                                     }
                                 ]
                             }
@@ -824,11 +812,72 @@
                             "created": 1641135345642,
                             "text": "Window",
                             "layout_right_offset": {
-                                "x": 450.9999988824129,
-                                "y": 312.9999952316284
+                                "x": 513.9999988824129,
+                                "y": 473.9999952316284
                             }
                         },
-                        "children": []
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "cgvv5e8guxk0",
+                                    "created": 1641195217019,
+                                    "text": "Init",
+                                    "layout_right_offset": {
+                                        "x": 340,
+                                        "y": 13
+                                    }
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "cgvv6u718lc0",
+                                    "created": 1641195330125,
+                                    "text": "Release",
+                                    "layout_right_offset": {
+                                        "x": 356,
+                                        "y": 11
+                                    }
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "cgvv6ylnnr40",
+                                    "created": 1641195339717,
+                                    "text": "GetHandle",
+                                    "layout_right_offset": {
+                                        "x": 365,
+                                        "y": 3
+                                    }
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "cgvxj39jsf40",
+                                    "created": 1641201932458,
+                                    "text": "GetWidth",
+                                    "layout_right_offset": {
+                                        "x": 364,
+                                        "y": -6
+                                    }
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "cgvxj6na2e80",
+                                    "created": 1641201939819,
+                                    "text": "GetHeight",
+                                    "layout_right_offset": {
+                                        "x": 369,
+                                        "y": -13
+                                    }
+                                },
+                                "children": []
+                            }
+                        ]
                     },
                     {
                         "data": {
@@ -836,8 +885,8 @@
                             "created": 1641135425023,
                             "text": "Math",
                             "layout_right_offset": {
-                                "x": 376.499999962747,
-                                "y": -375.9999985843896
+                                "x": 493.499999962747,
+                                "y": -371.9999985843896
                             }
                         },
                         "children": [
@@ -946,8 +995,8 @@
                             "created": 1641135477535,
                             "text": "Camera",
                             "layout_right_offset": {
-                                "x": 440.4999990686774,
-                                "y": 37.99999940395378
+                                "x": 515.4999990686774,
+                                "y": 162.99999940395378
                             }
                         },
                         "children": []
@@ -958,8 +1007,20 @@
                             "created": 1641135487331,
                             "text": "StaticModel",
                             "layout_right_offset": {
-                                "x": 453.9999990314245,
-                                "y": 144.9999987334013
+                                "x": 526.9999990314245,
+                                "y": 223.9999987334013
+                            }
+                        },
+                        "children": []
+                    },
+                    {
+                        "data": {
+                            "id": "cgvugqkub3s0",
+                            "created": 1641193284785,
+                            "text": "...",
+                            "layout_right_offset": {
+                                "x": 488,
+                                "y": 302
                             }
                         },
                         "children": []

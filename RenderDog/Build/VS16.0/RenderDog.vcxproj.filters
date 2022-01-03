@@ -10,6 +10,30 @@
     <Filter Include="Math\Private">
       <UniqueIdentifier>{af9bca78-3651-4edc-8432-5cf3ce8d9c31}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Framework">
+      <UniqueIdentifier>{e2a28d39-eef6-441d-b62b-5b1b9d4f12b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\Public">
+      <UniqueIdentifier>{1e2b90d4-0b58-4ebf-b7bd-e07a3b8a363b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\Private">
+      <UniqueIdentifier>{4fec8dc7-1fe2-4b44-a6eb-d170f3c50dbb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Window">
+      <UniqueIdentifier>{33a4470e-31a5-4971-b00f-b6bd06deae82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Window\Public">
+      <UniqueIdentifier>{d118d257-82d3-4741-83a3-8518974ec5bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Window\Private">
+      <UniqueIdentifier>{3845e8e4-44e8-48e9-acc2-7e13fb011072}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public">
+      <UniqueIdentifier>{0c70128f-9989-410c-9bcd-d7f422a80d31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private">
+      <UniqueIdentifier>{c7a8c27d-d6db-443c-b69e-f7e5b836b50f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Math\Private\Matrix.cpp">
@@ -24,6 +48,15 @@
     <ClCompile Include="..\..\Math\Private\Vector.cpp">
       <Filter>Math\Private</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Private\Framework.cpp">
+      <Filter>Framework\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Private\Window.cpp">
+      <Filter>Window\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Private\RenderDog.cpp">
+      <Filter>Private</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Math\Public\Matrix.h">
@@ -37,6 +70,15 @@
     </ClInclude>
     <ClInclude Include="..\..\Math\Public\Vector.h">
       <Filter>Math\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Public\Framework.h">
+      <Filter>Framework\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Public\Window.h">
+      <Filter>Window\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Public\RenderDog.h">
+      <Filter>Public</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

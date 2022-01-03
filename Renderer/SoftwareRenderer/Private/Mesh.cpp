@@ -246,4 +246,4 @@ namespace RenderDog
 			vert.tangent = Vector4(tangent, vert.tangent.w);
 		}
 	}
-}
+}// namespace RenderDog

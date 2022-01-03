@@ -43,4 +43,4 @@ namespace RenderDog
 	Matrix4x4	operator*(const Matrix4x4& matLHS, const Matrix4x4& matRHS);
 	Matrix4x4	GetIdentityMatrix();
 
-} // End namespace RenderDog
+}// namespace RenderDog
