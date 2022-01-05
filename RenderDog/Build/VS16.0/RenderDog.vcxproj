@@ -74,7 +74,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\Public;..\..\Math\Public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Public;..\..\Math\Public;..\..\..\Renderer\Public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -97,7 +97,7 @@ xcopy ..\..\Math\Public\*.* ..\..\..\EngineSDK\RenderDog\Public\Math\ /i /s /y</
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\Public;..\..\Math\Public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Public;..\..\Math\Public;..\..\..\Renderer\Public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -106,10 +106,7 @@ xcopy ..\..\Math\Public\*.* ..\..\..\EngineSDK\RenderDog\Public\Math\ /i /s /y</
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>del /s /q /f ..\..\..\EngineSDK\RenderDog\Libs\*.*
-del /s /q /f ..\..\..\EngineSDK\RenderDog\Public\$(ProjectName)\*.*
-
-xcopy $(TargetDir)*.lib ..\..\..\EngineSDK\RenderDog\Libs\ /i /s /y
+      <Command>xcopy $(TargetDir)*.lib ..\..\..\EngineSDK\RenderDog\Libs\ /i /s /y
 xcopy ..\..\Public\*.* ..\..\..\EngineSDK\RenderDog\Public\$(ProjectName)\ /i /s /y
 xcopy ..\..\Math\Public\*.* ..\..\..\EngineSDK\RenderDog\Public\Math\ /i /s /y</Command>
     </PostBuildEvent>

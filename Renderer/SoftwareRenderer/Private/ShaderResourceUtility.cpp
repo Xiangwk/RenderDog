@@ -1,6 +1,6 @@
 #include "ShaderResourceUtility.h"
 
-#include "RenderDog.h"
+#include "SoftwareRenderer.h"
 #include "Vector.h"
 
 #define STB_IMAGE_IMPLEMENTATION

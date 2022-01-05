@@ -5,7 +5,7 @@
 ///////////////////////////////////
 
 #include "Mesh.h"
-#include "RenderDog.h"
+#include "SoftwareRenderer.h"
 #include "Utility.h"
 
 namespace RenderDog

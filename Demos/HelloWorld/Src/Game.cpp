@@ -5,7 +5,7 @@
 //Written by Xiang Weikang
 ///////////////////////////////////
 
-#include "RenderDog.h"
+#include "SoftwareRenderer.h"
 #include "ShaderResourceUtility.h"
 #include "Vertex.h"
 #include "Transform.h"
@@ -100,9 +100,9 @@ HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow)
 	wcex.cbWndExtra = 0;
 	wcex.hInstance = hInstance;
 	wcex.hIcon = nullptr;
-	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
+	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
 	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-	wcex.lpszMenuName = NULL;
+	wcex.lpszMenuName = nullptr;
 	wcex.lpszClassName = L"GameWindowClass";
 	wcex.hIconSm = nullptr;
 	if (!RegisterClassEx(&wcex))
@@ -114,8 +114,8 @@ HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow)
 	AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 	g_WndHandle = CreateWindow(L"GameWindowClass", L"Hello World",
 		WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, CW_USEDEFAULT, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, hInstance,
-		NULL);
+		CW_USEDEFAULT, CW_USEDEFAULT, rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInstance,
+		nullptr);
 	if (!g_WndHandle)
 	{
 		return E_FAIL;
@@ -482,7 +482,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	MSG msg = { 0 };
 	while (WM_QUIT != msg.message)
 	{
-		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);

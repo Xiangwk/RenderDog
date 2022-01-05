@@ -6,6 +6,7 @@
 ///////////////////////////////////
 
 #include "Framework.h"
+#include "Renderer.h"
 
 namespace RenderDog
 {
@@ -40,11 +41,14 @@ namespace RenderDog
 
 	void Framework::Frame()
 	{
+		g_pIRenderer->Render();
+
 		return;
 	}
 
 	void Framework::OnResize()
 	{
+
 		return;
 	}
 

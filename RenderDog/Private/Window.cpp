@@ -31,7 +31,7 @@ namespace RenderDog
 		HWND			m_hWnd;
 		uint32_t		m_Width;
 		uint32_t		m_Height;
-		std::string		m_Caption;
+		std::wstring	m_Caption;
 
 	};
 
@@ -45,7 +45,7 @@ namespace RenderDog
 		m_hWnd(0),
 		m_Width(0),
 		m_Height(0),
-		m_Caption("")
+		m_Caption(L"")
 	{}
 
 	AppWindow::~AppWindow()
@@ -90,14 +90,14 @@ namespace RenderDog
 		wndClass.cbWndExtra = 0;
 		wndClass.hInstance = desc.hAppInstance;
 		wndClass.hIcon = LoadIcon(0, IDI_APPLICATION);
-		wndClass.hCursor = LoadCursor(NULL, IDC_ARROW);
+		wndClass.hCursor = LoadCursor(nullptr, IDC_ARROW);
 		wndClass.hbrBackground = (HBRUSH)GetStockObject(GRAY_BRUSH);
-		wndClass.lpszMenuName = NULL;
+		wndClass.lpszMenuName = nullptr;
 		wndClass.lpszClassName = desc.className.c_str();
 		wndClass.hIconSm = LoadIcon(0, IDI_APPLICATION);
 		if (!RegisterClassEx(&wndClass))
 		{
-			MessageBox(NULL, L"Failed to register WindowClass!", L"ERROR", MB_OK);
+			MessageBox(nullptr, L"Failed to register WindowClass!", L"ERROR", MB_OK);
 			return false;
 		}
 		else
@@ -115,7 +115,7 @@ namespace RenderDog
 		WndRect.bottom = desc.height - 1;
 		if (!AdjustWindowRect(&WndRect, WS_OVERLAPPEDWINDOW, false))
 		{
-			MessageBox(NULL, L"Failed to adjust window rectangle!", L"ERROR", MB_OK);
+			MessageBox(nullptr, L"Failed to adjust window rectangle!", L"ERROR", MB_OK);
 			return false;
 		}
 		int width = WndRect.right - WndRect.left;
@@ -126,18 +126,19 @@ namespace RenderDog
 			WS_OVERLAPPEDWINDOW,
 			CW_USEDEFAULT, CW_USEDEFAULT,
 			width, height,
-			NULL, NULL,
+			nullptr, nullptr,
 			desc.hAppInstance,
-			NULL);
+			nullptr);
 
 		if (!m_hWnd)
 		{
-			MessageBox(NULL, L"CreateWindow Failed.", L"ERROR", MB_OK);
+			MessageBox(nullptr, L"CreateWindow Failed.", L"ERROR", MB_OK);
 			return false;
 		}
 
 		m_Width = desc.width;
 		m_Height = desc.height;
+		m_Caption = desc.caption;
 
 		return true;
 	}

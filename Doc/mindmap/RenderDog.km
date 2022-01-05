@@ -566,8 +566,8 @@
                                             "created": 1641129358374,
                                             "text": "Init",
                                             "layout_right_offset": {
-                                                "x": 50,
-                                                "y": -76
+                                                "x": 48,
+                                                "y": -43
                                             }
                                         },
                                         "children": []
@@ -578,8 +578,8 @@
                                             "created": 1641129366359,
                                             "text": "Release",
                                             "layout_right_offset": {
-                                                "x": 38,
-                                                "y": -56
+                                                "x": 37,
+                                                "y": -43
                                             }
                                         },
                                         "children": []
@@ -590,8 +590,20 @@
                                             "created": 1641129383420,
                                             "text": "Render",
                                             "layout_right_offset": {
-                                                "x": 37,
-                                                "y": -34
+                                                "x": 39,
+                                                "y": -33
+                                            }
+                                        },
+                                        "children": []
+                                    },
+                                    {
+                                        "data": {
+                                            "id": "cgwxwazytn40",
+                                            "created": 1641304527984,
+                                            "text": "RegisterPrimitive",
+                                            "layout_right_offset": {
+                                                "x": 30,
+                                                "y": -2
                                             }
                                         },
                                         "children": []

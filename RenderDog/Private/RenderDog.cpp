@@ -5,6 +5,7 @@
 ///////////////////////////////////////////
 
 #include "RenderDog.h"
+#include "Renderer.h"
 
 namespace RenderDog
 {
@@ -33,6 +34,15 @@ namespace RenderDog
 			return false;
 		}
 
+		RendererInitDesc rendererDesc;
+		rendererDesc.hWnd = g_pIWindow->GetHandle();
+		rendererDesc.backBufferWidth = g_pIWindow->GetWidth();
+		rendererDesc.backBufferHeight = g_pIWindow->GetHeight();
+		if (!g_pIRenderer->Init(rendererDesc))
+		{
+			return false;
+		}
+
 		return true;
 	}
 
@@ -41,6 +51,8 @@ namespace RenderDog
 		g_pIFramework->Release();
 
 		g_pIWindow->Release();
+
+		g_pIRenderer->Release();
 	}
 
 	//---------------------------------------------------------------------------

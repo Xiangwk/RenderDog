@@ -43,14 +43,14 @@ int ModelViewer::Run()
 	MSG Msg = { 0 };
 	while (Msg.message != WM_QUIT)
 	{
-		if (PeekMessage(&Msg, NULL, 0, 0, PM_REMOVE))
+		if (PeekMessage(&Msg, nullptr, 0, 0, PM_REMOVE))
 		{
 			TranslateMessage(&Msg);
 			DispatchMessage(&Msg);
 		}
 		else
 		{
-			
+			RenderDog::g_pIFramework->Frame();
 		}
 	}
 

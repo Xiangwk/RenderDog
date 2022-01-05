@@ -11,7 +11,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Public\RenderDog.h">
+    <ClInclude Include="..\..\Public\SoftwareRenderer.h">
       <Filter>Public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Public\Vertex.h">
@@ -37,7 +37,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Private\RenderDog.cpp">
+    <ClCompile Include="..\..\Private\SoftwareRenderer.cpp">
       <Filter>Private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Private\ShaderResourceUtility.cpp">
