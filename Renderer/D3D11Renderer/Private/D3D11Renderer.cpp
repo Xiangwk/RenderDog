@@ -190,6 +190,11 @@ namespace RenderDog
 
 	bool D3D11Renderer::OnResize(uint32_t width, uint32_t height)
 	{
+		if (!m_pD3DDevice)
+		{
+			return false;
+		}
+
 		if (m_pRenderTargetView)
 		{
 			m_pRenderTargetView->Release();

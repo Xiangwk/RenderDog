@@ -20,7 +20,7 @@ namespace RenderDog
 		virtual void Release();
 
 		virtual void Frame();
-		virtual void OnResize();
+		virtual void OnResize(uint32_t width, uint32_t height);
 	};
 
 	Framework g_Framework;
@@ -46,8 +46,9 @@ namespace RenderDog
 		return;
 	}
 
-	void Framework::OnResize()
+	void Framework::OnResize(uint32_t width, uint32_t height)
 	{
+		g_pIRenderer->OnResize(width, height);
 
 		return;
 	}

@@ -23,6 +23,9 @@ namespace RenderDog
 		virtual uint32_t GetWidth() const { return m_Width; }
 		virtual uint32_t GetHeight() const { return m_Height; }
 
+		virtual void SetWidth(uint32_t width) { m_Width = width; }
+		virtual void SetHeight(uint32_t height) { m_Height = height; }
+
 	private:
 		bool RegisterWindowClass(const WindowDesc& desc);
 		bool CreateAppWindow(const WindowDesc& desc);

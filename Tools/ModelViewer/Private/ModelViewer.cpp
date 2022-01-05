@@ -75,6 +75,14 @@ LRESULT ModelViewer::MessageProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
 	//当窗口改变大小时发送该消息
 	case WM_SIZE:
 	{
+		uint32_t newWidth = LOWORD(lParam);
+		uint32_t newHeight = HIWORD(lParam);
+
+		RenderDog::g_pIWindow->SetWidth(newWidth);
+		RenderDog::g_pIWindow->SetHeight(newHeight);
+
+		RenderDog::g_pIFramework->OnResize(newWidth, newHeight);
+
 		break;
 	}
 	case WM_ENTERSIZEMOVE:
