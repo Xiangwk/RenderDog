@@ -160,7 +160,6 @@ xcopy ..\..\Public\*.* ..\..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i 
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Public\D3D11Buffer.h" />
     <ClInclude Include="..\..\Public\D3D11PrimitiveRenderer.h" />
     <ClInclude Include="..\..\Public\D3D11Renderer.h" />
   </ItemGroup>
