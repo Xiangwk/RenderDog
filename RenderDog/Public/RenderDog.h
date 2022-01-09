@@ -19,7 +19,6 @@ namespace RenderDog
 	class IRenderDog
 	{
 	public:
-		IRenderDog() = default;
 		virtual ~IRenderDog() = default;
 
 		virtual bool Init(const InitDesc& desc) = 0;

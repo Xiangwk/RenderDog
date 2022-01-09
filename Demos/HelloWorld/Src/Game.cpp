@@ -7,7 +7,6 @@
 
 #include "SoftwareRenderer.h"
 #include "ShaderResourceUtility.h"
-#include "Vertex.h"
 #include "Transform.h"
 #include "Camera.h"
 #include "Model.h"
@@ -22,7 +21,6 @@
 using RenderDog::Vector2;
 using RenderDog::Vector3;
 using RenderDog::Vector4;
-using RenderDog::Vertex;
 
 HINSTANCE						g_hInst = nullptr;
 HWND							g_WndHandle = nullptr;

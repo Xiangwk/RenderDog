@@ -15,16 +15,16 @@ namespace RenderDog
 		AppWindow();
 		virtual ~AppWindow();
 
-		virtual bool Init(const WindowDesc& desc);
-		virtual void Release();
+		virtual bool Init(const WindowDesc& desc) override;
+		virtual void Release() override;
 
-		virtual HWND GetHandle() const { return m_hWnd; }
+		virtual HWND GetHandle() const override { return m_hWnd; }
 
-		virtual uint32_t GetWidth() const { return m_Width; }
-		virtual uint32_t GetHeight() const { return m_Height; }
+		virtual uint32_t GetWidth() const override { return m_Width; }
+		virtual uint32_t GetHeight() const override { return m_Height; }
 
-		virtual void SetWidth(uint32_t width) { m_Width = width; }
-		virtual void SetHeight(uint32_t height) { m_Height = height; }
+		virtual void SetWidth(uint32_t width) override { m_Width = width; }
+		virtual void SetHeight(uint32_t height) override { m_Height = height; }
 
 	private:
 		bool RegisterWindowClass(const WindowDesc& desc);

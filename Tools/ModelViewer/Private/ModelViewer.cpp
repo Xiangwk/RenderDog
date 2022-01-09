@@ -5,12 +5,15 @@
 ///////////////////////////////////////////
 
 #include "ModelViewer.h"
+#include "GeometryGenerator.h"
 
 ModelViewer g_ModelViewer;
 ModelViewer* g_pModelViewer = &g_ModelViewer;
 
 ModelViewer::ModelViewer() :
-	m_pRenderDog(nullptr)
+	m_pRenderDog(nullptr),
+	m_pScene(nullptr),
+	m_pModel(nullptr)
 {}
 
 ModelViewer::~ModelViewer()
@@ -28,11 +31,34 @@ bool ModelViewer::Init(const RenderDog::InitDesc& desc)
 		return false;
 	}
 
+	RenderDog::SceneInitDesc sceneDesc;
+	sceneDesc.name = L"MainScene";
+	m_pScene = RenderDog::g_pISceneManager->CreateScene(sceneDesc);
+	if (!m_pScene)
+	{
+		MessageBox(nullptr, L"Create Scene Failed!", L"ERROR", MB_OK);
+		return false;
+	}
+
+	GeometryGenerator::LocalMeshData boxMeshData;
+	g_pGeometryGenerator->GenerateBox(1, 1, 1, boxMeshData);
+
+	m_pModel = new RenderDog::StaticModel();
+	m_pModel->LoadFromData(boxMeshData.vertices, boxMeshData.indices);
+
 	return true;
 }
 
 void ModelViewer::Release()
 {
+	if (m_pModel)
+	{
+		delete m_pModel;
+		m_pModel = nullptr;
+	}
+
+	m_pScene->Release();
+
 	m_pRenderDog->Release();
 
 	RenderDog::DestoryRenderDog(&m_pRenderDog);
@@ -50,6 +76,10 @@ int ModelViewer::Run()
 		}
 		else
 		{
+			m_pModel->RegisterToScene(m_pScene);
+
+			RenderDog::g_pIFramework->RegisterScene(m_pScene);
+
 			RenderDog::g_pIFramework->Frame();
 		}
 	}

@@ -30,7 +30,7 @@ namespace RenderDog
 		}
 	}
 
-	StaticMesh::StaticMesh(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices):
+	StaticMesh::StaticMesh(const std::vector<LocalVertex>& vertices, const std::vector<uint32_t>& indices):
 		m_pVB(nullptr),
 		m_pIB(nullptr)
 	{
@@ -51,7 +51,7 @@ namespace RenderDog
 	bool StaticMesh::Init(IDevice* pDevice)
 	{
 		BufferDesc vbDesc;
-		vbDesc.byteWidth = (uint32_t)m_Vertices.size() * sizeof(Vertex);
+		vbDesc.byteWidth = (uint32_t)m_Vertices.size() * sizeof(LocalVertex);
 		vbDesc.bindFlag = RD_BIND_FLAG::BIND_VERTEX_BUFFER;
 		SubResourceData initVBData;
 		initVBData.pSysMem = &m_Vertices[0];
@@ -101,7 +101,7 @@ namespace RenderDog
 	void StaticMesh::CalculateTangents()
 	{
 		//1. 按索引拆分顶点
-		std::vector<Vertex> tempVertices;
+		std::vector<LocalVertex> tempVertices;
 		tempVertices.reserve(m_RawIndices.size());
 
 		for (uint32_t i = 0; i < m_RawIndices.size(); ++i)
@@ -112,9 +112,9 @@ namespace RenderDog
 		//2. 按三角形计算TBN
 		for (uint32_t i = 0; i < tempVertices.size(); i += 3)
 		{
-			Vertex& v0 = tempVertices[i];
-			Vertex& v1 = tempVertices[i + 1];
-			Vertex& v2 = tempVertices[i + 2];
+			LocalVertex& v0 = tempVertices[i];
+			LocalVertex& v1 = tempVertices[i + 1];
+			LocalVertex& v2 = tempVertices[i + 2];
 
 			const Vector3& pos0 = v0.position;
 			const Vector3& pos1 = v1.position;
@@ -193,14 +193,14 @@ namespace RenderDog
 
 		for (uint32_t i = 3; i < tempVertices.size(); ++i)
 		{
-			Vertex& rawVert = tempVertices[i];
+			LocalVertex& rawVert = tempVertices[i];
 			Vector3 weightedAverNormal = rawVert.normal;
 
 			bool bHasSameVertex = false;
 			uint32_t theSameIndex = 0;
 			for (uint32_t j = 0; j < (uint32_t)m_Vertices.size(); ++j)
 			{
-				Vertex& vert = m_Vertices[j];
+				LocalVertex& vert = m_Vertices[j];
 				//TEMP!!! 暂时没有光滑组信息，临时增加一个夹角大于45度则不做法线的加权平均的条件
 				if (rawVert.position == vert.position && 
 					rawVert.texcoord == vert.texcoord && 
@@ -239,7 +239,7 @@ namespace RenderDog
 		//4. 将所有顶点的T和N规范正交化
 		for (uint32_t i = 0; i < m_Vertices.size(); ++i)
 		{
-			Vertex& vert = m_Vertices[i];
+			LocalVertex& vert = m_Vertices[i];
 			vert.normal.Normalize();
 			Vector3 tangent = Vector3(vert.tangent.x, vert.tangent.y, vert.tangent.z);
 			tangent = Normalize(tangent - vert.normal * DotProduct(vert.normal, tangent));

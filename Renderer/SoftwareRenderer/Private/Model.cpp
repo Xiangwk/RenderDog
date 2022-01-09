@@ -54,7 +54,7 @@ namespace RenderDog
 
 	StaticMesh StaticModel::ProcessMesh(const aiMesh* pAssimpMesh, const aiScene* pAssimpScene)
 	{
-		std::vector<Vertex> tempVertices;
+		std::vector<LocalVertex> tempVertices;
 		std::vector<uint32_t> tempIndices;
 
 		for (unsigned int i = 0; i < pAssimpMesh->mNumVertices; ++i)
@@ -64,7 +64,7 @@ namespace RenderDog
 			Vector3 normal = Vector3(pAssimpMesh->mNormals[i].x, pAssimpMesh->mNormals[i].y, pAssimpMesh->mNormals[i].z);
 			Vector2 texCoord = Vector2(pAssimpMesh->mTextureCoords[0][i].x, pAssimpMesh->mTextureCoords[0][i].y);
 
-			Vertex vert = { Vector3(position.x, position.y, position.z), Vector3(1.0f, 1.0f, 1.0f), Vector3(normal.x, normal.y, normal.z), Vector4(0.0f, 0.0f, 0.0f, 0.0f), Vector2(texCoord.x, texCoord.y) };
+			LocalVertex vert = { Vector3(position.x, position.y, position.z), Vector3(1.0f, 1.0f, 1.0f), Vector3(normal.x, normal.y, normal.z), Vector4(0.0f, 0.0f, 0.0f, 0.0f), Vector2(texCoord.x, texCoord.y) };
 
 			tempVertices.push_back(vert);
 		}

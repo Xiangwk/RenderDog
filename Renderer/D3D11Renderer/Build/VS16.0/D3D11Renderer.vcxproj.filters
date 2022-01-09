@@ -12,6 +12,12 @@
     <ClInclude Include="..\..\Public\D3D11Renderer.h">
       <Filter>Public</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Public\D3D11PrimitiveRenderer.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Public\D3D11Buffer.h">
+      <Filter>Public</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Private\D3D11Renderer.cpp">

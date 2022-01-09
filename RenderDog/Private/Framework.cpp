@@ -7,6 +7,9 @@
 
 #include "Framework.h"
 #include "Renderer.h"
+#include "Scene.h"
+
+#include <vector>
 
 namespace RenderDog
 {
@@ -16,11 +19,16 @@ namespace RenderDog
 		Framework() = default;
 		virtual ~Framework() = default;
 
-		virtual bool Init();
-		virtual void Release();
+		virtual bool Init() override;
+		virtual void Release() override;
 
-		virtual void Frame();
-		virtual void OnResize(uint32_t width, uint32_t height);
+		virtual void Frame() override;
+		virtual void OnResize(uint32_t width, uint32_t height) override;
+
+		virtual void RegisterScene(IScene* pScene) override;
+
+	private:
+		std::vector<IScene*>	m_pScenes;
 	};
 
 	Framework g_Framework;
@@ -41,7 +49,10 @@ namespace RenderDog
 
 	void Framework::Frame()
 	{
-		g_pIRenderer->Render();
+		for (uint32_t i = 0; i < m_pScenes.size(); ++i)
+		{
+			g_pIRenderer->Render(m_pScenes[i]);
+		}
 
 		return;
 	}
@@ -51,6 +62,11 @@ namespace RenderDog
 		g_pIRenderer->OnResize(width, height);
 
 		return;
+	}
+
+	void Framework::RegisterScene(IScene* pScene)
+	{
+		m_pScenes.push_back(pScene);
 	}
 
 }// namespace RenderDog

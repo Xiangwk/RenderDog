@@ -26,7 +26,6 @@ namespace RenderDog
 	class IWindow
 	{
 	public:
-		IWindow() = default;
 		virtual ~IWindow() = default;
 
 		virtual bool Init(const WindowDesc& desc) = 0;

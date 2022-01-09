@@ -5,21 +5,46 @@
 ////////////////////////////////////////
 
 #include "D3D11Renderer.h"
+#include "D3D11PrimitiveRenderer.h"
+#include "Scene.h"
+#include "SceneView.h"
 
 namespace RenderDog
 {
+	class D3D11MeshRenderer : public ID3D11PrimitiveRenderer
+	{
+	public:
+		D3D11MeshRenderer() = default;
+		virtual ~D3D11MeshRenderer() = default;
+
+		virtual void Render(const PrimitiveRenderParam& renderParam) override;
+	};
+
+	void D3D11MeshRenderer::Render(const PrimitiveRenderParam& renderParam)
+	{
+
+	}
+
+
 	class D3D11Renderer : public ID3D11Renderer
 	{
 	public:
 		D3D11Renderer();
 		virtual ~D3D11Renderer();
 
-		virtual bool Init(const RendererInitDesc& desc);
-		virtual void Release();
+		virtual bool Init(const RendererInitDesc& desc) override;
+		virtual void Release() override;
 
-		virtual void Render();
+		virtual void Render(IScene* pScene) override;
 
 		virtual bool OnResize(uint32_t width, uint32_t height);
+
+	private:
+		void ClearBackRenderTarget(float* clearColor);
+
+		void AddPrimitivesToSceneView(IScene* pScene);
+
+		void RenderPrimitives();
 
 	private:
 		ID3D11Device*				m_pD3DDevice;
@@ -30,11 +55,16 @@ namespace RenderDog
 		ID3D11RenderTargetView*		m_pRenderTargetView;
 		ID3D11DepthStencilView*		m_pDepthStencilView;
 		D3D11_VIEWPORT				m_ScreenViewport;
+
+		SceneView*					m_pSceneView;
 	};
 
 	D3D11Renderer g_D3D11Renderer;
 	IRenderer* g_pIRenderer = &g_D3D11Renderer;
 
+	//------------------------------------------------------------------------
+	//   Public Function
+	//------------------------------------------------------------------------
 	D3D11Renderer::D3D11Renderer() :
 		m_pD3DDevice(nullptr),
 		m_pD3DImmediateContext(nullptr),
@@ -42,7 +72,8 @@ namespace RenderDog
 		m_pDepthStencilTexture(nullptr),
 		m_pRenderTargetView(nullptr),
 		m_pDepthStencilView(nullptr),
-		m_ScreenViewport()
+		m_ScreenViewport(),
+		m_pSceneView(nullptr)
 	{}
 
 	D3D11Renderer::~D3D11Renderer()
@@ -124,11 +155,19 @@ namespace RenderDog
 			return false;
 		}
 
+		m_pSceneView = new SceneView();
+
 		return true;
 	}
 
 	void D3D11Renderer::Release()
 	{
+		if (m_pSceneView)
+		{
+			delete m_pSceneView;
+			m_pSceneView = nullptr;
+		}
+
 		if (m_pRenderTargetView)
 		{
 			m_pRenderTargetView->Release();
@@ -177,13 +216,14 @@ namespace RenderDog
 		}
 	}
 
-	void D3D11Renderer::Render()
+	void D3D11Renderer::Render(IScene* pScene)
 	{
-		float clearColor[4] = { 1.0f, 0.3f, 0.3f, 1.0f };
-		m_pD3DImmediateContext->ClearRenderTargetView(m_pRenderTargetView, clearColor);
-		m_pD3DImmediateContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+		float clearColor[4] = { 0.3f, 0.3f, 0.3f, 1.0f };
+		ClearBackRenderTarget(clearColor);
 
-		m_pD3DImmediateContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
+		AddPrimitivesToSceneView(pScene);
+
+		RenderPrimitives();
 
 		m_pSwapChain->Present(0, 0);
 	}
@@ -256,4 +296,40 @@ namespace RenderDog
 
 		return true;
 	}
-}
+
+	//------------------------------------------------------------------------
+	//   Private Function
+	//------------------------------------------------------------------------
+	void D3D11Renderer::ClearBackRenderTarget(float* clearColor)
+	{
+		m_pD3DImmediateContext->ClearRenderTargetView(m_pRenderTargetView, clearColor);
+		m_pD3DImmediateContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+		m_pD3DImmediateContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
+	}
+
+	void D3D11Renderer::AddPrimitivesToSceneView(IScene* pScene)
+	{
+		uint32_t priNum = pScene->GetPrimitivesNum();
+		for (uint32_t i = 0; i < priNum; ++i)
+		{
+			IPrimitive* pPri = pScene->GetPrimitive(i);
+
+			//FIXME!!! 这里后续应该添加视锥裁剪
+			m_pSceneView->AddPrimitive(pPri);
+		}
+	}
+
+	void D3D11Renderer::RenderPrimitives()
+	{
+		D3D11MeshRenderer meshRender = {};
+
+		uint32_t priNum = m_pSceneView->GetPrimitiveNum();
+		for (uint32_t i = 0; i < priNum; ++i)
+		{
+			IPrimitive* pPri = m_pSceneView->GetPrimitive(i);
+			pPri->Render(&meshRender);
+		}
+	}
+
+}// namespace RenderDog

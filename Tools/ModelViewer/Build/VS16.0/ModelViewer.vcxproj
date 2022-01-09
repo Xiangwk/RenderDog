@@ -158,9 +158,11 @@ xcopy ..\..\..\..\EngineSDK\3rdSDK\Bin\*.* ..\..\..\..\Bin\Tools\$(ProjectName)\
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Public\GeometryGenerator.h" />
     <ClInclude Include="..\..\Public\ModelViewer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Private\GeometryGenerator.cpp" />
     <ClCompile Include="..\..\Private\Main.cpp" />
     <ClCompile Include="..\..\Private\ModelViewer.cpp" />
   </ItemGroup>

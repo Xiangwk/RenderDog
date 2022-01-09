@@ -23,7 +23,7 @@ namespace RenderDog
 		StaticMesh();
 		~StaticMesh();
 
-		StaticMesh(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices);
+		StaticMesh(const std::vector<LocalVertex>& vertices, const std::vector<uint32_t>& indices);
 
 		bool Init(IDevice* pDevice);
 		void Release();
@@ -33,13 +33,14 @@ namespace RenderDog
 		void CalculateTangents();
 
 	private:
-		std::vector<Vertex>		m_RawVertices;
-		std::vector<uint32_t>	m_RawIndices;
+		std::vector<LocalVertex>		m_RawVertices;
+		std::vector<uint32_t>			m_RawIndices;
 
-		std::vector<Vertex>		m_Vertices;
-		std::vector<uint32_t>	m_Indices;
+		std::vector<LocalVertex>		m_Vertices;
+		std::vector<uint32_t>			m_Indices;
 
-		IBuffer*				m_pVB;
-		IBuffer*				m_pIB;
+		IBuffer*						m_pVB;
+		IBuffer*						m_pIB;
 	};
-}
+
+}// namespace RenderDog

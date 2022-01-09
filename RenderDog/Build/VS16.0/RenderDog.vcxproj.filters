@@ -34,6 +34,18 @@
     <Filter Include="Private">
       <UniqueIdentifier>{c7a8c27d-d6db-443c-b69e-f7e5b836b50f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Primitive">
+      <UniqueIdentifier>{f985adc6-5ca2-4b79-9836-df1b43ff8213}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Primitive\Public">
+      <UniqueIdentifier>{6cb31ab3-2ad3-4b97-a1d1-2192d2ac374b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Primitive\Private">
+      <UniqueIdentifier>{92975d52-9dda-48fe-9947-37485ba5d59f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Buffer">
+      <UniqueIdentifier>{aeb0266d-131e-49c4-8b5d-5ef155f56d86}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Math\Private\Matrix.cpp">
@@ -57,6 +69,21 @@
     <ClCompile Include="..\..\Private\RenderDog.cpp">
       <Filter>Private</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Private\Scene.cpp">
+      <Filter>Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Private\RefCntObject.cpp">
+      <Filter>Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Private\StaticMesh.cpp">
+      <Filter>Primitive\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Private\StaticModel.cpp">
+      <Filter>Primitive\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Private\SceneView.cpp">
+      <Filter>Private</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Math\Public\Matrix.h">
@@ -78,6 +105,30 @@
       <Filter>Window\Public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Public\RenderDog.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Public\Primitive.h">
+      <Filter>Primitive\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Public\Scene.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Public\RefCntObject.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Public\Vertex.h">
+      <Filter>Primitive\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Public\StaticMesh.h">
+      <Filter>Primitive\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Public\StaticModel.h">
+      <Filter>Primitive\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Public\Buffer.h">
+      <Filter>Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Public\SceneView.h">
       <Filter>Public</Filter>
     </ClInclude>
   </ItemGroup>

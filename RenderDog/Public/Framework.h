@@ -11,10 +11,11 @@
 
 namespace RenderDog
 {
+	class IScene;
+
 	class IFramework
 	{
 	public:
-		IFramework() = default;
 		virtual ~IFramework() = default;
 
 		virtual bool Init() = 0;
@@ -22,6 +23,8 @@ namespace RenderDog
 
 		virtual void Frame() = 0;
 		virtual void OnResize(uint32_t width, uint32_t height) = 0;
+
+		virtual void RegisterScene(IScene* pScene) = 0;
 	};
 
 	extern IFramework* g_pIFramework;

@@ -15,8 +15,8 @@ namespace RenderDog
 		RenderDog() = default;
 		virtual ~RenderDog() = default;
 
-		virtual bool Init(const InitDesc& desc);
-		virtual void Release();
+		virtual bool Init(const InitDesc& desc) override;
+		virtual void Release() override;
 	};
 
 	//---------------------------------------------------------------------------

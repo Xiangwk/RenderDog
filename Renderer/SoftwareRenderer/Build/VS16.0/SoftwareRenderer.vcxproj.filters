@@ -14,9 +14,6 @@
     <ClInclude Include="..\..\Public\SoftwareRenderer.h">
       <Filter>Public</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Public\Vertex.h">
-      <Filter>Public</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Public\ShaderResourceUtility.h">
       <Filter>Public</Filter>
     </ClInclude>

@@ -7,6 +7,8 @@
 #pragma once
 
 #include "RenderDog.h"
+#include "Scene.h"
+#include "StaticModel.h"
 
 class ModelViewer
 {
@@ -23,6 +25,9 @@ public:
 
 private:
 	RenderDog::IRenderDog*	m_pRenderDog;
+	RenderDog::IScene*		m_pScene;
+
+	RenderDog::StaticModel*	m_pModel;
 };
 
 extern ModelViewer* g_pModelViewer;

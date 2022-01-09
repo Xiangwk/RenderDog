@@ -420,7 +420,11 @@
                                         "data": {
                                             "id": "cdozukzv66g0",
                                             "created": 1629529080264,
-                                            "text": "Device"
+                                            "text": "Device",
+                                            "layout_right_offset": {
+                                                "x": 29,
+                                                "y": 0
+                                            }
                                         },
                                         "children": []
                                     },
@@ -1015,27 +1019,117 @@
                     },
                     {
                         "data": {
-                            "id": "cgv9z6smn1s0",
-                            "created": 1641135487331,
-                            "text": "StaticModel",
+                            "id": "cgvugqkub3s0",
+                            "created": 1641193284785,
+                            "text": "Primitive",
                             "layout_right_offset": {
-                                "x": 526.9999990314245,
-                                "y": 223.9999987334013
+                                "x": 513,
+                                "y": 431
                             }
                         },
-                        "children": []
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "cgyo9p7lbko0",
+                                    "created": 1641480486468,
+                                    "text": "VertexBuffer",
+                                    "layout_right_offset": {
+                                        "x": 290,
+                                        "y": 2
+                                    }
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "cgyo9u7as000",
+                                    "created": 1641480497335,
+                                    "text": "IndexBuffer",
+                                    "layout_right_offset": {
+                                        "x": 292,
+                                        "y": -1
+                                    }
+                                },
+                                "children": []
+                            }
+                        ]
                     },
                     {
                         "data": {
-                            "id": "cgvugqkub3s0",
-                            "created": 1641193284785,
-                            "text": "...",
+                            "id": "cgyopft4ueg0",
+                            "created": 1641481719830,
+                            "text": "Scene",
                             "layout_right_offset": {
-                                "x": 488,
-                                "y": 302
+                                "x": 519,
+                                "y": 127
                             }
                         },
-                        "children": []
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "cgyopj2z4a00",
+                                    "created": 1641481726955,
+                                    "text": "组织Primitive",
+                                    "layout_right_offset": {
+                                        "x": 351,
+                                        "y": -27
+                                    }
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "cgyotxreeeg0",
+                                    "created": 1641482072364,
+                                    "text": "应用程序中Scene的数量可以超过1，如何管理Scene的创建和释放？",
+                                    "layout_right_offset": {
+                                        "x": 594,
+                                        "y": -17
+                                    },
+                                    "priority": 2
+                                },
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cgyq95wwljk0",
+                                            "created": 1641486086683,
+                                            "text": "用户只能看到IScene",
+                                            "layout_right_offset": {
+                                                "x": 620,
+                                                "y": -43
+                                            }
+                                        },
+                                        "children": [
+                                            {
+                                                "data": {
+                                                    "id": "cgyq9f4jpwg0",
+                                                    "created": 1641486106736,
+                                                    "text": "需要一个SceneManager来负责创建和释放Scene",
+                                                    "layout_right_offset": {
+                                                        "x": 517,
+                                                        "y": -39
+                                                    }
+                                                },
+                                                "children": [
+                                                    {
+                                                        "data": {
+                                                            "id": "cgyqcgv3e1c0",
+                                                            "created": 1641486345611,
+                                                            "text": "创建和释放",
+                                                            "layout_right_offset": {
+                                                                "x": 484,
+                                                                "y": -31
+                                                            }
+                                                        },
+                                                        "children": []
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
                     }
                 ]
             }
