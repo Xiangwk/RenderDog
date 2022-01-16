@@ -113,7 +113,10 @@ LRESULT ModelViewer::MessageProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
 		RenderDog::g_pIWindow->SetWidth(newWidth);
 		RenderDog::g_pIWindow->SetHeight(newHeight);
 
-		RenderDog::g_pIFramework->OnResize(newWidth, newHeight);
+		if (wParam != SIZE_MINIMIZED)
+		{
+			RenderDog::g_pIFramework->OnResize(newWidth, newHeight);
+		}
 
 		break;
 	}

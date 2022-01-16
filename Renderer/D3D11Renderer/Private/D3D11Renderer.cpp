@@ -195,48 +195,42 @@ namespace RenderDog
 		if (m_pRenderTargetView)
 		{
 			m_pRenderTargetView->Release();
-			m_pRenderTargetView = nullptr;
 		}
 
 		if (m_pDepthStencilView)
 		{
 			m_pDepthStencilView->Release();
-			m_pDepthStencilView = nullptr;
 		}
 
 		if (m_pDepthStencilTexture)
 		{
 			m_pDepthStencilTexture->Release();
-			m_pDepthStencilTexture = nullptr;
 		}
 
 		if (m_pSwapChain)
 		{
 			m_pSwapChain->Release();
-			m_pSwapChain = nullptr;
 		}
 
 		if (g_pD3D11ImmediateContext)
 		{
 			g_pD3D11ImmediateContext->ClearState();
 			g_pD3D11ImmediateContext->Release();
-			g_pD3D11ImmediateContext = nullptr;
 		}
 
 #if defined(DEBUG) || defined(_DEBUG)
-		ID3D11Debug* pD3dDebug = nullptr;
+		/*ID3D11Debug* pD3dDebug = nullptr;
 		HRESULT hr = g_pD3D11Device->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&pD3dDebug));
 		if (SUCCEEDED(hr))
 		{
 			hr = pD3dDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
 		}
-		pD3dDebug->Release();
+		pD3dDebug->Release();*/
 #endif
 
 		if (g_pD3D11Device)
 		{
 			g_pD3D11Device->Release();
-			g_pD3D11Device = nullptr;
 		}
 	}
 
