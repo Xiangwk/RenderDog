@@ -16,7 +16,7 @@ namespace RenderDog
 
 	struct SceneInitDesc
 	{
-		std::wstring name;
+		std::string name;
 	};
 
 	class IScene : public RefCntObject

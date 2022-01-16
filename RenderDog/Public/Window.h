@@ -16,8 +16,8 @@ namespace RenderDog
 	{
 		uint32_t		width;
 		uint32_t		height;
-		std::wstring	caption;
-		std::wstring	className;
+		std::string		caption;
+		std::string		className;
 
 		HINSTANCE		hAppInstance;
 		WNDPROC			wndProc;

@@ -20,11 +20,13 @@ namespace RenderDog
 		++m_RefCnt;
 	}
 
-	uint32_t RefCntObject::SubRef()
+	void RefCntObject::SubRef()
 	{
 		--m_RefCnt;
-
-		return m_RefCnt;
+		if (m_RefCnt == 0)
+		{
+			delete this;
+		}
 	}
 
 

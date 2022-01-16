@@ -2212,7 +2212,7 @@ namespace RenderDog
 		vOutput.svPostion.z = inPos.z;
 		vOutput.svPostion.w = inPos.w;
 
-		vOutput.color = Vector4(inVertex.color, 1.0f);
+		vOutput.color = Vector4(inVertex.color);
 
 		Vector4 vNormal = Vector4(inVertex.normal, 0.0f);
 		vNormal = vNormal * matWorld;

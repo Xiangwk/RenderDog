@@ -10,17 +10,23 @@
 
 namespace RenderDog
 {
+	enum VertexType
+	{
+		RD_VERTEX_TYPE_SIMPLE,
+		RD_VERTEX_TYPE_STANDARD
+	};
+
 	struct SimpleVertex
 	{
 		Vector3 position;
-		Vector3 color;
+		Vector4 color;
 
 		SimpleVertex() = default;
 
 		SimpleVertex(float px, float py, float pz,
-					 float cx, float cy, float cz):
+					 float cx, float cy, float cz, float cw):
 			position(px, py, pz),
-			color(cx, cy, cz)
+			color(cx, cy, cz, cw)
 		{}
 	};
 
@@ -33,11 +39,11 @@ namespace RenderDog
 		LocalVertex() = default;
 
 		LocalVertex(float px, float py, float pz,
-					float cx, float cy, float cz,
+					float cx, float cy, float cz, float cw,
 					float nx, float ny, float nz,
 					float tx, float ty, float tz,
 					float tcx, float tcy) :
-			SimpleVertex(px, py, pz, cx, cy, cz),
+			SimpleVertex(px, py, pz, cx, cy, cz, cw),
 			normal(nx, ny, nz),
 			tangent(tx, ty, tz, 1.0f),
 			texcoord(tcx, tcy)

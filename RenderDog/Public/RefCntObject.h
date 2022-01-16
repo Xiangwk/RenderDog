@@ -14,10 +14,10 @@ namespace RenderDog
 	{
 	public:
 		RefCntObject();
-		~RefCntObject();
+		virtual ~RefCntObject();
 
 		void		AddRef();
-		uint32_t	SubRef();
+		void		SubRef();
 
 	protected:
 		uint32_t	m_RefCnt;

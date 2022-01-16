@@ -7,16 +7,30 @@
 
 #pragma once
 
+#include "RenderDog.h"
+
 #include <cstdint>
 
 namespace RenderDog
 {
+	struct BufferDesc
+	{
+		uint32_t	byteWidth;
+		void*		pInitData;
+		bool		isDynamic;
+
+		BufferDesc() :
+			byteWidth(0),
+			pInitData(nullptr),
+			isDynamic(false)
+		{}
+	};
+
 	class IBuffer
 	{
 	public:
 		virtual ~IBuffer() = default;
 
-		virtual bool Init() = 0;
 		virtual void Release() = 0;
 
 		virtual void Update() = 0;
@@ -27,8 +41,12 @@ namespace RenderDog
 	public:
 		virtual ~IVertexBuffer() = default;
 
-		virtual uint32_t	GetVertexNum() const = 0;
 		virtual void*		GetVertexBuffer() = 0;
+
+		virtual bool		Init(const BufferDesc& desc, uint32_t stride, uint32_t offset) = 0;
+
+		virtual uint32_t	GetStride() const = 0;
+		virtual uint32_t	GetOffset() const = 0;
 	};
 
 	class IIndexBuffer : public IBuffer
@@ -36,8 +54,22 @@ namespace RenderDog
 	public:
 		virtual ~IIndexBuffer() = default;
 
-		virtual uint32_t	GetIndexNum() const = 0;
+		virtual bool		Init(const BufferDesc& desc, uint32_t indexNum) = 0;
+
 		virtual void*		GetIndexBuffer() = 0;
+
+		virtual uint32_t	GetIndexNum() const = 0;
 	};
+
+	class IBufferManager
+	{
+	public:
+		virtual ~IBufferManager() = default;
+
+		virtual IVertexBuffer*	CreateVertexBuffer() = 0;
+		virtual IIndexBuffer*	CreateIndexBuffer() = 0;
+	};
+
+	extern IBufferManager* g_pIBufferManager;
 	
 }// namespace RenderDog

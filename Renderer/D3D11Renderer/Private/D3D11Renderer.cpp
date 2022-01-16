@@ -4,29 +4,57 @@
 //Written by Xiang Weikang
 ////////////////////////////////////////
 
+#include "Renderer.h"
 #include "D3D11Renderer.h"
-#include "D3D11PrimitiveRenderer.h"
+#include "Primitive.h"
 #include "Scene.h"
 #include "SceneView.h"
+#include "D3D11InputLayout.h"
 
 namespace RenderDog
 {
-	class D3D11MeshRenderer : public ID3D11PrimitiveRenderer
+	ID3D11Device*			g_pD3D11Device = nullptr;
+	ID3D11DeviceContext*	g_pD3D11ImmediateContext = nullptr;
+
+	class D3D11MeshRenderer : public IPrimitiveRenderer
 	{
 	public:
 		D3D11MeshRenderer() = default;
 		virtual ~D3D11MeshRenderer() = default;
 
-		virtual void Render(const PrimitiveRenderParam& renderParam) override;
+		virtual void	Render(const PrimitiveRenderParam& renderParam) override;
 	};
 
 	void D3D11MeshRenderer::Render(const PrimitiveRenderParam& renderParam)
 	{
+		if (!g_pD3D11ImmediateContext)
+		{
+			return;
+		}
 
+		if (!renderParam.pVB || !renderParam.pIB)
+		{
+			return;
+		}
+
+		ID3D11Buffer* pVB = (ID3D11Buffer*)(renderParam.pVB->GetVertexBuffer());
+		ID3D11Buffer* pIB = (ID3D11Buffer*)(renderParam.pIB->GetIndexBuffer());
+
+		uint32_t indexNum = renderParam.pIB->GetIndexNum();
+
+		uint32_t stride = renderParam.pVB->GetStride();
+		uint32_t offset = renderParam.pVB->GetOffset();
+		g_pD3D11ImmediateContext->IASetVertexBuffers(0, 1, &pVB, &stride, &offset);
+		g_pD3D11ImmediateContext->IASetIndexBuffer(pIB, DXGI_FORMAT_R32_UINT, 0);
+
+		renderParam.pVS->SetToContext();
+		renderParam.pPS->SetToContext();
+
+		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
 	}
 
 
-	class D3D11Renderer : public ID3D11Renderer
+	class D3D11Renderer : public IRenderer
 	{
 	public:
 		D3D11Renderer();
@@ -47,8 +75,6 @@ namespace RenderDog
 		void RenderPrimitives();
 
 	private:
-		ID3D11Device*				m_pD3DDevice;
-		ID3D11DeviceContext*		m_pD3DImmediateContext;
 		IDXGISwapChain*				m_pSwapChain;
 
 		ID3D11Texture2D*			m_pDepthStencilTexture;
@@ -66,8 +92,6 @@ namespace RenderDog
 	//   Public Function
 	//------------------------------------------------------------------------
 	D3D11Renderer::D3D11Renderer() :
-		m_pD3DDevice(nullptr),
-		m_pD3DImmediateContext(nullptr),
 		m_pSwapChain(nullptr),
 		m_pDepthStencilTexture(nullptr),
 		m_pRenderTargetView(nullptr),
@@ -94,18 +118,18 @@ namespace RenderDog
 			nullptr,
 			0,
 			D3D11_SDK_VERSION,
-			&m_pD3DDevice,
+			&g_pD3D11Device,
 			&featureLevel,
-			&m_pD3DImmediateContext);
+			&g_pD3D11ImmediateContext);
 		if (FAILED(hr))
 		{
-			MessageBox(nullptr, L"D3D11CreateDevice Failed!", L"ERROR", MB_OK);
+			MessageBox(nullptr, "D3D11CreateDevice Failed!", "ERROR", MB_OK);
 			return false;
 		}
 
 		if (featureLevel != D3D_FEATURE_LEVEL_11_0)
 		{
-			MessageBox(nullptr, L"Direct3D Feature Level 11 unsupported.", 0, 0);
+			MessageBox(nullptr, "Direct3D Feature Level 11 unsupported.", 0, 0);
 			return false;
 		}
 
@@ -125,7 +149,7 @@ namespace RenderDog
 		swapchainDesc.Flags = 0;
 
 		IDXGIDevice* pDXGIDevice = nullptr;
-		if (FAILED(m_pD3DDevice->QueryInterface(__uuidof(IDXGIDevice), (void**)&pDXGIDevice)))
+		if (FAILED(g_pD3D11Device->QueryInterface(__uuidof(IDXGIDevice), (void**)&pDXGIDevice)))
 		{
 			return false;
 		}
@@ -140,9 +164,9 @@ namespace RenderDog
 			return false;
 		}
 
-		if (FAILED(pDXGIFactory->CreateSwapChain(m_pD3DDevice, &swapchainDesc, &m_pSwapChain)))
+		if (FAILED(pDXGIFactory->CreateSwapChain(g_pD3D11Device, &swapchainDesc, &m_pSwapChain)))
 		{
-			MessageBox(nullptr, L"Direct3D create swapchain failed.", 0, 0);
+			MessageBox(nullptr, "Direct3D create swapchain failed.", 0, 0);
 			return false;
 		}
 		pDXGIDevice->Release();
@@ -151,7 +175,7 @@ namespace RenderDog
 
 		if (!OnResize(desc.backBufferWidth, desc.backBufferHeight))
 		{
-			MessageBox(nullptr, L"Direct3D OnResize failed.", 0, 0);
+			MessageBox(nullptr, "Direct3D OnResize failed.", 0, 0);
 			return false;
 		}
 
@@ -192,16 +216,16 @@ namespace RenderDog
 			m_pSwapChain = nullptr;
 		}
 
-		if (m_pD3DImmediateContext)
+		if (g_pD3D11ImmediateContext)
 		{
-			m_pD3DImmediateContext->ClearState();
-			m_pD3DImmediateContext->Release();
-			m_pD3DImmediateContext = nullptr;
+			g_pD3D11ImmediateContext->ClearState();
+			g_pD3D11ImmediateContext->Release();
+			g_pD3D11ImmediateContext = nullptr;
 		}
 
 #if defined(DEBUG) || defined(_DEBUG)
 		ID3D11Debug* pD3dDebug = nullptr;
-		HRESULT hr = m_pD3DDevice->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&pD3dDebug));
+		HRESULT hr = g_pD3D11Device->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&pD3dDebug));
 		if (SUCCEEDED(hr))
 		{
 			hr = pD3dDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
@@ -209,19 +233,23 @@ namespace RenderDog
 		pD3dDebug->Release();
 #endif
 
-		if (m_pD3DDevice)
+		if (g_pD3D11Device)
 		{
-			m_pD3DDevice->Release();
-			m_pD3DDevice = nullptr;
+			g_pD3D11Device->Release();
+			g_pD3D11Device = nullptr;
 		}
 	}
 
 	void D3D11Renderer::Render(IScene* pScene)
 	{
-		float clearColor[4] = { 0.3f, 0.3f, 0.3f, 1.0f };
-		ClearBackRenderTarget(clearColor);
+		m_pSceneView->ClearPrimitives();
 
 		AddPrimitivesToSceneView(pScene);
+
+		g_pD3D11ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		float clearColor[4] = { 0.3f, 0.3f, 0.3f, 1.0f };
+		ClearBackRenderTarget(clearColor);
 
 		RenderPrimitives();
 
@@ -230,7 +258,7 @@ namespace RenderDog
 
 	bool D3D11Renderer::OnResize(uint32_t width, uint32_t height)
 	{
-		if (!m_pD3DDevice)
+		if (!g_pD3D11Device)
 		{
 			return false;
 		}
@@ -259,7 +287,7 @@ namespace RenderDog
 		{
 			return false;
 		}
-		if (FAILED(m_pD3DDevice->CreateRenderTargetView(pBackBuffer, nullptr, &m_pRenderTargetView)))
+		if (FAILED(g_pD3D11Device->CreateRenderTargetView(pBackBuffer, nullptr, &m_pRenderTargetView)))
 		{
 			return false;
 		}
@@ -277,11 +305,11 @@ namespace RenderDog
 		depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 		depthStencilDesc.CPUAccessFlags = 0;
 		depthStencilDesc.MiscFlags = 0;
-		if (FAILED(m_pD3DDevice->CreateTexture2D(&depthStencilDesc, nullptr, &m_pDepthStencilTexture)))
+		if (FAILED(g_pD3D11Device->CreateTexture2D(&depthStencilDesc, nullptr, &m_pDepthStencilTexture)))
 		{
 			return false;
 		}
-		if (FAILED(m_pD3DDevice->CreateDepthStencilView(m_pDepthStencilTexture, nullptr, &m_pDepthStencilView)))
+		if (FAILED(g_pD3D11Device->CreateDepthStencilView(m_pDepthStencilTexture, nullptr, &m_pDepthStencilView)))
 		{
 			return false;
 		}
@@ -292,7 +320,7 @@ namespace RenderDog
 		m_ScreenViewport.Height = static_cast<float>(height);
 		m_ScreenViewport.MinDepth = 0;
 		m_ScreenViewport.MaxDepth = 1;
-		m_pD3DImmediateContext->RSSetViewports(1, &m_ScreenViewport);
+		g_pD3D11ImmediateContext->RSSetViewports(1, &m_ScreenViewport);
 
 		return true;
 	}
@@ -302,10 +330,10 @@ namespace RenderDog
 	//------------------------------------------------------------------------
 	void D3D11Renderer::ClearBackRenderTarget(float* clearColor)
 	{
-		m_pD3DImmediateContext->ClearRenderTargetView(m_pRenderTargetView, clearColor);
-		m_pD3DImmediateContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+		g_pD3D11ImmediateContext->ClearRenderTargetView(m_pRenderTargetView, clearColor);
+		g_pD3D11ImmediateContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-		m_pD3DImmediateContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
+		g_pD3D11ImmediateContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
 	}
 
 	void D3D11Renderer::AddPrimitivesToSceneView(IScene* pScene)

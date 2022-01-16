@@ -8,6 +8,7 @@
 #pragma once
 
 #include "Buffer.h"
+#include "Shader.h"
 
 namespace RenderDog
 {
@@ -15,6 +16,16 @@ namespace RenderDog
 	{
 		IVertexBuffer*	pVB;
 		IIndexBuffer*	pIB;
+
+		IShader*		pVS;
+		IShader*		pPS;
+
+		PrimitiveRenderParam() :
+			pVB(nullptr),
+			pIB(nullptr),
+			pVS(nullptr),
+			pPS(nullptr)
+		{}
 	};
 
 	class IPrimitiveRenderer
@@ -22,7 +33,7 @@ namespace RenderDog
 	public:
 		virtual ~IPrimitiveRenderer() = default;
 
-		virtual void Render(const PrimitiveRenderParam& renderParam) = 0;
+		virtual void	Render(const PrimitiveRenderParam& renderParam) = 0;
 	};
 
 	class IPrimitive

@@ -32,11 +32,11 @@ bool ModelViewer::Init(const RenderDog::InitDesc& desc)
 	}
 
 	RenderDog::SceneInitDesc sceneDesc;
-	sceneDesc.name = L"MainScene";
+	sceneDesc.name = "MainScene";
 	m_pScene = RenderDog::g_pISceneManager->CreateScene(sceneDesc);
 	if (!m_pScene)
 	{
-		MessageBox(nullptr, L"Create Scene Failed!", L"ERROR", MB_OK);
+		MessageBox(nullptr, "Create Scene Failed!", "ERROR", MB_OK);
 		return false;
 	}
 
@@ -46,6 +46,10 @@ bool ModelViewer::Init(const RenderDog::InitDesc& desc)
 	m_pModel = new RenderDog::StaticModel();
 	m_pModel->LoadFromData(boxMeshData.vertices, boxMeshData.indices);
 
+	m_pModel->RegisterToScene(m_pScene);
+
+	RenderDog::g_pIFramework->RegisterScene(m_pScene);
+
 	return true;
 }
 
@@ -53,6 +57,8 @@ void ModelViewer::Release()
 {
 	if (m_pModel)
 	{
+		m_pModel->ReleaseRenderData();
+
 		delete m_pModel;
 		m_pModel = nullptr;
 	}
@@ -76,10 +82,6 @@ int ModelViewer::Run()
 		}
 		else
 		{
-			m_pModel->RegisterToScene(m_pScene);
-
-			RenderDog::g_pIFramework->RegisterScene(m_pScene);
-
 			RenderDog::g_pIFramework->Frame();
 		}
 	}

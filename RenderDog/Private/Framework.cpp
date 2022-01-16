@@ -53,8 +53,6 @@ namespace RenderDog
 		{
 			g_pIRenderer->Render(m_pScenes[i]);
 		}
-
-		return;
 	}
 
 	void Framework::OnResize(uint32_t width, uint32_t height)

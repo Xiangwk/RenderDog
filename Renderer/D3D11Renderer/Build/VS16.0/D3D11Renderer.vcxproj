@@ -43,14 +43,14 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -129,10 +129,11 @@
     </Link>
     <PostBuildEvent>
       <Command>xcopy $(TargetDir)*.lib ..\..\..\..\EngineSDK\Renderer\Libs\ /i /s /y
-xcopy ..\..\Public\*.* ..\..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i /s /y</Command>
+xcopy ..\..\Public\*.* ..\..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i /s /y
+xcopy ..\..\Shaders\*.* ..\..\..\..\EngineSDK\Renderer\Shaders\ /i /s /y</Command>
     </PostBuildEvent>
     <Lib>
-      <AdditionalDependencies>d3d11.lib</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -153,18 +154,27 @@ xcopy ..\..\Public\*.* ..\..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i 
     </Link>
     <PostBuildEvent>
       <Command>xcopy $(TargetDir)*.lib ..\..\..\..\EngineSDK\Renderer\Libs\ /i /s /y
-xcopy ..\..\Public\*.* ..\..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i /s /y</Command>
+xcopy ..\..\Public\*.* ..\..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i /s /y
+xcopy ..\..\Shaders\*.* ..\..\..\..\EngineSDK\Renderer\Shaders\ /i /s /y</Command>
     </PostBuildEvent>
     <Lib>
-      <AdditionalDependencies>d3d11.lib</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Public\D3D11PrimitiveRenderer.h" />
+    <ClCompile Include="..\..\Private\D3D11Buffer.cpp" />
+    <ClCompile Include="..\..\Private\D3D11InputLayout.cpp" />
+    <ClCompile Include="..\..\Private\D3D11Renderer.cpp" />
+    <ClCompile Include="..\..\Private\D3D11Shader.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Public\D3D11InputLayout.h" />
     <ClInclude Include="..\..\Public\D3D11Renderer.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Private\D3D11Renderer.cpp" />
+    <None Include="..\..\Shaders\SingleColor.hlsl">
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

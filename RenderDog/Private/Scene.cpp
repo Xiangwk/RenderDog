@@ -28,7 +28,7 @@ namespace RenderDog
 		virtual uint32_t	GetPrimitivesNum() const override { return (uint32_t)m_Primitives.size(); }
 
 	private:
-		std::wstring				m_Name;
+		std::string					m_Name;
 		std::vector<IPrimitive*>	m_Primitives;
 	};
 
@@ -90,12 +90,7 @@ namespace RenderDog
 
 	void SceneManager::ReleaseScene(IScene* pScene)
 	{
-		uint32_t sceneRefCnt = pScene->SubRef();
-		if (sceneRefCnt == 0)
-		{
-			delete pScene;
-			pScene = nullptr;
-		}
+		pScene->SubRef();
 	}
 
 

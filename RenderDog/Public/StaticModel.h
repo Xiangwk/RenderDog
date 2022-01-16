@@ -25,6 +25,8 @@ namespace RenderDog
 
 		void RegisterToScene(IScene* pScene);
 
+		void ReleaseRenderData();
+
 	private:
 		std::vector<StaticMesh>	m_Meshes;
 	};

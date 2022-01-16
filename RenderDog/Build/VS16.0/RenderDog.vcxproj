@@ -36,6 +36,7 @@
     <ClInclude Include="..\..\Public\RenderDog.h" />
     <ClInclude Include="..\..\Public\Scene.h" />
     <ClInclude Include="..\..\Public\SceneView.h" />
+    <ClInclude Include="..\..\Public\Shader.h" />
     <ClInclude Include="..\..\Public\StaticMesh.h" />
     <ClInclude Include="..\..\Public\StaticModel.h" />
     <ClInclude Include="..\..\Public\Vertex.h" />
@@ -53,14 +54,14 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">

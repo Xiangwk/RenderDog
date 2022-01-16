@@ -22,6 +22,7 @@ namespace RenderDog
 	{
 		StaticMesh mesh;
 		mesh.LoadFromData(vertices, indices);
+		mesh.InitRenderData();
 
 		m_Meshes.push_back(mesh);
 	}
@@ -34,5 +35,15 @@ namespace RenderDog
 			pScene->RegisterPrimitive(pMesh);
 		}
 	}
+
+	void StaticModel::ReleaseRenderData()
+	{
+		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
+		{
+			StaticMesh* pMesh = &(m_Meshes[i]);
+			pMesh->ReleaseRenderData();
+		}
+	}
+
 
 }// namespace RenderDog

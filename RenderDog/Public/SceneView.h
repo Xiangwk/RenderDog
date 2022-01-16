@@ -22,6 +22,8 @@ namespace RenderDog
 		IPrimitive* GetPrimitive(uint32_t index);
 		uint32_t	GetPrimitiveNum() const { return (uint32_t)m_Primitives.size(); }
 
+		void		ClearPrimitives() { m_Primitives.clear(); }
+
 	private:
 		std::vector<IPrimitive*>	m_Primitives;
 	};

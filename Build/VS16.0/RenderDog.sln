@@ -30,6 +30,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{AE0FD782-93BF-47EA-9E72-C1EBE1DC2D48}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "D3D11Renderer", "..\..\Renderer\D3D11Renderer\Build\VS16.0\D3D11Renderer.vcxproj", "{FF2C6EB6-D980-4778-A0CE-A9C634253D47}"
+	ProjectSection(ProjectDependencies) = postProject
+		{89AD7527-609C-420D-857A-75B104ADC985} = {89AD7527-609C-420D-857A-75B104ADC985}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Public", "Public", "{3CD18E74-D496-4BD7-9F7A-29716F635216}"
 	ProjectSection(SolutionItems) = preProject

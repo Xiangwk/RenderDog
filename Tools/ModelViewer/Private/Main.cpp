@@ -12,8 +12,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	RenderDog::InitDesc renderDogDesc;
 	renderDogDesc.wndDesc.width = 1024;
 	renderDogDesc.wndDesc.height = 768;
-	renderDogDesc.wndDesc.caption = L"ModelViewer";
-	renderDogDesc.wndDesc.className = L"ModelViewerWindowClass";
+	renderDogDesc.wndDesc.caption = "ModelViewer";
+	renderDogDesc.wndDesc.className = "ModelViewerWindowClass";
 	renderDogDesc.wndDesc.hAppInstance = hInstance;
 	renderDogDesc.wndDesc.wndProc = g_pModelViewer->MessageProc;
 	if (!g_pModelViewer->Init(renderDogDesc))
