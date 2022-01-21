@@ -101,7 +101,6 @@ xcopy ..\..\Public\*.* ..\..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i 
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Public\Camera.h" />
     <ClInclude Include="..\..\Public\GameTimer.h" />
     <ClInclude Include="..\..\Public\Light.h" />
     <ClInclude Include="..\..\Public\Mesh.h" />
@@ -110,7 +109,6 @@ xcopy ..\..\Public\*.* ..\..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i 
     <ClInclude Include="..\..\Public\ShaderResourceUtility.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Private\Camera.cpp" />
     <ClCompile Include="..\..\Private\GameTimer.cpp" />
     <ClCompile Include="..\..\Private\Light.cpp" />
     <ClCompile Include="..\..\Private\Mesh.cpp" />

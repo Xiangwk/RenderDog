@@ -29,18 +29,19 @@ namespace RenderDog
 
 		Matrix4x4(const Vector4& v0, const Vector4& v1, const Vector4& v2, const Vector4& v3);
 
-		float	operator()(int r, int c) const { return m_fData[r][c]; }
-		float&	operator()(int r, int c) { return m_fData[r][c]; }
-		Vector4 GetRow(int r) const { return Vector4(m_fData[r][0], m_fData[r][1], m_fData[r][2], m_fData[r][3]); }
+		float		operator()(int r, int c) const { return m_fData[r][c]; }
+		float&		operator()(int r, int c) { return m_fData[r][c]; }
+		Vector4		GetRow(int r) const { return Vector4(m_fData[r][0], m_fData[r][1], m_fData[r][2], m_fData[r][3]); }
 
-		void Identity();
+		void		Identity();
 
 	private:
-		float m_fData[4][4];
+		float		m_fData[4][4];
 	};
 
-	Vector4		operator*(const Vector4& vec, const Matrix4x4& mat);
-	Matrix4x4	operator*(const Matrix4x4& matLHS, const Matrix4x4& matRHS);
-	Matrix4x4	GetIdentityMatrix();
+	Vector4			operator*(const Vector4& vec, const Matrix4x4& mat);
+	Matrix4x4		operator*(const Matrix4x4& matLHS, const Matrix4x4& matRHS);
+	Matrix4x4		GetIdentityMatrix();
+	Matrix4x4		Transpose(const Matrix4x4& mat);
 
 }// namespace RenderDog

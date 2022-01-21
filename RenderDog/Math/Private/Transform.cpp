@@ -58,6 +58,16 @@ namespace RenderDog
 		return rotateMatrix;
 	}
 
+	Matrix4x4 GetRotationMatrix(float xAngle, float yAngle, float zAngle)
+	{
+		Matrix4x4 result = GetRotationMatrix(xAngle, Vector3(1.0f, 0.0f, 0.0f));
+		result = result * GetRotationMatrix(yAngle, Vector3(0.0f, 1.0f, 0.0));
+		result = result * GetRotationMatrix(zAngle, Vector3(0.0f, 0.0f, 1.0f));
+
+		return result;
+	}
+
+
 	Matrix4x4 GetLookAtMatrixLH(const Vector3& eyePos, const Vector3& focusPos, const Vector3& upDir)
 	{
 		Vector3 camZAxis = focusPos - eyePos;

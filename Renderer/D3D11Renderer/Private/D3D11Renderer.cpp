@@ -10,6 +10,8 @@
 #include "Scene.h"
 #include "SceneView.h"
 #include "D3D11InputLayout.h"
+#include "Matrix.h"
+#include "Camera.h"
 
 namespace RenderDog
 {
@@ -19,11 +21,28 @@ namespace RenderDog
 	class D3D11MeshRenderer : public IPrimitiveRenderer
 	{
 	public:
-		D3D11MeshRenderer() = default;
-		virtual ~D3D11MeshRenderer() = default;
+		D3D11MeshRenderer();
+		D3D11MeshRenderer(IConstantBuffer* pCB);
+		virtual ~D3D11MeshRenderer();
 
-		virtual void	Render(const PrimitiveRenderParam& renderParam) override;
+		virtual IConstantBuffer*		GetVSConstantBuffer() override { return m_pVSConstantBuffer; }
+
+		virtual void					Render(const PrimitiveRenderParam& renderParam) override;
+
+	private:
+		IConstantBuffer*				m_pVSConstantBuffer;
 	};
+
+	D3D11MeshRenderer::D3D11MeshRenderer() :
+		m_pVSConstantBuffer(nullptr)
+	{}
+
+	D3D11MeshRenderer::~D3D11MeshRenderer()
+	{}
+
+	D3D11MeshRenderer::D3D11MeshRenderer(IConstantBuffer* pCB) :
+		m_pVSConstantBuffer(pCB)
+	{}
 
 	void D3D11MeshRenderer::Render(const PrimitiveRenderParam& renderParam)
 	{
@@ -48,6 +67,13 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->IASetIndexBuffer(pIB, DXGI_FORMAT_R32_UINT, 0);
 
 		renderParam.pVS->SetToContext();
+
+		ID3D11Buffer* pGlobalCB = (ID3D11Buffer*)(renderParam.pGlobalCB->GetConstantBuffer());
+		g_pD3D11ImmediateContext->VSSetConstantBuffers(0, 1, &pGlobalCB);
+
+		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetConstantBuffer());
+		g_pD3D11ImmediateContext->VSSetConstantBuffers(1, 1, &pPerObjCB);
+
 		renderParam.pPS->SetToContext();
 
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
@@ -56,23 +82,31 @@ namespace RenderDog
 
 	class D3D11Renderer : public IRenderer
 	{
+	private:
+		struct GlobalConstantData
+		{
+			Matrix4x4	viewMatrix;
+			Matrix4x4	projMatrix;
+		};
+
 	public:
 		D3D11Renderer();
 		virtual ~D3D11Renderer();
 
-		virtual bool Init(const RendererInitDesc& desc) override;
-		virtual void Release() override;
+		virtual bool				Init(const RendererInitDesc& desc) override;
+		virtual void				Release() override;
 
-		virtual void Render(IScene* pScene) override;
+		virtual void				Update() override;
+		virtual void				Render(IScene* pScene) override;
 
-		virtual bool OnResize(uint32_t width, uint32_t height);
+		virtual bool				OnResize(uint32_t width, uint32_t height);
 
 	private:
-		void ClearBackRenderTarget(float* clearColor);
+		void						ClearBackRenderTarget(float* clearColor);
 
-		void AddPrimitivesToSceneView(IScene* pScene);
+		void						AddPrimitivesToSceneView(IScene* pScene);
 
-		void RenderPrimitives();
+		void						RenderPrimitives();
 
 	private:
 		IDXGISwapChain*				m_pSwapChain;
@@ -83,6 +117,8 @@ namespace RenderDog
 		D3D11_VIEWPORT				m_ScreenViewport;
 
 		SceneView*					m_pSceneView;
+		GlobalConstantData			m_GlobalConstantData;
+		IConstantBuffer*			m_pGlobalConstantBuffer;
 	};
 
 	D3D11Renderer g_D3D11Renderer;
@@ -97,7 +133,9 @@ namespace RenderDog
 		m_pRenderTargetView(nullptr),
 		m_pDepthStencilView(nullptr),
 		m_ScreenViewport(),
-		m_pSceneView(nullptr)
+		m_pSceneView(nullptr),
+		m_GlobalConstantData(),
+		m_pGlobalConstantBuffer(nullptr)
 	{}
 
 	D3D11Renderer::~D3D11Renderer()
@@ -179,7 +217,16 @@ namespace RenderDog
 			return false;
 		}
 
-		m_pSceneView = new SceneView();
+		m_pSceneView = new SceneView(desc.backBufferWidth, desc.backBufferHeight);
+		m_pGlobalConstantBuffer = g_pIBufferManager->CreateConstantBuffer();
+		BufferDesc cbDesc = {};
+		cbDesc.byteWidth = sizeof(GlobalConstantData);
+		cbDesc.pInitData = nullptr;
+		cbDesc.isDynamic = true;
+		if (!m_pGlobalConstantBuffer->Init(cbDesc))
+		{
+			return false;
+		}
 
 		return true;
 	}
@@ -190,6 +237,13 @@ namespace RenderDog
 		{
 			delete m_pSceneView;
 			m_pSceneView = nullptr;
+		}
+
+		if (m_pGlobalConstantBuffer)
+		{
+			m_pGlobalConstantBuffer->Release();
+			delete m_pGlobalConstantBuffer;
+			m_pGlobalConstantBuffer = nullptr;
 		}
 
 		if (m_pRenderTargetView)
@@ -233,6 +287,16 @@ namespace RenderDog
 			g_pD3D11Device->Release();
 		}
 	}
+
+	void D3D11Renderer::Update()
+	{
+		FPSCamera* pCamera = m_pSceneView->GetCamera();
+		m_GlobalConstantData.viewMatrix = Transpose(pCamera->GetViewMatrix());
+		m_GlobalConstantData.projMatrix = Transpose(pCamera->GetPerspProjectionMatrix());
+
+		m_pGlobalConstantBuffer->Update(&m_GlobalConstantData, sizeof(m_GlobalConstantData));
+	}
+
 
 	void D3D11Renderer::Render(IScene* pScene)
 	{
@@ -344,7 +408,7 @@ namespace RenderDog
 
 	void D3D11Renderer::RenderPrimitives()
 	{
-		D3D11MeshRenderer meshRender = {};
+		D3D11MeshRenderer meshRender(m_pGlobalConstantBuffer);
 
 		uint32_t priNum = m_pSceneView->GetPrimitiveNum();
 		for (uint32_t i = 0; i < priNum; ++i)

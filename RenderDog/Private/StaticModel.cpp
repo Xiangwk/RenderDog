@@ -27,6 +27,15 @@ namespace RenderDog
 		m_Meshes.push_back(mesh);
 	}
 
+	void StaticModel::SetPosGesture(const Vector3& pos, const Vector3& euler, const Vector3& scale)
+	{
+		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
+		{
+			StaticMesh* pMesh = &(m_Meshes[i]);
+			pMesh->SetPosGesture(pos, euler, scale);
+		}
+	}
+
 	void StaticModel::RegisterToScene(IScene* pScene)
 	{
 		for (uint32_t i = 0; i < m_Meshes.size(); ++i)

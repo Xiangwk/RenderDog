@@ -8,6 +8,7 @@
 
 #include "RenderDog.h"
 #include "Scene.h"
+#include "Camera.h"
 #include "StaticModel.h"
 
 class ModelViewer
@@ -28,6 +29,8 @@ private:
 	RenderDog::IScene*		m_pScene;
 
 	RenderDog::StaticModel*	m_pModel;
+
+	RenderDog::FPSCamera	m_FPSCamera;
 };
 
 extern ModelViewer* g_pModelViewer;

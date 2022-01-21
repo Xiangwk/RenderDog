@@ -15,6 +15,7 @@
     <ClCompile Include="..\..\Math\Private\Transform.cpp" />
     <ClCompile Include="..\..\Math\Private\Utility.cpp" />
     <ClCompile Include="..\..\Math\Private\Vector.cpp" />
+    <ClCompile Include="..\..\Private\Camera.cpp" />
     <ClCompile Include="..\..\Private\Framework.cpp" />
     <ClCompile Include="..\..\Private\RefCntObject.cpp" />
     <ClCompile Include="..\..\Private\RenderDog.cpp" />
@@ -30,6 +31,7 @@
     <ClInclude Include="..\..\Math\Public\Utility.h" />
     <ClInclude Include="..\..\Math\Public\Vector.h" />
     <ClInclude Include="..\..\Public\Buffer.h" />
+    <ClInclude Include="..\..\Public\Camera.h" />
     <ClInclude Include="..\..\Public\Framework.h" />
     <ClInclude Include="..\..\Public\Primitive.h" />
     <ClInclude Include="..\..\Public\RefCntObject.h" />

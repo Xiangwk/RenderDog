@@ -31,9 +31,9 @@ namespace RenderDog
 	public:
 		virtual ~IBuffer() = default;
 
-		virtual void Release() = 0;
+		virtual void		Release() = 0;
 
-		virtual void Update() = 0;
+		virtual void		Update(void* srcData, uint32_t srcSize) = 0;
 	};
 
 	class IVertexBuffer : public IBuffer
@@ -61,13 +61,24 @@ namespace RenderDog
 		virtual uint32_t	GetIndexNum() const = 0;
 	};
 
+	class IConstantBuffer : public IBuffer
+	{
+	public:
+		virtual ~IConstantBuffer() = default;
+
+		virtual bool		Init(const BufferDesc& desc) = 0;
+
+		virtual void*		GetConstantBuffer() = 0;
+	};
+
 	class IBufferManager
 	{
 	public:
 		virtual ~IBufferManager() = default;
 
-		virtual IVertexBuffer*	CreateVertexBuffer() = 0;
-		virtual IIndexBuffer*	CreateIndexBuffer() = 0;
+		virtual IVertexBuffer*		CreateVertexBuffer() = 0;
+		virtual IIndexBuffer*		CreateIndexBuffer() = 0;
+		virtual IConstantBuffer*	CreateConstantBuffer() = 0;
 	};
 
 	extern IBufferManager* g_pIBufferManager;

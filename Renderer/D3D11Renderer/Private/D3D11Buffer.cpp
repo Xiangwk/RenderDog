@@ -20,12 +20,12 @@ namespace RenderDog
 	public:
 		D3D11VertexBuffer();
 
-		~D3D11VertexBuffer();
+		virtual ~D3D11VertexBuffer();
 
 		virtual bool		Init(const BufferDesc& desc, uint32_t stride, uint32_t offset) override;
 		virtual void		Release() override;
 
-		virtual void		Update() override;
+		virtual void		Update(void* srcData, uint32_t srcSize) override;
 
 		virtual void*		GetVertexBuffer() override;
 
@@ -79,7 +79,7 @@ namespace RenderDog
 		m_Offset = 0;
 	}
 
-	void D3D11VertexBuffer::Update()
+	void D3D11VertexBuffer::Update(void* srcData, uint32_t srcSize)
 	{
 	}
 
@@ -97,12 +97,12 @@ namespace RenderDog
 	{
 	public:
 		D3D11IndexBuffer();
-		~D3D11IndexBuffer();
+		virtual ~D3D11IndexBuffer();
 
 		virtual bool		Init(const BufferDesc& desc, uint32_t indexNum) override;
 		virtual void		Release() override;
 
-		virtual void		Update() override;
+		virtual void		Update(void* srcData, uint32_t srcSize) override;
 
 		virtual void*		GetIndexBuffer() override;
 
@@ -151,7 +151,7 @@ namespace RenderDog
 		m_indexNum = 0;
 	}
 
-	void D3D11IndexBuffer::Update()
+	void D3D11IndexBuffer::Update(void* srcData, uint32_t srcSize)
 	{
 	}
 
@@ -160,14 +160,98 @@ namespace RenderDog
 		return (void*)m_pIB;
 	}
 
+
+	//================================================================
+	//       ConstantBuffer
+	//================================================================
+
+	class D3D11ConstantBuffer : public IConstantBuffer
+	{
+	public:
+		D3D11ConstantBuffer();
+		virtual ~D3D11ConstantBuffer();
+
+		virtual bool		Init(const BufferDesc& desc) override;
+		virtual void		Release() override;
+
+		virtual void		Update(void* srcData, uint32_t srcSize) override;
+
+		virtual void*		GetConstantBuffer() override;
+
+	private:
+		ID3D11Buffer*		m_pCB;
+		bool				m_IsDynamic;
+	};
+
+	D3D11ConstantBuffer::D3D11ConstantBuffer() :
+		m_pCB(nullptr),
+		m_IsDynamic(false)
+	{}
+
+	D3D11ConstantBuffer::~D3D11ConstantBuffer()
+	{}
+
+	bool D3D11ConstantBuffer::Init(const BufferDesc& desc)
+	{
+		D3D11_BUFFER_DESC bufferDesc = {};
+		bufferDesc.Usage = desc.isDynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
+		bufferDesc.ByteWidth = desc.byteWidth;
+		bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		bufferDesc.CPUAccessFlags = desc.isDynamic ? D3D11_CPU_ACCESS_WRITE : 0;
+		D3D11_SUBRESOURCE_DATA initData = {};
+		initData.pSysMem = desc.pInitData;
+		if (FAILED(g_pD3D11Device->CreateBuffer(&bufferDesc, nullptr, &m_pCB)))
+		{
+			return false;
+		}
+
+		m_IsDynamic = desc.isDynamic;
+
+		return true;
+	}
+
+	void D3D11ConstantBuffer::Release()
+	{
+		if (m_pCB)
+		{
+			m_pCB->Release();
+			m_pCB = nullptr;
+		}
+	}
+
+	void D3D11ConstantBuffer::Update(void* srcData, uint32_t srcSize)
+	{
+		if (!m_IsDynamic)
+		{
+			g_pD3D11ImmediateContext->UpdateSubresource(m_pCB, 0, nullptr, srcData, 0, 0);
+		}
+		else
+		{
+			D3D11_MAPPED_SUBRESOURCE mappedResource = {};
+			g_pD3D11ImmediateContext->Map(m_pCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+			memcpy(mappedResource.pData, srcData, srcSize);
+			g_pD3D11ImmediateContext->Unmap(m_pCB, 0);
+		}
+	}
+
+	void* D3D11ConstantBuffer::GetConstantBuffer()
+	{
+		return (void*)m_pCB;
+	}
+
+	//================================================================
+	//       BufferManager
+	//================================================================
+
 	class D3D11BufferManager : public IBufferManager
 	{
 	public:
 		D3D11BufferManager() = default;
 		virtual ~D3D11BufferManager() = default;
 
-		virtual IVertexBuffer*	CreateVertexBuffer() override;
-		virtual IIndexBuffer*	CreateIndexBuffer() override;
+		virtual IVertexBuffer*		CreateVertexBuffer() override;
+		virtual IIndexBuffer*		CreateIndexBuffer() override;
+		virtual IConstantBuffer*	CreateConstantBuffer() override;
 	};
 
 	D3D11BufferManager g_D3D11BufferManager;
@@ -186,6 +270,13 @@ namespace RenderDog
 		D3D11IndexBuffer* pIndexBuffer = new D3D11IndexBuffer();
 
 		return pIndexBuffer;
+	}
+
+	IConstantBuffer* D3D11BufferManager::CreateConstantBuffer()
+	{
+		D3D11ConstantBuffer* pConstantBuffer = new D3D11ConstantBuffer();
+
+		return pConstantBuffer;
 	}
 
 

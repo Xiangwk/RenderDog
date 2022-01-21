@@ -17,9 +17,6 @@
     <ClInclude Include="..\..\Public\ShaderResourceUtility.h">
       <Filter>Public</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Public\Camera.h">
-      <Filter>Public</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Public\Model.h">
       <Filter>Public</Filter>
     </ClInclude>
@@ -38,9 +35,6 @@
       <Filter>Private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Private\ShaderResourceUtility.cpp">
-      <Filter>Private</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Private\Camera.cpp">
       <Filter>Private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Private\Model.cpp">

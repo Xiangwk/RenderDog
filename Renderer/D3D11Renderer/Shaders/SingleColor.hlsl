@@ -1,9 +1,14 @@
-//cbuffer cbPerObject : register(b0)
-//{
-//	matrix WorldMat;
-//	matrix ViewMat;
-//	matrix ProjMat;
-//};
+cbuffer GlobleCB : register(b0)
+{
+	
+	matrix ViewMat;
+	matrix ProjMat;
+};
+
+cbuffer PerObjCB : register(b1)
+{
+	matrix WorldMat;
+};
 
 struct VS_Input
 {
@@ -23,13 +28,11 @@ struct VS_Output
 VS_Output VS(VS_Input vsInput)
 {
 	VS_Output vsOutput = (VS_Output)0;
-	/*float4 PosL = float4(vs_input.Pos, 1.0f);
-	vs_output.Pos = mul(PosL, WorldMat);
-	vs_output.Pos = mul(vs_output.Pos, ViewMat);
-	vs_output.Pos = mul(vs_output.Pos, ProjMat);*/
+	float4 PosL = float4(vsInput.Pos, 1.0f);
+	vsOutput.Pos = mul(PosL, WorldMat);
+	vsOutput.Pos = mul(vsOutput.Pos, ViewMat);
+	vsOutput.Pos = mul(vsOutput.Pos, ProjMat);
 
-	vsOutput.Pos = float4(vsInput.Pos, 1.0f);
-	vsOutput.Pos.z = 0.0f;
 	vsOutput.Color = vsInput.Color;
 
 	return vsOutput;

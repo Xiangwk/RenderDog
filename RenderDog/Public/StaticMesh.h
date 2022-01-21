@@ -16,15 +16,17 @@ namespace RenderDog
 {
 	struct StaticMeshRenderData
 	{
-		IVertexBuffer*	pVB;
-		IIndexBuffer*	pIB;
+		IVertexBuffer*		pVB;
+		IIndexBuffer*		pIB;
+		IConstantBuffer*	pCB;
 
-		IShader*		pVS;
-		IShader*		pPS;
+		IShader*			pVS;
+		IShader*			pPS;
 
 		StaticMeshRenderData() :
 			pVB(nullptr),
 			pIB(nullptr),
+			pCB(nullptr),
 			pVS(nullptr),
 			pPS(nullptr)
 		{}
@@ -42,6 +44,8 @@ namespace RenderDog
 
 		void InitRenderData();
 		void ReleaseRenderData();
+
+		void SetPosGesture(const Vector3& pos, const Vector3& euler, const Vector3& scale);
 
 	private:
 		std::vector<LocalVertex>	m_Vertices;

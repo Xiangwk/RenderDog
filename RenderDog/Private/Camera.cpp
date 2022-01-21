@@ -1,3 +1,9 @@
+////////////////////////////////////////
+//RenderDog <¡¤,¡¤>
+//FileName: Camera.cpp
+//Written by Xiang Weikang
+////////////////////////////////////////
+
 #include "Camera.h"
 
 #include "Transform.h"

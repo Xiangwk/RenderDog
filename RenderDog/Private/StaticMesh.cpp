@@ -5,6 +5,8 @@
 ////////////////////////////////////////
 
 #include "StaticMesh.h"
+#include "Matrix.h"
+#include "Transform.h"
 
 namespace RenderDog
 {
@@ -23,10 +25,12 @@ namespace RenderDog
 	void StaticMesh::Render(IPrimitiveRenderer* pPrimitiveRenderer)
 	{
 		PrimitiveRenderParam renderParam = {};
-		renderParam.pVB = m_pRenderData->pVB;
-		renderParam.pIB = m_pRenderData->pIB;
-		renderParam.pVS = m_pRenderData->pVS;
-		renderParam.pPS = m_pRenderData->pPS;
+		renderParam.pVB			= m_pRenderData->pVB;
+		renderParam.pIB			= m_pRenderData->pIB;
+		renderParam.pGlobalCB	= pPrimitiveRenderer->GetVSConstantBuffer();
+		renderParam.pPerObjCB	= m_pRenderData->pCB;
+		renderParam.pVS			= m_pRenderData->pVS;
+		renderParam.pPS			= m_pRenderData->pPS;
 
 		pPrimitiveRenderer->Render(renderParam);
 	}
@@ -62,6 +66,17 @@ namespace RenderDog
 			m_pRenderData->pIB->Init(ibDesc, (uint32_t)m_Indices.size());
 		}
 
+		BufferDesc cbDesc = {};
+		cbDesc.byteWidth = sizeof(Matrix4x4);
+		cbDesc.pInitData = nullptr;
+		cbDesc.isDynamic = false;
+		m_pRenderData->pCB = g_pIBufferManager->CreateConstantBuffer();
+		if (m_pRenderData->pCB)
+		{
+			m_pRenderData->pCB->Init(cbDesc);
+		}
+
+
 		m_pRenderData->pVS = g_pIShaderManager->CreateVertexShader(RD_VERTEX_TYPE_STANDARD);
 		m_pRenderData->pVS->CompileFromFile("Shaders/SingleColor.hlsl", nullptr, "VS", "vs_5_0", 0);
 		m_pRenderData->pVS->Init();
@@ -77,6 +92,7 @@ namespace RenderDog
 		{
 			m_pRenderData->pVB->Release();
 			m_pRenderData->pIB->Release();
+			m_pRenderData->pCB->Release();
 			m_pRenderData->pVS->Release();
 			m_pRenderData->pPS->Release();
 
@@ -85,6 +101,15 @@ namespace RenderDog
 		}
 	}
 
+	void StaticMesh::SetPosGesture(const Vector3& pos, const Vector3& euler, const Vector3& scale)
+	{
+		Matrix4x4 transMat = GetTranslationMatrix(pos.x, pos.y, pos.z);
+		Matrix4x4 rotMat = GetRotationMatrix(euler.x, euler.y, euler.z);
+		Matrix4x4 scaleMat = GetScaleMatrix(scale.x, scale.y, scale.z);
 
+		Matrix4x4 worldMat = transMat * rotMat * scaleMat;
+
+		m_pRenderData->pCB->Update(&worldMat, sizeof(Matrix4x4));
+	}
 
 }// namespace RenderDog
