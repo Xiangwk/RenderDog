@@ -23,9 +23,6 @@
     <ClInclude Include="..\..\Public\Mesh.h">
       <Filter>Public</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Public\Light.h">
-      <Filter>Public</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Public\GameTimer.h">
       <Filter>Public</Filter>
     </ClInclude>
@@ -41,9 +38,6 @@
       <Filter>Private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Private\Mesh.cpp">
-      <Filter>Private</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Private\Light.cpp">
       <Filter>Private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Private\GameTimer.cpp">
