@@ -167,9 +167,8 @@ namespace RenderDog
 
 		struct DirectionalLightData
 		{
+			Vector4		color;
 			Vector3		direction;
-			float		padding;
-			Vector3		color;
 			float		luminance;
 		};
 
@@ -402,8 +401,7 @@ namespace RenderDog
 			ILight* pMainLight = m_pSceneView->GetLight(0);
 			DirectionalLightData dirLightData = {};
 			dirLightData.direction = pMainLight->GetDirection();
-			dirLightData.padding = 0.0f;
-			dirLightData.color = pMainLight->GetColor();
+			dirLightData.color = Vector4(pMainLight->GetColor(), 1.0f);
 			dirLightData.luminance = pMainLight->GetLuminance();
 
 			m_pLightingConstantBuffer->Update(&dirLightData, sizeof(dirLightData));
@@ -492,6 +490,12 @@ namespace RenderDog
 		m_ScreenViewport.MinDepth = 0;
 		m_ScreenViewport.MaxDepth = 1;
 		g_pD3D11ImmediateContext->RSSetViewports(1, &m_ScreenViewport);
+
+		if (m_pSceneView && m_pSceneView->GetCamera())
+		{
+			m_pSceneView->GetCamera()->OnWindowResize(width, height);
+
+		}
 
 		return true;
 	}

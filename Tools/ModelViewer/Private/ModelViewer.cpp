@@ -48,7 +48,7 @@ bool ModelViewer::Init(const RenderDog::InitDesc& desc)
 
 	m_pModel = new RenderDog::StaticModel();
 	m_pModel->LoadFromData(boxMeshData.vertices, boxMeshData.indices);
-	m_pModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(45.0f, 45.0f, 0.0f), RenderDog::Vector3(1.0f));
+	m_pModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(45.0f, 70.0f, 20.0f), RenderDog::Vector3(1.0f));
 
 	m_pModel->RegisterToScene(m_pScene);
 

@@ -8,6 +8,8 @@
 
 #include "Matrix.h"
 
+#include <cstdint>
+
 namespace RenderDog
 {
 	struct CameraDesc
@@ -41,6 +43,8 @@ namespace RenderDog
 
 		void Move(float speed, MoveMode moveMode);
 		void Rotate(float deltaYaw, float deltaPitch, float speed);
+
+		void OnWindowResize(uint32_t width, uint32_t height);
 
 	private:
 		Vector3	m_Postion;

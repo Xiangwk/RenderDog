@@ -85,4 +85,9 @@ namespace RenderDog
 		m_Right = Vector3(matView(0, 0), matView(1, 0), matView(2, 0));
 		m_Up = Vector3(matView(0, 1), matView(1, 1), matView(2, 1));
 	}
+
+	void FPSCamera::OnWindowResize(uint32_t width, uint32_t height)
+	{
+		m_Aspect = float(width) / (float)height;
+	}
 }
