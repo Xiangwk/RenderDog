@@ -130,6 +130,8 @@
     <PostBuildEvent>
       <Command>xcopy $(TargetDir)*.lib ..\..\..\..\EngineSDK\Renderer\Libs\ /i /s /y
 xcopy ..\..\Public\*.* ..\..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i /s /y
+
+del /s /q /f ..\..\..\..\EngineSDK\Renderer\Shaders\*.* 
 xcopy ..\..\Shaders\*.* ..\..\..\..\EngineSDK\Renderer\Shaders\ /i /s /y</Command>
     </PostBuildEvent>
     <Lib>
@@ -155,6 +157,8 @@ xcopy ..\..\Shaders\*.* ..\..\..\..\EngineSDK\Renderer\Shaders\ /i /s /y</Comman
     <PostBuildEvent>
       <Command>xcopy $(TargetDir)*.lib ..\..\..\..\EngineSDK\Renderer\Libs\ /i /s /y
 xcopy ..\..\Public\*.* ..\..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i /s /y
+
+del     ..\..\..\..\EngineSDK\Renderer\Shaders\*.* 
 xcopy ..\..\Shaders\*.* ..\..\..\..\EngineSDK\Renderer\Shaders\ /i /s /y</Command>
     </PostBuildEvent>
     <Lib>
@@ -172,7 +176,16 @@ xcopy ..\..\Shaders\*.* ..\..\..\..\EngineSDK\Renderer\Shaders\ /i /s /y</Comman
     <ClInclude Include="..\..\Public\D3D11Renderer.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Shaders\SingleColor.hlsl">
+    <None Include="..\..\Shaders\PhongLightingCommon.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\Shaders\PhongLightingPixelShader.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\Shaders\SingleColorPixelShader.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\Shaders\StaticModelVertexShader.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

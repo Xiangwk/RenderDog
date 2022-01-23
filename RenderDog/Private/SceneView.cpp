@@ -11,6 +11,7 @@ namespace RenderDog
 {
 	SceneView::SceneView():
 		m_Primitives(0),
+		m_Lights(0),
 		m_pCamera(nullptr)
 	{}
 
@@ -31,6 +32,10 @@ namespace RenderDog
 
 	SceneView::~SceneView()
 	{
+		m_Primitives.clear();
+
+		m_Lights.clear();
+
 		if (m_pCamera)
 		{
 			delete m_pCamera;
@@ -46,6 +51,26 @@ namespace RenderDog
 	IPrimitive* SceneView::GetPrimitive(uint32_t index)
 	{
 		return m_Primitives[index];
+	}
+
+	void SceneView::AddLight(ILight* pLight)
+	{
+		m_Lights.push_back(pLight);
+	}
+
+	ILight* SceneView::GetLight(uint32_t index)
+	{
+		return m_Lights[index];
+	}
+
+	void SceneView::ClearPrimitives() 
+	{ 
+		m_Primitives.clear(); 
+	}
+
+	void SceneView::ClearLights() 
+	{ 
+		m_Lights.clear();
 	}
 
 }// namespace RenderDog

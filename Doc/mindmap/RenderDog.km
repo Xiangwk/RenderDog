@@ -506,13 +506,26 @@
                                     "created": 1627922334327,
                                     "text": "抽出一个Platform工程",
                                     "layout_right_offset": {
-                                        "x": 168.49999914318323,
-                                        "y": 54.7500009872017
+                                        "x": 171.49999914318323,
+                                        "y": 97.7500009872017
                                     },
-                                    "priority": 1,
-                                    "progress": 1
+                                    "priority": null,
+                                    "progress": 9
                                 },
-                                "children": []
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "chcrvqwjvbs0",
+                                            "created": 1642912516889,
+                                            "text": "不再需要Platform了，统一放到RenderDog中即可",
+                                            "layout_right_offset": {
+                                                "x": 24,
+                                                "y": 43
+                                            }
+                                        },
+                                        "children": []
+                                    }
+                                ]
                             }
                         ]
                     }
@@ -615,6 +628,18 @@
                                 ]
                             }
                         ]
+                    },
+                    {
+                        "data": {
+                            "id": "chcro93c0g00",
+                            "created": 1642911929568,
+                            "text": "增加一个资源管理器，用于统一创建渲染时需要的各种资源",
+                            "layout_right_offset": {
+                                "x": 147,
+                                "y": 39
+                            }
+                        },
+                        "children": []
                     }
                 ]
             },

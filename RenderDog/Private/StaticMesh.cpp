@@ -29,6 +29,7 @@ namespace RenderDog
 		renderParam.pIB			= m_pRenderData->pIB;
 		renderParam.pGlobalCB	= pPrimitiveRenderer->GetVSConstantBuffer();
 		renderParam.pPerObjCB	= m_pRenderData->pCB;
+		renderParam.pLightingCB = pPrimitiveRenderer->GetLightingConstantbuffer();
 		renderParam.pVS			= m_pRenderData->pVS;
 		renderParam.pPS			= m_pRenderData->pPS;
 
@@ -78,11 +79,11 @@ namespace RenderDog
 
 
 		m_pRenderData->pVS = g_pIShaderManager->CreateVertexShader(RD_VERTEX_TYPE_STANDARD);
-		m_pRenderData->pVS->CompileFromFile("Shaders/SingleColor.hlsl", nullptr, "VS", "vs_5_0", 0);
+		m_pRenderData->pVS->CompileFromFile("Shaders/StaticModelVertexShader.hlsl", nullptr, "Main", "vs_5_0", 0);
 		m_pRenderData->pVS->Init();
 
 		m_pRenderData->pPS = g_pIShaderManager->CreatePixelShader();
-		m_pRenderData->pPS->CompileFromFile("Shaders/SingleColor.hlsl", nullptr, "PS", "ps_5_0", 0);
+		m_pRenderData->pPS->CompileFromFile("Shaders/PhongLightingPixelShader.hlsl", nullptr, "Main", "ps_5_0", 0);
 		m_pRenderData->pPS->Init();
 	}
 

@@ -99,10 +99,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>del /s /q /f ..\..\..\EngineSDK\RenderDog\Libs\*.*
-del /s /q /f ..\..\..\EngineSDK\RenderDog\Public\$(ProjectName)\*.*
-
-xcopy $(TargetDir)*.lib ..\..\..\EngineSDK\RenderDog\Libs\ /i /s /y
+      <Command>xcopy $(TargetDir)*.lib ..\..\..\EngineSDK\RenderDog\Libs\ /i /s /y
 xcopy ..\..\Public\*.* ..\..\..\EngineSDK\RenderDog\Public\$(ProjectName)\ /i /s /y
 xcopy ..\..\Math\Public\*.* ..\..\..\EngineSDK\RenderDog\Public\Math\ /i /s /y</Command>
     </PostBuildEvent>

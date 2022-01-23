@@ -7,6 +7,7 @@
 #include "Renderer.h"
 #include "D3D11Renderer.h"
 #include "Primitive.h"
+#include "Light.h"
 #include "Scene.h"
 #include "SceneView.h"
 #include "D3D11InputLayout.h"
@@ -18,30 +19,35 @@ namespace RenderDog
 	ID3D11Device*			g_pD3D11Device = nullptr;
 	ID3D11DeviceContext*	g_pD3D11ImmediateContext = nullptr;
 
+	//===========================================================
+	//    Mesh Renderer
+	//===========================================================
+
 	class D3D11MeshRenderer : public IPrimitiveRenderer
 	{
 	public:
 		D3D11MeshRenderer();
-		D3D11MeshRenderer(IConstantBuffer* pCB);
+		D3D11MeshRenderer(IConstantBuffer* pVertexShaderCB);
 		virtual ~D3D11MeshRenderer();
 
-		virtual IConstantBuffer*		GetVSConstantBuffer() override { return m_pVSConstantBuffer; }
+		virtual IConstantBuffer*		GetVSConstantBuffer() override { return m_pVertexShaderCB; }
+		virtual IConstantBuffer*		GetLightingConstantbuffer() override { return nullptr; }
 
 		virtual void					Render(const PrimitiveRenderParam& renderParam) override;
 
-	private:
-		IConstantBuffer*				m_pVSConstantBuffer;
+	protected:
+		IConstantBuffer*				m_pVertexShaderCB;
 	};
 
 	D3D11MeshRenderer::D3D11MeshRenderer() :
-		m_pVSConstantBuffer(nullptr)
+		m_pVertexShaderCB(nullptr)
 	{}
 
 	D3D11MeshRenderer::~D3D11MeshRenderer()
 	{}
 
-	D3D11MeshRenderer::D3D11MeshRenderer(IConstantBuffer* pCB) :
-		m_pVSConstantBuffer(pCB)
+	D3D11MeshRenderer::D3D11MeshRenderer(IConstantBuffer* pVertexShaderCB) :
+		m_pVertexShaderCB(pVertexShaderCB)
 	{}
 
 	void D3D11MeshRenderer::Render(const PrimitiveRenderParam& renderParam)
@@ -79,6 +85,76 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
 	}
 
+	class D3D11MeshLightingRenderer : public D3D11MeshRenderer
+	{
+	public:
+		D3D11MeshLightingRenderer();
+		D3D11MeshLightingRenderer(IConstantBuffer* pVertexShaderCB, IConstantBuffer* pLightingCB);
+		virtual ~D3D11MeshLightingRenderer();
+
+		virtual IConstantBuffer*		GetLightingConstantbuffer() override { return m_LightingCB; }
+
+		virtual void					Render(const PrimitiveRenderParam& renderParam) override;
+
+	protected:
+		IConstantBuffer*				m_LightingCB;
+	};
+
+	D3D11MeshLightingRenderer::D3D11MeshLightingRenderer() :
+		D3D11MeshRenderer(),
+		m_LightingCB(nullptr)
+	{}
+
+	D3D11MeshLightingRenderer::D3D11MeshLightingRenderer(IConstantBuffer* pVertexShaderCB, IConstantBuffer* pLightingCB):
+		D3D11MeshRenderer(pVertexShaderCB),
+		m_LightingCB(pLightingCB)
+	{}
+
+	D3D11MeshLightingRenderer::~D3D11MeshLightingRenderer()
+	{}
+
+	void D3D11MeshLightingRenderer::Render(const PrimitiveRenderParam& renderParam)
+	{
+		if (!g_pD3D11ImmediateContext)
+		{
+			return;
+		}
+
+		if (!renderParam.pVB || !renderParam.pIB)
+		{
+			return;
+		}
+
+		ID3D11Buffer* pVB = (ID3D11Buffer*)(renderParam.pVB->GetVertexBuffer());
+		ID3D11Buffer* pIB = (ID3D11Buffer*)(renderParam.pIB->GetIndexBuffer());
+
+		uint32_t indexNum = renderParam.pIB->GetIndexNum();
+
+		uint32_t stride = renderParam.pVB->GetStride();
+		uint32_t offset = renderParam.pVB->GetOffset();
+		g_pD3D11ImmediateContext->IASetVertexBuffers(0, 1, &pVB, &stride, &offset);
+		g_pD3D11ImmediateContext->IASetIndexBuffer(pIB, DXGI_FORMAT_R32_UINT, 0);
+
+		renderParam.pVS->SetToContext();
+
+		ID3D11Buffer* pGlobalCB = (ID3D11Buffer*)(renderParam.pGlobalCB->GetConstantBuffer());
+		g_pD3D11ImmediateContext->VSSetConstantBuffers(0, 1, &pGlobalCB);
+
+		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetConstantBuffer());
+		g_pD3D11ImmediateContext->VSSetConstantBuffers(1, 1, &pPerObjCB);
+
+		renderParam.pPS->SetToContext();
+
+		ID3D11Buffer* pLightingCB = (ID3D11Buffer*)(m_LightingCB->GetConstantBuffer());
+		g_pD3D11ImmediateContext->PSSetConstantBuffers(0, 1, &pLightingCB);
+
+		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
+	}
+
+
+	//===========================================================
+	//    D3D11 Renderer
+	//===========================================================
 
 	class D3D11Renderer : public IRenderer
 	{
@@ -87,6 +163,14 @@ namespace RenderDog
 		{
 			Matrix4x4	viewMatrix;
 			Matrix4x4	projMatrix;
+		};
+
+		struct DirectionalLightData
+		{
+			Vector3		direction;
+			float		padding;
+			Vector3		color;
+			float		luminance;
 		};
 
 	public:
@@ -104,7 +188,7 @@ namespace RenderDog
 	private:
 		void						ClearBackRenderTarget(float* clearColor);
 
-		void						AddPrimitivesToSceneView(IScene* pScene);
+		void						AddPrisAndLightsToSceneView(IScene* pScene);
 
 		void						RenderPrimitives();
 
@@ -117,8 +201,9 @@ namespace RenderDog
 		D3D11_VIEWPORT				m_ScreenViewport;
 
 		SceneView*					m_pSceneView;
-		GlobalConstantData			m_GlobalConstantData;
+
 		IConstantBuffer*			m_pGlobalConstantBuffer;
+		IConstantBuffer*			m_pLightingConstantBuffer;
 	};
 
 	D3D11Renderer g_D3D11Renderer;
@@ -134,8 +219,8 @@ namespace RenderDog
 		m_pDepthStencilView(nullptr),
 		m_ScreenViewport(),
 		m_pSceneView(nullptr),
-		m_GlobalConstantData(),
-		m_pGlobalConstantBuffer(nullptr)
+		m_pGlobalConstantBuffer(nullptr),
+		m_pLightingConstantBuffer(nullptr)
 	{}
 
 	D3D11Renderer::~D3D11Renderer()
@@ -218,12 +303,20 @@ namespace RenderDog
 		}
 
 		m_pSceneView = new SceneView(desc.backBufferWidth, desc.backBufferHeight);
+
 		m_pGlobalConstantBuffer = g_pIBufferManager->CreateConstantBuffer();
 		BufferDesc cbDesc = {};
 		cbDesc.byteWidth = sizeof(GlobalConstantData);
 		cbDesc.pInitData = nullptr;
 		cbDesc.isDynamic = true;
 		if (!m_pGlobalConstantBuffer->Init(cbDesc))
+		{
+			return false;
+		}
+
+		m_pLightingConstantBuffer = g_pIBufferManager->CreateConstantBuffer();
+		cbDesc.byteWidth = sizeof(DirectionalLightData);
+		if (!m_pLightingConstantBuffer->Init(cbDesc))
 		{
 			return false;
 		}
@@ -244,6 +337,13 @@ namespace RenderDog
 			m_pGlobalConstantBuffer->Release();
 			delete m_pGlobalConstantBuffer;
 			m_pGlobalConstantBuffer = nullptr;
+		}
+
+		if (m_pLightingConstantBuffer)
+		{
+			m_pLightingConstantBuffer->Release();
+			delete m_pLightingConstantBuffer;
+			m_pLightingConstantBuffer = nullptr;
 		}
 
 		if (m_pRenderTargetView)
@@ -291,10 +391,23 @@ namespace RenderDog
 	void D3D11Renderer::Update()
 	{
 		FPSCamera* pCamera = m_pSceneView->GetCamera();
-		m_GlobalConstantData.viewMatrix = Transpose(pCamera->GetViewMatrix());
-		m_GlobalConstantData.projMatrix = Transpose(pCamera->GetPerspProjectionMatrix());
+		GlobalConstantData globalCBData = {};
+		globalCBData.viewMatrix = Transpose(pCamera->GetViewMatrix());
+		globalCBData.projMatrix = Transpose(pCamera->GetPerspProjectionMatrix());
 
-		m_pGlobalConstantBuffer->Update(&m_GlobalConstantData, sizeof(m_GlobalConstantData));
+		m_pGlobalConstantBuffer->Update(&globalCBData, sizeof(globalCBData));
+
+		if (m_pSceneView->GetLightNum() > 0)
+		{
+			ILight* pMainLight = m_pSceneView->GetLight(0);
+			DirectionalLightData dirLightData = {};
+			dirLightData.direction = pMainLight->GetDirection();
+			dirLightData.padding = 0.0f;
+			dirLightData.color = pMainLight->GetColor();
+			dirLightData.luminance = pMainLight->GetLuminance();
+
+			m_pLightingConstantBuffer->Update(&dirLightData, sizeof(dirLightData));
+		}
 	}
 
 
@@ -302,7 +415,7 @@ namespace RenderDog
 	{
 		m_pSceneView->ClearPrimitives();
 
-		AddPrimitivesToSceneView(pScene);
+		AddPrisAndLightsToSceneView(pScene);
 
 		g_pD3D11ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -394,7 +507,7 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
 	}
 
-	void D3D11Renderer::AddPrimitivesToSceneView(IScene* pScene)
+	void D3D11Renderer::AddPrisAndLightsToSceneView(IScene* pScene)
 	{
 		uint32_t priNum = pScene->GetPrimitivesNum();
 		for (uint32_t i = 0; i < priNum; ++i)
@@ -404,11 +517,23 @@ namespace RenderDog
 			//FIXME!!! 这里后续应该添加视锥裁剪
 			m_pSceneView->AddPrimitive(pPri);
 		}
+
+		uint32_t lightsNum = pScene->GetLightsNum();
+		for (uint32_t i = 0; i < lightsNum; ++i)
+		{
+			ILight* pLight = pScene->GetLight(i);
+
+			if (pLight->GetType() == RD_LIGHT_TYPE_DIRECTIONAL)
+			{
+				m_pSceneView->AddLight(pLight);
+			}
+		}
 	}
 
 	void D3D11Renderer::RenderPrimitives()
 	{
-		D3D11MeshRenderer meshRender(m_pGlobalConstantBuffer);
+		//D3D11MeshRenderer meshRender(m_pGlobalConstantBuffer);
+		D3D11MeshLightingRenderer meshRender(m_pGlobalConstantBuffer, m_pLightingConstantBuffer);
 
 		uint32_t priNum = m_pSceneView->GetPrimitiveNum();
 		for (uint32_t i = 0; i < priNum; ++i)

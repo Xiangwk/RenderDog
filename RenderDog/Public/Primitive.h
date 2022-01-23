@@ -14,19 +14,21 @@ namespace RenderDog
 {
 	struct PrimitiveRenderParam
 	{
-		IVertexBuffer*		pVB;
-		IIndexBuffer*		pIB;
-		IConstantBuffer*	pGlobalCB;
-		IConstantBuffer*	pPerObjCB;
+		IVertexBuffer* pVB;
+		IIndexBuffer* pIB;
+		IConstantBuffer* pGlobalCB;
+		IConstantBuffer* pPerObjCB;
+		IConstantBuffer* pLightingCB;
 
-		IShader*			pVS;
-		IShader*			pPS;
+		IShader* pVS;
+		IShader* pPS;
 
 		PrimitiveRenderParam() :
 			pVB(nullptr),
 			pIB(nullptr),
 			pGlobalCB(nullptr),
 			pPerObjCB(nullptr),
+			pLightingCB(nullptr),
 			pVS(nullptr),
 			pPS(nullptr)
 		{}
@@ -38,6 +40,7 @@ namespace RenderDog
 		virtual ~IPrimitiveRenderer() = default;
 
 		virtual IConstantBuffer*	GetVSConstantBuffer() = 0;
+		virtual IConstantBuffer*	GetLightingConstantbuffer() = 0;
 
 		virtual void				Render(const PrimitiveRenderParam& renderParam) = 0;
 	};

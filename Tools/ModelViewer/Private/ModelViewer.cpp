@@ -15,7 +15,8 @@ ModelViewer::ModelViewer() :
 	m_pRenderDog(nullptr),
 	m_pScene(nullptr),
 	m_pModel(nullptr),
-	m_FPSCamera()
+	m_FPSCamera(),
+	m_pMainLight(nullptr)
 {}
 
 ModelViewer::~ModelViewer()
@@ -51,6 +52,15 @@ bool ModelViewer::Init(const RenderDog::InitDesc& desc)
 
 	m_pModel->RegisterToScene(m_pScene);
 
+	RenderDog::LightDesc lightDesc = {};
+	lightDesc.type = RenderDog::RD_LIGHT_TYPE_DIRECTIONAL;
+	lightDesc.color = RenderDog::Vector3(1.0f, 1.0f, 1.0f);
+	lightDesc.eulerDir = RenderDog::Vector3(0.0f, 0.0f, 0.0f);
+	lightDesc.luminance = 1.0f;
+	m_pMainLight = RenderDog::g_pILightManager->CreateLight(lightDesc);
+
+	m_pMainLight->RegisterToScene(m_pScene);
+
 	RenderDog::g_pIFramework->RegisterScene(m_pScene);
 
 	return true;
@@ -64,6 +74,11 @@ void ModelViewer::Release()
 
 		delete m_pModel;
 		m_pModel = nullptr;
+	}
+
+	if (m_pMainLight)
+	{
+		m_pMainLight->Release();
 	}
 
 	m_pScene->Release();

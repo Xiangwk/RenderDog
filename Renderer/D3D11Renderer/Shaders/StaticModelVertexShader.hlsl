@@ -1,6 +1,11 @@
+////////////////////////////////////////
+//RenderDog <¡¤,¡¤>
+//FileName: StaticModelVertexShader.hlsl
+//Written by Xiang Weikang
+////////////////////////////////////////
+
 cbuffer GlobleCB : register(b0)
 {
-	
 	matrix ViewMat;
 	matrix ProjMat;
 };
@@ -10,7 +15,7 @@ cbuffer PerObjCB : register(b1)
 	matrix WorldMat;
 };
 
-struct VS_Input
+struct VSInput
 {
 	float3 Pos		: POSITION;
 	float4 Color	: COLOR;
@@ -19,26 +24,26 @@ struct VS_Input
 	float2 Texcoord : TEXCOORD;
 };
 
-struct VS_Output
+struct VSOutput
 {
-	float4 Pos   : SV_POSITION;
-	float4 Color : COLOR;
+	float4 Pos		: SV_POSITION;
+	float4 Color	: COLOR;
+	float3 Normal	: NORMAL;
 };
 
-VS_Output VS(VS_Input vsInput)
+VSOutput Main(VSInput vsInput)
 {
-	VS_Output vsOutput = (VS_Output)0;
+	VSOutput vsOutput = (VSOutput)0;
 	float4 PosL = float4(vsInput.Pos, 1.0f);
 	vsOutput.Pos = mul(PosL, WorldMat);
 	vsOutput.Pos = mul(vsOutput.Pos, ViewMat);
 	vsOutput.Pos = mul(vsOutput.Pos, ProjMat);
 
+	float4 normal = float4(vsInput.Normal, 0.0f);
+	normal = mul(normal, WorldMat);
+	vsOutput.Normal = normalize(normal.xyz);
+
 	vsOutput.Color = vsInput.Color;
 
 	return vsOutput;
-}
-
-float4 PS(VS_Output vs_output) : SV_Target
-{
-	return vs_output.Color;
 }

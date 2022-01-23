@@ -49,7 +49,7 @@ Vector2							g_LastMousePos;
 
 RenderDog::StaticModel*			g_pStaticModel;
 
-RenderDog::DirectionalLight*	g_pMainLight;
+RenderDog::ILight*				g_pMainLight;
 
 
 int aKeys[512];	// 当前键盘按下状态
@@ -231,12 +231,12 @@ bool InitDevice()
 
 	memset(aKeys, 0, sizeof(int) * 512);
 
-	RenderDog::DirLightDesc dirLightDesc;
+	RenderDog::LightDesc dirLightDesc;
+	dirLightDesc.type = RenderDog::RD_LIGHT_TYPE_DIRECTIONAL;
 	dirLightDesc.color = Vector3(1.0f, 1.0f, 1.0f);
 	dirLightDesc.luminance = 0.8f;
-	dirLightDesc.pitch = -3.14f * 0.25f;
-	dirLightDesc.yaw = 3.14f * 0.25f;
-	g_pMainLight = new RenderDog::DirectionalLight(dirLightDesc);
+	dirLightDesc.eulerDir = Vector3(45.0f, 45.0f, 45.0f);
+	g_pMainLight = RenderDog::g_pILightManager->CreateLight(dirLightDesc);
 
 	return true;
 }
@@ -326,8 +326,7 @@ void CleanupDevice()
 
 	if (g_pMainLight)
 	{
-		delete g_pMainLight;
-		g_pMainLight = nullptr;
+		g_pMainLight->Release();
 	}
 
 	if (g_pGameTimer)

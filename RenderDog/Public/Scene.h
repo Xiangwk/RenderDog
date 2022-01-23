@@ -13,6 +13,7 @@
 namespace RenderDog
 {
 	class IPrimitive;
+	class ILight;
 
 	struct SceneInitDesc
 	{
@@ -30,6 +31,10 @@ namespace RenderDog
 		virtual void			RegisterPrimitive(IPrimitive* pPrimitive) = 0;
 		virtual IPrimitive*		GetPrimitive(uint32_t index) = 0;
 		virtual uint32_t		GetPrimitivesNum() const = 0;
+
+		virtual	void			RegisterLight(ILight* pLight) = 0;
+		virtual ILight*			GetLight(uint32_t index) = 0;
+		virtual uint32_t		GetLightsNum() const = 0;
 	};
 
 	class ISceneManager

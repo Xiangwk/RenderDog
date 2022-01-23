@@ -7,38 +7,56 @@
 #pragma once
 
 #include "Vector.h"
+#include "RefCntObject.h"
 
 namespace RenderDog
 {
-	struct DirLightDesc
+	class IScene;
+
+	enum LightType
 	{
-		Vector3	color;
-		float	luminance;
-		float	pitch;
-		float	yaw;
+		RD_LIGHT_TYPE_DIRECTIONAL,
+		RD_LIGHT_TYPE_POINT,
+		RD_LIGHT_TYPE_SPOT
 	};
 
-	class DirectionalLight
+	struct LightDesc
+	{
+		LightType	type;
+		Vector3		color;
+		Vector3		eulerDir;
+		float		luminance;
+	};
+
+	class ILight : public RefCntObject
 	{
 	public:
-		DirectionalLight(const DirLightDesc& desc);
-		~DirectionalLight() {}
+		virtual ~ILight() = default;
 
-		void		UpdateDirection(float deltaYaw, float deltaPitch);
+		virtual bool		Init(const LightDesc& desc) = 0;
+		virtual void		Release() = 0;
 
-		Vector3		GetDirection() const { return m_Direction; }
-		Vector3		GetColor() const { return m_Color; }
-		float		GetLuminance() const { return m_Luminance; }
+		virtual LightType	GetType() const = 0;
 
-		void		SetColor(const Vector3& color) { m_Color = color; }
-		void		SetLuminance(float luma) { m_Luminance = luma; }
+		virtual Vector3		GetDirection() const = 0;
+		virtual Vector3		GetColor() const = 0;
+		virtual float		GetLuminance() const = 0;
+		
+		virtual void		SetDirection(float eulerX, float eulerY, float eulerZ) = 0;
+		virtual void		SetColor(const Vector3& color) = 0;
+		virtual void		SetLuminance(float luma) = 0;
 
-	private:
-		Vector3		m_Direction;	//从光源发射光线的方向
-		Vector3		m_Color;
-		float		m_Luminance;
-
-		float		m_Pitch;		//俯仰角
-		float		m_Yaw;			//偏航角
+		virtual void		RegisterToScene(IScene* pScene) = 0;
 	};
+
+	class ILightManager
+	{
+	public:
+		virtual ~ILightManager() = default;
+
+		virtual	ILight*		CreateLight(const LightDesc& desc) = 0;
+		virtual void		ReleaseLight(ILight* pLight) = 0;
+	};
+
+	extern ILightManager* g_pILightManager;
 }

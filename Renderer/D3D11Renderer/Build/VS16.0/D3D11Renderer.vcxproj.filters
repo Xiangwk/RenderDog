@@ -34,7 +34,16 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Shaders\SingleColor.hlsl">
+    <None Include="..\..\Shaders\PhongLightingCommon.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\Shaders\PhongLightingPixelShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\Shaders\SingleColorPixelShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\Shaders\StaticModelVertexShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

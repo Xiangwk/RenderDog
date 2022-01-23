@@ -6,40 +6,48 @@
 
 #include "Scene.h"
 #include "Primitive.h"
+#include "Light.h"
 
 #include <vector>
 
 namespace RenderDog
 {
-	//--------------------------------------------------------------
+	//==============================================================
 	//                   Scene
-	//--------------------------------------------------------------
+	//==============================================================
 	class Scene : public IScene
 	{
 	public:
 		Scene();
 		~Scene();
 
-		virtual bool Init(const SceneInitDesc& desc) override;
-		virtual void Release() override;
+		virtual bool				Init(const SceneInitDesc& desc) override;
+		virtual void				Release() override;
 
-		virtual void		RegisterPrimitive(IPrimitive* pPrimitive) override;
-		virtual IPrimitive* GetPrimitive(uint32_t index) override { return m_Primitives[index]; }
-		virtual uint32_t	GetPrimitivesNum() const override { return (uint32_t)m_Primitives.size(); }
+		virtual void				RegisterPrimitive(IPrimitive* pPrimitive) override;
+		virtual IPrimitive*			GetPrimitive(uint32_t index) override { return m_Primitives[index]; }
+		virtual uint32_t			GetPrimitivesNum() const override { return (uint32_t)m_Primitives.size(); }
+
+		virtual	void				RegisterLight(ILight* pLight) override;
+		virtual ILight*				GetLight(uint32_t index) override { return m_Lights[index]; }
+		virtual uint32_t			GetLightsNum() const override { return (uint32_t)m_Lights.size(); }
 
 	private:
-		std::string					m_Name;
-		std::vector<IPrimitive*>	m_Primitives;
+		std::string						m_Name;
+		std::vector<IPrimitive*>		m_Primitives;
+		std::vector<ILight*>			m_Lights;
 	};
 
 	Scene::Scene() :
 		m_Name(),
-		m_Primitives(0)
+		m_Primitives(0),
+		m_Lights(0)
 	{}
 
 	Scene::~Scene()
 	{
 		m_Primitives.clear();
+		m_Lights.clear();
 	}
 
 	bool Scene::Init(const SceneInitDesc& desc)
@@ -59,9 +67,14 @@ namespace RenderDog
 		m_Primitives.push_back(pPrimitive);
 	}
 
-	//--------------------------------------------------------------
+	void Scene::RegisterLight(ILight* pLight)
+	{
+		m_Lights.push_back(pLight);
+	}
+
+	//==============================================================
 	//                   SceneManager
-	//--------------------------------------------------------------
+	//==============================================================
 	class SceneManager : public ISceneManager
 	{
 	public:
