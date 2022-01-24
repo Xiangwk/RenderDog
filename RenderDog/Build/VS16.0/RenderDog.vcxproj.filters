@@ -43,7 +43,7 @@
     <Filter Include="Primitive\Private">
       <UniqueIdentifier>{92975d52-9dda-48fe-9947-37485ba5d59f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Buffer">
+    <Filter Include="Resource">
       <UniqueIdentifier>{aeb0266d-131e-49c4-8b5d-5ef155f56d86}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -132,7 +132,7 @@
       <Filter>Primitive\Public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Public\Buffer.h">
-      <Filter>Buffer</Filter>
+      <Filter>Resource</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Public\SceneView.h">
       <Filter>Public</Filter>

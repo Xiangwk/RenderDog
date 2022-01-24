@@ -39,6 +39,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Public", "Public", "{3CD18E
 		..\..\Renderer\Public\Renderer.h = ..\..\Renderer\Public\Renderer.h
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectXTex", "..\..\3rdSDK\DirectXTex\Build\VS16.0\DirectXTex_Desktop_2019_Win10.vcxproj", "{371B9FA9-4C90-4AC6-A123-ACED756D6C77}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -93,6 +95,12 @@ Global
 		{FF2C6EB6-D980-4778-A0CE-A9C634253D47}.Release|x64.Build.0 = Release|x64
 		{FF2C6EB6-D980-4778-A0CE-A9C634253D47}.Release|x86.ActiveCfg = Release|Win32
 		{FF2C6EB6-D980-4778-A0CE-A9C634253D47}.Release|x86.Build.0 = Release|Win32
+		{371B9FA9-4C90-4AC6-A123-ACED756D6C77}.Debug|x64.ActiveCfg = Debug|x64
+		{371B9FA9-4C90-4AC6-A123-ACED756D6C77}.Debug|x64.Build.0 = Debug|x64
+		{371B9FA9-4C90-4AC6-A123-ACED756D6C77}.Debug|x86.ActiveCfg = Debug|x64
+		{371B9FA9-4C90-4AC6-A123-ACED756D6C77}.Release|x64.ActiveCfg = Release|x64
+		{371B9FA9-4C90-4AC6-A123-ACED756D6C77}.Release|x64.Build.0 = Release|x64
+		{371B9FA9-4C90-4AC6-A123-ACED756D6C77}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -105,6 +113,7 @@ Global
 		{059B6975-F731-4D80-A3EB-4D755E6C26B6} = {AE0FD782-93BF-47EA-9E72-C1EBE1DC2D48}
 		{FF2C6EB6-D980-4778-A0CE-A9C634253D47} = {7EE04F69-00BD-4289-B524-9EE9A5867DAC}
 		{3CD18E74-D496-4BD7-9F7A-29716F635216} = {7EE04F69-00BD-4289-B524-9EE9A5867DAC}
+		{371B9FA9-4C90-4AC6-A123-ACED756D6C77} = {F86212ED-5261-440F-ABA5-57D28412DA9D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F0D4812D-BB41-4D52-A8A3-B2C006F5E15E}
