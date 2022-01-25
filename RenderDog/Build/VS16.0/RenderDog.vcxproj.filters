@@ -146,5 +146,8 @@
     <ClInclude Include="..\..\Public\Light.h">
       <Filter>Public</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Public\Texture.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

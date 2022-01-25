@@ -12,6 +12,9 @@
 
 namespace RenderDog
 {
+	class ITexture2D;
+	class ISamplerState;
+
 	struct PrimitiveRenderParam
 	{
 		IVertexBuffer* pVB;
@@ -42,7 +45,7 @@ namespace RenderDog
 		virtual IConstantBuffer*	GetVSConstantBuffer() = 0;
 		virtual IConstantBuffer*	GetLightingConstantbuffer() = 0;
 
-		virtual void				Render(const PrimitiveRenderParam& renderParam) = 0;
+		virtual void				Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler) = 0;
 	};
 
 	class IPrimitive

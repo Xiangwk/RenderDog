@@ -18,10 +18,12 @@ namespace RenderDog
 		m_Meshes.clear();
 	}
 
-	void StaticModel::LoadFromData(const std::vector<LocalVertex>& vertices, const std::vector<uint32_t>& indices)
+	void StaticModel::LoadFromData(const std::vector<LocalVertex>& vertices, 
+								   const std::vector<uint32_t>& indices, 
+								   const std::wstring& diffuseTexturePath)
 	{
 		StaticMesh mesh;
-		mesh.LoadFromData(vertices, indices);
+		mesh.LoadFromData(vertices, indices, diffuseTexturePath);
 		mesh.InitRenderData();
 
 		m_Meshes.push_back(mesh);

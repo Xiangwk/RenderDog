@@ -21,7 +21,9 @@ namespace RenderDog
 		StaticModel(const StaticModel&) = default;
 		StaticModel& operator=(const StaticModel&) = default;
 
-		void LoadFromData(const std::vector<LocalVertex>& vertices, const std::vector<uint32_t>& indices);
+		void LoadFromData(const std::vector<LocalVertex>& vertices, 
+						  const std::vector<uint32_t>& indices, 
+						  const std::wstring& diffuseTexturePath);
 
 		void SetPosGesture(const Vector3& pos, const Vector3& euler, const Vector3& scale);
 

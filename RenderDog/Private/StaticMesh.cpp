@@ -13,7 +13,9 @@ namespace RenderDog
 	StaticMesh::StaticMesh() :
 		m_Vertices(0),
 		m_Indices(0),
-		m_pRenderData(nullptr)
+		m_pRenderData(nullptr),
+		m_pDiffuseTexture(nullptr),
+		m_pLinearSampler(nullptr)
 	{}
 
 	StaticMesh::~StaticMesh()
@@ -33,14 +35,25 @@ namespace RenderDog
 		renderParam.pVS			= m_pRenderData->pVS;
 		renderParam.pPS			= m_pRenderData->pPS;
 
-		pPrimitiveRenderer->Render(renderParam);
+		pPrimitiveRenderer->Render(renderParam, m_pDiffuseTexture, m_pLinearSampler);
 	}
 
-	void StaticMesh::LoadFromData(const std::vector<LocalVertex>& vertices, const std::vector<uint32_t>& indices)
+	void StaticMesh::LoadFromData(const std::vector<LocalVertex>& vertices, 
+								  const std::vector<uint32_t>& indices, 
+								  const std::wstring& diffuseTexturePath)
 	{
 		m_Vertices.assign(vertices.begin(), vertices.end());
 
 		m_Indices.assign(indices.begin(), indices.end());
+
+		m_pDiffuseTexture = g_pITextureManager->CreateTexture2D();
+		m_pDiffuseTexture->LoadFromFile(diffuseTexturePath);
+
+		SamplerDesc samplerDesc = {};
+		samplerDesc.filterMode = SamplerFilterMode::RD_SAMPLER_FILTER_LINEAR;
+		samplerDesc.addressMode = SamplerAddressMode::RD_SAMPLER_ADDRESS_WRAP;
+		m_pLinearSampler = g_pISamplerStateManager->CreateSamplerState();
+		m_pLinearSampler->Init(samplerDesc);
 	}
 
 	void StaticMesh::InitRenderData()
@@ -99,6 +112,20 @@ namespace RenderDog
 
 			delete m_pRenderData;
 			m_pRenderData = nullptr;
+		}
+
+		if (m_pDiffuseTexture)
+		{
+			m_pDiffuseTexture->Release();
+
+			g_pITextureManager->ReleaseTexture(m_pDiffuseTexture);
+		}
+
+		if (m_pLinearSampler)
+		{
+			m_pLinearSampler->Release();
+
+			g_pISamplerStateManager->ReleaseSamplerState(m_pLinearSampler);
 		}
 	}
 

@@ -24,6 +24,9 @@
     <ClCompile Include="..\..\Private\D3D11InputLayout.cpp">
       <Filter>Private</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Private\D3D11Texture.cpp">
+      <Filter>Private</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Public\D3D11Renderer.h">

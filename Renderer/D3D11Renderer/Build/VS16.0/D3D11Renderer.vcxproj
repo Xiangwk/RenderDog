@@ -135,7 +135,8 @@ del /s /q /f ..\..\..\..\EngineSDK\Renderer\Shaders\*.*
 xcopy ..\..\Shaders\*.* ..\..\..\..\EngineSDK\Renderer\Shaders\ /i /s /y</Command>
     </PostBuildEvent>
     <Lib>
-      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;DirectXTex_d.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\..\EngineSDK\3rdSDK\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -158,11 +159,12 @@ xcopy ..\..\Shaders\*.* ..\..\..\..\EngineSDK\Renderer\Shaders\ /i /s /y</Comman
       <Command>xcopy $(TargetDir)*.lib ..\..\..\..\EngineSDK\Renderer\Libs\ /i /s /y
 xcopy ..\..\Public\*.* ..\..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i /s /y
 
-del     ..\..\..\..\EngineSDK\Renderer\Shaders\*.* 
+del /s /q /f ..\..\..\..\EngineSDK\Renderer\Shaders\*.* 
 xcopy ..\..\Shaders\*.* ..\..\..\..\EngineSDK\Renderer\Shaders\ /i /s /y</Command>
     </PostBuildEvent>
     <Lib>
-      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;DirectXTex.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\..\EngineSDK\3rdSDK\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -170,6 +172,7 @@ xcopy ..\..\Shaders\*.* ..\..\..\..\EngineSDK\Renderer\Shaders\ /i /s /y</Comman
     <ClCompile Include="..\..\Private\D3D11InputLayout.cpp" />
     <ClCompile Include="..\..\Private\D3D11Renderer.cpp" />
     <ClCompile Include="..\..\Private\D3D11Shader.cpp" />
+    <ClCompile Include="..\..\Private\D3D11Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Public\D3D11InputLayout.h" />

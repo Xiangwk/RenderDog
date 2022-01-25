@@ -29,6 +29,7 @@ struct VSOutput
 	float4 Pos		: SV_POSITION;
 	float4 Color	: COLOR;
 	float3 Normal	: NORMAL;
+	float2 Texcoord : TEXCOORD0;
 };
 
 VSOutput Main(VSInput vsInput)
@@ -44,6 +45,8 @@ VSOutput Main(VSInput vsInput)
 	vsOutput.Normal = normalize(normal.xyz);
 
 	vsOutput.Color = vsInput.Color;
+
+	vsOutput.Texcoord = vsInput.Texcoord;
 
 	return vsOutput;
 }

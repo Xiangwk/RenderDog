@@ -7,6 +7,7 @@
 #include "Vertex.h"
 #include "Primitive.h"
 #include "Shader.h"
+#include "Texture.h"
 
 #include <vector>
 
@@ -40,7 +41,9 @@ namespace RenderDog
 
 		virtual void Render(IPrimitiveRenderer* pPrimitiveRenderer) override;
 
-		void LoadFromData(const std::vector<LocalVertex>& vertices, const std::vector<uint32_t>& indices);
+		void LoadFromData(const std::vector<LocalVertex>& vertices, 
+						  const std::vector<uint32_t>& indices, 
+						  const std::wstring& diffuseTexturePath);
 
 		void InitRenderData();
 		void ReleaseRenderData();
@@ -52,6 +55,9 @@ namespace RenderDog
 		std::vector<uint32_t>		m_Indices;
 
 		StaticMeshRenderData*		m_pRenderData;
+
+		ITexture2D*					m_pDiffuseTexture;
+		ISamplerState*				m_pLinearSampler;
 	};
 
 }// namespace RenderDog

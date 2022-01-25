@@ -43,6 +43,7 @@
     <ClInclude Include="..\..\Public\Shader.h" />
     <ClInclude Include="..\..\Public\StaticMesh.h" />
     <ClInclude Include="..\..\Public\StaticModel.h" />
+    <ClInclude Include="..\..\Public\Texture.h" />
     <ClInclude Include="..\..\Public\Vertex.h" />
     <ClInclude Include="..\..\Public\Window.h" />
   </ItemGroup>
@@ -101,7 +102,8 @@
     <PostBuildEvent>
       <Command>xcopy $(TargetDir)*.lib ..\..\..\EngineSDK\RenderDog\Libs\ /i /s /y
 xcopy ..\..\Public\*.* ..\..\..\EngineSDK\RenderDog\Public\$(ProjectName)\ /i /s /y
-xcopy ..\..\Math\Public\*.* ..\..\..\EngineSDK\RenderDog\Public\Math\ /i /s /y</Command>
+xcopy ..\..\Math\Public\*.* ..\..\..\EngineSDK\RenderDog\Public\Math\ /i /s /y
+xcopy ..\..\EngineAsset\*.* ..\..\..\EngineSDK\RenderDog\EngineAsset\ /i /s /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -123,7 +125,8 @@ xcopy ..\..\Math\Public\*.* ..\..\..\EngineSDK\RenderDog\Public\Math\ /i /s /y</
     <PostBuildEvent>
       <Command>xcopy $(TargetDir)*.lib ..\..\..\EngineSDK\RenderDog\Libs\ /i /s /y
 xcopy ..\..\Public\*.* ..\..\..\EngineSDK\RenderDog\Public\$(ProjectName)\ /i /s /y
-xcopy ..\..\Math\Public\*.* ..\..\..\EngineSDK\RenderDog\Public\Math\ /i /s /y</Command>
+xcopy ..\..\Math\Public\*.* ..\..\..\EngineSDK\RenderDog\Public\Math\ /i /s /y
+xcopy ..\..\EngineAsset\*.* ..\..\..\EngineSDK\RenderDog\EngineAsset\ /i /s /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -132,7 +132,8 @@
     <PostBuildEvent>
       <Command>xcopy $(TargetDir)*.exe ..\..\..\..\Bin\Tools\$(ProjectName)\ /i /s /y
 xcopy ..\..\..\..\EngineSDK\3rdSDK\Bin\*.* ..\..\..\..\Bin\Tools\$(ProjectName)\ /i /s /y
-xcopy ..\..\..\..\EngineSDK\Renderer\Shaders\*.* ..\..\..\..\Bin\Tools\$(ProjectName)\Shaders\ /i /s /y</Command>
+xcopy ..\..\..\..\EngineSDK\Renderer\Shaders\*.* ..\..\..\..\Bin\Tools\$(ProjectName)\Shaders\ /i /s /y
+xcopy ..\..\..\..\EngineSDK\RenderDog\EngineAsset\*.* ..\..\..\..\Bin\Tools\$(ProjectName)\EngineAsset\ /i /s /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -156,7 +157,8 @@ xcopy ..\..\..\..\EngineSDK\Renderer\Shaders\*.* ..\..\..\..\Bin\Tools\$(Project
     <PostBuildEvent>
       <Command>xcopy $(TargetDir)*.exe ..\..\..\..\Bin\Tools\$(ProjectName)\ /i /s /y
 xcopy ..\..\..\..\EngineSDK\3rdSDK\Bin\*.* ..\..\..\..\Bin\Tools\$(ProjectName)\ /i /s /y
-xcopy ..\..\..\..\EngineSDK\Renderer\Shaders\*.* ..\..\..\..\Bin\Tools\$(ProjectName)\Shaders\ /i /s /y</Command>
+xcopy ..\..\..\..\EngineSDK\Renderer\Shaders\*.* ..\..\..\..\Bin\Tools\$(ProjectName)\Shaders\ /i /s /y
+xcopy ..\..\..\..\EngineSDK\RenderDog\EngineAsset\*.* ..\..\..\..\Bin\Tools\$(ProjectName)\EngineAsset\ /i /s /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

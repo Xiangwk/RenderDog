@@ -13,6 +13,7 @@
 #include "D3D11InputLayout.h"
 #include "Matrix.h"
 #include "Camera.h"
+#include "Texture.h"
 
 namespace RenderDog
 {
@@ -33,7 +34,7 @@ namespace RenderDog
 		virtual IConstantBuffer*		GetVSConstantBuffer() override { return m_pVertexShaderCB; }
 		virtual IConstantBuffer*		GetLightingConstantbuffer() override { return nullptr; }
 
-		virtual void					Render(const PrimitiveRenderParam& renderParam) override;
+		virtual void					Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler) override;
 
 	protected:
 		IConstantBuffer*				m_pVertexShaderCB;
@@ -50,7 +51,7 @@ namespace RenderDog
 		m_pVertexShaderCB(pVertexShaderCB)
 	{}
 
-	void D3D11MeshRenderer::Render(const PrimitiveRenderParam& renderParam)
+	void D3D11MeshRenderer::Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler)
 	{
 		if (!g_pD3D11ImmediateContext)
 		{
@@ -82,6 +83,10 @@ namespace RenderDog
 
 		renderParam.pPS->SetToContext();
 
+		ID3D11ShaderResourceView* pSRV = (ID3D11ShaderResourceView*)(pDiffuseTexture->GetShaderResourceView());
+		g_pD3D11ImmediateContext->PSSetShaderResources(0, 1, &pSRV);
+		pSampler->SetToPixelShader(0);
+
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
 	}
 
@@ -94,7 +99,7 @@ namespace RenderDog
 
 		virtual IConstantBuffer*		GetLightingConstantbuffer() override { return m_LightingCB; }
 
-		virtual void					Render(const PrimitiveRenderParam& renderParam) override;
+		virtual void					Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler) override;
 
 	protected:
 		IConstantBuffer*				m_LightingCB;
@@ -113,7 +118,7 @@ namespace RenderDog
 	D3D11MeshLightingRenderer::~D3D11MeshLightingRenderer()
 	{}
 
-	void D3D11MeshLightingRenderer::Render(const PrimitiveRenderParam& renderParam)
+	void D3D11MeshLightingRenderer::Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler)
 	{
 		if (!g_pD3D11ImmediateContext)
 		{
@@ -147,6 +152,10 @@ namespace RenderDog
 
 		ID3D11Buffer* pLightingCB = (ID3D11Buffer*)(m_LightingCB->GetConstantBuffer());
 		g_pD3D11ImmediateContext->PSSetConstantBuffers(0, 1, &pLightingCB);
+
+		ID3D11ShaderResourceView* pSRV = (ID3D11ShaderResourceView*)(pDiffuseTexture->GetShaderResourceView());
+		g_pD3D11ImmediateContext->PSSetShaderResources(0, 1, &pSRV);
+		pSampler->SetToPixelShader(0);
 
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
 	}

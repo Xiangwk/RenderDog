@@ -47,7 +47,7 @@ bool ModelViewer::Init(const RenderDog::InitDesc& desc)
 	g_pGeometryGenerator->GenerateBox(1, 1, 1, boxMeshData);
 
 	m_pModel = new RenderDog::StaticModel();
-	m_pModel->LoadFromData(boxMeshData.vertices, boxMeshData.indices);
+	m_pModel->LoadFromData(boxMeshData.vertices, boxMeshData.indices, L"EngineAsset/Textures/awesomeface.dds");
 	m_pModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(45.0f, 70.0f, 20.0f), RenderDog::Vector3(1.0f));
 
 	m_pModel->RegisterToScene(m_pScene);
