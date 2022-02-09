@@ -59,4 +59,5 @@ namespace RenderDog
 	};
 
 	extern ILightManager* g_pILightManager;
-}
+
+}// namespace RenderDog

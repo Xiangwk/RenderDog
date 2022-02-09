@@ -149,5 +149,8 @@
     <ClInclude Include="..\..\Public\Texture.h">
       <Filter>Resource</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Public\Material.h">
+      <Filter>Public</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -1036,8 +1036,8 @@
                             "created": 1641135477535,
                             "text": "Camera",
                             "layout_right_offset": {
-                                "x": 515.4999990686774,
-                                "y": 162.99999940395378
+                                "x": 536.4999990686774,
+                                "y": 122.99999940395378
                             }
                         },
                         "children": []
@@ -1055,27 +1055,28 @@
                         "children": [
                             {
                                 "data": {
-                                    "id": "cgyo9p7lbko0",
-                                    "created": 1641480486468,
-                                    "text": "VertexBuffer",
+                                    "id": "chhek9yt8w00",
+                                    "created": 1643382743369,
+                                    "text": "StaticModel",
                                     "layout_right_offset": {
-                                        "x": 290,
-                                        "y": 2
+                                        "x": 300,
+                                        "y": 26
                                     }
                                 },
-                                "children": []
-                            },
-                            {
-                                "data": {
-                                    "id": "cgyo9u7as000",
-                                    "created": 1641480497335,
-                                    "text": "IndexBuffer",
-                                    "layout_right_offset": {
-                                        "x": 292,
-                                        "y": -1
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "chhew32pas00",
+                                            "created": 1643383668737,
+                                            "text": "StaticMesh",
+                                            "layout_right_offset": {
+                                                "x": 313,
+                                                "y": 15
+                                            }
+                                        },
+                                        "children": []
                                     }
-                                },
-                                "children": []
+                                ]
                             }
                         ]
                     },
@@ -1153,6 +1154,81 @@
                                         ]
                                     }
                                 ]
+                            }
+                        ]
+                    },
+                    {
+                        "data": {
+                            "id": "chheedizbk80",
+                            "created": 1643382280934,
+                            "text": "Material",
+                            "layout_right_offset": {
+                                "x": 512,
+                                "y": 418
+                            },
+                            "priority": 1
+                        },
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "chhejbw1rio0",
+                                    "created": 1643382669191,
+                                    "text": "MaterialInstance",
+                                    "layout_right_offset": {
+                                        "x": 296,
+                                        "y": 61
+                                    }
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "chhejwwunns0",
+                                    "created": 1643382714952,
+                                    "text": "Material",
+                                    "layout_right_offset": {
+                                        "x": 264,
+                                        "y": -81
+                                    }
+                                },
+                                "children": []
+                            }
+                        ]
+                    },
+                    {
+                        "data": {
+                            "id": "chhfpqro8og0",
+                            "created": 1643385992873,
+                            "text": "Resource",
+                            "layout_right_offset": {
+                                "x": 523,
+                                "y": 55
+                            }
+                        },
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "chhfq0gngvs0",
+                                    "created": 1643386013975,
+                                    "text": "Texture",
+                                    "layout_right_offset": {
+                                        "x": 241,
+                                        "y": -34
+                                    }
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "chhfq31n3kg0",
+                                    "created": 1643386019598,
+                                    "text": "Buffer",
+                                    "layout_right_offset": {
+                                        "x": 239,
+                                        "y": -1
+                                    }
+                                },
+                                "children": []
                             }
                         ]
                     }

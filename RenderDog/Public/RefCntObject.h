@@ -23,5 +23,4 @@ namespace RenderDog
 		uint32_t	m_RefCnt;
 	};
 
-
 }// namespace RenderDog

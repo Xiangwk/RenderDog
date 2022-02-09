@@ -35,6 +35,7 @@
     <ClInclude Include="..\..\Public\Camera.h" />
     <ClInclude Include="..\..\Public\Framework.h" />
     <ClInclude Include="..\..\Public\Light.h" />
+    <ClInclude Include="..\..\Public\Material.h" />
     <ClInclude Include="..\..\Public\Primitive.h" />
     <ClInclude Include="..\..\Public\RefCntObject.h" />
     <ClInclude Include="..\..\Public\RenderDog.h" />
