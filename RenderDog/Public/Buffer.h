@@ -8,25 +8,40 @@
 #pragma once
 
 #include "RenderDog.h"
+#include "RefCntObject.h"
 
 #include <cstdint>
 
 namespace RenderDog
 {
+	enum class BufferBind
+	{
+		NONE,
+		VERTEX,
+		INDEX,
+		CONSTANT
+	};
+
 	struct BufferDesc
 	{
+		BufferBind	bufferBind;
 		uint32_t	byteWidth;
+		uint32_t	stride;
+		uint32_t	offset;
 		void*		pInitData;
 		bool		isDynamic;
 
 		BufferDesc() :
+			bufferBind(BufferBind::NONE),
 			byteWidth(0),
+			stride(0),
+			offset(0),
 			pInitData(nullptr),
 			isDynamic(false)
 		{}
 	};
 
-	class IBuffer
+	class IBuffer : public RefCntObject
 	{
 	public:
 		virtual ~IBuffer() = default;
@@ -43,8 +58,6 @@ namespace RenderDog
 
 		virtual void*		GetVertexBuffer() = 0;
 
-		virtual bool		Init(const BufferDesc& desc, uint32_t stride, uint32_t offset) = 0;
-
 		virtual uint32_t	GetStride() const = 0;
 		virtual uint32_t	GetOffset() const = 0;
 	};
@@ -53,8 +66,6 @@ namespace RenderDog
 	{
 	public:
 		virtual ~IIndexBuffer() = default;
-
-		virtual bool		Init(const BufferDesc& desc, uint32_t indexNum) = 0;
 
 		virtual void*		GetIndexBuffer() = 0;
 
@@ -66,8 +77,6 @@ namespace RenderDog
 	public:
 		virtual ~IConstantBuffer() = default;
 
-		virtual bool		Init(const BufferDesc& desc) = 0;
-
 		virtual void*		GetConstantBuffer() = 0;
 	};
 
@@ -76,9 +85,8 @@ namespace RenderDog
 	public:
 		virtual ~IBufferManager() = default;
 
-		virtual IVertexBuffer*		CreateVertexBuffer() = 0;
-		virtual IIndexBuffer*		CreateIndexBuffer() = 0;
-		virtual IConstantBuffer*	CreateConstantBuffer() = 0;
+		virtual IBuffer*	CreateBuffer(const BufferDesc& desc) = 0;
+		virtual void		ReleaseBuffer(IBuffer* pBuffer) = 0;
 	};
 
 	extern IBufferManager* g_pIBufferManager;

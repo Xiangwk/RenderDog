@@ -18,11 +18,10 @@ namespace RenderDog
 	class D3D11VertexBuffer : public IVertexBuffer
 	{
 	public:
-		D3D11VertexBuffer();
+		D3D11VertexBuffer(const BufferDesc& desc);
 
 		virtual ~D3D11VertexBuffer();
 
-		virtual bool		Init(const BufferDesc& desc, uint32_t stride, uint32_t offset) override;
 		virtual void		Release() override;
 
 		virtual void		Update(void* srcData, uint32_t srcSize) override;
@@ -38,16 +37,10 @@ namespace RenderDog
 		uint32_t			m_Offset;
 	};
 
-	D3D11VertexBuffer::D3D11VertexBuffer() :
+	D3D11VertexBuffer::D3D11VertexBuffer(const BufferDesc& desc) :
 		m_pVB(nullptr),
-		m_Stride(0),
-		m_Offset(0)
-	{}
-
-	D3D11VertexBuffer::~D3D11VertexBuffer()
-	{}
-
-	bool D3D11VertexBuffer::Init(const BufferDesc& desc, uint32_t stride, uint32_t offset)
+		m_Stride(desc.stride),
+		m_Offset(desc.offset)
 	{
 		D3D11_BUFFER_DESC bufferDesc = {};
 		bufferDesc.Usage = desc.isDynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
@@ -56,27 +49,21 @@ namespace RenderDog
 		bufferDesc.CPUAccessFlags = desc.isDynamic ? D3D11_CPU_ACCESS_WRITE : 0;
 		D3D11_SUBRESOURCE_DATA initData = {};
 		initData.pSysMem = desc.pInitData;
-		if (FAILED(g_pD3D11Device->CreateBuffer(&bufferDesc, &initData, &m_pVB)))
-		{
-			return false;
-		}
-
-		m_Stride = stride;
-		m_Offset = offset;
-
-		return true;
+		g_pD3D11Device->CreateBuffer(&bufferDesc, &initData, &m_pVB);
 	}
 
-	void D3D11VertexBuffer::Release()
+	D3D11VertexBuffer::~D3D11VertexBuffer()
 	{
 		if (m_pVB)
 		{
 			m_pVB->Release();
 			m_pVB = nullptr;
 		}
-		
-		m_Stride = 0;
-		m_Offset = 0;
+	}
+
+	void D3D11VertexBuffer::Release()
+	{
+		g_pIBufferManager->ReleaseBuffer(this);
 	}
 
 	void D3D11VertexBuffer::Update(void* srcData, uint32_t srcSize)
@@ -96,10 +83,9 @@ namespace RenderDog
 	class D3D11IndexBuffer : public IIndexBuffer
 	{
 	public:
-		D3D11IndexBuffer();
+		D3D11IndexBuffer(const BufferDesc& desc);
 		virtual ~D3D11IndexBuffer();
 
-		virtual bool		Init(const BufferDesc& desc, uint32_t indexNum) override;
 		virtual void		Release() override;
 
 		virtual void		Update(void* srcData, uint32_t srcSize) override;
@@ -113,15 +99,9 @@ namespace RenderDog
 		uint32_t			m_indexNum;
 	};
 
-	D3D11IndexBuffer::D3D11IndexBuffer() :
+	D3D11IndexBuffer::D3D11IndexBuffer(const BufferDesc& desc) :
 		m_pIB(nullptr),
-		m_indexNum(0)
-	{}
-
-	D3D11IndexBuffer::~D3D11IndexBuffer()
-	{}
-
-	bool D3D11IndexBuffer::Init(const BufferDesc& desc, uint32_t indexNum)
+		m_indexNum(desc.byteWidth / sizeof(uint32_t))
 	{
 		D3D11_BUFFER_DESC bufferDesc = {};
 		bufferDesc.Usage = desc.isDynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
@@ -130,25 +110,21 @@ namespace RenderDog
 		bufferDesc.CPUAccessFlags = desc.isDynamic ? D3D11_CPU_ACCESS_WRITE : 0;
 		D3D11_SUBRESOURCE_DATA initData = {};
 		initData.pSysMem = desc.pInitData;
-		if (FAILED(g_pD3D11Device->CreateBuffer(&bufferDesc, &initData, &m_pIB)))
-		{
-			return false;
-		}
-
-		m_indexNum = indexNum;
-
-		return true;
+		g_pD3D11Device->CreateBuffer(&bufferDesc, &initData, &m_pIB);
 	}
 
-	void D3D11IndexBuffer::Release()
+	D3D11IndexBuffer::~D3D11IndexBuffer()
 	{
 		if (m_pIB)
 		{
 			m_pIB->Release();
 			m_pIB = nullptr;
 		}
+	}
 
-		m_indexNum = 0;
+	void D3D11IndexBuffer::Release()
+	{
+		g_pIBufferManager->ReleaseBuffer(this);
 	}
 
 	void D3D11IndexBuffer::Update(void* srcData, uint32_t srcSize)
@@ -168,10 +144,9 @@ namespace RenderDog
 	class D3D11ConstantBuffer : public IConstantBuffer
 	{
 	public:
-		D3D11ConstantBuffer();
+		D3D11ConstantBuffer(const BufferDesc& desc);
 		virtual ~D3D11ConstantBuffer();
 
-		virtual bool		Init(const BufferDesc& desc) override;
 		virtual void		Release() override;
 
 		virtual void		Update(void* srcData, uint32_t srcSize) override;
@@ -183,15 +158,9 @@ namespace RenderDog
 		bool				m_IsDynamic;
 	};
 
-	D3D11ConstantBuffer::D3D11ConstantBuffer() :
+	D3D11ConstantBuffer::D3D11ConstantBuffer(const BufferDesc& desc) :
 		m_pCB(nullptr),
-		m_IsDynamic(false)
-	{}
-
-	D3D11ConstantBuffer::~D3D11ConstantBuffer()
-	{}
-
-	bool D3D11ConstantBuffer::Init(const BufferDesc& desc)
+		m_IsDynamic(desc.isDynamic)
 	{
 		D3D11_BUFFER_DESC bufferDesc = {};
 		bufferDesc.Usage = desc.isDynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
@@ -200,23 +169,21 @@ namespace RenderDog
 		bufferDesc.CPUAccessFlags = desc.isDynamic ? D3D11_CPU_ACCESS_WRITE : 0;
 		D3D11_SUBRESOURCE_DATA initData = {};
 		initData.pSysMem = desc.pInitData;
-		if (FAILED(g_pD3D11Device->CreateBuffer(&bufferDesc, nullptr, &m_pCB)))
-		{
-			return false;
-		}
-
-		m_IsDynamic = desc.isDynamic;
-
-		return true;
+		g_pD3D11Device->CreateBuffer(&bufferDesc, nullptr, &m_pCB);
 	}
 
-	void D3D11ConstantBuffer::Release()
+	D3D11ConstantBuffer::~D3D11ConstantBuffer()
 	{
 		if (m_pCB)
 		{
 			m_pCB->Release();
 			m_pCB = nullptr;
 		}
+	}
+
+	void D3D11ConstantBuffer::Release()
+	{
+		g_pIBufferManager->ReleaseBuffer(this);
 	}
 
 	void D3D11ConstantBuffer::Update(void* srcData, uint32_t srcSize)
@@ -249,35 +216,47 @@ namespace RenderDog
 		D3D11BufferManager() = default;
 		virtual ~D3D11BufferManager() = default;
 
-		virtual IVertexBuffer*		CreateVertexBuffer() override;
-		virtual IIndexBuffer*		CreateIndexBuffer() override;
-		virtual IConstantBuffer*	CreateConstantBuffer() override;
+		virtual IBuffer*	CreateBuffer(const BufferDesc& desc) override;
+		virtual void		ReleaseBuffer(IBuffer* pBuffer) override;
 	};
 
 	D3D11BufferManager g_D3D11BufferManager;
 	IBufferManager* g_pIBufferManager = &g_D3D11BufferManager;
 
 
-	IVertexBuffer* D3D11BufferManager::CreateVertexBuffer()
+	IBuffer* D3D11BufferManager::CreateBuffer(const BufferDesc& desc)
 	{
-		D3D11VertexBuffer* pVertexBuffer = new D3D11VertexBuffer();
+		IBuffer* pBuffer = nullptr;
+		switch (desc.bufferBind)
+		{
+		case BufferBind::NONE:
+			break;
 
-		return pVertexBuffer;
+		case BufferBind::VERTEX:
+			pBuffer = new D3D11VertexBuffer(desc);
+			pBuffer->AddRef();
+			break;
+
+		case BufferBind::INDEX:
+			pBuffer = new D3D11IndexBuffer(desc);
+			pBuffer->AddRef();
+			break;
+
+		case BufferBind::CONSTANT:
+			pBuffer = new D3D11ConstantBuffer(desc);
+			pBuffer->AddRef();
+			break;
+
+		default:
+			break;
+		}
+
+		return pBuffer;
 	}
 
-	IIndexBuffer* D3D11BufferManager::CreateIndexBuffer()
+	void D3D11BufferManager::ReleaseBuffer(IBuffer* pBuffer)
 	{
-		D3D11IndexBuffer* pIndexBuffer = new D3D11IndexBuffer();
-
-		return pIndexBuffer;
+		pBuffer->SubRef();
 	}
-
-	IConstantBuffer* D3D11BufferManager::CreateConstantBuffer()
-	{
-		D3D11ConstantBuffer* pConstantBuffer = new D3D11ConstantBuffer();
-
-		return pConstantBuffer;
-	}
-
 
 }// namespace RenderDog

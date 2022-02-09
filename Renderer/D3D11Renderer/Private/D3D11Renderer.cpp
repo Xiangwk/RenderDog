@@ -312,22 +312,15 @@ namespace RenderDog
 
 		m_pSceneView = new SceneView(desc.backBufferWidth, desc.backBufferHeight);
 
-		m_pGlobalConstantBuffer = g_pIBufferManager->CreateConstantBuffer();
 		BufferDesc cbDesc = {};
+		cbDesc.bufferBind = BufferBind::CONSTANT;
 		cbDesc.byteWidth = sizeof(GlobalConstantData);
 		cbDesc.pInitData = nullptr;
 		cbDesc.isDynamic = true;
-		if (!m_pGlobalConstantBuffer->Init(cbDesc))
-		{
-			return false;
-		}
+		m_pGlobalConstantBuffer = (IConstantBuffer*)g_pIBufferManager->CreateBuffer(cbDesc);
 
-		m_pLightingConstantBuffer = g_pIBufferManager->CreateConstantBuffer();
 		cbDesc.byteWidth = sizeof(DirectionalLightData);
-		if (!m_pLightingConstantBuffer->Init(cbDesc))
-		{
-			return false;
-		}
+		m_pLightingConstantBuffer = (IConstantBuffer*)g_pIBufferManager->CreateBuffer(cbDesc);
 
 		return true;
 	}
@@ -343,14 +336,12 @@ namespace RenderDog
 		if (m_pGlobalConstantBuffer)
 		{
 			m_pGlobalConstantBuffer->Release();
-			delete m_pGlobalConstantBuffer;
 			m_pGlobalConstantBuffer = nullptr;
 		}
 
 		if (m_pLightingConstantBuffer)
 		{
 			m_pLightingConstantBuffer->Release();
-			delete m_pLightingConstantBuffer;
 			m_pLightingConstantBuffer = nullptr;
 		}
 

@@ -61,35 +61,27 @@ namespace RenderDog
 		m_pRenderData = new StaticMeshRenderData();
 
 		BufferDesc vbDesc = {};
+		vbDesc.bufferBind = BufferBind::VERTEX;
 		vbDesc.byteWidth = sizeof(LocalVertex) * (uint32_t)m_Vertices.size();
+		vbDesc.stride = sizeof(LocalVertex);
+		vbDesc.offset = 0;
 		vbDesc.pInitData = &(m_Vertices[0]);
 		vbDesc.isDynamic = false;
-		m_pRenderData->pVB = g_pIBufferManager->CreateVertexBuffer();
-		if (m_pRenderData->pVB)
-		{
-			m_pRenderData->pVB->Init(vbDesc, sizeof(LocalVertex), 0);
-		}
+		m_pRenderData->pVB = (IVertexBuffer*)g_pIBufferManager->CreateBuffer(vbDesc);
 
 		BufferDesc ibDesc = {};
+		ibDesc.bufferBind = BufferBind::INDEX;
 		ibDesc.byteWidth = sizeof(uint32_t) * (uint32_t)m_Indices.size();
 		ibDesc.pInitData = &(m_Indices[0]);
 		ibDesc.isDynamic = false;
-		m_pRenderData->pIB = g_pIBufferManager->CreateIndexBuffer();
-		if (m_pRenderData->pIB)
-		{
-			m_pRenderData->pIB->Init(ibDesc, (uint32_t)m_Indices.size());
-		}
+		m_pRenderData->pIB = (IIndexBuffer*)g_pIBufferManager->CreateBuffer(ibDesc);
 
 		BufferDesc cbDesc = {};
+		cbDesc.bufferBind = BufferBind::CONSTANT;
 		cbDesc.byteWidth = sizeof(Matrix4x4);
 		cbDesc.pInitData = nullptr;
 		cbDesc.isDynamic = false;
-		m_pRenderData->pCB = g_pIBufferManager->CreateConstantBuffer();
-		if (m_pRenderData->pCB)
-		{
-			m_pRenderData->pCB->Init(cbDesc);
-		}
-
+		m_pRenderData->pCB = (IConstantBuffer*)g_pIBufferManager->CreateBuffer(cbDesc);
 
 		m_pRenderData->pVS = g_pIShaderManager->CreateVertexShader(RD_VERTEX_TYPE_STANDARD);
 		m_pRenderData->pVS->CompileFromFile("Shaders/StaticModelVertexShader.hlsl", nullptr, "Main", "vs_5_0", 0);
