@@ -43,9 +43,10 @@ namespace RenderDog
 
 	class IBuffer : public RefCntObject
 	{
-	public:
+	protected:
 		virtual ~IBuffer() = default;
 
+	public:
 		virtual void		Release() = 0;
 
 		virtual void		Update(void* srcData, uint32_t srcSize) = 0;
@@ -53,9 +54,10 @@ namespace RenderDog
 
 	class IVertexBuffer : public IBuffer
 	{
-	public:
+	protected:
 		virtual ~IVertexBuffer() = default;
 
+	public:
 		virtual void*		GetVertexBuffer() = 0;
 
 		virtual uint32_t	GetStride() const = 0;
@@ -64,9 +66,10 @@ namespace RenderDog
 
 	class IIndexBuffer : public IBuffer
 	{
-	public:
+	protected:
 		virtual ~IIndexBuffer() = default;
 
+	public:
 		virtual void*		GetIndexBuffer() = 0;
 
 		virtual uint32_t	GetIndexNum() const = 0;
@@ -74,9 +77,10 @@ namespace RenderDog
 
 	class IConstantBuffer : public IBuffer
 	{
-	public:
+	protected:
 		virtual ~IConstantBuffer() = default;
 
+	public:
 		virtual void*		GetConstantBuffer() = 0;
 	};
 
