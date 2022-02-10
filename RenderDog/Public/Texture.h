@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include "RefCntObject.h"
+
 #include <string>
 
 namespace RenderDog
@@ -37,22 +39,22 @@ namespace RenderDog
 		bool				isDynamic;
 	};
 
-	class ITexture
+	class ITexture : public RefCntObject
 	{
-	public:
+	protected:
 		virtual ~ITexture() = default;
 
+	public:
 		virtual void Release() = 0;
 	};
 
 	class ITexture2D : public ITexture
 	{
-	public:
+	protected:
 		virtual ~ITexture2D() = default;
 		
+	public:
 		virtual bool	LoadFromFile(const std::wstring& filePath) = 0;
-
-		virtual bool	Init(const TextureDesc& desc) = 0;
 
 		virtual void*	GetShaderResourceView() = 0;
 		virtual void*	GetRenderTargetView() = 0;
@@ -67,7 +69,7 @@ namespace RenderDog
 	public:
 		virtual ~ITextureManager() = default;
 
-		virtual ITexture2D* CreateTexture2D() = 0;
+		virtual ITexture2D* CreateTexture2D(const TextureDesc& desc) = 0;
 		virtual void		ReleaseTexture(ITexture* pTexture) = 0;
 	};
 

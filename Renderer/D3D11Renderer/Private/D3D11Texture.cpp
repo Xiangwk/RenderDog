@@ -19,12 +19,11 @@ namespace RenderDog
 	class D3D11Texture2D : public ITexture2D
 	{
 	public:
-		D3D11Texture2D();
+		D3D11Texture2D(const TextureDesc& desc);
 		virtual ~D3D11Texture2D();
 
 		virtual bool				LoadFromFile(const std::wstring& filePath) override;
 
-		virtual bool				Init(const TextureDesc& desc) override;
 		virtual void				Release() override;
 
 		virtual void*				GetRenderTargetView() override { return (void*)m_pRTV; }
@@ -36,14 +35,34 @@ namespace RenderDog
 		ID3D11ShaderResourceView*	m_pSRV;
 	};
 
-	D3D11Texture2D::D3D11Texture2D() :
+	D3D11Texture2D::D3D11Texture2D(const TextureDesc& desc) :
 		m_pTexture2D(nullptr),
 		m_pRTV(nullptr),
 		m_pSRV(nullptr)
-	{}
+	{
+		//TODO!!!
+	}
 
 	D3D11Texture2D::~D3D11Texture2D()
-	{}
+	{
+		if (m_pTexture2D)
+		{
+			m_pTexture2D->Release();
+			m_pTexture2D = nullptr;
+		}
+
+		if (m_pRTV)
+		{
+			m_pRTV->Release();
+			m_pRTV = nullptr;
+		}
+
+		if (m_pSRV)
+		{
+			m_pSRV->Release();
+			m_pSRV = nullptr;
+		}
+	}
 
 	bool D3D11Texture2D::LoadFromFile(const std::wstring& filePath)
 	{
@@ -70,31 +89,9 @@ namespace RenderDog
 		return true;
 	}
 
-	bool D3D11Texture2D::Init(const TextureDesc& desc)
-	{
-		//TODO!!!
-		return true;
-	}
-
 	void D3D11Texture2D::Release()
 	{
-		if (m_pTexture2D)
-		{
-			m_pTexture2D->Release();
-			m_pTexture2D = nullptr;
-		}
-
-		if (m_pRTV)
-		{
-			m_pRTV->Release();
-			m_pRTV = nullptr;
-		}
-
-		if (m_pSRV)
-		{
-			m_pSRV->Release();
-			m_pSRV = nullptr;
-		}
+		
 	}
 
 	//==================================================
@@ -107,27 +104,24 @@ namespace RenderDog
 		D3D11TextureManager() = default;
 		virtual ~D3D11TextureManager() = default;
 
-		virtual ITexture2D* CreateTexture2D() override;
+		virtual ITexture2D* CreateTexture2D(const TextureDesc& desc) override;
 		virtual void		ReleaseTexture(ITexture* pTexture) override;
 	};
 
 	D3D11TextureManager g_D3D11TextureManager;
 	ITextureManager* g_pITextureManager = &g_D3D11TextureManager;
 
-	ITexture2D* D3D11TextureManager::CreateTexture2D()
+	ITexture2D* D3D11TextureManager::CreateTexture2D(const TextureDesc& desc)
 	{
-		ITexture2D* pTexture = new D3D11Texture2D();
+		ITexture2D* pTexture = new D3D11Texture2D(desc);
+		pTexture->AddRef();
 
 		return pTexture;
 	}
 
 	void D3D11TextureManager::ReleaseTexture(ITexture* pTexture)
 	{
-		if (pTexture)
-		{
-			delete pTexture;
-			pTexture = nullptr;
-		}
+		pTexture->SubRef();
 	}
 
 	//==================================================

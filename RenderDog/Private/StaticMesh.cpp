@@ -46,7 +46,8 @@ namespace RenderDog
 
 		m_Indices.assign(indices.begin(), indices.end());
 
-		m_pDiffuseTexture = g_pITextureManager->CreateTexture2D();
+		TextureDesc texDesc;
+		m_pDiffuseTexture = g_pITextureManager->CreateTexture2D(texDesc);
 		m_pDiffuseTexture->LoadFromFile(diffuseTexturePath);
 
 		SamplerDesc samplerDesc = {};
