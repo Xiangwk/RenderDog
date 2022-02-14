@@ -11,9 +11,12 @@
 
 namespace RenderDog
 {
+	class FPSCamera;
+
 	struct InitDesc
 	{
-		WindowDesc wndDesc;
+		WindowDesc	wndDesc;
+		FPSCamera*	pMainCamera;
 	};
 
 	class IRenderDog

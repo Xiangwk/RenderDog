@@ -38,6 +38,7 @@ namespace RenderDog
 		rendererDesc.hWnd = g_pIWindow->GetHandle();
 		rendererDesc.backBufferWidth = g_pIWindow->GetWidth();
 		rendererDesc.backBufferHeight = g_pIWindow->GetHeight();
+		rendererDesc.pMainCamera = desc.pMainCamera;
 		if (!g_pIRenderer->Init(rendererDesc))
 		{
 			return false;

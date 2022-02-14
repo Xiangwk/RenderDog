@@ -9,14 +9,14 @@
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
-	RenderDog::InitDesc renderDogDesc;
-	renderDogDesc.wndDesc.width = 1024;
-	renderDogDesc.wndDesc.height = 768;
-	renderDogDesc.wndDesc.caption = "ModelViewer";
-	renderDogDesc.wndDesc.className = "ModelViewerWindowClass";
-	renderDogDesc.wndDesc.hAppInstance = hInstance;
-	renderDogDesc.wndDesc.wndProc = g_pModelViewer->MessageProc;
-	if (!g_pModelViewer->Init(renderDogDesc))
+	ModelViewerInitDesc initDesc;
+	initDesc.wndDesc.width = 1024;
+	initDesc.wndDesc.height = 768;
+	initDesc.wndDesc.caption = "ModelViewer";
+	initDesc.wndDesc.className = "ModelViewerWindowClass";
+	initDesc.wndDesc.hAppInstance = hInstance;
+	initDesc.wndDesc.wndProc = g_pModelViewer->MessageProc;
+	if (!g_pModelViewer->Init(initDesc))
 	{
 		return 0;
 	}

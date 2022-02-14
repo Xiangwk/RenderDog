@@ -216,7 +216,8 @@ bool InitDevice()
 	}
 
 	RenderDog::CameraDesc camDesc;
-	camDesc.position = Vector3(0, 25, -100);
+	//camDesc.position = Vector3(0, 25, -100);
+	camDesc.position = Vector3(0, 0, -100);
 	camDesc.direction = Vector3(0, 0, 1);
 	camDesc.fov = 45.0f;
 	camDesc.aspectRitio = (float)g_WindowWidth / g_WindowHeight;
@@ -226,6 +227,7 @@ bool InitDevice()
 	g_pMainCamera = new RenderDog::FPSCamera(camDesc);
 
 	g_WorldMatrix = RenderDog::GetRotationMatrix(90.0f, Vector3(1.0f, 0.0f, 0.0f));
+	g_WorldMatrix = g_WorldMatrix * RenderDog::GetTranslationMatrix(0.0f, -25.0f, 0.0f);
 	g_ViewMatrix = g_pMainCamera->GetViewMatrix();
 	g_PerspProjMatrix = g_pMainCamera->GetPerspProjectionMatrix();
 

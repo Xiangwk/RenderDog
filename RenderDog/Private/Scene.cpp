@@ -7,6 +7,7 @@
 #include "Scene.h"
 #include "Primitive.h"
 #include "Light.h"
+#include "Camera.h"
 
 #include <vector>
 
@@ -21,27 +22,33 @@ namespace RenderDog
 		Scene();
 		~Scene();
 
-		virtual bool				Init(const SceneInitDesc& desc) override;
-		virtual void				Release() override;
+		virtual bool					Init(const SceneInitDesc& desc) override;
+		virtual void					Release() override;
 
-		virtual void				RegisterPrimitive(IPrimitive* pPrimitive) override;
-		virtual IPrimitive*			GetPrimitive(uint32_t index) override { return m_Primitives[index]; }
-		virtual uint32_t			GetPrimitivesNum() const override { return (uint32_t)m_Primitives.size(); }
+		virtual void					SetMainCamera(FPSCamera* pCamera) override { m_pMainCamera = pCamera; }
+		virtual FPSCamera*				GetMainCamera() override { return m_pMainCamera; }
 
-		virtual	void				RegisterLight(ILight* pLight) override;
-		virtual ILight*				GetLight(uint32_t index) override { return m_Lights[index]; }
-		virtual uint32_t			GetLightsNum() const override { return (uint32_t)m_Lights.size(); }
+		virtual void					RegisterPrimitive(IPrimitive* pPrimitive) override;
+		virtual IPrimitive*				GetPrimitive(uint32_t index) override { return m_Primitives[index]; }
+		virtual uint32_t				GetPrimitivesNum() const override { return (uint32_t)m_Primitives.size(); }
+
+		virtual	void					RegisterLight(ILight* pLight) override;
+		virtual ILight*					GetLight(uint32_t index) override { return m_Lights[index]; }
+		virtual uint32_t				GetLightsNum() const override { return (uint32_t)m_Lights.size(); }
 
 	private:
 		std::string						m_Name;
 		std::vector<IPrimitive*>		m_Primitives;
 		std::vector<ILight*>			m_Lights;
+
+		FPSCamera*						m_pMainCamera;
 	};
 
 	Scene::Scene() :
 		m_Name(),
 		m_Primitives(0),
-		m_Lights(0)
+		m_Lights(0),
+		m_pMainCamera(nullptr)
 	{}
 
 	Scene::~Scene()

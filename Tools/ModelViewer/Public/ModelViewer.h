@@ -12,13 +12,18 @@
 #include "Light.h"
 #include "StaticModel.h"
 
+struct ModelViewerInitDesc
+{
+	RenderDog::WindowDesc wndDesc;
+};
+
 class ModelViewer
 {
 public:
 	ModelViewer();
 	~ModelViewer();
 
-	bool			Init(const RenderDog::InitDesc& desc);
+	bool			Init(const ModelViewerInitDesc& desc);
 	void			Release();
 
 	int				Run();
@@ -31,7 +36,7 @@ private:
 
 	RenderDog::StaticModel*		m_pModel;
 
-	RenderDog::FPSCamera		m_FPSCamera;
+	RenderDog::FPSCamera*		m_pFPSCamera;
 	RenderDog::ILight*			m_pMainLight;
 };
 

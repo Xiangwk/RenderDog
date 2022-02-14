@@ -310,7 +310,7 @@ namespace RenderDog
 			return false;
 		}
 
-		m_pSceneView = new SceneView(desc.backBufferWidth, desc.backBufferHeight);
+		m_pSceneView = new SceneView(desc.pMainCamera);
 
 		BufferDesc cbDesc = {};
 		cbDesc.bufferBind = BufferBind::CONSTANT;

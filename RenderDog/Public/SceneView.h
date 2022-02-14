@@ -18,7 +18,7 @@ namespace RenderDog
 	{
 	public:
 		SceneView();
-		SceneView(uint32_t viewWidth, uint32_t viewHeight);
+		SceneView(FPSCamera* pCamera);
 		~SceneView();
 
 		void						AddPrimitive(IPrimitive* pPri);
@@ -30,6 +30,7 @@ namespace RenderDog
 		uint32_t					GetLightNum() const { return (uint32_t)m_Lights.size(); }
 
 		FPSCamera*					GetCamera() { return m_pCamera; }
+		void						SetCamera(FPSCamera* pCamera) { m_pCamera = pCamera; }
 
 		void						ClearPrimitives();
 		void						ClearLights();

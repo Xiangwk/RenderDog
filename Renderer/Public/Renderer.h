@@ -11,14 +11,16 @@
 
 namespace RenderDog
 {
+	class IScene;
+	class FPSCamera;
+
 	struct RendererInitDesc
 	{
 		HWND				hWnd;
 		uint32_t			backBufferWidth;
 		uint32_t			backBufferHeight;
+		FPSCamera*			pMainCamera;
 	};
-
-	class IScene;
 
 	class IRenderer
 	{

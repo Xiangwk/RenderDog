@@ -94,7 +94,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\Public;..\..\Math\Public;..\..\..\Renderer\Public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Public;..\..\Math\Public;..\..\..\Renderer\Public;..\..\..\EngineSDK\3rdSDK\Public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -106,6 +106,10 @@ xcopy ..\..\Public\*.* ..\..\..\EngineSDK\RenderDog\Public\$(ProjectName)\ /i /s
 xcopy ..\..\Math\Public\*.* ..\..\..\EngineSDK\RenderDog\Public\Math\ /i /s /y
 xcopy ..\..\EngineAsset\*.* ..\..\..\EngineSDK\RenderDog\EngineAsset\ /i /s /y</Command>
     </PostBuildEvent>
+    <Lib>
+      <AdditionalDependencies>assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\EngineSDK\3rdSDK\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -115,7 +119,7 @@ xcopy ..\..\EngineAsset\*.* ..\..\..\EngineSDK\RenderDog\EngineAsset\ /i /s /y</
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\Public;..\..\Math\Public;..\..\..\Renderer\Public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Public;..\..\Math\Public;..\..\..\Renderer\Public;..\..\..\EngineSDK\3rdSDK\Public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -129,6 +133,10 @@ xcopy ..\..\Public\*.* ..\..\..\EngineSDK\RenderDog\Public\$(ProjectName)\ /i /s
 xcopy ..\..\Math\Public\*.* ..\..\..\EngineSDK\RenderDog\Public\Math\ /i /s /y
 xcopy ..\..\EngineAsset\*.* ..\..\..\EngineSDK\RenderDog\EngineAsset\ /i /s /y</Command>
     </PostBuildEvent>
+    <Lib>
+      <AdditionalDependencies>assimp-vc142-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\EngineSDK\3rdSDK\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

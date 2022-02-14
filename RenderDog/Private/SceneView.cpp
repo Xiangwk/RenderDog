@@ -15,32 +15,17 @@ namespace RenderDog
 		m_pCamera(nullptr)
 	{}
 
-	SceneView::SceneView(uint32_t viewWidth, uint32_t viewHeight):
+	SceneView::SceneView(FPSCamera* pCamera) :
 		m_Primitives(0),
-		m_pCamera(nullptr)
-	{
-		CameraDesc cameraDesc = {};
-		cameraDesc.position = Vector3(0.0f, 0.0f, -5.0f);
-		cameraDesc.direction = Vector3(0.0f, 0.0f, 1.0f);
-		cameraDesc.fov = 45.0f;
-		cameraDesc.aspectRitio = (float)viewWidth / (float)viewHeight;
-		cameraDesc.nearPlane = 0.1f;
-		cameraDesc.farPlane = 1000.0f;
-		m_pCamera = new FPSCamera(cameraDesc);
-	}
-
+		m_Lights(0),
+		m_pCamera(pCamera)
+	{}
 
 	SceneView::~SceneView()
 	{
 		m_Primitives.clear();
 
 		m_Lights.clear();
-
-		if (m_pCamera)
-		{
-			delete m_pCamera;
-			m_pCamera = nullptr;
-		}
 	}
 
 	void SceneView::AddPrimitive(IPrimitive* pPri)

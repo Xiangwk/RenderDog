@@ -15,21 +15,33 @@ ModelViewer::ModelViewer() :
 	m_pRenderDog(nullptr),
 	m_pScene(nullptr),
 	m_pModel(nullptr),
-	m_FPSCamera(),
+	m_pFPSCamera(nullptr),
 	m_pMainLight(nullptr)
 {}
 
 ModelViewer::~ModelViewer()
 {}
 
-bool ModelViewer::Init(const RenderDog::InitDesc& desc)
+bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 {
+	RenderDog::CameraDesc camDesc;
+	camDesc.position = RenderDog::Vector3(0.0f, 0.0f, -100.0f);
+	camDesc.direction = RenderDog::Vector3(0.0f, 0.0f, 1.0f);
+	camDesc.fov = 45.0f;
+	camDesc.aspectRitio = (float)desc.wndDesc.width / (float)desc.wndDesc.height;
+	camDesc.nearPlane = 0.1f;
+	camDesc.farPlane = 1000.0f;
+	m_pFPSCamera = new RenderDog::FPSCamera(camDesc);
+
 	if (!RenderDog::CreateRenderDog(&m_pRenderDog))
 	{
 		return false;
 	}
 
-	if (!m_pRenderDog->Init(desc))
+	RenderDog::InitDesc renderDogDesc;
+	renderDogDesc.wndDesc = desc.wndDesc;
+	renderDogDesc.pMainCamera = m_pFPSCamera;
+	if (!m_pRenderDog->Init(renderDogDesc))
 	{
 		return false;
 	}
@@ -47,8 +59,10 @@ bool ModelViewer::Init(const RenderDog::InitDesc& desc)
 	g_pGeometryGenerator->GenerateBox(1, 1, 1, boxMeshData);
 
 	m_pModel = new RenderDog::StaticModel();
-	m_pModel->LoadFromData(boxMeshData.vertices, boxMeshData.indices, L"EngineAsset/Textures/awesomeface.dds");
-	m_pModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(45.0f, 70.0f, 20.0f), RenderDog::Vector3(1.0f));
+	//m_pModel->LoadFromData(boxMeshData.vertices, boxMeshData.indices);
+	m_pModel->LoadFromFile("Models/generator/generator_small.obj");
+	m_pModel->LoadTextureFromFile(L"EngineAsset/Textures/awesomeface.dds");
+	m_pModel->SetPosGesture(RenderDog::Vector3(0.0f, -25.0f, 0.0f), RenderDog::Vector3(90.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
 
 	m_pModel->RegisterToScene(m_pScene);
 
@@ -79,6 +93,12 @@ void ModelViewer::Release()
 	if (m_pMainLight)
 	{
 		m_pMainLight->Release();
+	}
+
+	if (m_pFPSCamera)
+	{
+		delete m_pFPSCamera;
+		m_pFPSCamera = nullptr;
 	}
 
 	m_pScene->Release();
