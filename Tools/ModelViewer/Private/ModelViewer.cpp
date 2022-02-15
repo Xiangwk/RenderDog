@@ -11,13 +11,17 @@
 ModelViewer g_ModelViewer;
 ModelViewer* g_pModelViewer = &g_ModelViewer;
 
+int ModelViewer::m_Keys[512];
+
 ModelViewer::ModelViewer() :
 	m_pRenderDog(nullptr),
 	m_pScene(nullptr),
 	m_pModel(nullptr),
 	m_pFPSCamera(nullptr),
 	m_pMainLight(nullptr)
-{}
+{
+	memset(m_Keys, 0, sizeof(int) * 512);
+}
 
 ModelViewer::~ModelViewer()
 {}
@@ -43,6 +47,7 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 	renderDogDesc.pMainCamera = m_pFPSCamera;
 	if (!m_pRenderDog->Init(renderDogDesc))
 	{
+		MessageBox(nullptr, "RenderDog Init Failed!", "ERROR", MB_OK);
 		return false;
 	}
 
@@ -120,6 +125,7 @@ int ModelViewer::Run()
 		}
 		else
 		{
+			Update();
 			RenderDog::g_pIFramework->Frame();
 		}
 	}
@@ -193,10 +199,13 @@ LRESULT ModelViewer::MessageProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
 	}
 	case WM_KEYDOWN:
 	{
+		m_Keys[wParam & 511] = 1;
 		break;
 	}
+		
 	case WM_KEYUP:
 	{
+		m_Keys[wParam & 511] = 0;
 		break;
 	}
 	default:
@@ -205,4 +214,39 @@ LRESULT ModelViewer::MessageProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
 	}
 	}
 	return 0;
+}
+
+void ModelViewer::Update()
+{
+	float cameraSpeed = 0.01f;
+	//W
+	if (m_Keys[0x57])
+	{
+		m_pFPSCamera->Move(cameraSpeed, RenderDog::FPSCamera::MoveMode::FrontAndBack);
+	}
+	//S
+	if (m_Keys[0x53])
+	{
+		m_pFPSCamera->Move(-cameraSpeed, RenderDog::FPSCamera::MoveMode::FrontAndBack);
+	}
+	//A
+	if (m_Keys[0x41])
+	{
+		m_pFPSCamera->Move(-cameraSpeed, RenderDog::FPSCamera::MoveMode::LeftAndRight);
+	}
+	//D
+	if (m_Keys[0x44])
+	{
+		m_pFPSCamera->Move(cameraSpeed, RenderDog::FPSCamera::MoveMode::LeftAndRight);
+	}
+	//Q
+	if (m_Keys[0x51])
+	{
+		m_pFPSCamera->Move(cameraSpeed, RenderDog::FPSCamera::MoveMode::UpAndDown);
+	}
+	//E
+	if (m_Keys[0x45])
+	{
+		m_pFPSCamera->Move(-cameraSpeed, RenderDog::FPSCamera::MoveMode::UpAndDown);
+	}
 }

@@ -31,13 +31,19 @@ public:
 	static LRESULT	MessageProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 private:
+	void			Update();
+
+private:
 	RenderDog::IRenderDog*		m_pRenderDog;
 	RenderDog::IScene*			m_pScene;
 
 	RenderDog::StaticModel*		m_pModel;
 
 	RenderDog::FPSCamera*		m_pFPSCamera;
+
 	RenderDog::ILight*			m_pMainLight;
+
+	static int					m_Keys[512];	// 当前键盘按下状态
 };
 
 extern ModelViewer* g_pModelViewer;

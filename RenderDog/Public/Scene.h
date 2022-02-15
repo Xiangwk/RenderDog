@@ -29,9 +29,6 @@ namespace RenderDog
 		virtual bool			Init(const SceneInitDesc& desc) = 0;
 		virtual void			Release() = 0;
 
-		virtual void			SetMainCamera(FPSCamera* pCamera) = 0;
-		virtual FPSCamera*		GetMainCamera() = 0;
-
 		virtual void			RegisterPrimitive(IPrimitive* pPrimitive) = 0;
 		virtual IPrimitive*		GetPrimitive(uint32_t index) = 0;
 		virtual uint32_t		GetPrimitivesNum() const = 0;
