@@ -60,8 +60,8 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 		return false;
 	}
 
-	GeometryGenerator::LocalMeshData boxMeshData;
-	g_pGeometryGenerator->GenerateBox(1, 1, 1, boxMeshData);
+	//GeometryGenerator::LocalMeshData boxMeshData;
+	//g_pGeometryGenerator->GenerateBox(1, 1, 1, boxMeshData);
 
 	m_pModel = new RenderDog::StaticModel();
 	//m_pModel->LoadFromData(boxMeshData.vertices, boxMeshData.indices);
