@@ -14,7 +14,7 @@ namespace RenderDog
 {
 	class IDevice;
 	class IDeviceContext;
-	class IBuffer;
+	class ISRBuffer;
 	class IndexBuffer;
 
 	class StaticMesh
@@ -39,8 +39,8 @@ namespace RenderDog
 		std::vector<LocalVertex>		m_Vertices;
 		std::vector<uint32_t>			m_Indices;
 
-		IBuffer*						m_pVB;
-		IBuffer*						m_pIB;
+		ISRBuffer*						m_pVB;
+		ISRBuffer*						m_pIB;
 	};
 
 }// namespace RenderDog

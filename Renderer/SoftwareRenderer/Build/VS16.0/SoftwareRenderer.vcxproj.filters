@@ -11,7 +11,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Public\SoftwareRenderer.h">
+    <ClInclude Include="..\..\Public\SoftwareRender3D.h">
       <Filter>Public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Public\ShaderResourceUtility.h">
@@ -28,7 +28,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Private\SoftwareRenderer.cpp">
+    <ClCompile Include="..\..\Private\SoftwareRender3D.cpp">
       <Filter>Private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Private\ShaderResourceUtility.cpp">
@@ -41,6 +41,9 @@
       <Filter>Private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Private\GameTimer.cpp">
+      <Filter>Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Private\SRBuffer.cpp">
       <Filter>Private</Filter>
     </ClCompile>
   </ItemGroup>

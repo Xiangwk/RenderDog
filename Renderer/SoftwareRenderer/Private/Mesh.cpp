@@ -5,7 +5,7 @@
 ///////////////////////////////////
 
 #include "Mesh.h"
-#include "SoftwareRenderer.h"
+#include "SoftwareRender3D.h"
 #include "Utility.h"
 
 namespace RenderDog
@@ -50,9 +50,9 @@ namespace RenderDog
 
 	bool StaticMesh::Init(IDevice* pDevice)
 	{
-		BufferDesc vbDesc;
+		SRBufferDesc vbDesc;
 		vbDesc.byteWidth = (uint32_t)m_Vertices.size() * sizeof(LocalVertex);
-		vbDesc.bindFlag = RD_BIND_FLAG::BIND_VERTEX_BUFFER;
+		vbDesc.bindFlag = SR_BIND_FLAG::BIND_VERTEX_BUFFER;
 		SubResourceData initVBData;
 		initVBData.pSysMem = &m_Vertices[0];
 		initVBData.sysMemPitch = vbDesc.byteWidth;
@@ -61,9 +61,9 @@ namespace RenderDog
 			return false;
 		}
 
-		BufferDesc ibDesc;
+		SRBufferDesc ibDesc;
 		ibDesc.byteWidth = (uint32_t)m_Indices.size() * sizeof(uint32_t);
-		ibDesc.bindFlag = RD_BIND_FLAG::BIND_INDEX_BUFFER;
+		ibDesc.bindFlag = SR_BIND_FLAG::BIND_INDEX_BUFFER;
 		SubResourceData initIBData;
 		initIBData.pSysMem = &m_Indices[0];
 		initIBData.sysMemPitch = ibDesc.byteWidth;

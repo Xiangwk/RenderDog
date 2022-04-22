@@ -8,40 +8,40 @@
 namespace RenderDog
 {
 #pragma region Enum
-	enum class RD_PRIMITIVE_TOPOLOGY
+	enum class SR_PRIMITIVE_TOPOLOGY
 	{
 		LINE_LIST,
 		TRIANGLE_LIST
 	};
 
-	enum class RD_RESOURCE_DIMENSION
+	enum class SR_RESOURCE_DIMENSION
 	{
 		UNKNOWN = 0,
 		BUFFER = 1,
 		TEXTURE2D = 2,
 	};
 
-	enum class RD_RTV_DIMENSION
+	enum class SR_RTV_DIMENSION
 	{
 		UNKNOWN = 0,
 		BUFFER = 1,
 		TEXTURE2D = 2,
 	};
 
-	enum class RD_DSV_DIMENSION
+	enum class SR_DSV_DIMENSION
 	{
 		UNKNOWN = 0,
 		TEXTURE2D = 1,
 	};
 
-	enum class RD_SRV_DIMENSION
+	enum class SR_SRV_DIMENSION
 	{
 		UNKNOWN = 0,
 		BUFFER = 1,
 		TEXTURE2D = 2,
 	};
 
-	enum class RD_FORMAT
+	enum class SR_FORMAT
 	{
 		UNKNOWN = 0,
 		R8G8B8A8_UNORM = 1,
@@ -49,7 +49,7 @@ namespace RenderDog
 		R32_FLOAT = 3
 	};
 
-	enum class RD_BIND_FLAG
+	enum class SR_BIND_FLAG
 	{
 		BIND_UNKNOWN = 0,
 		BIND_VERTEX_BUFFER = 1,
@@ -66,13 +66,13 @@ namespace RenderDog
 	{
 		uint32_t	width;
 		uint32_t	height;
-		RD_FORMAT	format;
+		SR_FORMAT	format;
 		HWND		hOutputWindow;
 
 		SwapChainDesc() :
 			width(0),
 			height(0),
-			format(RD_FORMAT::UNKNOWN),
+			format(SR_FORMAT::UNKNOWN),
 			hOutputWindow(nullptr)
 		{}
 
@@ -94,14 +94,14 @@ namespace RenderDog
 		}
 	};
 
-	struct BufferDesc
+	struct SRBufferDesc
 	{
 		uint32_t		byteWidth;
-		RD_BIND_FLAG	bindFlag;
+		SR_BIND_FLAG	bindFlag;
 
-		BufferDesc() :
+		SRBufferDesc() :
 			byteWidth(0),
-			bindFlag(RD_BIND_FLAG::BIND_UNKNOWN)
+			bindFlag(SR_BIND_FLAG::BIND_UNKNOWN)
 		{}
 	};
 
@@ -109,41 +109,41 @@ namespace RenderDog
 	{
 		uint32_t		width;
 		uint32_t		height;
-		RD_FORMAT		format;
+		SR_FORMAT		format;
 
 		Texture2DDesc() :
 			width(0),
 			height(0),
-			format(RD_FORMAT::UNKNOWN)
+			format(SR_FORMAT::UNKNOWN)
 		{}
 	};
 
 	struct RenderTargetViewDesc
 	{
-		RD_FORMAT		format;
-		RD_RTV_DIMENSION	viewDimension;
+		SR_FORMAT		format;
+		SR_RTV_DIMENSION	viewDimension;
 
 		RenderTargetViewDesc() :
-			format(RD_FORMAT::UNKNOWN),
-			viewDimension(RD_RTV_DIMENSION::UNKNOWN)
+			format(SR_FORMAT::UNKNOWN),
+			viewDimension(SR_RTV_DIMENSION::UNKNOWN)
 		{}
 	};
 
 	struct DepthStencilViewDesc
 	{
-		RD_FORMAT format;
-		RD_DSV_DIMENSION viewDimension;
+		SR_FORMAT format;
+		SR_DSV_DIMENSION viewDimension;
 
 		DepthStencilViewDesc() :
-			format(RD_FORMAT::UNKNOWN),
-			viewDimension(RD_DSV_DIMENSION::UNKNOWN)
+			format(SR_FORMAT::UNKNOWN),
+			viewDimension(SR_DSV_DIMENSION::UNKNOWN)
 		{}
 	};
 
 	struct ShaderResourceViewDesc
 	{
-		RD_FORMAT format;
-		RD_SRV_DIMENSION viewDimension;
+		SR_FORMAT format;
+		SR_SRV_DIMENSION viewDimension;
 	};
 #pragma endregion Description
 
@@ -190,13 +190,13 @@ namespace RenderDog
 	class IResource : public IUnknown
 	{
 	public:
-		virtual void GetType(RD_RESOURCE_DIMENSION* pResDimension) = 0;
+		virtual void GetType(SR_RESOURCE_DIMENSION* pResDimension) = 0;
 	};
 
-	class IBuffer : public IResource
+	class ISRBuffer : public IResource
 	{
 	public:
-		virtual void GetDesc(BufferDesc* pDesc) = 0;
+		virtual void GetDesc(SRBufferDesc* pDesc) = 0;
 	};
 
 	class ITexture2D : public IResource
@@ -241,7 +241,7 @@ namespace RenderDog
 		virtual bool CreateRenderTargetView(IResource* pResource, const RenderTargetViewDesc* pDesc, IRenderTargetView** ppRenderTargetView) = 0;
 		virtual bool CreateDepthStencilView(IResource* pResource, const DepthStencilViewDesc* pDesc, IDepthStencilView** ppDepthStencilView) = 0;
 		virtual bool CreateShaderResourceView(IResource* pResource, const ShaderResourceViewDesc* pDesc, IShaderResourceView** ppShaderResourceView) = 0;
-		virtual bool CreateBuffer(const BufferDesc* pDesc, const SubResourceData* pInitData, IBuffer** ppBuffer) = 0;
+		virtual bool CreateBuffer(const SRBufferDesc* pDesc, const SubResourceData* pInitData, ISRBuffer** ppBuffer) = 0;
 		virtual bool CreateVertexShader(IVertexShader** ppVertexShader) = 0;
 		virtual bool CreatePixelShader(IPixelShader** ppPixelShader) = 0;
 	};
@@ -249,15 +249,15 @@ namespace RenderDog
 	class IDeviceContext : public IUnknown
 	{
 	public:
-		virtual void IASetVertexBuffer(IBuffer* pVB) = 0;
-		virtual void IASetIndexBuffer(IBuffer* pIB) = 0;
-		virtual void IASetPrimitiveTopology(RD_PRIMITIVE_TOPOLOGY topology) = 0;
+		virtual void IASetVertexBuffer(ISRBuffer* pVB) = 0;
+		virtual void IASetIndexBuffer(ISRBuffer* pIB) = 0;
+		virtual void IASetPrimitiveTopology(SR_PRIMITIVE_TOPOLOGY topology) = 0;
 
 		virtual	void UpdateSubresource(IResource* pDstResource, const void* pSrcData, uint32_t srcRowPitch, uint32_t srcDepthPitch) = 0;
 
 		virtual void VSSetShader(IVertexShader* pVS) = 0;
-		virtual void VSSetConstantBuffer(uint32_t startSlot, IBuffer* const* ppConstantBuffer) = 0;
-		virtual void PSSetConstantBuffer(uint32_t startSlot, IBuffer* const* ppConstantBuffer) = 0;
+		virtual void VSSetConstantBuffer(uint32_t startSlot, ISRBuffer* const* ppConstantBuffer) = 0;
+		virtual void PSSetConstantBuffer(uint32_t startSlot, ISRBuffer* const* ppConstantBuffer) = 0;
 		virtual void PSSetShader(IPixelShader* pPS) = 0;
 		virtual void PSSetShaderResource(IShaderResourceView* const* ppShaderResourceView) = 0;
 

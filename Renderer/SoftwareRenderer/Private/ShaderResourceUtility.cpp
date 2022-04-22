@@ -26,7 +26,7 @@ namespace RenderDog
 		tex2DDesc.height = nTexHeight;
 		if (nChannels == 3 || nChannels == 4)
 		{
-			tex2DDesc.format = RD_FORMAT::R32G32B32A32_FLOAT;
+			tex2DDesc.format = SR_FORMAT::R32G32B32A32_FLOAT;
 		}
 
 		Vector4* pColor = new Vector4[nTexWidth * nTexHeight];
@@ -73,7 +73,7 @@ namespace RenderDog
 
 		ShaderResourceViewDesc srvDesc;
 		srvDesc.format = tex2DDesc.format;
-		srvDesc.viewDimension = RD_SRV_DIMENSION::TEXTURE2D;
+		srvDesc.viewDimension = SR_SRV_DIMENSION::TEXTURE2D;
 		if (!pDevice->CreateShaderResourceView(pTexture2D, &srvDesc, ppShaderResourceView))
 		{
 			return false;

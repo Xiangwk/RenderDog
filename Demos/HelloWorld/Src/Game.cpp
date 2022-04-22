@@ -31,8 +31,8 @@ RenderDog::IDevice*				g_pDevice = nullptr;
 RenderDog::IDeviceContext*		g_pDeviceContext = nullptr;
 RenderDog::ISwapChain*			g_pSwapChain = nullptr;
 RenderDog::IRenderTargetView*	g_pRenderTargetView = nullptr;
-RenderDog::IBuffer*				g_pMVPMatrixConstantBuffer = nullptr;
-RenderDog::IBuffer*				g_pMainLightConstantBuffer = nullptr;
+RenderDog::ISRBuffer*			g_pMVPMatrixConstantBuffer = nullptr;
+RenderDog::ISRBuffer*			g_pMainLightConstantBuffer = nullptr;
 RenderDog::IVertexShader*		g_pVertexShader = nullptr;
 RenderDog::IPixelShader*		g_pPixelShader = nullptr;
 RenderDog::ITexture2D*			g_pDepthTexture = nullptr;
@@ -133,7 +133,7 @@ bool InitDevice()
 	ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
 	swapChainDesc.width = g_WindowWidth;
 	swapChainDesc.height = g_WindowHeight;
-	swapChainDesc.format = RenderDog::RD_FORMAT::R8G8B8A8_UNORM;
+	swapChainDesc.format = RenderDog::SR_FORMAT::R8G8B8A8_UNORM;
 	swapChainDesc.hOutputWindow = g_WndHandle;
 
 	if (!RenderDog::CreateDeviceAndSwapChain(&g_pDevice, &g_pDeviceContext, &g_pSwapChain, &swapChainDesc))
@@ -156,7 +156,7 @@ bool InitDevice()
 	RenderDog::Texture2DDesc depthDesc;
 	depthDesc.width = g_WindowWidth;
 	depthDesc.height = g_WindowWidth;
-	depthDesc.format = RenderDog::RD_FORMAT::R32_FLOAT;
+	depthDesc.format = RenderDog::SR_FORMAT::R32_FLOAT;
 	if (!g_pDevice->CreateTexture2D(&depthDesc, nullptr, &g_pDepthTexture))
 	{
 		return false;
@@ -164,7 +164,7 @@ bool InitDevice()
 
 	RenderDog::DepthStencilViewDesc dsDesc;
 	dsDesc.format = depthDesc.format;
-	dsDesc.viewDimension = RenderDog::RD_DSV_DIMENSION::TEXTURE2D;
+	dsDesc.viewDimension = RenderDog::SR_DSV_DIMENSION::TEXTURE2D;
 	if (!g_pDevice->CreateDepthStencilView(g_pDepthTexture, &dsDesc, &g_pDepthStencilView))
 	{
 		return false;
@@ -196,9 +196,9 @@ bool InitDevice()
 		return false;
 	}
 
-	RenderDog::BufferDesc cbDesc;
+	RenderDog::SRBufferDesc cbDesc;
 	cbDesc.byteWidth = sizeof(ConstantBufferMVPMatrix);
-	cbDesc.bindFlag = RenderDog::RD_BIND_FLAG::BIND_CONSTANT_BUFFER;
+	cbDesc.bindFlag = RenderDog::SR_BIND_FLAG::BIND_CONSTANT_BUFFER;
 	if (!g_pDevice->CreateBuffer(&cbDesc, nullptr, &g_pMVPMatrixConstantBuffer))
 	{
 		return false;
@@ -394,7 +394,7 @@ void Render()
 
 	g_pDeviceContext->ClearDepthStencilView(g_pDepthStencilView, 1.0f);
 
-	g_pDeviceContext->IASetPrimitiveTopology(RenderDog::RD_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST);
+	g_pDeviceContext->IASetPrimitiveTopology(RenderDog::SR_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST);
 
 	g_pDeviceContext->VSSetShader(g_pVertexShader);
 	//FIXME!!! 这里暂时将slot0固定设置为MVP矩阵，不能修改
