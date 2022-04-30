@@ -16,8 +16,8 @@ struct aiScene;
 
 namespace RenderDog
 {
-	class IDevice;
-	class IDeviceContext;
+	class ISRDevice;
+	class ISRDeviceContext;
 
 	class StaticModel
 	{
@@ -27,10 +27,10 @@ namespace RenderDog
 
 		bool LoadFromFile(const std::string& fileName);
 
-		bool Init(IDevice* pDevice);
+		bool Init(ISRDevice* pDevice);
 		void Release();
 
-		void Draw(IDeviceContext* pDeviceContext);
+		void Draw(ISRDeviceContext* pDeviceContext);
 
 	private:
 		void ProcessNode(const aiNode* pAssimpNode, const aiScene* pAssimpScene);

@@ -89,7 +89,7 @@ namespace RenderDog
 		}
 	}
 
-	bool StaticModel::Init(IDevice* pDevice)
+	bool StaticModel::Init(ISRDevice* pDevice)
 	{
 		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
 		{
@@ -110,7 +110,7 @@ namespace RenderDog
 		}
 	}
 
-	void StaticModel::Draw(IDeviceContext* pDeviceContext)
+	void StaticModel::Draw(ISRDeviceContext* pDeviceContext)
 	{
 		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
 		{

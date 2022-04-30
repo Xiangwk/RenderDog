@@ -1,3 +1,9 @@
+///////////////////////////////////
+//RenderDog <·,·>
+//FileName: SoftwareRender3D.cpp
+//Written by Xiang Weikang
+///////////////////////////////////
+
 #include "SoftwareRender3D.h"
 #include "Vertex.h"
 #include "Matrix.h"
@@ -35,7 +41,7 @@ namespace RenderDog
 		Vector2 texcoord;
 	};
 
-	class VertexShader : public IVertexShader
+	class VertexShader : public ISRVertexShader
 	{
 	public:
 		VertexShader() = default;
@@ -47,7 +53,7 @@ namespace RenderDog
 		VSOutputVertex VSMain(const LocalVertex& inVertex, const Matrix4x4& matWorld, const Matrix4x4& matView, const Matrix4x4& matProj) const;
 	};
 
-	class PixelShader : public IPixelShader
+	class PixelShader : public ISRPixelShader
 	{
 	private:
 		struct MainLight
@@ -108,7 +114,7 @@ namespace RenderDog
 
 #pragma region Texture2D
 
-	class Texture2D : public ITexture2D
+	class Texture2D : public ISRTexture2D
 	{
 	public:
 		Texture2D();
@@ -199,7 +205,7 @@ namespace RenderDog
 
 
 #pragma region View
-	class RenderTargetView : public IRenderTargetView
+	class RenderTargetView : public ISRRenderTargetView
 	{
 	public:
 		RenderTargetView() :
@@ -210,23 +216,23 @@ namespace RenderDog
 		~RenderTargetView()
 		{}
 
-		bool Init(IResource* pResource, const RenderTargetViewDesc* pDesc);
+		bool Init(ISFResource* pResource, const RenderTargetViewDesc* pDesc);
 
 		virtual void AddRef() override { ++m_RefCnt; }
 		virtual void Release() override;
 
-		virtual void GetResource(IResource** ppResource) override { *ppResource = m_pViewResource; }
+		virtual void GetResource(ISFResource** ppResource) override { *ppResource = m_pViewResource; }
 
 		virtual void GetDesc(RenderTargetViewDesc* pDesc) override { *pDesc = m_Desc; }
 
 	private:
 		int						m_RefCnt;
 
-		IResource*				m_pViewResource;
+		ISFResource*				m_pViewResource;
 		RenderTargetViewDesc	m_Desc;
 	};
 
-	bool RenderTargetView::Init(IResource* pResource, const RenderTargetViewDesc* pDesc)
+	bool RenderTargetView::Init(ISFResource* pResource, const RenderTargetViewDesc* pDesc)
 	{
 		m_pViewResource = pResource;
 		m_pViewResource->AddRef();
@@ -252,7 +258,7 @@ namespace RenderDog
 		}
 	}
 
-	class DepthStencilView : public IDepthStencilView
+	class DepthStencilView : public ISRDepthStencilView
 	{
 	public:
 		DepthStencilView() :
@@ -263,23 +269,23 @@ namespace RenderDog
 		~DepthStencilView()
 		{}
 
-		bool Init(IResource* pResource, const DepthStencilViewDesc* pDesc);
+		bool Init(ISFResource* pResource, const DepthStencilViewDesc* pDesc);
 
 		virtual void AddRef() override { ++m_RefCnt; }
 		virtual void Release() override;
 
-		virtual void GetResource(IResource** ppResource) override { *ppResource = m_pViewResource; }
+		virtual void GetResource(ISFResource** ppResource) override { *ppResource = m_pViewResource; }
 
 		virtual void GetDesc(DepthStencilViewDesc* pDesc) override { *pDesc = m_Desc; }
 
 	private:
 		int						m_RefCnt;
 
-		IResource*				m_pViewResource;
+		ISFResource*				m_pViewResource;
 		DepthStencilViewDesc	m_Desc;
 	};
 
-	bool DepthStencilView::Init(IResource* pResource, const DepthStencilViewDesc* pDesc)
+	bool DepthStencilView::Init(ISFResource* pResource, const DepthStencilViewDesc* pDesc)
 	{
 		m_pViewResource = pResource;
 		m_pViewResource->AddRef();
@@ -305,7 +311,7 @@ namespace RenderDog
 		}
 	}
 
-	class ShaderResourceView : public IShaderResourceView
+	class ShaderResourceView : public ISRShaderResourceView
 	{
 	public:
 		ShaderResourceView() :
@@ -317,23 +323,23 @@ namespace RenderDog
 		~ShaderResourceView()
 		{}
 
-		bool Init(IResource* pResource, const ShaderResourceViewDesc* pDesc);
+		bool Init(ISFResource* pResource, const ShaderResourceViewDesc* pDesc);
 
 		virtual void AddRef() override { ++m_RefCnt; }
 		virtual void Release() override;
 
-		virtual void GetResource(IResource** ppResource) override { *ppResource = m_pViewResource; }
+		virtual void GetResource(ISFResource** ppResource) override { *ppResource = m_pViewResource; }
 
 		virtual void GetDesc(ShaderResourceViewDesc* pDesc) override { *pDesc = m_Desc; }
 
 	private:
 		int						m_RefCnt;
 
-		IResource*				m_pViewResource;
+		ISFResource*				m_pViewResource;
 		ShaderResourceViewDesc	m_Desc;
 	};
 
-	bool ShaderResourceView::Init(IResource* pResource, const ShaderResourceViewDesc* pDesc)
+	bool ShaderResourceView::Init(ISFResource* pResource, const ShaderResourceViewDesc* pDesc)
 	{
 		m_pViewResource = pResource;
 
@@ -572,7 +578,7 @@ namespace RenderDog
 #pragma endregion Buffer
 
 #pragma region Device
-	class Device : public IDevice
+	class Device : public ISRDevice
 	{
 	public:
 		Device() = default;
@@ -581,13 +587,13 @@ namespace RenderDog
 		Device(const Device&) = delete;
 		Device& operator=(const Device&) = delete;
 
-		virtual bool CreateTexture2D(const Texture2DDesc* pDesc, const SubResourceData* pInitData, ITexture2D** ppTexture) override;
-		virtual bool CreateRenderTargetView(IResource* pResource, const RenderTargetViewDesc* pDesc, IRenderTargetView** ppRenderTargetView) override;
-		virtual bool CreateDepthStencilView(IResource* pResource, const DepthStencilViewDesc* pDesc, IDepthStencilView** ppDepthStencilView) override;
-		virtual bool CreateShaderResourceView(IResource* pResource, const ShaderResourceViewDesc* pDesc, IShaderResourceView** ppShaderResourceView) override;
+		virtual bool CreateTexture2D(const Texture2DDesc* pDesc, const SubResourceData* pInitData, ISRTexture2D** ppTexture) override;
+		virtual bool CreateRenderTargetView(ISFResource* pResource, const RenderTargetViewDesc* pDesc, ISRRenderTargetView** ppRenderTargetView) override;
+		virtual bool CreateDepthStencilView(ISFResource* pResource, const DepthStencilViewDesc* pDesc, ISRDepthStencilView** ppDepthStencilView) override;
+		virtual bool CreateShaderResourceView(ISFResource* pResource, const ShaderResourceViewDesc* pDesc, ISRShaderResourceView** ppShaderResourceView) override;
 		virtual bool CreateBuffer(const SRBufferDesc* pDesc, const SubResourceData* pInitData, ISRBuffer** ppBuffer) override;
-		virtual bool CreateVertexShader(IVertexShader** ppVertexShader) override;
-		virtual bool CreatePixelShader(IPixelShader** ppPixelShader) override;
+		virtual bool CreateVertexShader(ISRVertexShader** ppVertexShader) override;
+		virtual bool CreatePixelShader(ISRPixelShader** ppPixelShader) override;
 
 		virtual void AddRef() override {}
 		virtual void Release() override { delete this; }
@@ -599,7 +605,7 @@ namespace RenderDog
 	};
 
 
-	bool Device::CreateTexture2D(const Texture2DDesc* pDesc, const SubResourceData* pInitData, ITexture2D** ppTexture)
+	bool Device::CreateTexture2D(const Texture2DDesc* pDesc, const SubResourceData* pInitData, ISRTexture2D** ppTexture)
 	{
 		Texture2D* pTex = new Texture2D;
 		if (!pTex)
@@ -617,7 +623,7 @@ namespace RenderDog
 		return true;
 	}
 
-	bool Device::CreateRenderTargetView(IResource* pResource, const RenderTargetViewDesc* pDesc, IRenderTargetView** ppRenderTargetView)
+	bool Device::CreateRenderTargetView(ISFResource* pResource, const RenderTargetViewDesc* pDesc, ISRRenderTargetView** ppRenderTargetView)
 	{
 		RenderTargetView* pRTV = new RenderTargetView();
 		if (!pRTV)
@@ -644,7 +650,7 @@ namespace RenderDog
 		return true;
 	}
 
-	bool Device::CreateDepthStencilView(IResource* pResource, const DepthStencilViewDesc* pDesc, IDepthStencilView** ppDepthStencilView)
+	bool Device::CreateDepthStencilView(ISFResource* pResource, const DepthStencilViewDesc* pDesc, ISRDepthStencilView** ppDepthStencilView)
 	{
 		DepthStencilView* pDSV = new DepthStencilView();
 		if (!pDSV)
@@ -662,7 +668,7 @@ namespace RenderDog
 		return true;
 	}
 
-	bool Device::CreateShaderResourceView(IResource* pResource, const ShaderResourceViewDesc* pDesc, IShaderResourceView** ppShaderResourceView)
+	bool Device::CreateShaderResourceView(ISFResource* pResource, const ShaderResourceViewDesc* pDesc, ISRShaderResourceView** ppShaderResourceView)
 	{
 		ShaderResourceView* pSRV = new ShaderResourceView();
 		if (!pSRV)
@@ -708,7 +714,7 @@ namespace RenderDog
 		return false;
 	}
 
-	bool Device::CreateVertexShader(IVertexShader** ppVertexShader)
+	bool Device::CreateVertexShader(ISRVertexShader** ppVertexShader)
 	{
 		VertexShader* pVS = new VertexShader();
 		if (!pVS)
@@ -721,7 +727,7 @@ namespace RenderDog
 		return true;
 	}
 
-	bool Device::CreatePixelShader(IPixelShader** ppPixelShader)
+	bool Device::CreatePixelShader(ISRPixelShader** ppPixelShader)
 	{
 		PixelShader* pPS = new PixelShader();
 		if (!pPS)
@@ -790,7 +796,7 @@ namespace RenderDog
 #pragma endregion Device
 
 #pragma region DeviceContext
-	class DeviceContext : public IDeviceContext
+	class DeviceContext : public ISRDeviceContext
 	{
 	public:
 		DeviceContext();
@@ -808,19 +814,19 @@ namespace RenderDog
 		virtual void IASetIndexBuffer(ISRBuffer* pIB) override;
 		virtual void IASetPrimitiveTopology(SR_PRIMITIVE_TOPOLOGY topology) override { m_PriTopology = topology; }
 
-		virtual	void UpdateSubresource(IResource* pDstResource, const void* pSrcData, uint32_t srcRowPitch, uint32_t srcDepthPitch) override;
+		virtual	void UpdateSubresource(ISFResource* pDstResource, const void* pSrcData, uint32_t srcRowPitch, uint32_t srcDepthPitch) override;
 
-		virtual void VSSetShader(IVertexShader* pVS) override { m_pVS = dynamic_cast<VertexShader*>(pVS); }
+		virtual void VSSetShader(ISRVertexShader* pVS) override { m_pVS = dynamic_cast<VertexShader*>(pVS); }
 		virtual void VSSetConstantBuffer(uint32_t startSlot, ISRBuffer* const* ppConstantBuffer) override;
 		virtual void PSSetConstantBuffer(uint32_t startSlot, ISRBuffer* const* ppConstantBuffer) override;
-		virtual void PSSetShader(IPixelShader* pPS) override { m_pPS = dynamic_cast<PixelShader*>(pPS); }
-		virtual void PSSetShaderResource(IShaderResourceView* const* ppShaderResourceView) override;
+		virtual void PSSetShader(ISRPixelShader* pPS) override { m_pPS = dynamic_cast<PixelShader*>(pPS); }
+		virtual void PSSetShaderResource(ISRShaderResourceView* const* ppShaderResourceView) override;
 
-		virtual void RSSetViewport(const Viewport* pVP) override;
+		virtual void RSSetViewport(const SRViewport* pVP) override;
 
-		virtual void OMSetRenderTarget(IRenderTargetView* pRenderTargetView, IDepthStencilView* pDepthStencilVew) override;
-		virtual void ClearRenderTargetView(IRenderTargetView* pRenderTargetView, const float* clearColor) override;
-		virtual void ClearDepthStencilView(IDepthStencilView* pDepthStencilView, float fDepth) override;
+		virtual void OMSetRenderTarget(ISRRenderTargetView* pRenderTargetView, ISRDepthStencilView* pDepthStencilVew) override;
+		virtual void ClearRenderTargetView(ISRRenderTargetView* pRenderTargetView, const float* clearColor) override;
+		virtual void ClearDepthStencilView(ISRDepthStencilView* pDepthStencilView, float fDepth) override;
 		virtual void Draw() override;
 		virtual void DrawIndex(uint32_t indexNum) override;
 		virtual void DrawLineWithDDA(float fPos1X, float fPos1Y, float fPos2X, float fPos2Y, const float* lineColor) override;
@@ -946,7 +952,7 @@ namespace RenderDog
 		}
 	}
 
-	void DeviceContext::UpdateSubresource(IResource* pDstResource, const void* pSrcData, uint32_t srcRowPitch, uint32_t srcDepthPitch)
+	void DeviceContext::UpdateSubresource(ISFResource* pDstResource, const void* pSrcData, uint32_t srcRowPitch, uint32_t srcDepthPitch)
 	{
 		SR_RESOURCE_DIMENSION resDimension;
 		pDstResource->GetType(&resDimension);
@@ -997,9 +1003,9 @@ namespace RenderDog
 		m_pPS->SetMainLight(mainLightDir, mainLightColor, mainLightLuma);
 	}
 
-	void DeviceContext::PSSetShaderResource(IShaderResourceView* const* ppShaderResourceView)
+	void DeviceContext::PSSetShaderResource(ISRShaderResourceView* const* ppShaderResourceView)
 	{ 
-		IResource* pRes = nullptr;
+		ISFResource* pRes = nullptr;
 		(*ppShaderResourceView)->GetResource(&pRes);
 
 		ShaderResourceViewDesc srvDesc;
@@ -1022,7 +1028,7 @@ namespace RenderDog
 		}
 	}
 
-	void DeviceContext::RSSetViewport(const Viewport* pViewport)
+	void DeviceContext::RSSetViewport(const SRViewport* pViewport)
 	{
 		m_ViewportMatrix(0, 0) = (pViewport->width - 1) / 2.0f;
 		m_ViewportMatrix(3, 0) = (pViewport->width - 1) / 2.0f + pViewport->topLeftX;
@@ -1032,9 +1038,9 @@ namespace RenderDog
 		m_ViewportMatrix(3, 2) = pViewport->minDepth;
 	}
 
-	void DeviceContext::OMSetRenderTarget(IRenderTargetView* pRenderTargetView, IDepthStencilView* pDepthStencilView)
+	void DeviceContext::OMSetRenderTarget(ISRRenderTargetView* pRenderTargetView, ISRDepthStencilView* pDepthStencilView)
 	{
-		IResource* pTex = nullptr;
+		ISFResource* pTex = nullptr;
 		pRenderTargetView->GetResource(&pTex);
 		
 		RenderTargetViewDesc rtvDesc;
@@ -1096,13 +1102,13 @@ namespace RenderDog
 		}
 	}
 
-	void DeviceContext::ClearRenderTargetView(IRenderTargetView* pRenderTargetView, const float* clearColor)
+	void DeviceContext::ClearRenderTargetView(ISRRenderTargetView* pRenderTargetView, const float* clearColor)
 	{
 		Vector4 colorVector(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
 		Vector4 ARGB = ConvertRGBAColorToARGBColor(colorVector);
 		uint32_t nClearColor = ConvertColorToUInt32(ARGB);
 
-		IResource* pTex = nullptr;
+		ISFResource* pTex = nullptr;
 		pRenderTargetView->GetResource(&pTex);
 
 		RenderTargetViewDesc rtvDesc;
@@ -1132,9 +1138,9 @@ namespace RenderDog
 		}
 	}
 
-	void DeviceContext::ClearDepthStencilView(IDepthStencilView* pDepthStencil, float depth)
+	void DeviceContext::ClearDepthStencilView(ISRDepthStencilView* pDepthStencil, float depth)
 	{
-		IResource* pTex = nullptr;
+		ISFResource* pTex = nullptr;
 		pDepthStencil->GetResource(&pTex);
 
 		DepthStencilViewDesc dsvDesc;
@@ -1993,7 +1999,7 @@ namespace RenderDog
 #pragma endregion DeviceContext
 
 #pragma region SwapChain
-	class SwapChain : public ISwapChain
+	class SwapChain : public ISRSwapChain
 	{
 	public:
 		SwapChain() :
@@ -2015,7 +2021,10 @@ namespace RenderDog
 		virtual void Release() override;
 
 		virtual bool GetBuffer(void** ppSurface) override;
+		virtual bool ResizeBuffers(uint32_t bufferCnts, uint32_t width, uint32_t height, SR_FORMAT format) override;
+
 		virtual void GetDesc(SwapChainDesc* pDesc) override;
+
 		virtual void Present() override;
 
 	private:
@@ -2085,7 +2094,6 @@ namespace RenderDog
 		}
 		}
 
-		
 		BITMAPINFO bitMapInfo =
 		{
 			{ sizeof(BITMAPINFOHEADER), (int)pDesc->width, -(int)pDesc->height, 1, bitCnt, BI_RGB, imageSize, 0, 0, 0, 0 }
@@ -2155,6 +2163,94 @@ namespace RenderDog
 		return true;
 	}
 
+	bool SwapChain::ResizeBuffers(uint32_t bufferCnts, uint32_t width, uint32_t height, SR_FORMAT format)
+	{
+		if (m_hOldBitMap)
+		{
+			SelectObject(m_hWndDC, m_hOldBitMap);
+			m_hOldBitMap = nullptr;
+		}
+
+		if (m_hBitMap)
+		{
+			DeleteObject(m_hBitMap);
+			m_hBitMap = nullptr;
+			m_pBackBuffer->GetData() = nullptr;
+		}
+
+		if (m_pBackBuffer)
+		{
+			m_pBackBuffer->Release();
+			m_pBackBuffer = nullptr;
+		}
+
+		m_Desc.width = width;
+		m_Desc.height = height;
+		m_Desc.format = format;
+
+		m_pBackBuffer = new Texture2D();
+		if (!m_pBackBuffer)
+		{
+			return false;
+		}
+
+		Texture2DDesc texDesc;
+		texDesc.width = m_Desc.width;
+		texDesc.height = m_Desc.height;
+		texDesc.format = SR_FORMAT::UNKNOWN;   //这里不传入pDesc->format是为了Init Texture2D时避免分配内存，SwapChain的backbuffer的内存由CreateDIBSection来分配；
+		if (!m_pBackBuffer->Init(&texDesc, nullptr))
+		{
+			return false;
+		}
+
+		void*& pTempBitMapBuffer = m_pBackBuffer->GetData();
+
+		uint16_t bitCnt = 0;
+		uint32_t imageSize = 0;
+		switch (format)
+		{
+		case SR_FORMAT::R8G8B8A8_UNORM:
+		{
+			bitCnt = 32;
+			imageSize = width * height * 4;
+
+			m_pBackBuffer->SetFormat(SR_FORMAT::R8G8B8A8_UNORM);
+
+			break;
+		}
+		case SR_FORMAT::UNKNOWN:
+		{
+			bitCnt = 0;
+			imageSize = 0;
+
+			return false;
+			break;
+		}
+		default:
+		{
+			break;
+		}
+		}
+
+		BITMAPINFO bitMapInfo =
+		{
+			{ sizeof(BITMAPINFOHEADER), (int)width, -(int)height, 1, bitCnt, BI_RGB, imageSize, 0, 0, 0, 0 }
+		};
+		m_hBitMap = CreateDIBSection(m_hWndDC, &bitMapInfo, DIB_RGB_COLORS, &pTempBitMapBuffer, 0, 0);
+		if (m_hBitMap)
+		{
+			m_hOldBitMap = (HBITMAP)SelectObject(m_hWndDC, m_hBitMap);
+		}
+		else
+		{
+			m_hOldBitMap = nullptr;
+
+			return false;
+		}
+
+		return true;
+	}
+
 	void SwapChain::GetDesc(SwapChainDesc* pDesc)
 	{
 		pDesc = &m_Desc;
@@ -2162,7 +2258,7 @@ namespace RenderDog
 #pragma endregion SwapChain
 
 
-	bool CreateDeviceAndSwapChain(IDevice** ppDevice, IDeviceContext** ppDeviceContext, ISwapChain** ppSwapChain, const SwapChainDesc* pSwapChainDesc)
+	bool CreateDeviceAndSwapChain(ISRDevice** ppDevice, ISRDeviceContext** ppDeviceContext, ISRSwapChain** ppSwapChain, const SwapChainDesc* pSwapChainDesc)
 	{
 		Device *pDevice = new Device();
 		if (!pDevice)

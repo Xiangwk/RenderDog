@@ -26,6 +26,9 @@
     <ClInclude Include="..\..\Public\GameTimer.h">
       <Filter>Public</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Public\SoftwareRenderer.h">
+      <Filter>Public</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Private\SoftwareRender3D.cpp">
@@ -44,6 +47,9 @@
       <Filter>Private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Private\SRBuffer.cpp">
+      <Filter>Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Private\SoftwareRenderer.cpp">
       <Filter>Private</Filter>
     </ClCompile>
   </ItemGroup>

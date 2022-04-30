@@ -22,14 +22,14 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -60,7 +60,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\Public;..\..\..\..\EngineSDK\3rdSDK\Public;..\..\..\..\EngineSDK\RenderDog\Public\Math;..\..\..\..\EngineSDK\RenderDog\Public\RenderDog;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Public;..\..\..\Public;..\..\..\..\EngineSDK\3rdSDK\Public;..\..\..\..\EngineSDK\RenderDog\Public\Math;..\..\..\..\EngineSDK\RenderDog\Public\RenderDog;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -83,7 +83,7 @@ xcopy ..\..\Public\*.* ..\..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i 
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\Public;..\..\..\..\EngineSDK\3rdSDK\Public;..\..\..\..\EngineSDK\RenderDog\Public\Math;..\..\..\..\EngineSDK\RenderDog\Public\RenderDog;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Public;..\..\..\Public;..\..\..\..\EngineSDK\3rdSDK\Public;..\..\..\..\EngineSDK\RenderDog\Public\Math;..\..\..\..\EngineSDK\RenderDog\Public\RenderDog;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -106,11 +106,13 @@ xcopy ..\..\Public\*.* ..\..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i 
     <ClInclude Include="..\..\Public\Model.h" />
     <ClInclude Include="..\..\Public\SoftwareRender3D.h" />
     <ClInclude Include="..\..\Public\ShaderResourceUtility.h" />
+    <ClInclude Include="..\..\Public\SoftwareRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Private\GameTimer.cpp" />
     <ClCompile Include="..\..\Private\Mesh.cpp" />
     <ClCompile Include="..\..\Private\Model.cpp" />
+    <ClCompile Include="..\..\Private\SoftwareRenderer.cpp" />
     <ClCompile Include="..\..\Private\SRBuffer.cpp" />
     <ClCompile Include="..\..\Private\SoftwareRender3D.cpp" />
     <ClCompile Include="..\..\Private\ShaderResourceUtility.cpp" />

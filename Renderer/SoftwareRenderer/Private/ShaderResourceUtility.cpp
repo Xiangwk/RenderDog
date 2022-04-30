@@ -8,7 +8,7 @@
 
 namespace RenderDog
 {
-	bool CreateShaderResourceViewFromFile(IDevice* pDevice, const char* strSrcFile, IShaderResourceView** ppShaderResourceView)
+	bool CreateShaderResourceViewFromFile(ISRDevice* pDevice, const char* strSrcFile, ISRShaderResourceView** ppShaderResourceView)
 	{
 		uint32_t nTexWidth = 0;
 		uint32_t nTexHeight = 0;
@@ -19,7 +19,7 @@ namespace RenderDog
 			return false;
 		}
 
-		ITexture2D* pTexture2D = nullptr;
+		ISRTexture2D* pTexture2D = nullptr;
 
 		Texture2DDesc tex2DDesc;
 		tex2DDesc.width = nTexWidth;

@@ -10,8 +10,8 @@
 
 namespace RenderDog
 {
-	class IDevice;
-	class IShaderResourceView;
+	class ISRDevice;
+	class ISRShaderResourceView;
 
-	bool CreateShaderResourceViewFromFile(IDevice* pDevice, const char* strSrcFile, IShaderResourceView** ppShaderResourceView);
+	bool CreateShaderResourceViewFromFile(ISRDevice* pDevice, const char* strSrcFile, ISRShaderResourceView** ppShaderResourceView);
 }

@@ -27,17 +27,17 @@ HWND							g_WndHandle = nullptr;
 uint32_t						g_WindowWidth = 1024;
 uint32_t						g_WindowHeight = 768;
 								
-RenderDog::IDevice*				g_pDevice = nullptr;
-RenderDog::IDeviceContext*		g_pDeviceContext = nullptr;
-RenderDog::ISwapChain*			g_pSwapChain = nullptr;
-RenderDog::IRenderTargetView*	g_pRenderTargetView = nullptr;
+RenderDog::ISRDevice*			g_pDevice = nullptr;
+RenderDog::ISRDeviceContext*	g_pDeviceContext = nullptr;
+RenderDog::ISRSwapChain*		g_pSwapChain = nullptr;
+RenderDog::ISRRenderTargetView*	g_pRenderTargetView = nullptr;
 RenderDog::ISRBuffer*			g_pMVPMatrixConstantBuffer = nullptr;
 RenderDog::ISRBuffer*			g_pMainLightConstantBuffer = nullptr;
-RenderDog::IVertexShader*		g_pVertexShader = nullptr;
-RenderDog::IPixelShader*		g_pPixelShader = nullptr;
-RenderDog::ITexture2D*			g_pDepthTexture = nullptr;
-RenderDog::IDepthStencilView*	g_pDepthStencilView = nullptr;
-RenderDog::IShaderResourceView*	g_pTextureSRV = nullptr;
+RenderDog::ISRVertexShader*		g_pVertexShader = nullptr;
+RenderDog::ISRPixelShader*		g_pPixelShader = nullptr;
+RenderDog::ISRTexture2D*		g_pDepthTexture = nullptr;
+RenderDog::ISRDepthStencilView*	g_pDepthStencilView = nullptr;
+RenderDog::ISRShaderResourceView*	g_pTextureSRV = nullptr;
 
 RenderDog::GameTimer*			g_pGameTimer = nullptr;
 
@@ -141,7 +141,7 @@ bool InitDevice()
 		return false;
 	}
 
-	RenderDog::ITexture2D* pBackBuffer = nullptr;
+	RenderDog::ISRTexture2D* pBackBuffer = nullptr;
 	if (!g_pSwapChain->GetBuffer((void**)&pBackBuffer))
 	{
 		return false;
@@ -155,7 +155,7 @@ bool InitDevice()
 
 	RenderDog::Texture2DDesc depthDesc;
 	depthDesc.width = g_WindowWidth;
-	depthDesc.height = g_WindowWidth;
+	depthDesc.height = g_WindowHeight;
 	depthDesc.format = RenderDog::SR_FORMAT::R32_FLOAT;
 	if (!g_pDevice->CreateTexture2D(&depthDesc, nullptr, &g_pDepthTexture))
 	{
@@ -170,7 +170,7 @@ bool InitDevice()
 		return false;
 	}
 
-	RenderDog::Viewport vp;
+	RenderDog::SRViewport vp;
 	vp.width = (float)g_WindowWidth;
 	vp.height = (float)g_WindowHeight;
 	vp.minDepth = 0.0f;

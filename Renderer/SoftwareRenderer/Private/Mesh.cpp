@@ -48,7 +48,7 @@ namespace RenderDog
 		}
 	}
 
-	bool StaticMesh::Init(IDevice* pDevice)
+	bool StaticMesh::Init(ISRDevice* pDevice)
 	{
 		SRBufferDesc vbDesc;
 		vbDesc.byteWidth = (uint32_t)m_Vertices.size() * sizeof(LocalVertex);
@@ -90,7 +90,7 @@ namespace RenderDog
 		}
 	}
 
-	void StaticMesh::Draw(IDeviceContext* pDeviceContext)
+	void StaticMesh::Draw(ISRDeviceContext* pDeviceContext)
 	{
 		pDeviceContext->IASetVertexBuffer(m_pVB);
 		pDeviceContext->IASetIndexBuffer(m_pIB);

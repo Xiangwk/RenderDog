@@ -1,3 +1,9 @@
+///////////////////////////////////
+//RenderDog <¡¤,¡¤>
+//FileName: SoftwareRender3D.h
+//Written by Xiang Weikang
+///////////////////////////////////
+
 #pragma once
 
 #include <windows.h>
@@ -158,7 +164,7 @@ namespace RenderDog
 		{}
 	};
 
-	struct Viewport
+	struct SRViewport
 	{
 		float topLeftX;
 		float topLeftY;
@@ -170,36 +176,36 @@ namespace RenderDog
 
 #pragma region Interface
 
-	class IUnknown
+	class ISRUnknown
 	{
 	public:
 		virtual void AddRef() = 0;
 		virtual void Release() = 0;
 	};
 
-	class IVertexShader : public IUnknown
+	class ISRVertexShader : public ISRUnknown
 	{
 	public:
 	};
 
-	class IPixelShader : public IUnknown
+	class ISRPixelShader : public ISRUnknown
 	{
 	public:
 	};
 
-	class IResource : public IUnknown
+	class ISFResource : public ISRUnknown
 	{
 	public:
 		virtual void GetType(SR_RESOURCE_DIMENSION* pResDimension) = 0;
 	};
 
-	class ISRBuffer : public IResource
+	class ISRBuffer : public ISFResource
 	{
 	public:
 		virtual void GetDesc(SRBufferDesc* pDesc) = 0;
 	};
 
-	class ITexture2D : public IResource
+	class ISRTexture2D : public ISFResource
 	{
 	public:
 		virtual void GetDesc(Texture2DDesc* pDesc) = 0;
@@ -209,77 +215,80 @@ namespace RenderDog
 		virtual const void* GetData() const = 0;
 	};
 
-	class IView : public IUnknown
+	class ISRView : public ISRUnknown
 	{
 	public:
-		virtual void GetResource(IResource** ppResource) = 0;
+		virtual void GetResource(ISFResource** ppResource) = 0;
 	};
 
-	class IRenderTargetView : public IView
+	class ISRRenderTargetView : public ISRView
 	{
 	public:
 		virtual void GetDesc(RenderTargetViewDesc* pDesc) = 0;
 	};
 
-	class IDepthStencilView : public IView
+	class ISRDepthStencilView : public ISRView
 	{
 	public:
 		virtual void GetDesc(DepthStencilViewDesc* pDesc) = 0;
 	};
 
-	class IShaderResourceView : public IView
+	class ISRShaderResourceView : public ISRView
 	{
 	public:
 		virtual void GetDesc(ShaderResourceViewDesc* pDesc) = 0;
 	};
 
 #pragma region Device
-	class IDevice : public IUnknown
+	class ISRDevice : public ISRUnknown
 	{
 	public:
-		virtual bool CreateTexture2D(const Texture2DDesc* pDesc, const SubResourceData* pInitData, ITexture2D** ppTexture) = 0;
-		virtual bool CreateRenderTargetView(IResource* pResource, const RenderTargetViewDesc* pDesc, IRenderTargetView** ppRenderTargetView) = 0;
-		virtual bool CreateDepthStencilView(IResource* pResource, const DepthStencilViewDesc* pDesc, IDepthStencilView** ppDepthStencilView) = 0;
-		virtual bool CreateShaderResourceView(IResource* pResource, const ShaderResourceViewDesc* pDesc, IShaderResourceView** ppShaderResourceView) = 0;
+		virtual bool CreateTexture2D(const Texture2DDesc* pDesc, const SubResourceData* pInitData, ISRTexture2D** ppTexture) = 0;
+		virtual bool CreateRenderTargetView(ISFResource* pResource, const RenderTargetViewDesc* pDesc, ISRRenderTargetView** ppRenderTargetView) = 0;
+		virtual bool CreateDepthStencilView(ISFResource* pResource, const DepthStencilViewDesc* pDesc, ISRDepthStencilView** ppDepthStencilView) = 0;
+		virtual bool CreateShaderResourceView(ISFResource* pResource, const ShaderResourceViewDesc* pDesc, ISRShaderResourceView** ppShaderResourceView) = 0;
 		virtual bool CreateBuffer(const SRBufferDesc* pDesc, const SubResourceData* pInitData, ISRBuffer** ppBuffer) = 0;
-		virtual bool CreateVertexShader(IVertexShader** ppVertexShader) = 0;
-		virtual bool CreatePixelShader(IPixelShader** ppPixelShader) = 0;
+		virtual bool CreateVertexShader(ISRVertexShader** ppVertexShader) = 0;
+		virtual bool CreatePixelShader(ISRPixelShader** ppPixelShader) = 0;
 	};
 
-	class IDeviceContext : public IUnknown
+	class ISRDeviceContext : public ISRUnknown
 	{
 	public:
 		virtual void IASetVertexBuffer(ISRBuffer* pVB) = 0;
 		virtual void IASetIndexBuffer(ISRBuffer* pIB) = 0;
 		virtual void IASetPrimitiveTopology(SR_PRIMITIVE_TOPOLOGY topology) = 0;
 
-		virtual	void UpdateSubresource(IResource* pDstResource, const void* pSrcData, uint32_t srcRowPitch, uint32_t srcDepthPitch) = 0;
+		virtual	void UpdateSubresource(ISFResource* pDstResource, const void* pSrcData, uint32_t srcRowPitch, uint32_t srcDepthPitch) = 0;
 
-		virtual void VSSetShader(IVertexShader* pVS) = 0;
+		virtual void VSSetShader(ISRVertexShader* pVS) = 0;
 		virtual void VSSetConstantBuffer(uint32_t startSlot, ISRBuffer* const* ppConstantBuffer) = 0;
 		virtual void PSSetConstantBuffer(uint32_t startSlot, ISRBuffer* const* ppConstantBuffer) = 0;
-		virtual void PSSetShader(IPixelShader* pPS) = 0;
-		virtual void PSSetShaderResource(IShaderResourceView* const* ppShaderResourceView) = 0;
+		virtual void PSSetShader(ISRPixelShader* pPS) = 0;
+		virtual void PSSetShaderResource(ISRShaderResourceView* const* ppShaderResourceView) = 0;
 
-		virtual void RSSetViewport(const Viewport* pViewport) = 0;
+		virtual void RSSetViewport(const SRViewport* pViewport) = 0;
 
-		virtual void OMSetRenderTarget(IRenderTargetView* pRenderTargetView, IDepthStencilView* pDepthStencilView) = 0;
-		virtual void ClearRenderTargetView(IRenderTargetView* pRenderTargetView, const float* clearColor) = 0;
-		virtual void ClearDepthStencilView(IDepthStencilView* pDepthStencilView, float fDepth) = 0;
+		virtual void OMSetRenderTarget(ISRRenderTargetView* pRenderTargetView, ISRDepthStencilView* pDepthStencilView) = 0;
+		virtual void ClearRenderTargetView(ISRRenderTargetView* pRenderTargetView, const float* clearColor) = 0;
+		virtual void ClearDepthStencilView(ISRDepthStencilView* pDepthStencilView, float fDepth) = 0;
 		virtual void Draw() = 0;
 		virtual void DrawIndex(uint32_t nIndexNum) = 0;
 		virtual void DrawLineWithDDA(float fPos1X, float fPos1Y, float fPos2X, float fPos2Y, const float* lineColor) = 0;
 	};
 #pragma endregion Device
 
-	class ISwapChain : public IUnknown
+	class ISRSwapChain : public ISRUnknown
 	{
 	public:
 		virtual bool GetBuffer(void** ppSurface) = 0;
+		virtual bool ResizeBuffers(uint32_t bufferCnts, uint32_t width, uint32_t height, SR_FORMAT format) = 0;
+
 		virtual void GetDesc(SwapChainDesc* pDesc) = 0;
+
 		virtual void Present() = 0;
 	};
 #pragma endregion Interface
 
-	bool CreateDeviceAndSwapChain(IDevice** pDevice, IDeviceContext** pDeviceContext, ISwapChain** ppSwapChain, const SwapChainDesc* pSwapChainDesc);
+	bool CreateDeviceAndSwapChain(ISRDevice** pDevice, ISRDeviceContext** pDeviceContext, ISRSwapChain** ppSwapChain, const SwapChainDesc* pSwapChainDesc);
 }
