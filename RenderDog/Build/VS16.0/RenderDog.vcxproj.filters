@@ -90,6 +90,9 @@
     <ClCompile Include="..\..\Private\Light.cpp">
       <Filter>Private</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Private\GameTimer.cpp">
+      <Filter>Private</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Math\Public\Matrix.h">
@@ -150,6 +153,9 @@
       <Filter>Resource</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Public\Material.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Public\GameTimer.h">
       <Filter>Public</Filter>
     </ClInclude>
   </ItemGroup>

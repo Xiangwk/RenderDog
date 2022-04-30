@@ -17,6 +17,7 @@
     <ClCompile Include="..\..\Math\Private\Vector.cpp" />
     <ClCompile Include="..\..\Private\Camera.cpp" />
     <ClCompile Include="..\..\Private\Framework.cpp" />
+    <ClCompile Include="..\..\Private\GameTimer.cpp" />
     <ClCompile Include="..\..\Private\Light.cpp" />
     <ClCompile Include="..\..\Private\RefCntObject.cpp" />
     <ClCompile Include="..\..\Private\RenderDog.cpp" />
@@ -34,6 +35,7 @@
     <ClInclude Include="..\..\Public\Buffer.h" />
     <ClInclude Include="..\..\Public\Camera.h" />
     <ClInclude Include="..\..\Public\Framework.h" />
+    <ClInclude Include="..\..\Public\GameTimer.h" />
     <ClInclude Include="..\..\Public\Light.h" />
     <ClInclude Include="..\..\Public\Material.h" />
     <ClInclude Include="..\..\Public\Primitive.h" />
