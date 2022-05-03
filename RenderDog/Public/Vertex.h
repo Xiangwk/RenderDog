@@ -10,7 +10,7 @@
 
 namespace RenderDog
 {
-	enum VertexType
+	enum class VertexType
 	{
 		RD_VERTEX_TYPE_SIMPLE,
 		RD_VERTEX_TYPE_STANDARD

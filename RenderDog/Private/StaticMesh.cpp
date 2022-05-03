@@ -116,7 +116,7 @@ namespace RenderDog
 		cbDesc.isDynamic = false;
 		m_pRenderData->pCB = (IConstantBuffer*)g_pIBufferManager->CreateBuffer(cbDesc);
 
-		m_pRenderData->pVS = g_pIShaderManager->CreateVertexShader(RD_VERTEX_TYPE_STANDARD);
+		m_pRenderData->pVS = g_pIShaderManager->CreateVertexShader(VertexType::RD_VERTEX_TYPE_STANDARD);
 		m_pRenderData->pVS->CompileFromFile("Shaders/StaticModelVertexShader.hlsl", nullptr, "Main", "vs_5_0", 0);
 		m_pRenderData->pVS->Init();
 

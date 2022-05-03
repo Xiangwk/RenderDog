@@ -22,34 +22,34 @@ using RenderDog::Vector2;
 using RenderDog::Vector3;
 using RenderDog::Vector4;
 
-HINSTANCE						g_hInst = nullptr;
-HWND							g_WndHandle = nullptr;
-uint32_t						g_WindowWidth = 1024;
-uint32_t						g_WindowHeight = 768;
+HINSTANCE							g_hInst = nullptr;
+HWND								g_WndHandle = nullptr;
+uint32_t							g_WindowWidth = 1024;
+uint32_t							g_WindowHeight = 768;
 								
-RenderDog::ISRDevice*			g_pDevice = nullptr;
-RenderDog::ISRDeviceContext*	g_pDeviceContext = nullptr;
-RenderDog::ISRSwapChain*		g_pSwapChain = nullptr;
-RenderDog::ISRRenderTargetView*	g_pRenderTargetView = nullptr;
-RenderDog::ISRBuffer*			g_pMVPMatrixConstantBuffer = nullptr;
-RenderDog::ISRBuffer*			g_pMainLightConstantBuffer = nullptr;
-RenderDog::ISRVertexShader*		g_pVertexShader = nullptr;
-RenderDog::ISRPixelShader*		g_pPixelShader = nullptr;
-RenderDog::ISRTexture2D*		g_pDepthTexture = nullptr;
-RenderDog::ISRDepthStencilView*	g_pDepthStencilView = nullptr;
+RenderDog::ISRDevice*				g_pDevice = nullptr;
+RenderDog::ISRDeviceContext*		g_pDeviceContext = nullptr;
+RenderDog::ISRSwapChain*			g_pSwapChain = nullptr;
+RenderDog::ISRRenderTargetView*		g_pRenderTargetView = nullptr;
+RenderDog::ISRBuffer*				g_pMVPMatrixConstantBuffer = nullptr;
+RenderDog::ISRBuffer*				g_pMainLightConstantBuffer = nullptr;
+RenderDog::ISRVertexShader*			g_pVertexShader = nullptr;
+RenderDog::ISRPixelShader*			g_pPixelShader = nullptr;
+RenderDog::ISRTexture2D*			g_pDepthTexture = nullptr;
+RenderDog::ISRDepthStencilView*		g_pDepthStencilView = nullptr;
 RenderDog::ISRShaderResourceView*	g_pTextureSRV = nullptr;
 
-RenderDog::GameTimer*			g_pGameTimer = nullptr;
+RenderDog::GameTimer*				g_pGameTimer = nullptr;
 
-RenderDog::Matrix4x4			g_WorldMatrix;
-RenderDog::Matrix4x4			g_ViewMatrix;
-RenderDog::Matrix4x4			g_PerspProjMatrix;
+RenderDog::Matrix4x4				g_WorldMatrix;
+RenderDog::Matrix4x4				g_ViewMatrix;
+RenderDog::Matrix4x4				g_PerspProjMatrix;
 
-Vector2							g_LastMousePos;
+Vector2								g_LastMousePos;
 
-RenderDog::StaticModel*			g_pStaticModel;
+RenderDog::StaticModel*				g_pStaticModel;
 
-RenderDog::ILight*				g_pMainLight;
+RenderDog::ILight*					g_pMainLight;
 
 
 int aKeys[512];	// 当前键盘按下状态
@@ -101,7 +101,7 @@ HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow)
 	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
 	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 	wcex.lpszMenuName = nullptr;
-	wcex.lpszClassName = L"GameWindowClass";
+	wcex.lpszClassName = "GameWindowClass";
 	wcex.hIconSm = nullptr;
 	if (!RegisterClassEx(&wcex))
 		return E_FAIL;
@@ -110,7 +110,7 @@ HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow)
 	g_hInst = hInstance;
 	RECT rc = { 0, 0, (LONG)g_WindowWidth, (LONG)g_WindowHeight };
 	AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
-	g_WndHandle = CreateWindow(L"GameWindowClass", L"Hello World",
+	g_WndHandle = CreateWindow("GameWindowClass", "Hello World",
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT, rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInstance,
 		nullptr);

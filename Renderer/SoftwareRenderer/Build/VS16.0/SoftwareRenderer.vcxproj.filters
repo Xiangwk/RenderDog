@@ -14,15 +14,6 @@
     <ClInclude Include="..\..\Public\SoftwareRender3D.h">
       <Filter>Public</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Public\ShaderResourceUtility.h">
-      <Filter>Public</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Public\Model.h">
-      <Filter>Public</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Public\Mesh.h">
-      <Filter>Public</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Public\SoftwareRenderer.h">
       <Filter>Public</Filter>
     </ClInclude>
@@ -31,19 +22,16 @@
     <ClCompile Include="..\..\Private\SoftwareRender3D.cpp">
       <Filter>Private</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Private\ShaderResourceUtility.cpp">
-      <Filter>Private</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Private\Model.cpp">
-      <Filter>Private</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Private\Mesh.cpp">
-      <Filter>Private</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Private\SRBuffer.cpp">
       <Filter>Private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Private\SoftwareRenderer.cpp">
+      <Filter>Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Private\SRTexture.cpp">
+      <Filter>Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Private\SRShader.cpp">
       <Filter>Private</Filter>
     </ClCompile>
   </ItemGroup>

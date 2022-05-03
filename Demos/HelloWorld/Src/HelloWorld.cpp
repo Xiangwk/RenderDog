@@ -1,32 +1,34 @@
-///////////////////////////////////////////
-//ModelViewer
-//FileName: ModelViewer.vpp
+///////////////////////////////////
+//RenderDog <·,·>
+//FileName: HelloWorld.h
+//Hello World Demo
 //Written by Xiang Weikang
-///////////////////////////////////////////
+///////////////////////////////////
 
-#include "ModelViewer.h"
-#include "Vector.h"
-#include "GeometryGenerator.h"
+#include "HelloWorld.h"
 
-ModelViewer g_ModelViewer;
-ModelViewer* g_pModelViewer = &g_ModelViewer;
+#include <sstream>
 
-int ModelViewer::m_Keys[512];
+DemoApp g_HelloWorldDemo;
+DemoApp* g_pHelloWorldDemo = &g_HelloWorldDemo;
 
-ModelViewer::ModelViewer() :
+int DemoApp::m_Keys[512];
+
+DemoApp::DemoApp():
 	m_pRenderDog(nullptr),
 	m_pScene(nullptr),
 	m_pModel(nullptr),
 	m_pFPSCamera(nullptr),
-	m_pMainLight(nullptr)
+	m_pMainLight(nullptr),
+	m_pGameTimer(nullptr)
 {
 	memset(m_Keys, 0, sizeof(int) * 512);
 }
 
-ModelViewer::~ModelViewer()
+DemoApp::~DemoApp()
 {}
 
-bool ModelViewer::Init(const ModelViewerInitDesc& desc)
+bool DemoApp::Init(const DemoInitDesc& desc)
 {
 	RenderDog::CameraDesc camDesc;
 	camDesc.position = RenderDog::Vector3(0.0f, 0.0f, -100.0f);
@@ -60,13 +62,10 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 		return false;
 	}
 
-	//GeometryGenerator::LocalMeshData boxMeshData;
-	//g_pGeometryGenerator->GenerateBox(1, 1, 1, boxMeshData);
-
 	m_pModel = new RenderDog::StaticModel();
-	//m_pModel->LoadFromData(boxMeshData.vertices, boxMeshData.indices);
 	m_pModel->LoadFromFile("Models/generator/generator_small.obj");
-	m_pModel->LoadTextureFromFile(L"EngineAsset/Textures/awesomeface.dds");
+	//m_pModel->LoadTextureFromFile(L"EngineAsset/Textures/awesomeface.dds");
+	m_pModel->LoadTextureFromFile(L"Textures/PolybumpTangent_DDN.tga");
 	m_pModel->SetPosGesture(RenderDog::Vector3(0.0f, -25.0f, 0.0f), RenderDog::Vector3(90.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
 
 	m_pModel->RegisterToScene(m_pScene);
@@ -82,10 +81,13 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 
 	RenderDog::g_pIFramework->RegisterScene(m_pScene);
 
+	m_pGameTimer = new RenderDog::GameTimer();
+	m_pGameTimer->Reset();
+
 	return true;
 }
 
-void ModelViewer::Release()
+void DemoApp::Release()
 {
 	if (m_pModel)
 	{
@@ -111,9 +113,15 @@ void ModelViewer::Release()
 	m_pRenderDog->Release();
 
 	RenderDog::DestoryRenderDog(&m_pRenderDog);
+
+	if (m_pGameTimer)
+	{
+		delete m_pGameTimer;
+		m_pGameTimer = nullptr;
+	}
 }
 
-int ModelViewer::Run()
+int	DemoApp::Run()
 {
 	MSG Msg = { 0 };
 	while (Msg.message != WM_QUIT)
@@ -125,7 +133,11 @@ int ModelViewer::Run()
 		}
 		else
 		{
+			m_pGameTimer->Tick();
+			CalculateFrameStats();
+
 			Update();
+
 			RenderDog::g_pIFramework->Frame();
 		}
 	}
@@ -133,7 +145,7 @@ int ModelViewer::Run()
 	return (int)Msg.wParam;
 }
 
-LRESULT ModelViewer::MessageProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+LRESULT DemoApp::MessageProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg)
 	{
@@ -202,7 +214,7 @@ LRESULT ModelViewer::MessageProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
 		m_Keys[wParam & 511] = 1;
 		break;
 	}
-		
+
 	case WM_KEYUP:
 	{
 		m_Keys[wParam & 511] = 0;
@@ -216,7 +228,7 @@ LRESULT ModelViewer::MessageProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
 	return 0;
 }
 
-void ModelViewer::Update()
+void DemoApp::Update()
 {
 	float cameraSpeed = 0.01f;
 	//W
@@ -248,5 +260,28 @@ void ModelViewer::Update()
 	if (m_Keys[0x45])
 	{
 		m_pFPSCamera->Move(-cameraSpeed, RenderDog::FPSCamera::MoveMode::UpAndDown);
+	}
+}
+
+void DemoApp::CalculateFrameStats()
+{
+	static int frameCnt = 0;
+	static double timeElapsed = 0.0;
+
+	++frameCnt;
+	//当统计时间大于1s时，统计framecnt以计算fps
+	if ((m_pGameTimer->GetTotalTime() - timeElapsed) >= 1.0f)
+	{
+		float framePerSecond = static_cast<float>(frameCnt);
+		float millisecondsPerFrame = 1000.0f / framePerSecond;
+
+		std::ostringstream outs;
+		outs.precision(6);
+		outs << "FPS: " << framePerSecond << "    "
+			<< "Frame Time: " << millisecondsPerFrame << " (ms)";
+		SetWindowTextA(0, outs.str().c_str());
+
+		frameCnt = 0;
+		timeElapsed += 1.0;
 	}
 }

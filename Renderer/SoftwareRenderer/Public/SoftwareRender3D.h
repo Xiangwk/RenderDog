@@ -65,6 +65,12 @@ namespace RenderDog
 		BIND_RENDER_TARGET = 5,
 		BIND_DEPTH_STENCIL = 6
 	};
+
+	enum class SR_FILTER
+	{
+		POINT = 0,
+		BILINEAR
+	};
 #pragma endregion Enum
 
 #pragma region Description
@@ -111,54 +117,63 @@ namespace RenderDog
 		{}
 	};
 
-	struct Texture2DDesc
+	struct SRTexture2DDesc
 	{
 		uint32_t		width;
 		uint32_t		height;
 		SR_FORMAT		format;
 
-		Texture2DDesc() :
+		SRTexture2DDesc() :
 			width(0),
 			height(0),
 			format(SR_FORMAT::UNKNOWN)
 		{}
 	};
 
-	struct RenderTargetViewDesc
+	struct SRSamplerDesc
 	{
-		SR_FORMAT		format;
+		SR_FILTER		filter;
+
+		SRSamplerDesc() :
+			filter(SR_FILTER::POINT)
+		{}
+	};
+
+	struct SRRenderTargetViewDesc
+	{
+		SR_FORMAT			format;
 		SR_RTV_DIMENSION	viewDimension;
 
-		RenderTargetViewDesc() :
+		SRRenderTargetViewDesc() :
 			format(SR_FORMAT::UNKNOWN),
 			viewDimension(SR_RTV_DIMENSION::UNKNOWN)
 		{}
 	};
 
-	struct DepthStencilViewDesc
+	struct SRDepthStencilViewDesc
 	{
 		SR_FORMAT format;
 		SR_DSV_DIMENSION viewDimension;
 
-		DepthStencilViewDesc() :
+		SRDepthStencilViewDesc() :
 			format(SR_FORMAT::UNKNOWN),
 			viewDimension(SR_DSV_DIMENSION::UNKNOWN)
 		{}
 	};
 
-	struct ShaderResourceViewDesc
+	struct SRShaderResourceViewDesc
 	{
 		SR_FORMAT format;
 		SR_SRV_DIMENSION viewDimension;
 	};
 #pragma endregion Description
 
-	struct SubResourceData
+	struct SRSubResourceData
 	{
 		const void* pSysMem;
 		uint32_t	sysMemPitch;
 
-		SubResourceData() :
+		SRSubResourceData() :
 			pSysMem(nullptr),
 			sysMemPitch(0)
 		{}
@@ -208,11 +223,16 @@ namespace RenderDog
 	class ISRTexture2D : public ISFResource
 	{
 	public:
-		virtual void GetDesc(Texture2DDesc* pDesc) = 0;
+		virtual void GetDesc(SRTexture2DDesc* pDesc) = 0;
 
 		//以下两个接口为临时添加，后续需要删除
 		virtual void*& GetData() = 0;
 		virtual const void* GetData() const = 0;
+	};
+
+	class ISRSamplerState : public ISRUnknown
+	{
+		virtual void GetDesc(SRSamplerDesc* pDesc) = 0;
 	};
 
 	class ISRView : public ISRUnknown
@@ -224,32 +244,33 @@ namespace RenderDog
 	class ISRRenderTargetView : public ISRView
 	{
 	public:
-		virtual void GetDesc(RenderTargetViewDesc* pDesc) = 0;
+		virtual void GetDesc(SRRenderTargetViewDesc* pDesc) = 0;
 	};
 
 	class ISRDepthStencilView : public ISRView
 	{
 	public:
-		virtual void GetDesc(DepthStencilViewDesc* pDesc) = 0;
+		virtual void GetDesc(SRDepthStencilViewDesc* pDesc) = 0;
 	};
 
 	class ISRShaderResourceView : public ISRView
 	{
 	public:
-		virtual void GetDesc(ShaderResourceViewDesc* pDesc) = 0;
+		virtual void GetDesc(SRShaderResourceViewDesc* pDesc) = 0;
 	};
 
 #pragma region Device
 	class ISRDevice : public ISRUnknown
 	{
 	public:
-		virtual bool CreateTexture2D(const Texture2DDesc* pDesc, const SubResourceData* pInitData, ISRTexture2D** ppTexture) = 0;
-		virtual bool CreateRenderTargetView(ISFResource* pResource, const RenderTargetViewDesc* pDesc, ISRRenderTargetView** ppRenderTargetView) = 0;
-		virtual bool CreateDepthStencilView(ISFResource* pResource, const DepthStencilViewDesc* pDesc, ISRDepthStencilView** ppDepthStencilView) = 0;
-		virtual bool CreateShaderResourceView(ISFResource* pResource, const ShaderResourceViewDesc* pDesc, ISRShaderResourceView** ppShaderResourceView) = 0;
-		virtual bool CreateBuffer(const SRBufferDesc* pDesc, const SubResourceData* pInitData, ISRBuffer** ppBuffer) = 0;
+		virtual bool CreateTexture2D(const SRTexture2DDesc* pDesc, const SRSubResourceData* pInitData, ISRTexture2D** ppTexture) = 0;
+		virtual bool CreateRenderTargetView(ISFResource* pResource, const SRRenderTargetViewDesc* pDesc, ISRRenderTargetView** ppRenderTargetView) = 0;
+		virtual bool CreateDepthStencilView(ISFResource* pResource, const SRDepthStencilViewDesc* pDesc, ISRDepthStencilView** ppDepthStencilView) = 0;
+		virtual bool CreateShaderResourceView(ISFResource* pResource, const SRShaderResourceViewDesc* pDesc, ISRShaderResourceView** ppShaderResourceView) = 0;
+		virtual bool CreateBuffer(const SRBufferDesc* pDesc, const SRSubResourceData* pInitData, ISRBuffer** ppBuffer) = 0;
 		virtual bool CreateVertexShader(ISRVertexShader** ppVertexShader) = 0;
 		virtual bool CreatePixelShader(ISRPixelShader** ppPixelShader) = 0;
+		virtual bool CreateSamplerState(const SRSamplerDesc* pDesc, ISRSamplerState** ppSamplerState) = 0;
 	};
 
 	class ISRDeviceContext : public ISRUnknown
@@ -266,6 +287,7 @@ namespace RenderDog
 		virtual void PSSetConstantBuffer(uint32_t startSlot, ISRBuffer* const* ppConstantBuffer) = 0;
 		virtual void PSSetShader(ISRPixelShader* pPS) = 0;
 		virtual void PSSetShaderResource(ISRShaderResourceView* const* ppShaderResourceView) = 0;
+		virtual void PSSetSampler(uint32_t startSlot, ISRSamplerState* const* ppSamplerState) = 0;
 
 		virtual void RSSetViewport(const SRViewport* pViewport) = 0;
 

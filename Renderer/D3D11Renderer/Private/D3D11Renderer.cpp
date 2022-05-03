@@ -527,7 +527,7 @@ namespace RenderDog
 		{
 			ILight* pLight = pScene->GetLight(i);
 
-			if (pLight->GetType() == RD_LIGHT_TYPE_DIRECTIONAL)
+			if (pLight->GetType() == LightType::RD_LIGHT_TYPE_DIRECTIONAL)
 			{
 				m_pSceneView->AddLight(pLight);
 			}

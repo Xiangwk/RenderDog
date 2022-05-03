@@ -137,7 +137,7 @@ namespace RenderDog
 		D3D11Shader(),
 		m_pVS(nullptr),
 		m_pInputLayout(nullptr),
-		m_VertexType(RD_VERTEX_TYPE_SIMPLE)
+		m_VertexType(VertexType::RD_VERTEX_TYPE_SIMPLE)
 	{}
 
 	D3D11VertexShader::D3D11VertexShader(VertexType vertexType):

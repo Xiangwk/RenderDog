@@ -68,6 +68,7 @@ namespace RenderDog
 
 	void D3D11VertexBuffer::Update(void* srcData, uint32_t srcSize)
 	{
+
 	}
 
 	void* D3D11VertexBuffer::GetVertexBuffer()
@@ -129,6 +130,7 @@ namespace RenderDog
 
 	void D3D11IndexBuffer::Update(void* srcData, uint32_t srcSize)
 	{
+
 	}
 
 	void* D3D11IndexBuffer::GetIndexBuffer()

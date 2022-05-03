@@ -39,11 +39,11 @@ namespace RenderDog
 		uint32_t elemNum = 0;
 		switch (vertexType)
 		{
-		case RenderDog::RD_VERTEX_TYPE_SIMPLE:
+		case RenderDog::VertexType::RD_VERTEX_TYPE_SIMPLE:
 			inputElemDesc = SimpleInputLayout;
 			elemNum = 2;
 			break;
-		case RenderDog::RD_VERTEX_TYPE_STANDARD:
+		case RenderDog::VertexType::RD_VERTEX_TYPE_STANDARD:
 			inputElemDesc = StandardInputLayout;
 			elemNum = 5;
 			break;

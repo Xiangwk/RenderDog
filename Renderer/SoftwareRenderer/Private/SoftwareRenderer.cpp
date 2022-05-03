@@ -5,17 +5,161 @@
 ///////////////////////////////////
 
 #include "SoftwareRenderer.h"
+#include "SoftwareRender3D.h"
 #include "Renderer.h"
 #include "SceneView.h"
 #include "Buffer.h"
 #include "Matrix.h"
 #include "Camera.h"
 #include "Light.h"
+#include "Primitive.h"
+#include "Texture.h"
+#include "Scene.h"
 
 namespace RenderDog
 {
 	ISRDevice* g_pSRDevice = nullptr;
 	ISRDeviceContext* g_pSRImmediateContext = nullptr;
+
+	//===========================================================
+	//    Mesh Renderer
+	//===========================================================
+
+	class SoftwareMeshRenderer : public IPrimitiveRenderer
+	{
+	public:
+		SoftwareMeshRenderer();
+		SoftwareMeshRenderer(IConstantBuffer* pVertexShaderCB);
+		virtual ~SoftwareMeshRenderer();
+
+		virtual IConstantBuffer*	GetVSConstantBuffer() override { return m_pVertexShaderCB; }
+		virtual IConstantBuffer*	GetLightingConstantbuffer() override { return nullptr; }
+
+		virtual void				Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler) override;
+
+	protected:
+		IConstantBuffer* m_pVertexShaderCB;
+	};
+
+	SoftwareMeshRenderer::SoftwareMeshRenderer() :
+		m_pVertexShaderCB(nullptr)
+	{}
+
+	SoftwareMeshRenderer::~SoftwareMeshRenderer()
+	{}
+
+	SoftwareMeshRenderer::SoftwareMeshRenderer(IConstantBuffer* pVertexShaderCB) :
+		m_pVertexShaderCB(pVertexShaderCB)
+	{}
+
+	void SoftwareMeshRenderer::Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler)
+	{
+		if (!g_pSRImmediateContext)
+		{
+			return;
+		}
+
+		if (!renderParam.pVB || !renderParam.pIB)
+		{
+			return;
+		}
+
+		ISRBuffer* pVB = (ISRBuffer*)(renderParam.pVB->GetVertexBuffer());
+		ISRBuffer* pIB = (ISRBuffer*)(renderParam.pIB->GetIndexBuffer());
+
+		uint32_t indexNum = renderParam.pIB->GetIndexNum();
+
+		uint32_t stride = renderParam.pVB->GetStride();
+		uint32_t offset = renderParam.pVB->GetOffset();
+		g_pSRImmediateContext->IASetVertexBuffer(pVB);
+		g_pSRImmediateContext->IASetIndexBuffer(pIB);
+
+		renderParam.pVS->SetToContext();
+
+		ISRBuffer* pGlobalCB = (ISRBuffer*)(renderParam.pGlobalCB->GetConstantBuffer());
+		g_pSRImmediateContext->VSSetConstantBuffer(0, &pGlobalCB);
+
+		ISRBuffer* pPerObjCB = (ISRBuffer*)(renderParam.pPerObjCB->GetConstantBuffer());
+		g_pSRImmediateContext->VSSetConstantBuffer(1, &pPerObjCB);
+
+		renderParam.pPS->SetToContext();
+
+		ISRShaderResourceView* pSRV = (ISRShaderResourceView*)(pDiffuseTexture->GetShaderResourceView());
+		g_pSRImmediateContext->PSSetShaderResource(&pSRV);
+		pSampler->SetToPixelShader(0);
+
+		g_pSRImmediateContext->DrawIndex(indexNum);
+	}
+
+	class SoftwareMeshLightingRenderer : public SoftwareMeshRenderer
+	{
+	public:
+		SoftwareMeshLightingRenderer();
+		SoftwareMeshLightingRenderer(IConstantBuffer* pVertexShaderCB, IConstantBuffer* pLightingCB);
+		virtual ~SoftwareMeshLightingRenderer();
+
+		virtual IConstantBuffer*	GetLightingConstantbuffer() override { return m_LightingCB; }
+
+		virtual void				Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler) override;
+
+	protected:
+		IConstantBuffer* m_LightingCB;
+	};
+
+	SoftwareMeshLightingRenderer::SoftwareMeshLightingRenderer() :
+		SoftwareMeshRenderer(),
+		m_LightingCB(nullptr)
+	{}
+
+	SoftwareMeshLightingRenderer::SoftwareMeshLightingRenderer(IConstantBuffer* pVertexShaderCB, IConstantBuffer* pLightingCB) :
+		SoftwareMeshRenderer(pVertexShaderCB),
+		m_LightingCB(pLightingCB)
+	{}
+
+	SoftwareMeshLightingRenderer::~SoftwareMeshLightingRenderer()
+	{}
+
+	void SoftwareMeshLightingRenderer::Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler)
+	{
+		if (!g_pSRImmediateContext)
+		{
+			return;
+		}
+
+		if (!renderParam.pVB || !renderParam.pIB)
+		{
+			return;
+		}
+
+		ISRBuffer* pVB = (ISRBuffer*)(renderParam.pVB->GetVertexBuffer());
+		ISRBuffer* pIB = (ISRBuffer*)(renderParam.pIB->GetIndexBuffer());
+
+		uint32_t indexNum = renderParam.pIB->GetIndexNum();
+
+		uint32_t stride = renderParam.pVB->GetStride();
+		uint32_t offset = renderParam.pVB->GetOffset();
+		g_pSRImmediateContext->IASetVertexBuffer(pVB);
+		g_pSRImmediateContext->IASetIndexBuffer(pIB);
+
+		renderParam.pVS->SetToContext();
+
+		ISRBuffer* pGlobalCB = (ISRBuffer*)(renderParam.pGlobalCB->GetConstantBuffer());
+		g_pSRImmediateContext->VSSetConstantBuffer(0, &pGlobalCB);
+
+		ISRBuffer* pPerObjCB = (ISRBuffer*)(renderParam.pPerObjCB->GetConstantBuffer());
+		g_pSRImmediateContext->VSSetConstantBuffer(1, &pPerObjCB);
+
+		renderParam.pPS->SetToContext();
+
+		ISRBuffer* pLightingCB = (ISRBuffer*)(m_LightingCB->GetConstantBuffer());
+		g_pSRImmediateContext->PSSetConstantBuffer(0, &pLightingCB);
+
+		ISRShaderResourceView* pSRV = (ISRShaderResourceView*)(pDiffuseTexture->GetShaderResourceView());
+		g_pSRImmediateContext->PSSetShaderResource(&pSRV);
+		pSampler->SetToPixelShader(0);
+
+		g_pSRImmediateContext->DrawIndex(indexNum);
+	}
 
 	//===========================================================
 	//    Software Renderer
@@ -49,6 +193,13 @@ namespace RenderDog
 		virtual void				Render(IScene* pScene) override;
 
 		virtual bool				OnResize(uint32_t width, uint32_t height);
+
+	private:
+		void						ClearBackRenderTarget(float* clearColor);
+
+		void						AddPrisAndLightsToSceneView(IScene* pScene);
+
+		void						RenderPrimitives();
 
 	private:
 		ISRSwapChain*				m_pSwapChain;
@@ -176,8 +327,8 @@ namespace RenderDog
 	{
 		FPSCamera* pCamera = m_pSceneView->GetCamera();
 		GlobalConstantData globalCBData = {};
-		globalCBData.viewMatrix = Transpose(pCamera->GetViewMatrix());
-		globalCBData.projMatrix = Transpose(pCamera->GetPerspProjectionMatrix());
+		globalCBData.viewMatrix = pCamera->GetViewMatrix();
+		globalCBData.projMatrix = pCamera->GetPerspProjectionMatrix();
 
 		m_pGlobalConstantBuffer->Update(&globalCBData, sizeof(globalCBData));
 
@@ -195,7 +346,18 @@ namespace RenderDog
 
 	void SoftwareRenderer::Render(IScene* pScene)
 	{
-		//TODO
+		m_pSceneView->ClearPrimitives();
+
+		AddPrisAndLightsToSceneView(pScene);
+
+		g_pSRImmediateContext->IASetPrimitiveTopology(RenderDog::SR_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST);
+
+		float clearColor[4] = { 0.3f, 0.3f, 0.3f, 1.0f };
+		ClearBackRenderTarget(clearColor);
+
+		RenderPrimitives();
+
+		m_pSwapChain->Present();
 	}
 
 	bool SoftwareRenderer::OnResize(uint32_t width, uint32_t height)
@@ -237,7 +399,7 @@ namespace RenderDog
 		}
 		pBackBuffer->Release();
 
-		RenderDog::Texture2DDesc depthDesc;
+		RenderDog::SRTexture2DDesc depthDesc;
 		depthDesc.width = width;
 		depthDesc.height = height;
 		depthDesc.format = RenderDog::SR_FORMAT::R32_FLOAT;
@@ -246,7 +408,7 @@ namespace RenderDog
 			return false;
 		}
 
-		RenderDog::DepthStencilViewDesc dsDesc;
+		RenderDog::SRDepthStencilViewDesc dsDesc;
 		dsDesc.format = depthDesc.format;
 		dsDesc.viewDimension = RenderDog::SR_DSV_DIMENSION::TEXTURE2D;
 		if (!g_pSRDevice->CreateDepthStencilView(m_pDepthStencilTexture, &dsDesc, &m_pDepthStencilView))
@@ -269,5 +431,52 @@ namespace RenderDog
 		}
 
 		return true;
+	}
+
+	//------------------------------------------------------------------------
+	//   Private Function
+	//------------------------------------------------------------------------
+	void SoftwareRenderer::ClearBackRenderTarget(float* clearColor)
+	{
+		g_pSRImmediateContext->ClearRenderTargetView(m_pRenderTargetView, clearColor);
+		g_pSRImmediateContext->ClearDepthStencilView(m_pDepthStencilView, 1.0f);
+
+		g_pSRImmediateContext->OMSetRenderTarget(m_pRenderTargetView, m_pDepthStencilView);
+	}
+
+	void SoftwareRenderer::AddPrisAndLightsToSceneView(IScene* pScene)
+	{
+		uint32_t priNum = pScene->GetPrimitivesNum();
+		for (uint32_t i = 0; i < priNum; ++i)
+		{
+			IPrimitive* pPri = pScene->GetPrimitive(i);
+
+			//FIXME!!! 这里后续应该添加视锥裁剪
+			m_pSceneView->AddPrimitive(pPri);
+		}
+
+		uint32_t lightsNum = pScene->GetLightsNum();
+		for (uint32_t i = 0; i < lightsNum; ++i)
+		{
+			ILight* pLight = pScene->GetLight(i);
+
+			if (pLight->GetType() == LightType::RD_LIGHT_TYPE_DIRECTIONAL)
+			{
+				m_pSceneView->AddLight(pLight);
+			}
+		}
+	}
+
+	void SoftwareRenderer::RenderPrimitives()
+	{
+		//D3D11MeshRenderer meshRender(m_pGlobalConstantBuffer);
+		SoftwareMeshLightingRenderer meshRender(m_pGlobalConstantBuffer, m_pLightingConstantBuffer);
+
+		uint32_t priNum = m_pSceneView->GetPrimitiveNum();
+		for (uint32_t i = 0; i < priNum; ++i)
+		{
+			IPrimitive* pPri = m_pSceneView->GetPrimitive(i);
+			pPri->Render(&meshRender);
+		}
 	}
 }

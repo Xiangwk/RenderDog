@@ -10,6 +10,6 @@
 
 namespace RenderDog
 {
-	extern ISRDevice* g_pSR11Device;
+	extern ISRDevice* g_pSRDevice;
 	extern ISRDeviceContext* g_pSRImmediateContext;
 }

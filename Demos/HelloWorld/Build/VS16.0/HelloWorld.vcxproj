@@ -22,14 +22,14 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -60,7 +60,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\..\..\EngineSDK\Renderer\Public\SoftwareRenderer;..\..\..\..\EngineSDK\RenderDog\Public\Math;..\..\..\..\EngineSDK\RenderDog\Public\RenderDog;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Include;..\..\..\..\EngineSDK\Renderer\Public\SoftwareRenderer;..\..\..\..\EngineSDK\RenderDog\Public\Math;..\..\..\..\EngineSDK\RenderDog\Public\RenderDog;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -71,7 +71,8 @@
     </Link>
     <PostBuildEvent>
       <Command>xcopy $(TargetDir)*.exe ..\..\..\..\Bin\Demos\$(ProjectName)\ /i /s /y
-xcopy ..\..\..\..\EngineSDK\3rdSDK\Bin\*.* ..\..\..\..\Bin\Demos\$(ProjectName)\ /i /s /y</Command>
+xcopy ..\..\..\..\EngineSDK\3rdSDK\Bin\*.* ..\..\..\..\Bin\Demos\$(ProjectName)\ /i /s /y
+xcopy ..\..\..\..\EngineSDK\RenderDog\EngineAsset\*.* ..\..\..\..\Bin\Demos\$(ProjectName)\EngineAsset\ /i /s /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -82,7 +83,7 @@ xcopy ..\..\..\..\EngineSDK\3rdSDK\Bin\*.* ..\..\..\..\Bin\Demos\$(ProjectName)\
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\..\..\EngineSDK\Renderer\Public\SoftwareRenderer;..\..\..\..\EngineSDK\RenderDog\Public\Math;..\..\..\..\EngineSDK\RenderDog\Public\RenderDog;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Include;..\..\..\..\EngineSDK\Renderer\Public\SoftwareRenderer;..\..\..\..\EngineSDK\RenderDog\Public\Math;..\..\..\..\EngineSDK\RenderDog\Public\RenderDog;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -95,11 +96,16 @@ xcopy ..\..\..\..\EngineSDK\3rdSDK\Bin\*.* ..\..\..\..\Bin\Demos\$(ProjectName)\
     </Link>
     <PostBuildEvent>
       <Command>xcopy $(TargetDir)*.exe ..\..\..\..\Bin\Demos\$(ProjectName)\ /i /s /y
-xcopy ..\..\..\..\EngineSDK\3rdSDK\Bin\*.* ..\..\..\..\Bin\Demos\$(ProjectName)\ /i /s /y</Command>
+xcopy ..\..\..\..\EngineSDK\3rdSDK\Bin\*.* ..\..\..\..\Bin\Demos\$(ProjectName)\ /i /s /y
+xcopy ..\..\..\..\EngineSDK\RenderDog\EngineAsset\*.* ..\..\..\..\Bin\Demos\$(ProjectName)\EngineAsset\ /i /s /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Src\Game.cpp" />
+    <ClCompile Include="..\..\Src\HelloWorld.cpp" />
+    <ClCompile Include="..\..\Src\Main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Include\HelloWorld.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

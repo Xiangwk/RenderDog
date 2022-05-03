@@ -101,19 +101,15 @@ xcopy ..\..\Public\*.* ..\..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i 
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Public\Mesh.h" />
-    <ClInclude Include="..\..\Public\Model.h" />
     <ClInclude Include="..\..\Public\SoftwareRender3D.h" />
-    <ClInclude Include="..\..\Public\ShaderResourceUtility.h" />
     <ClInclude Include="..\..\Public\SoftwareRenderer.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Private\Mesh.cpp" />
-    <ClCompile Include="..\..\Private\Model.cpp" />
     <ClCompile Include="..\..\Private\SoftwareRenderer.cpp" />
     <ClCompile Include="..\..\Private\SRBuffer.cpp" />
     <ClCompile Include="..\..\Private\SoftwareRender3D.cpp" />
-    <ClCompile Include="..\..\Private\ShaderResourceUtility.cpp" />
+    <ClCompile Include="..\..\Private\SRShader.cpp" />
+    <ClCompile Include="..\..\Private\SRTexture.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
