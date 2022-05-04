@@ -73,8 +73,7 @@ bool DemoApp::Init(const DemoInitDesc& desc)
 	RenderDog::LightDesc lightDesc = {};
 	lightDesc.type = RenderDog::LightType::RD_LIGHT_TYPE_DIRECTIONAL;
 	lightDesc.color = RenderDog::Vector3(1.0f, 1.0f, 1.0f);
-	//lightDesc.eulerDir = RenderDog::Vector3(45.0f, 45.0f, 45.0f);
-	lightDesc.eulerDir = RenderDog::Vector3(0.0f, 0.0f, 0.0f);
+	lightDesc.eulerDir = RenderDog::Vector3(45.0f, 45.0f, 45.0f);
 	lightDesc.luminance = 0.8f;
 	m_pMainLight = RenderDog::g_pILightManager->CreateLight(lightDesc);
 
@@ -231,7 +230,7 @@ LRESULT DemoApp::MessageProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 void DemoApp::Update()
 {
-	float cameraSpeed = 0.01f;
+	float cameraSpeed = 0.1f;
 	//W
 	if (m_Keys[0x57])
 	{
