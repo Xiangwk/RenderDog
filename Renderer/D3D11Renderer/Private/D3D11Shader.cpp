@@ -71,8 +71,8 @@ namespace RenderDog
 		ID3DInclude* pShaderInclude = D3D_COMPILE_STANDARD_FILE_INCLUDE;
 		ID3DBlob* pErroMsg = nullptr;
 		HRESULT hr = D3DCompile(sourceCode.c_str(), sourceCode.length(),
-			fileName.c_str(), &d3d11ShaderMacro, pShaderInclude, entryPoint.c_str(),
-			target.c_str(), compileFlag, 0, &m_pCompiledCode, &pErroMsg);
+								fileName.c_str(), &d3d11ShaderMacro, pShaderInclude, entryPoint.c_str(),
+								target.c_str(), compileFlag, 0, &m_pCompiledCode, &pErroMsg);
 
 		if (SUCCEEDED(hr))
 		{
@@ -81,6 +81,7 @@ namespace RenderDog
 				const char* output = static_cast<const char*>(pErroMsg->GetBufferPointer());
 				OutputDebugString(output);
 				pErroMsg->Release();
+
 				return;
 			}
 		}
@@ -92,6 +93,7 @@ namespace RenderDog
 				const char* output = static_cast<const char*>(pErroMsg->GetBufferPointer());
 				OutputDebugString(output);
 				pErroMsg->Release();
+
 				return;
 			}
 			else
@@ -266,8 +268,8 @@ namespace RenderDog
 		virtual IShader*	CreatePixelShader() override;
 	};
 
-	D3D11ShaderManager g_D3D11ShaderManager;
-	IShaderManager* g_pIShaderManager = &g_D3D11ShaderManager;
+	D3D11ShaderManager	g_D3D11ShaderManager;
+	IShaderManager*		g_pIShaderManager = &g_D3D11ShaderManager;
 
 	IShader* D3D11ShaderManager::CreateVertexShader(VertexType vertexType)
 	{

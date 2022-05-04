@@ -74,9 +74,9 @@ namespace RenderDog
 		int nChannels = 0;
 		
 		std::string tempFilePath;
-		int len = WideCharToMultiByte(CP_ACP, 0, filePath.c_str(), filePath.size(), nullptr, 0, nullptr, nullptr);
+		int len = WideCharToMultiByte(CP_ACP, 0, filePath.c_str(), (int)filePath.size(), nullptr, 0, nullptr, nullptr);
 		char* buffer = new char[len + 1];
-		WideCharToMultiByte(CP_ACP, 0, filePath.c_str(), filePath.size(), buffer, len, nullptr, nullptr);
+		WideCharToMultiByte(CP_ACP, 0, filePath.c_str(), (int)filePath.size(), buffer, len, nullptr, nullptr);
 		buffer[len] = '\0';
 		tempFilePath.append(buffer);
 		delete [] buffer;
@@ -130,16 +130,16 @@ namespace RenderDog
 		stbi_image_free(pTexData);
 
 		SRSubResourceData initData;
-		initData.pSysMem = pColor;
-		initData.sysMemPitch = nTexWidth * nTexHeight * sizeof(Vector4);
+		initData.pSysMem		= pColor;
+		initData.sysMemPitch	= nTexWidth * nTexHeight * sizeof(Vector4);
 		if (!g_pSRDevice->CreateTexture2D(&tex2DDesc, &initData, &m_pTexture2D))
 		{
 			return false;
 		}
 
 		SRShaderResourceViewDesc srvDesc;
-		srvDesc.format = tex2DDesc.format;
-		srvDesc.viewDimension = SR_SRV_DIMENSION::TEXTURE2D;
+		srvDesc.format			= tex2DDesc.format;
+		srvDesc.viewDimension	= SR_SRV_DIMENSION::TEXTURE2D;
 		if (!g_pSRDevice->CreateShaderResourceView(m_pTexture2D, &srvDesc, &m_pSRV))
 		{
 			return false;
@@ -195,13 +195,13 @@ namespace RenderDog
 		SRSamplerState();
 		virtual ~SRSamplerState();
 
-		virtual bool Init(const SamplerDesc& desc) override;
-		virtual void Release() override;
+		virtual bool		Init(const SamplerDesc& desc) override;
+		virtual void		Release() override;
 
-		virtual void SetToPixelShader(uint32_t startSlot) override;
+		virtual void		SetToPixelShader(uint32_t startSlot) override;
 
 	private:
-		ISRSamplerState* m_pSamplerState;
+		ISRSamplerState*	m_pSamplerState;
 	};
 
 	SRSamplerState::SRSamplerState() :
@@ -255,7 +255,7 @@ namespace RenderDog
 		SRSamplerStateManager() = default;
 		virtual ~SRSamplerStateManager() = default;
 
-		virtual ISamplerState* CreateSamplerState() override;
+		virtual ISamplerState*	CreateSamplerState() override;
 		virtual void			ReleaseSamplerState(ISamplerState* pSampler) override;
 	};
 

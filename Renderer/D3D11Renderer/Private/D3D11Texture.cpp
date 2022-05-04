@@ -82,10 +82,6 @@ namespace RenderDog
 			hr = DirectX::GetMetadataFromTGAFile(filePath.c_str(), MetaData);
 			hr = DirectX::LoadFromTGAFile(filePath.c_str(), &MetaData, Image);
 		}
-		else
-		{
-			return false;
-		}
 		
 		if (hr != S_OK)
 		{
@@ -120,8 +116,8 @@ namespace RenderDog
 		virtual void		ReleaseTexture(ITexture* pTexture) override;
 	};
 
-	D3D11TextureManager g_D3D11TextureManager;
-	ITextureManager* g_pITextureManager = &g_D3D11TextureManager;
+	D3D11TextureManager	g_D3D11TextureManager;
+	ITextureManager*	g_pITextureManager = &g_D3D11TextureManager;
 
 	ITexture2D* D3D11TextureManager::CreateTexture2D(const TextureDesc& desc)
 	{
@@ -146,10 +142,10 @@ namespace RenderDog
 		D3D11SamplerState();
 		virtual ~D3D11SamplerState();
 
-		virtual bool Init(const SamplerDesc& desc) override;
-		virtual void Release() override;
+		virtual bool			Init(const SamplerDesc& desc) override;
+		virtual void			Release() override;
 
-		virtual void SetToPixelShader(uint32_t startSlot) override;
+		virtual void			SetToPixelShader(uint32_t startSlot) override;
 
 	private:
 		ID3D11SamplerState*		m_pSamplerState;
@@ -231,8 +227,8 @@ namespace RenderDog
 		virtual void			ReleaseSamplerState(ISamplerState* pSampler) override;
 	};
 
-	D3D11SamplerStateManager g_D3D11SamplerStateManager;
-	ISamplerStateManager* g_pISamplerStateManager = &g_D3D11SamplerStateManager;
+	D3D11SamplerStateManager	g_D3D11SamplerStateManager;
+	ISamplerStateManager*		g_pISamplerStateManager = &g_D3D11SamplerStateManager;
 
 	ISamplerState* D3D11SamplerStateManager::CreateSamplerState()
 	{

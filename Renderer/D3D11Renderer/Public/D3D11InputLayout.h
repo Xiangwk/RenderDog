@@ -19,10 +19,10 @@ namespace RenderDog
 		D3D11InputLayout();
 		~D3D11InputLayout();
 
-		bool Init(VertexType vertexType, void* compiledCode, uint32_t codeSize);
-		void Release();
+		bool				Init(VertexType vertexType, void* compiledCode, uint32_t codeSize);
+		void				Release();
 
-		void SetToContext();
+		void				SetToContext();
 
 	private:
 		ID3D11InputLayout*	m_InputLayout;

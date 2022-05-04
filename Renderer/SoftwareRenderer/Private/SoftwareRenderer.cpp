@@ -18,8 +18,8 @@
 
 namespace RenderDog
 {
-	ISRDevice* g_pSRDevice = nullptr;
-	ISRDeviceContext* g_pSRImmediateContext = nullptr;
+	ISRDevice*			g_pSRDevice = nullptr;
+	ISRDeviceContext*	g_pSRImmediateContext = nullptr;
 
 	//===========================================================
 	//    Mesh Renderer
@@ -38,7 +38,7 @@ namespace RenderDog
 		virtual void				Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler) override;
 
 	protected:
-		IConstantBuffer* m_pVertexShaderCB;
+		IConstantBuffer*			m_pVertexShaderCB;
 	};
 
 	SoftwareMeshRenderer::SoftwareMeshRenderer() :
@@ -103,7 +103,7 @@ namespace RenderDog
 		virtual void				Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler) override;
 
 	protected:
-		IConstantBuffer* m_LightingCB;
+		IConstantBuffer*			m_LightingCB;
 	};
 
 	SoftwareMeshLightingRenderer::SoftwareMeshLightingRenderer() :
@@ -215,8 +215,8 @@ namespace RenderDog
 		IConstantBuffer*			m_pLightingConstantBuffer;
 	};
 
-	SoftwareRenderer g_SoftwareRenderer;
-	IRenderer* g_pIRenderer = &g_SoftwareRenderer;
+	SoftwareRenderer	g_SoftwareRenderer;
+	IRenderer*			g_pIRenderer = &g_SoftwareRenderer;
 
 	//------------------------------------------------------------------------
 	//   Public Function

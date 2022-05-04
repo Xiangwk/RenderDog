@@ -2,6 +2,7 @@
 //RenderDog <·,·>
 //FileName: SoftwareRender3D.h
 //Written by Xiang Weikang
+// SoftwareRenderer Interface
 ///////////////////////////////////
 
 #pragma once
@@ -152,8 +153,8 @@ namespace RenderDog
 
 	struct SRDepthStencilViewDesc
 	{
-		SR_FORMAT format;
-		SR_DSV_DIMENSION viewDimension;
+		SR_FORMAT			format;
+		SR_DSV_DIMENSION	viewDimension;
 
 		SRDepthStencilViewDesc() :
 			format(SR_FORMAT::UNKNOWN),
@@ -163,15 +164,15 @@ namespace RenderDog
 
 	struct SRShaderResourceViewDesc
 	{
-		SR_FORMAT format;
-		SR_SRV_DIMENSION viewDimension;
+		SR_FORMAT			format;
+		SR_SRV_DIMENSION	viewDimension;
 	};
 #pragma endregion Description
 
 	struct SRSubResourceData
 	{
-		const void* pSysMem;
-		uint32_t	sysMemPitch;
+		const void*		pSysMem;
+		uint32_t		sysMemPitch;
 
 		SRSubResourceData() :
 			pSysMem(nullptr),
@@ -223,11 +224,11 @@ namespace RenderDog
 	class ISRTexture2D : public ISFResource
 	{
 	public:
-		virtual void GetDesc(SRTexture2DDesc* pDesc) = 0;
+		virtual void			GetDesc(SRTexture2DDesc* pDesc) = 0;
 
 		//以下两个接口为临时添加，后续需要删除
-		virtual void*& GetData() = 0;
-		virtual const void* GetData() const = 0;
+		virtual void*&			GetData() = 0;
+		virtual const void*		GetData() const = 0;
 	};
 
 	class ISRSamplerState : public ISRUnknown

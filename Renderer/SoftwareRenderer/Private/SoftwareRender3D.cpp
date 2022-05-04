@@ -34,13 +34,13 @@ namespace RenderDog
 	{
 		VSOutputVertex() = default;
 		VSOutputVertex(const VSOutputVertex& v) = default;
-		VSOutputVertex& operator=(const VSOutputVertex& v) = default;
+		VSOutputVertex&		operator=(const VSOutputVertex& v) = default;
 
-		Vector4 svPostion;
-		Vector4 color;
-		Vector3 normal;
-		Vector4 tangent;
-		Vector2 texcoord;
+		Vector4				svPostion;
+		Vector4				color;
+		Vector3				normal;
+		Vector4				tangent;
+		Vector2				texcoord;
 	};
 
 	class VertexShader : public ISRVertexShader
@@ -49,10 +49,10 @@ namespace RenderDog
 		VertexShader() = default;
 		~VertexShader() = default;
 
-		virtual void AddRef() override {}
-		virtual void Release() override { delete this; }
+		virtual void	AddRef() override {}
+		virtual void	Release() override { delete this; }
 
-		VSOutputVertex VSMain(const LocalVertex& inVertex, const Matrix4x4& matWorld, const Matrix4x4& matView, const Matrix4x4& matProj) const;
+		VSOutputVertex	VSMain(const LocalVertex& inVertex, const Matrix4x4& matWorld, const Matrix4x4& matView, const Matrix4x4& matProj) const;
 	};
 
 	class PixelShader : public ISRPixelShader
@@ -88,7 +88,7 @@ namespace RenderDog
 		Vector4			PSMain(const VSOutputVertex& VSOutput, const ShaderResourceTexture* pSRTexture) const;
 
 	private:
-		Vector3 CalcPhongLighing(const MainLight* light, const Vector3& normal, const Vector3& faceColor) const;
+		Vector3			CalcPhongLighing(const MainLight* light, const Vector3& normal, const Vector3& faceColor) const;
 
 	private:
 		MainLight*		m_pMainLight;
@@ -290,19 +290,18 @@ namespace RenderDog
 		~RenderTargetView()
 		{}
 
-		bool Init(ISFResource* pResource, const SRRenderTargetViewDesc* pDesc);
+		bool					Init(ISFResource* pResource, const SRRenderTargetViewDesc* pDesc);
 
-		virtual void AddRef() override { ++m_RefCnt; }
-		virtual void Release() override;
+		virtual void			AddRef() override { ++m_RefCnt; }
+		virtual void			Release() override;
 
-		virtual void GetResource(ISFResource** ppResource) override { *ppResource = m_pViewResource; }
+		virtual void			GetResource(ISFResource** ppResource) override { *ppResource = m_pViewResource; }
 
-		virtual void GetDesc(SRRenderTargetViewDesc* pDesc) override { *pDesc = m_Desc; }
+		virtual void			GetDesc(SRRenderTargetViewDesc* pDesc) override { *pDesc = m_Desc; }
 
 	private:
 		int						m_RefCnt;
-
-		ISFResource*				m_pViewResource;
+		ISFResource*			m_pViewResource;
 		SRRenderTargetViewDesc	m_Desc;
 	};
 
@@ -343,19 +342,18 @@ namespace RenderDog
 		~DepthStencilView()
 		{}
 
-		bool Init(ISFResource* pResource, const SRDepthStencilViewDesc* pDesc);
+		bool					Init(ISFResource* pResource, const SRDepthStencilViewDesc* pDesc);
 
-		virtual void AddRef() override { ++m_RefCnt; }
-		virtual void Release() override;
+		virtual void			AddRef() override { ++m_RefCnt; }
+		virtual void			Release() override;
 
-		virtual void GetResource(ISFResource** ppResource) override { *ppResource = m_pViewResource; }
+		virtual void			GetResource(ISFResource** ppResource) override { *ppResource = m_pViewResource; }
 
-		virtual void GetDesc(SRDepthStencilViewDesc* pDesc) override { *pDesc = m_Desc; }
+		virtual void			GetDesc(SRDepthStencilViewDesc* pDesc) override { *pDesc = m_Desc; }
 
 	private:
 		int						m_RefCnt;
-
-		ISFResource*				m_pViewResource;
+		ISFResource*			m_pViewResource;
 		SRDepthStencilViewDesc	m_Desc;
 	};
 
@@ -397,18 +395,17 @@ namespace RenderDog
 		~ShaderResourceView()
 		{}
 
-		bool Init(ISFResource* pResource, const SRShaderResourceViewDesc* pDesc);
+		bool						Init(ISFResource* pResource, const SRShaderResourceViewDesc* pDesc);
 
-		virtual void AddRef() override { ++m_RefCnt; }
-		virtual void Release() override;
+		virtual void				AddRef() override { ++m_RefCnt; }
+		virtual void				Release() override;
 
-		virtual void GetResource(ISFResource** ppResource) override { *ppResource = m_pViewResource; }
+		virtual void				GetResource(ISFResource** ppResource) override { *ppResource = m_pViewResource; }
 
-		virtual void GetDesc(SRShaderResourceViewDesc* pDesc) override { *pDesc = m_Desc; }
+		virtual void				GetDesc(SRShaderResourceViewDesc* pDesc) override { *pDesc = m_Desc; }
 
 	private:
-		int						m_RefCnt;
-
+		int							m_RefCnt;
 		ISFResource*				m_pViewResource;
 		SRShaderResourceViewDesc	m_Desc;
 	};
@@ -540,7 +537,6 @@ namespace RenderDog
 	private:
 		int				m_RefCnt;
 		SRBufferDesc	m_Desc;
-
 		uint32_t*		m_pData;
 	};
 
@@ -607,9 +603,7 @@ namespace RenderDog
 
 	private:
 		int					m_RefCnt;
-
 		SRBufferDesc		m_Desc;
-
 		void*				m_pData;
 	};
 
@@ -661,22 +655,22 @@ namespace RenderDog
 		Device(const Device&) = delete;
 		Device& operator=(const Device&) = delete;
 
-		virtual bool CreateTexture2D(const SRTexture2DDesc* pDesc, const SRSubResourceData* pInitData, ISRTexture2D** ppTexture) override;
-		virtual bool CreateRenderTargetView(ISFResource* pResource, const SRRenderTargetViewDesc* pDesc, ISRRenderTargetView** ppRenderTargetView) override;
-		virtual bool CreateDepthStencilView(ISFResource* pResource, const SRDepthStencilViewDesc* pDesc, ISRDepthStencilView** ppDepthStencilView) override;
-		virtual bool CreateShaderResourceView(ISFResource* pResource, const SRShaderResourceViewDesc* pDesc, ISRShaderResourceView** ppShaderResourceView) override;
-		virtual bool CreateBuffer(const SRBufferDesc* pDesc, const SRSubResourceData* pInitData, ISRBuffer** ppBuffer) override;
-		virtual bool CreateVertexShader(ISRVertexShader** ppVertexShader) override;
-		virtual bool CreatePixelShader(ISRPixelShader** ppPixelShader) override;
-		virtual bool CreateSamplerState(const SRSamplerDesc* pDesc, ISRSamplerState** ppSamplerState) override;
+		virtual bool	CreateTexture2D(const SRTexture2DDesc* pDesc, const SRSubResourceData* pInitData, ISRTexture2D** ppTexture) override;
+		virtual bool	CreateRenderTargetView(ISFResource* pResource, const SRRenderTargetViewDesc* pDesc, ISRRenderTargetView** ppRenderTargetView) override;
+		virtual bool	CreateDepthStencilView(ISFResource* pResource, const SRDepthStencilViewDesc* pDesc, ISRDepthStencilView** ppDepthStencilView) override;
+		virtual bool	CreateShaderResourceView(ISFResource* pResource, const SRShaderResourceViewDesc* pDesc, ISRShaderResourceView** ppShaderResourceView) override;
+		virtual bool	CreateBuffer(const SRBufferDesc* pDesc, const SRSubResourceData* pInitData, ISRBuffer** ppBuffer) override;
+		virtual bool	CreateVertexShader(ISRVertexShader** ppVertexShader) override;
+		virtual bool	CreatePixelShader(ISRPixelShader** ppPixelShader) override;
+		virtual bool	CreateSamplerState(const SRSamplerDesc* pDesc, ISRSamplerState** ppSamplerState) override;
 
-		virtual void AddRef() override {}
-		virtual void Release() override { delete this; }
+		virtual void	AddRef() override {}
+		virtual void	Release() override { delete this; }
 
 	private:
-		bool CreateVertexBuffer(const SRBufferDesc* pDesc, const SRSubResourceData* pInitData, ISRBuffer** ppBuffer);
-		bool CreateIndexBuffer(const SRBufferDesc* pDesc, const SRSubResourceData* pInitData, ISRBuffer** ppBuffer);
-		bool CreateConstantBuffer(const SRBufferDesc* pDesc, const SRSubResourceData* pInitData, ISRBuffer** ppBuffer);
+		bool			CreateVertexBuffer(const SRBufferDesc* pDesc, const SRSubResourceData* pInitData, ISRBuffer** ppBuffer);
+		bool			CreateIndexBuffer(const SRBufferDesc* pDesc, const SRSubResourceData* pInitData, ISRBuffer** ppBuffer);
+		bool			CreateConstantBuffer(const SRBufferDesc* pDesc, const SRSubResourceData* pInitData, ISRBuffer** ppBuffer);
 	};
 
 
@@ -898,71 +892,70 @@ namespace RenderDog
 		DeviceContext(const DeviceContext&) = delete;
 		DeviceContext& operator=(const DeviceContext&) = delete;
 
-		bool Init(uint32_t width, uint32_t height);
+		bool						Init(uint32_t width, uint32_t height);
 
-		virtual void AddRef() override {}
-		virtual void Release() override { delete this; }
+		virtual void				AddRef() override {}
+		virtual void				Release() override { delete this; }
 
-		virtual void IASetVertexBuffer(ISRBuffer* pVB) override;
-		virtual void IASetIndexBuffer(ISRBuffer* pIB) override;
-		virtual void IASetPrimitiveTopology(SR_PRIMITIVE_TOPOLOGY topology) override { m_PriTopology = topology; }
+		virtual void				IASetVertexBuffer(ISRBuffer* pVB) override;
+		virtual void				IASetIndexBuffer(ISRBuffer* pIB) override;
+		virtual void				IASetPrimitiveTopology(SR_PRIMITIVE_TOPOLOGY topology) override { m_PriTopology = topology; }
 
-		virtual	void UpdateSubresource(ISFResource* pDstResource, const void* pSrcData, uint32_t srcRowPitch, uint32_t srcDepthPitch) override;
+		virtual	void				UpdateSubresource(ISFResource* pDstResource, const void* pSrcData, uint32_t srcRowPitch, uint32_t srcDepthPitch) override;
 
-		virtual void VSSetShader(ISRVertexShader* pVS) override { m_pVS = dynamic_cast<VertexShader*>(pVS); }
-		virtual void VSSetConstantBuffer(uint32_t startSlot, ISRBuffer* const* ppConstantBuffer) override;
-		virtual void PSSetConstantBuffer(uint32_t startSlot, ISRBuffer* const* ppConstantBuffer) override;
-		virtual void PSSetShader(ISRPixelShader* pPS) override { m_pPS = dynamic_cast<PixelShader*>(pPS); }
-		virtual void PSSetShaderResource(ISRShaderResourceView* const* ppShaderResourceView) override;
-		virtual void PSSetSampler(uint32_t startSlot, ISRSamplerState* const* ppSamplerState) override;
+		virtual void				VSSetShader(ISRVertexShader* pVS) override { m_pVS = dynamic_cast<VertexShader*>(pVS); }
+		virtual void				VSSetConstantBuffer(uint32_t startSlot, ISRBuffer* const* ppConstantBuffer) override;
+		virtual void				PSSetConstantBuffer(uint32_t startSlot, ISRBuffer* const* ppConstantBuffer) override;
+		virtual void				PSSetShader(ISRPixelShader* pPS) override { m_pPS = dynamic_cast<PixelShader*>(pPS); }
+		virtual void				PSSetShaderResource(ISRShaderResourceView* const* ppShaderResourceView) override;
+		virtual void				PSSetSampler(uint32_t startSlot, ISRSamplerState* const* ppSamplerState) override;
 
-		virtual void RSSetViewport(const SRViewport* pVP) override;
+		virtual void				RSSetViewport(const SRViewport* pVP) override;
 
-		virtual void OMSetRenderTarget(ISRRenderTargetView* pRenderTargetView, ISRDepthStencilView* pDepthStencilVew) override;
-		virtual void ClearRenderTargetView(ISRRenderTargetView* pRenderTargetView, const float* clearColor) override;
-		virtual void ClearDepthStencilView(ISRDepthStencilView* pDepthStencilView, float fDepth) override;
-		virtual void Draw() override;
-		virtual void DrawIndex(uint32_t indexNum) override;
-		virtual void DrawLineWithDDA(float fPos1X, float fPos1Y, float fPos2X, float fPos2Y, const float* lineColor) override;
+		virtual void				OMSetRenderTarget(ISRRenderTargetView* pRenderTargetView, ISRDepthStencilView* pDepthStencilVew) override;
+		virtual void				ClearRenderTargetView(ISRRenderTargetView* pRenderTargetView, const float* clearColor) override;
+		virtual void				ClearDepthStencilView(ISRDepthStencilView* pDepthStencilView, float fDepth) override;
+		virtual void				Draw() override;
+		virtual void				DrawIndex(uint32_t indexNum) override;
+		virtual void				DrawLineWithDDA(float fPos1X, float fPos1Y, float fPos2X, float fPos2Y, const float* lineColor) override;
 
 	private:
-		void DrawTriangleWithLine(const VSOutputVertex& v0, const VSOutputVertex& v1, const VSOutputVertex& v2);
-		void DrawTriangleWithFlat(const VSOutputVertex& v0, const VSOutputVertex& v1, const VSOutputVertex& v2);
+		void						DrawTriangleWithLine(const VSOutputVertex& v0, const VSOutputVertex& v1, const VSOutputVertex& v2);
+		void						DrawTriangleWithFlat(const VSOutputVertex& v0, const VSOutputVertex& v1, const VSOutputVertex& v2);
 
-		void SortTriangleVertsByYGrow(VSOutputVertex& v0, VSOutputVertex& v1, VSOutputVertex& v2);
-		void SortScanlineVertsByXGrow(VSOutputVertex& v0, VSOutputVertex& v1);
+		void						SortTriangleVertsByYGrow(VSOutputVertex& v0, VSOutputVertex& v1, VSOutputVertex& v2);
+		void						SortScanlineVertsByXGrow(VSOutputVertex& v0, VSOutputVertex& v1);
 
 		//平顶三角形和平底三角形
-		void DrawTopTriangle(VSOutputVertex& v0, VSOutputVertex& v1, VSOutputVertex& v2);
-		void DrawBottomTriangle(VSOutputVertex& v0, VSOutputVertex& v1, VSOutputVertex& v2);
+		void						DrawTopTriangle(VSOutputVertex& v0, VSOutputVertex& v1, VSOutputVertex& v2);
+		void						DrawBottomTriangle(VSOutputVertex& v0, VSOutputVertex& v1, VSOutputVertex& v2);
 
-		void SliceTriangleToUpAndBottom(const VSOutputVertex& v0, const VSOutputVertex& v1, const VSOutputVertex& v2, VSOutputVertex& vNew);
+		void						SliceTriangleToUpAndBottom(const VSOutputVertex& v0, const VSOutputVertex& v1, const VSOutputVertex& v2, VSOutputVertex& vNew);
 
-		void LerpVertexParamsInScreen(const VSOutputVertex& vStart, const VSOutputVertex& vEnd, VSOutputVertex& vNew, float fLerpFactor);
+		void						LerpVertexParamsInScreen(const VSOutputVertex& vStart, const VSOutputVertex& vEnd, VSOutputVertex& vNew, float fLerpFactor);
+		void						LerpVertexParamsInClip(const VSOutputVertex& vStart, const VSOutputVertex& vEnd, VSOutputVertex& vNew, float fLerpFactor);
 
-		void LerpVertexParamsInClip(const VSOutputVertex& vStart, const VSOutputVertex& vEnd, VSOutputVertex& vNew, float fLerpFactor);
+		void						ClipTrianglesInClipSpace();
 
-		void ClipTrianglesInClipSpace();
+		void						ViewportTransform();
 
-		void ViewportTransform();
+		void						ClipTriangleWithPlaneX(int nSign); //sign为+1或者-1
+		void						ClipTriangleWithPlaneY(int nSign); //sign为+1或者-1
+		void						ClipTriangleWithPlaneZeroZ();
+		void						ClipTriangleWithPlanePositiveZ();
 
-		void ClipTriangleWithPlaneX(int nSign); //sign为+1或者-1
-		void ClipTriangleWithPlaneY(int nSign); //sign为+1或者-1
-		void ClipTriangleWithPlaneZeroZ();
-		void ClipTriangleWithPlanePositiveZ();
+		void						ClipTwoVertsInTriangle(const VSOutputVertex& vertIn, VSOutputVertex& vertOut1, VSOutputVertex& vertOut2, float lerpFactor1, float lerpFactor2);
+		void						ClipOneVertInTriangle(VSOutputVertex& vertOut, const VSOutputVertex& vertIn1, const VSOutputVertex& vertIn2, float lerpFactor1, float lerpFactor2, std::vector<VSOutputVertex>& tempVerts);
+		float						GetClipLerpFactorX(const VSOutputVertex& vert0, const VSOutputVertex& vert1, int sign);
+		float						GetClipLerpFactorY(const VSOutputVertex& vert0, const VSOutputVertex& vert1, int sign);
+		float						GetClipLerpFactorZeroZ(const VSOutputVertex& vert0, const VSOutputVertex& vert1);
+		float						GetClipLerpFactorPositiveZ(const VSOutputVertex& vert0, const VSOutputVertex& vert1);
 
-		void ClipTwoVertsInTriangle(const VSOutputVertex& vertIn, VSOutputVertex& vertOut1, VSOutputVertex& vertOut2, float lerpFactor1, float lerpFactor2);
-		void ClipOneVertInTriangle(VSOutputVertex& vertOut, const VSOutputVertex& vertIn1, const VSOutputVertex& vertIn2, float lerpFactor1, float lerpFactor2, std::vector<VSOutputVertex>& tempVerts);
-		float GetClipLerpFactorX(const VSOutputVertex& vert0, const VSOutputVertex& vert1, int sign);
-		float GetClipLerpFactorY(const VSOutputVertex& vert0, const VSOutputVertex& vert1, int sign);
-		float GetClipLerpFactorZeroZ(const VSOutputVertex& vert0, const VSOutputVertex& vert1);
-		float GetClipLerpFactorPositiveZ(const VSOutputVertex& vert0, const VSOutputVertex& vert1);
+		void						ShapeAssemble(uint32_t indexNum);
 
-		void ShapeAssemble(uint32_t indexNum);
+		void						BackFaceCulling();
 
-		void BackFaceCulling();
-
-		void Rasterization();
+		void						Rasterization();
 
 	private:
 		uint32_t*					m_pFrameBuffer;
@@ -1058,7 +1051,6 @@ namespace RenderDog
 		{
 		case RenderDog::SR_RESOURCE_DIMENSION::UNKNOWN:
 		{
-			return;
 			break;
 		}
 		case RenderDog::SR_RESOURCE_DIMENSION::BUFFER:
@@ -1284,7 +1276,7 @@ namespace RenderDog
 	void DeviceContext::DrawIndex(uint32_t indexNum)
 	{
 		const LocalVertex* pVerts = m_pVB->GetData();
-		//Local Space to Clip Space
+
 		for (uint32_t i = 0; i < m_pVB->GetNum(); ++i)
 		{
 			const LocalVertex& vert = pVerts[i];
@@ -2120,17 +2112,17 @@ namespace RenderDog
 		SwapChain(const SwapChain&) = delete;
 		SwapChain& operator=(const SwapChain&) = delete;
 
-		bool Init(const SwapChainDesc* pDesc);
+		bool			Init(const SwapChainDesc* pDesc);
 		
-		virtual void AddRef() override {}
-		virtual void Release() override;
+		virtual void	AddRef() override {}
+		virtual void	Release() override;
 
-		virtual bool GetBuffer(void** ppSurface) override;
-		virtual bool ResizeBuffers(uint32_t bufferCnts, uint32_t width, uint32_t height, SR_FORMAT format) override;
+		virtual bool	GetBuffer(void** ppSurface) override;
+		virtual bool	ResizeBuffers(uint32_t bufferCnts, uint32_t width, uint32_t height, SR_FORMAT format) override;
 
-		virtual void GetDesc(SwapChainDesc* pDesc) override;
+		virtual void	GetDesc(SwapChainDesc* pDesc) override;
 
-		virtual void Present() override;
+		virtual void	Present() override;
 
 	private:
 		Texture2D*		m_pBackBuffer;

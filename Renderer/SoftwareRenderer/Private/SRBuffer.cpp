@@ -43,11 +43,13 @@ namespace RenderDog
 		m_Offset(desc.offset)
 	{
 		SRBufferDesc bufferDesc = {};
-		bufferDesc.byteWidth = desc.byteWidth;
-		bufferDesc.bindFlag = SR_BIND_FLAG::BIND_VERTEX_BUFFER;
+		bufferDesc.byteWidth	= desc.byteWidth;
+		bufferDesc.bindFlag		= SR_BIND_FLAG::BIND_VERTEX_BUFFER;
+
 		SRSubResourceData initData = {};
-		initData.pSysMem = desc.pInitData;
-		initData.sysMemPitch = bufferDesc.byteWidth;
+		initData.pSysMem		= desc.pInitData;
+		initData.sysMemPitch	= bufferDesc.byteWidth;
+
 		g_pSRDevice->CreateBuffer(&bufferDesc, &initData, &m_pVB);
 	}
 
@@ -103,11 +105,12 @@ namespace RenderDog
 		m_indexNum(desc.byteWidth / sizeof(uint32_t))
 	{
 		SRBufferDesc bufferDesc = {};
-		bufferDesc.byteWidth = desc.byteWidth;
-		bufferDesc.bindFlag = SR_BIND_FLAG::BIND_INDEX_BUFFER;
+		bufferDesc.byteWidth	= desc.byteWidth;
+		bufferDesc.bindFlag		= SR_BIND_FLAG::BIND_INDEX_BUFFER;
+
 		SRSubResourceData initData = {};
-		initData.pSysMem = desc.pInitData;
-		initData.sysMemPitch = desc.byteWidth;
+		initData.pSysMem		= desc.pInitData;
+		initData.sysMemPitch	= desc.byteWidth;
 		g_pSRDevice->CreateBuffer(&bufferDesc, &initData, &m_pIB);
 	}
 
@@ -161,10 +164,12 @@ namespace RenderDog
 		m_IsDynamic(desc.isDynamic)
 	{
 		SRBufferDesc bufferDesc = {};
-		bufferDesc.byteWidth = desc.byteWidth;
-		bufferDesc.bindFlag = SR_BIND_FLAG::BIND_CONSTANT_BUFFER;
+		bufferDesc.byteWidth	= desc.byteWidth;
+		bufferDesc.bindFlag		= SR_BIND_FLAG::BIND_CONSTANT_BUFFER;
+
 		SRSubResourceData initData = {};
-		initData.pSysMem = desc.pInitData;
+		initData.pSysMem		= desc.pInitData;
+
 		g_pSRDevice->CreateBuffer(&bufferDesc, nullptr, &m_pCB);
 	}
 

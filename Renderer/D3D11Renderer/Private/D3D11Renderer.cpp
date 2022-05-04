@@ -98,7 +98,6 @@ namespace RenderDog
 		virtual ~D3D11MeshLightingRenderer();
 
 		virtual IConstantBuffer*		GetLightingConstantbuffer() override { return m_LightingCB; }
-
 		virtual void					Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler) override;
 
 	protected:
@@ -214,8 +213,8 @@ namespace RenderDog
 		IConstantBuffer*			m_pLightingConstantBuffer;
 	};
 
-	D3D11Renderer g_D3D11Renderer;
-	IRenderer* g_pIRenderer = &g_D3D11Renderer;
+	D3D11Renderer	g_D3D11Renderer;
+	IRenderer*		g_pIRenderer = &g_D3D11Renderer;
 
 	//------------------------------------------------------------------------
 	//   Public Function
@@ -265,19 +264,19 @@ namespace RenderDog
 		}
 
 		DXGI_SWAP_CHAIN_DESC swapchainDesc;
-		swapchainDesc.BufferDesc.Width = desc.backBufferWidth;
-		swapchainDesc.BufferDesc.Height = desc.backBufferHeight;
-		swapchainDesc.BufferDesc.RefreshRate.Numerator = 60;
-		swapchainDesc.BufferDesc.RefreshRate.Denominator = 1;
-		swapchainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		swapchainDesc.SampleDesc.Count = 1;
-		swapchainDesc.SampleDesc.Quality = 0;
-		swapchainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		swapchainDesc.BufferCount = 1;
-		swapchainDesc.OutputWindow = desc.hWnd;
-		swapchainDesc.Windowed = true;
-		swapchainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-		swapchainDesc.Flags = 0;
+		swapchainDesc.BufferDesc.Width						= desc.backBufferWidth;
+		swapchainDesc.BufferDesc.Height						= desc.backBufferHeight;
+		swapchainDesc.BufferDesc.RefreshRate.Numerator		= 60;
+		swapchainDesc.BufferDesc.RefreshRate.Denominator	= 1;
+		swapchainDesc.BufferDesc.Format						= DXGI_FORMAT_R8G8B8A8_UNORM;
+		swapchainDesc.SampleDesc.Count						= 1;
+		swapchainDesc.SampleDesc.Quality					= 0;
+		swapchainDesc.BufferUsage							= DXGI_USAGE_RENDER_TARGET_OUTPUT;
+		swapchainDesc.BufferCount							= 1;
+		swapchainDesc.OutputWindow							= desc.hWnd;
+		swapchainDesc.Windowed								= true;
+		swapchainDesc.SwapEffect							= DXGI_SWAP_EFFECT_DISCARD;
+		swapchainDesc.Flags									= 0;
 
 		IDXGIDevice* pDXGIDevice = nullptr;
 		if (FAILED(g_pD3D11Device->QueryInterface(__uuidof(IDXGIDevice), (void**)&pDXGIDevice)))
@@ -372,6 +371,7 @@ namespace RenderDog
 		}
 
 #if defined(DEBUG) || defined(_DEBUG)
+		//输出详细的debug信息，如有需要去掉注释即可
 		/*ID3D11Debug* pD3dDebug = nullptr;
 		HRESULT hr = g_pD3D11Device->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&pD3dDebug));
 		if (SUCCEEDED(hr))
@@ -401,9 +401,9 @@ namespace RenderDog
 		{
 			ILight* pMainLight = m_pSceneView->GetLight(0);
 			DirectionalLightData dirLightData = {};
-			dirLightData.direction = pMainLight->GetDirection();
-			dirLightData.color = Vector4(pMainLight->GetColor(), 1.0f);
-			dirLightData.luminance = pMainLight->GetLuminance();
+			dirLightData.direction	= pMainLight->GetDirection();
+			dirLightData.color		= Vector4(pMainLight->GetColor(), 1.0f);
+			dirLightData.luminance	= pMainLight->GetLuminance();
 
 			m_pLightingConstantBuffer->Update(&dirLightData, sizeof(dirLightData));
 		}
@@ -452,11 +452,13 @@ namespace RenderDog
 		{
 			return false;
 		}
+
 		ID3D11Texture2D* pBackBuffer = nullptr;
 		if (FAILED(m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBackBuffer)))
 		{
 			return false;
 		}
+
 		if (FAILED(g_pD3D11Device->CreateRenderTargetView(pBackBuffer, nullptr, &m_pRenderTargetView)))
 		{
 			return false;
@@ -479,6 +481,7 @@ namespace RenderDog
 		{
 			return false;
 		}
+
 		if (FAILED(g_pD3D11Device->CreateDepthStencilView(m_pDepthStencilTexture, nullptr, &m_pDepthStencilView)))
 		{
 			return false;
@@ -537,7 +540,6 @@ namespace RenderDog
 
 	void D3D11Renderer::RenderPrimitives()
 	{
-		//D3D11MeshRenderer meshRender(m_pGlobalConstantBuffer);
 		D3D11MeshLightingRenderer meshRender(m_pGlobalConstantBuffer, m_pLightingConstantBuffer);
 
 		uint32_t priNum = m_pSceneView->GetPrimitiveNum();

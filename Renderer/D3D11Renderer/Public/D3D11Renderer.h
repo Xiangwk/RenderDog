@@ -1,8 +1,7 @@
 ////////////////////////////////////////
 //RenderDog <¡¤,¡¤>
-//FileName: Buffer.h
+//FileName: D3D11Renderer.h
 //Written by Xiang Weikang
-//Desc: Buffer Interface
 ////////////////////////////////////////
 
 #pragma once

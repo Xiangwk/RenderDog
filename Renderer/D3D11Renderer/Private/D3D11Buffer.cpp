@@ -43,12 +43,14 @@ namespace RenderDog
 		m_Offset(desc.offset)
 	{
 		D3D11_BUFFER_DESC bufferDesc = {};
-		bufferDesc.Usage = desc.isDynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
-		bufferDesc.ByteWidth = desc.byteWidth;
-		bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		bufferDesc.CPUAccessFlags = desc.isDynamic ? D3D11_CPU_ACCESS_WRITE : 0;
+		bufferDesc.Usage			= desc.isDynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
+		bufferDesc.ByteWidth		= desc.byteWidth;
+		bufferDesc.BindFlags		= D3D11_BIND_VERTEX_BUFFER;
+		bufferDesc.CPUAccessFlags	= desc.isDynamic ? D3D11_CPU_ACCESS_WRITE : 0;
+
 		D3D11_SUBRESOURCE_DATA initData = {};
 		initData.pSysMem = desc.pInitData;
+
 		g_pD3D11Device->CreateBuffer(&bufferDesc, &initData, &m_pVB);
 	}
 
@@ -105,12 +107,14 @@ namespace RenderDog
 		m_indexNum(desc.byteWidth / sizeof(uint32_t))
 	{
 		D3D11_BUFFER_DESC bufferDesc = {};
-		bufferDesc.Usage = desc.isDynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
-		bufferDesc.ByteWidth = desc.byteWidth;
-		bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-		bufferDesc.CPUAccessFlags = desc.isDynamic ? D3D11_CPU_ACCESS_WRITE : 0;
+		bufferDesc.Usage			= desc.isDynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
+		bufferDesc.ByteWidth		= desc.byteWidth;
+		bufferDesc.BindFlags		= D3D11_BIND_INDEX_BUFFER;
+		bufferDesc.CPUAccessFlags	= desc.isDynamic ? D3D11_CPU_ACCESS_WRITE : 0;
+
 		D3D11_SUBRESOURCE_DATA initData = {};
 		initData.pSysMem = desc.pInitData;
+
 		g_pD3D11Device->CreateBuffer(&bufferDesc, &initData, &m_pIB);
 	}
 
@@ -165,12 +169,14 @@ namespace RenderDog
 		m_IsDynamic(desc.isDynamic)
 	{
 		D3D11_BUFFER_DESC bufferDesc = {};
-		bufferDesc.Usage = desc.isDynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
-		bufferDesc.ByteWidth = desc.byteWidth;
-		bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		bufferDesc.CPUAccessFlags = desc.isDynamic ? D3D11_CPU_ACCESS_WRITE : 0;
+		bufferDesc.Usage			= desc.isDynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
+		bufferDesc.ByteWidth		= desc.byteWidth;
+		bufferDesc.BindFlags		= D3D11_BIND_CONSTANT_BUFFER;
+		bufferDesc.CPUAccessFlags	= desc.isDynamic ? D3D11_CPU_ACCESS_WRITE : 0;
+
 		D3D11_SUBRESOURCE_DATA initData = {};
 		initData.pSysMem = desc.pInitData;
+
 		g_pD3D11Device->CreateBuffer(&bufferDesc, nullptr, &m_pCB);
 	}
 
@@ -222,8 +228,8 @@ namespace RenderDog
 		virtual void		ReleaseBuffer(IBuffer* pBuffer) override;
 	};
 
-	D3D11BufferManager g_D3D11BufferManager;
-	IBufferManager* g_pIBufferManager = &g_D3D11BufferManager;
+	D3D11BufferManager	g_D3D11BufferManager;
+	IBufferManager*		g_pIBufferManager = &g_D3D11BufferManager;
 
 
 	IBuffer* D3D11BufferManager::CreateBuffer(const BufferDesc& desc)
