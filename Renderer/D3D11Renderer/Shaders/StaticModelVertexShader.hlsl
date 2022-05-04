@@ -6,13 +6,13 @@
 
 cbuffer GlobleCB : register(b0)
 {
-	matrix ViewMat;
-	matrix ProjMat;
+	row_major matrix ViewMat;
+	row_major matrix ProjMat;
 };
 
 cbuffer PerObjCB : register(b1)
 {
-	matrix WorldMat;
+	row_major matrix WorldMat;
 };
 
 struct VSInput

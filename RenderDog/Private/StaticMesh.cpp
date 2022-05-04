@@ -161,7 +161,7 @@ namespace RenderDog
 		Matrix4x4 scaleMat = GetScaleMatrix(scale.x, scale.y, scale.z);
 
 		Matrix4x4 worldMat = scaleMat * rotMat * transMat;
-		worldMat = Transpose(worldMat);
+		worldMat = worldMat;
 
 		m_pRenderData->pCB->Update(&worldMat, sizeof(Matrix4x4));
 	}

@@ -391,8 +391,9 @@ namespace RenderDog
 	{
 		FPSCamera* pCamera = m_pSceneView->GetCamera();
 		GlobalConstantData globalCBData = {};
-		globalCBData.viewMatrix = Transpose(pCamera->GetViewMatrix());
-		globalCBData.projMatrix = Transpose(pCamera->GetPerspProjectionMatrix());
+
+		globalCBData.viewMatrix = pCamera->GetViewMatrix();
+		globalCBData.projMatrix = pCamera->GetPerspProjectionMatrix();
 
 		m_pGlobalConstantBuffer->Update(&globalCBData, sizeof(globalCBData));
 
