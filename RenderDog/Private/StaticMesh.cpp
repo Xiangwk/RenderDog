@@ -14,6 +14,8 @@ namespace RenderDog
 	StaticMesh::StaticMesh() :
 		m_Vertices(0),
 		m_Indices(0),
+		m_RawVertices(0),
+		m_RawIndices(0),
 		m_pRenderData(nullptr),
 		m_pDiffuseTexture(nullptr),
 		m_pLinearSampler(nullptr)
@@ -21,6 +23,9 @@ namespace RenderDog
 
 	StaticMesh::~StaticMesh()
 	{
+		m_RawVertices.clear();
+		m_RawIndices.clear();
+
 		m_Vertices.clear();
 		m_Indices.clear();
 	}
@@ -28,21 +33,23 @@ namespace RenderDog
 	StaticMesh::StaticMesh(const std::vector<LocalVertex>& vertices, const std::vector<uint32_t>& indices) :
 		m_Vertices(0),
 		m_Indices(0),
+		m_RawVertices(0),
+		m_RawIndices(0),
 		m_pRenderData(nullptr),
 		m_pDiffuseTexture(nullptr),
 		m_pLinearSampler(nullptr)
 	{
-		m_Vertices.reserve(vertices.size());
-		m_Indices.reserve(indices.size());
+		m_RawVertices.reserve(vertices.size());
+		m_RawIndices.reserve(indices.size());
 
 		for (uint32_t i = 0; i < vertices.size(); ++i)
 		{
-			m_Vertices.push_back(vertices[i]);
+			m_RawVertices.push_back(vertices[i]);
 		}
 
 		for (uint32_t i = 0; i < indices.size(); ++i)
 		{
-			m_Indices.push_back(indices[i]);
+			m_RawIndices.push_back(indices[i]);
 		}
 	}
 
@@ -170,11 +177,11 @@ namespace RenderDog
 	{
 		//1. 按索引拆分顶点
 		std::vector<LocalVertex> tempVertices;
-		tempVertices.reserve(m_Indices.size());
+		tempVertices.reserve(m_RawIndices.size());
 
-		for (uint32_t i = 0; i < m_Indices.size(); ++i)
+		for (uint32_t i = 0; i < m_RawIndices.size(); ++i)
 		{
-			tempVertices.push_back(m_Vertices[m_Indices[i]]);
+			tempVertices.push_back(m_RawVertices[m_RawIndices[i]]);
 		}
 
 		//2. 按三角形计算TBN
@@ -244,7 +251,7 @@ namespace RenderDog
 		}
 
 		//3. 合并相同的顶点
-		m_Vertices.reserve(m_Vertices.size());
+		m_Vertices.reserve(m_RawVertices.size());
 		m_Indices.reserve(tempVertices.size());
 
 		if (tempVertices.size() < 3)

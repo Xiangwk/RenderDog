@@ -60,13 +60,14 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 		return false;
 	}
 
-	//GeometryGenerator::LocalMeshData boxMeshData;
-	//g_pGeometryGenerator->GenerateBox(1, 1, 1, boxMeshData);
+	GeometryGenerator::LocalMeshData boxMeshData;
+	g_pGeometryGenerator->GenerateBox(1, 1, 1, boxMeshData);
 
 	m_pModel = new RenderDog::StaticModel();
 	//m_pModel->LoadFromData(boxMeshData.vertices, boxMeshData.indices);
 	m_pModel->LoadFromFile("Models/generator/generator_small.obj");
-	m_pModel->LoadTextureFromFile(L"EngineAsset/Textures/awesomeface.dds");
+	//m_pModel->LoadTextureFromFile(L"EngineAsset/Textures/Brick_norm.dds");
+	m_pModel->LoadTextureFromFile(L"Textures/PolybumpTangent_DDN.tga");
 	m_pModel->SetPosGesture(RenderDog::Vector3(0.0f, -25.0f, 0.0f), RenderDog::Vector3(90.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
 
 	m_pModel->RegisterToScene(m_pScene);
@@ -74,7 +75,7 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 	RenderDog::LightDesc lightDesc = {};
 	lightDesc.type = RenderDog::LightType::RD_LIGHT_TYPE_DIRECTIONAL;
 	lightDesc.color = RenderDog::Vector3(1.0f, 1.0f, 1.0f);
-	lightDesc.eulerDir = RenderDog::Vector3(0.0f, 0.0f, 0.0f);
+	lightDesc.eulerDir = RenderDog::Vector3(45.0f, 45.0f, 0.0f);
 	lightDesc.luminance = 1.0f;
 	m_pMainLight = RenderDog::g_pILightManager->CreateLight(lightDesc);
 

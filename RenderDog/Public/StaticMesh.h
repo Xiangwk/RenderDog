@@ -56,13 +56,16 @@ namespace RenderDog
 		void CalculateTangents();
 
 	private:
-		std::vector<LocalVertex>	m_Vertices;
-		std::vector<uint32_t>		m_Indices;
+		std::vector<LocalVertex>		m_RawVertices;
+		std::vector<uint32_t>			m_RawIndices;
 
-		StaticMeshRenderData*		m_pRenderData;
+		std::vector<LocalVertex>		m_Vertices;
+		std::vector<uint32_t>			m_Indices;
 
-		ITexture2D*					m_pDiffuseTexture;
-		ISamplerState*				m_pLinearSampler;
+		StaticMeshRenderData*			m_pRenderData;
+
+		ITexture2D*						m_pDiffuseTexture;
+		ISamplerState*					m_pLinearSampler;
 	};
 
 }// namespace RenderDog

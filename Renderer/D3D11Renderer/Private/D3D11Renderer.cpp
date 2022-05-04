@@ -124,7 +124,7 @@ namespace RenderDog
 		{
 			return;
 		}
-
+		
 		if (!renderParam.pVB || !renderParam.pIB)
 		{
 			return;
@@ -132,7 +132,7 @@ namespace RenderDog
 
 		ID3D11Buffer* pVB = (ID3D11Buffer*)(renderParam.pVB->GetVertexBuffer());
 		ID3D11Buffer* pIB = (ID3D11Buffer*)(renderParam.pIB->GetIndexBuffer());
-
+		
 		uint32_t indexNum = renderParam.pIB->GetIndexNum();
 
 		uint32_t stride = renderParam.pVB->GetStride();
@@ -147,7 +147,7 @@ namespace RenderDog
 
 		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetConstantBuffer());
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(1, 1, &pPerObjCB);
-
+		
 		renderParam.pPS->SetToContext();
 
 		ID3D11Buffer* pLightingCB = (ID3D11Buffer*)(m_LightingCB->GetConstantBuffer());

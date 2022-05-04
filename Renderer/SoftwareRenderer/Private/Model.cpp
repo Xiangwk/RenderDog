@@ -43,6 +43,7 @@ namespace RenderDog
 		for (uint32_t i = 0; i < pAssimpNode->mNumMeshes; ++i)
 		{
 			aiMesh* pMesh = pAssimpScene->mMeshes[pAssimpNode->mMeshes[i]];
+
 			m_Meshes.push_back(ProcessMesh(pMesh, pAssimpScene));
 		}
 
@@ -59,7 +60,6 @@ namespace RenderDog
 
 		for (unsigned int i = 0; i < pAssimpMesh->mNumVertices; ++i)
 		{
-
 			Vector3 position = Vector3(pAssimpMesh->mVertices[i].x, pAssimpMesh->mVertices[i].y, pAssimpMesh->mVertices[i].z);
 			Vector3 normal = Vector3(pAssimpMesh->mNormals[i].x, pAssimpMesh->mNormals[i].y, pAssimpMesh->mNormals[i].z);
 			Vector2 texCoord = Vector2(pAssimpMesh->mTextureCoords[0][i].x, pAssimpMesh->mTextureCoords[0][i].y);

@@ -70,16 +70,20 @@ namespace RenderDog
 		DirectX::ScratchImage DDSImage = DirectX::ScratchImage();
 
 		HRESULT hr = 0;
-		hr = DirectX::GetMetadataFromDDSFile(filePath.c_str(), 0, MetaData);
+		//hr = DirectX::GetMetadataFromDDSFile(filePath.c_str(), 0, MetaData);
+		hr = DirectX::GetMetadataFromTGAFile(filePath.c_str(), MetaData);
 		if (hr != S_OK)
 		{
 			return false;
 		}
-		hr = DirectX::LoadFromDDSFile(filePath.c_str(), 0, &MetaData, DDSImage);
+
+		//hr = DirectX::LoadFromDDSFile(filePath.c_str(), 0, &MetaData, DDSImage);
+		hr = DirectX::LoadFromTGAFile(filePath.c_str(), &MetaData, DDSImage);
 		if (hr != S_OK)
 		{
 			return false;
 		}
+
 		hr = DirectX::CreateShaderResourceView(g_pD3D11Device, DDSImage.GetImages(), MetaData.mipLevels, MetaData, &m_pSRV);
 		if (hr != S_OK)
 		{
