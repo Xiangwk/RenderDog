@@ -336,8 +336,8 @@ namespace RenderDog
 		{
 			ILight* pMainLight = m_pSceneView->GetLight(0);
 			DirectionalLightData dirLightData = {};
-			dirLightData.direction = pMainLight->GetDirection();
 			dirLightData.color = Vector4(pMainLight->GetColor(), 1.0f);
+			dirLightData.direction = pMainLight->GetDirection();
 			dirLightData.luminance = pMainLight->GetLuminance();
 
 			m_pLightingConstantBuffer->Update(&dirLightData, sizeof(dirLightData));

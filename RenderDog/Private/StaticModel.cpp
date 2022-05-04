@@ -60,6 +60,12 @@ namespace RenderDog
 
 		CalculateMeshTangents();
 
+		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
+		{
+			StaticMesh& mesh = m_Meshes[i];
+			mesh.InitRenderData();
+		}
+
 		return true;
 	}
 
@@ -98,7 +104,6 @@ namespace RenderDog
 			aiMesh* pMesh = pAssimpScene->mMeshes[pAssimpNode->mMeshes[i]];
 
 			StaticMesh mesh = ProcessMesh(pMesh, pAssimpScene);
-			mesh.InitRenderData();
 			m_Meshes.push_back(mesh);
 		}
 

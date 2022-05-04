@@ -60,8 +60,8 @@ namespace RenderDog
 	private:
 		struct MainLight
 		{
+			Vector4	color;
 			Vector3	direction;	//从光源发射光线的方向
-			Vector3	color;
 			float	luminance;
 
 			MainLight() :
@@ -82,7 +82,7 @@ namespace RenderDog
 		virtual void	AddRef() override {}
 		virtual void	Release() override;
 
-		void			SetMainLight(const Vector3& direction, const Vector3& color, float luma);
+		void			SetMainLight(const Vector4& color, const Vector3& direction, float luma);
 		void			SetSamplerState(uint32_t startSlot, SamplerState* pSamplerState);
 
 		Vector4			PSMain(const VSOutputVertex& VSOutput, const ShaderResourceTexture* pSRTexture) const;
@@ -106,10 +106,10 @@ namespace RenderDog
 		delete this; 
 	}
 
-	void PixelShader::SetMainLight(const Vector3& direction, const Vector3& color, float luma)
+	void PixelShader::SetMainLight(const Vector4& color, const Vector3& direction, float luma)
 	{
-		m_pMainLight->direction = direction;
 		m_pMainLight->color = color;
+		m_pMainLight->direction = direction;
 		m_pMainLight->luminance = luma;
 	}
 
@@ -1093,11 +1093,11 @@ namespace RenderDog
 		m_pPixelShaderCB = dynamic_cast<ConstantBuffer*>(*ppConstantBuffer);
 
 		float* pData = static_cast<float*>(m_pPixelShaderCB->GetData());
-		Vector3 mainLightDir(pData[0], pData[1], pData[2]);
-		Vector3 mainLightColor(pData[3], pData[4], pData[5]);
-		float mainLightLuma = pData[6];
+		Vector4 mainLightColor(pData[0], pData[1], pData[2], pData[3]);
+		Vector3 mainLightDir(pData[4], pData[5], pData[6]);
+		float mainLightLuma = pData[7];
 
-		m_pPS->SetMainLight(mainLightDir, mainLightColor, mainLightLuma);
+		m_pPS->SetMainLight(mainLightColor, mainLightDir, mainLightLuma);
 	}
 
 	void DeviceContext::PSSetShaderResource(ISRShaderResourceView* const* ppShaderResourceView)
@@ -2478,7 +2478,9 @@ namespace RenderDog
 
 		diffuseFactor = Clamp(diffuseFactor, 0.0f, 1.0f);
 
-		return diffuseFactor * light->color * light->luminance * faceColor;
+		Vector3 lightColor = Vector3(light->color.x, light->color.y, light->color.z);
+
+		return diffuseFactor * lightColor * light->luminance * faceColor;
 	}
 #pragma endregion Shader
 }
