@@ -2465,6 +2465,10 @@ namespace RenderDog
 		Vector3 AmbientColor = Vector3(0.05f, 0.05f, 0.05f);
 		Vector3 finalColor = diffuseColor + AmbientColor;
 
+		finalColor.x = Clamp(finalColor.x, 0.0f, 1.0f);
+		finalColor.y = Clamp(finalColor.y, 0.0f, 1.0f);
+		finalColor.z = Clamp(finalColor.z, 0.0f, 1.0f);
+
 		return Vector4(finalColor, 1.0f);
 	}
 
