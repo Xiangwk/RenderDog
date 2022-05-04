@@ -67,24 +67,32 @@ namespace RenderDog
 	bool D3D11Texture2D::LoadFromFile(const std::wstring& filePath)
 	{
 		DirectX::TexMetadata MetaData = DirectX::TexMetadata();
-		DirectX::ScratchImage DDSImage = DirectX::ScratchImage();
+		DirectX::ScratchImage Image = DirectX::ScratchImage();
 
 		HRESULT hr = 0;
-		//hr = DirectX::GetMetadataFromDDSFile(filePath.c_str(), 0, MetaData);
-		hr = DirectX::GetMetadataFromTGAFile(filePath.c_str(), MetaData);
+		uint32_t pos = (uint32_t)filePath.find('.');
+		std::wstring fileExt = filePath.substr(pos);
+		if (fileExt == L".dds")
+		{
+			hr = DirectX::GetMetadataFromDDSFile(filePath.c_str(), 0, MetaData);
+			hr = DirectX::LoadFromDDSFile(filePath.c_str(), 0, &MetaData, Image);
+		}
+		else if (fileExt == L".tga")
+		{
+			hr = DirectX::GetMetadataFromTGAFile(filePath.c_str(), MetaData);
+			hr = DirectX::LoadFromTGAFile(filePath.c_str(), &MetaData, Image);
+		}
+		else
+		{
+			return false;
+		}
+		
 		if (hr != S_OK)
 		{
 			return false;
 		}
 
-		//hr = DirectX::LoadFromDDSFile(filePath.c_str(), 0, &MetaData, DDSImage);
-		hr = DirectX::LoadFromTGAFile(filePath.c_str(), &MetaData, DDSImage);
-		if (hr != S_OK)
-		{
-			return false;
-		}
-
-		hr = DirectX::CreateShaderResourceView(g_pD3D11Device, DDSImage.GetImages(), MetaData.mipLevels, MetaData, &m_pSRV);
+		hr = DirectX::CreateShaderResourceView(g_pD3D11Device, Image.GetImages(), MetaData.mipLevels, MetaData, &m_pSRV);
 		if (hr != S_OK)
 		{
 			return false;
