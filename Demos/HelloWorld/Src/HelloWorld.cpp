@@ -6,6 +6,7 @@
 ///////////////////////////////////
 
 #include "HelloWorld.h"
+#include "Window.h"
 
 #include <sstream>
 
@@ -279,7 +280,7 @@ void DemoApp::CalculateFrameStats()
 		outs.precision(6);
 		outs << "FPS: " << framePerSecond << "    "
 			<< "Frame Time: " << millisecondsPerFrame << " (ms)";
-		SetWindowTextA(0, outs.str().c_str());
+		SetWindowTextA(RenderDog::g_pIWindow->GetHandle(), outs.str().c_str());
 
 		frameCnt = 0;
 		timeElapsed += 1.0;

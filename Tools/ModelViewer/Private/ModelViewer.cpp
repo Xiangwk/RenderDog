@@ -8,6 +8,8 @@
 #include "Vector.h"
 #include "GeometryGenerator.h"
 
+#include <sstream>
+
 ModelViewer g_ModelViewer;
 ModelViewer* g_pModelViewer = &g_ModelViewer;
 
@@ -18,7 +20,8 @@ ModelViewer::ModelViewer() :
 	m_pScene(nullptr),
 	m_pModel(nullptr),
 	m_pFPSCamera(nullptr),
-	m_pMainLight(nullptr)
+	m_pMainLight(nullptr),
+	m_pGameTimer(nullptr)
 {
 	memset(m_Keys, 0, sizeof(int) * 512);
 }
@@ -83,6 +86,9 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 
 	RenderDog::g_pIFramework->RegisterScene(m_pScene);
 
+	m_pGameTimer = new RenderDog::GameTimer();
+	m_pGameTimer->Reset();
+
 	return true;
 }
 
@@ -109,6 +115,12 @@ void ModelViewer::Release()
 
 	m_pScene->Release();
 
+	if (m_pGameTimer)
+	{
+		delete m_pGameTimer;
+		m_pGameTimer = nullptr;
+	}
+
 	m_pRenderDog->Release();
 
 	RenderDog::DestoryRenderDog(&m_pRenderDog);
@@ -126,6 +138,9 @@ int ModelViewer::Run()
 		}
 		else
 		{
+			m_pGameTimer->Tick();
+			CalculateFrameStats();
+
 			Update();
 			RenderDog::g_pIFramework->Frame();
 		}
@@ -219,7 +234,7 @@ LRESULT ModelViewer::MessageProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
 
 void ModelViewer::Update()
 {
-	float cameraSpeed = 0.01f;
+	float cameraSpeed = 0.05f;
 	//W
 	if (m_Keys[0x57])
 	{
@@ -249,5 +264,28 @@ void ModelViewer::Update()
 	if (m_Keys[0x45])
 	{
 		m_pFPSCamera->Move(-cameraSpeed, RenderDog::FPSCamera::MoveMode::UpAndDown);
+	}
+}
+
+void ModelViewer::CalculateFrameStats()
+{
+	static int frameCnt = 0;
+	static double timeElapsed = 0.0;
+
+	++frameCnt;
+	//当统计时间大于1s时，统计framecnt以计算fps
+	if ((m_pGameTimer->GetTotalTime() - timeElapsed) >= 1.0f)
+	{
+		float framePerSecond = static_cast<float>(frameCnt);
+		float millisecondsPerFrame = 1000.0f / framePerSecond;
+
+		std::ostringstream outs;
+		outs.precision(6);
+		outs << "FPS: " << framePerSecond << "    "
+			<< "Frame Time: " << millisecondsPerFrame << " (ms)";
+		SetWindowTextA(RenderDog::g_pIWindow->GetHandle(), outs.str().c_str());
+
+		frameCnt = 0;
+		timeElapsed += 1.0;
 	}
 }
