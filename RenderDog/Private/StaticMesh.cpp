@@ -85,7 +85,8 @@ namespace RenderDog
 		}
 
 		SamplerDesc samplerDesc = {};
-		samplerDesc.filterMode = SamplerFilterMode::RD_SAMPLER_FILTER_LINEAR;
+		//samplerDesc.filterMode = SamplerFilterMode::RD_SAMPLER_FILTER_LINEAR;
+		samplerDesc.filterMode = SamplerFilterMode::RD_SAMPLER_FILTER_POINT;
 		samplerDesc.addressMode = SamplerAddressMode::RD_SAMPLER_ADDRESS_WRAP;
 		m_pLinearSampler = g_pISamplerStateManager->CreateSamplerState();
 		if (!m_pLinearSampler->Init(samplerDesc))
