@@ -39,7 +39,8 @@ namespace RenderDog
 		Vector4				svPostion;
 		Vector4				color;
 		Vector3				normal;
-		Vector4				tangent;
+		Vector3				tangent;
+		Vector3				biTangent;
 		Vector2				texcoord;
 	};
 
@@ -1547,6 +1548,7 @@ namespace RenderDog
 		vNew.color		= newW * ((vStart.color / vStart.svPostion.w) * (1.0f - lerpFactor) + (vEnd.color / vEnd.svPostion.w) * lerpFactor);
 		vNew.normal		= newW * ((vStart.normal / vStart.svPostion.w) * (1.0f - lerpFactor) + (vEnd.normal / vEnd.svPostion.w) * lerpFactor);
 		vNew.tangent	= newW * ((vStart.tangent / vStart.svPostion.w) * (1.0f - lerpFactor) + (vEnd.tangent / vEnd.svPostion.w) * lerpFactor);
+		vNew.biTangent	= newW * ((vStart.biTangent / vStart.svPostion.w) * (1.0f - lerpFactor) + (vEnd.biTangent / vEnd.svPostion.w) * lerpFactor);
 		vNew.texcoord	= newW * ((vStart.texcoord / vStart.svPostion.w) * (1.0f - lerpFactor) + (vEnd.texcoord / vEnd.svPostion.w) * lerpFactor);
 	}
 
@@ -1561,6 +1563,7 @@ namespace RenderDog
 		vNew.color		= vStart.color * (1.0f - lerpFactor) + vEnd.color * lerpFactor;
 		vNew.normal		= vStart.normal * (1.0f - lerpFactor) + vEnd.normal * lerpFactor;
 		vNew.tangent	= vStart.tangent * (1.0f - lerpFactor) + vEnd.tangent * lerpFactor;
+		vNew.biTangent	= vStart.biTangent * (1.0f - lerpFactor) + vEnd.biTangent * lerpFactor;
 		vNew.texcoord	= vStart.texcoord * (1.0f - lerpFactor) + vEnd.texcoord * lerpFactor;
 	}
 
@@ -2418,7 +2421,8 @@ namespace RenderDog
 		vOutput.tangent.x = vTangent.x;
 		vOutput.tangent.y = vTangent.y;
 		vOutput.tangent.z = vTangent.z;
-		vOutput.tangent.w = inVertex.tangent.w;
+		
+		vOutput.biTangent = CrossProduct(vOutput.normal, vOutput.tangent) * inVertex.tangent.w;
 
 		vOutput.texcoord = inVertex.texcoord;
 
@@ -2441,7 +2445,7 @@ namespace RenderDog
 		Vector3 tangentNormal = Normalize(Vector3(tangentNormalX, tangentNormalY, tangentNormalZ));
 
 		Vector3 tangent = Normalize(Vector3(psInput.tangent.x, psInput.tangent.y, psInput.tangent.z));
-		Vector3 biTangent = Normalize(CrossProduct(psInput.normal, tangent) * psInput.tangent.w);
+		Vector3 biTangent = Normalize(psInput.biTangent);
 		Vector3 vertexNormal = Normalize(psInput.normal);
 
 		Vector4 T = Vector4(tangent, 0.0f);
