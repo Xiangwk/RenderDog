@@ -33,7 +33,7 @@ float4 Main(VSOutput vsOutput) : SV_Target
 
 	float2 TangentNormalXY = NormalTexture.Sample(LinearSampler, vsOutput.TexCoord).xy;
 	TangentNormalXY = TangentNormalXY * 2.0f - 1.0f;
-	float TangentNormalZ = sqrt(1.0f - TangentNormalXY.x * TangentNormalXY.x + TangentNormalXY.y * TangentNormalXY.y);
+	float TangentNormalZ = sqrt(1.0f - TangentNormalXY.x * TangentNormalXY.x - TangentNormalXY.y * TangentNormalXY.y);
 	float3 TangentNormal = normalize(float3(TangentNormalXY, TangentNormalZ));
 
 	float3x3 TBN = float3x3(vsOutput.Tangent, vsOutput.BiTangent, vsOutput.Normal);
@@ -43,5 +43,9 @@ float4 Main(VSOutput vsOutput) : SV_Target
 	float NoL = saturate(dot(WorldNormal, -lightDirection));
 	float3 diffuse = ComFunc_Phong_Diffuse(lightColor.rgb, luminance, BaseColor, NoL);
 
-	return float4(diffuse, 1.0f);
+	float3 ambient = float3(0.05f, 0.05f, 0.05f);
+
+	float3 finalColor = saturate(diffuse + ambient);
+
+	return float4(finalColor, 1.0f);
 }

@@ -2437,10 +2437,10 @@ namespace RenderDog
 
 		float tangentNormalX = textureColor.x;
 		float tangentNormalY = textureColor.y;
-		float tangentNormalZ = textureColor.z;
 		tangentNormalX = tangentNormalX * 2.0f - 1.0f;
 		tangentNormalY = tangentNormalY * 2.0f - 1.0f;
-		tangentNormalZ = tangentNormalZ * 2.0f - 1.0f;
+
+		float tangentNormalZ = std::sqrt(1.0f - tangentNormalX * tangentNormalX - tangentNormalY * tangentNormalY);
 
 		Vector3 tangentNormal = Normalize(Vector3(tangentNormalX, tangentNormalY, tangentNormalZ));
 
@@ -2471,7 +2471,6 @@ namespace RenderDog
 	Vector3 PixelShader::CalcPhongLighing(const MainLight* light, const Vector3& normal, const Vector3& faceColor) const
 	{
 		Vector3 worldLightDir = -Normalize(light->direction);
-		worldLightDir = Normalize(worldLightDir);
 		Vector3 worldNormal = Normalize(normal);
 
 		float diffuseFactor = DotProduct(worldLightDir, worldNormal);

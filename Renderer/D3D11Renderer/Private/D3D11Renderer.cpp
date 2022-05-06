@@ -425,7 +425,7 @@ namespace RenderDog
 
 		m_pSwapChain->Present(0, 0);
 	}
-
+	
 	bool D3D11Renderer::OnResize(uint32_t width, uint32_t height)
 	{
 		if (!g_pD3D11Device)
