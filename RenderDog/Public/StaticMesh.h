@@ -41,19 +41,14 @@ namespace RenderDog
 
 		StaticMesh(const std::vector<LocalVertex>& vertices, const std::vector<uint32_t>& indices);
 
-		virtual void Render(IPrimitiveRenderer* pPrimitiveRenderer) override;
+		virtual void					Render(IPrimitiveRenderer* pPrimitiveRenderer) override;
 
-		void LoadFromData(const std::vector<LocalVertex>& vertices, 
-						  const std::vector<uint32_t>& indices);
-
-		bool LoadTextureFromFile(const std::wstring& diffuseTexturePath);
-
-		void InitRenderData();
-		void ReleaseRenderData();
-
-		void SetPosGesture(const Vector3& pos, const Vector3& euler, const Vector3& scale);
-
-		void CalculateTangents();
+		void							LoadFromData(const std::vector<LocalVertex>& vertices, const std::vector<uint32_t>& indices);
+		bool							LoadTextureFromFile(const std::wstring& diffuseTexturePath);
+		void							InitRenderData();
+		void							ReleaseRenderData();
+		void							SetPosGesture(const Vector3& pos, const Vector3& euler, const Vector3& scale);
+		void							CalculateTangents();
 
 	private:
 		std::vector<LocalVertex>		m_RawVertices;

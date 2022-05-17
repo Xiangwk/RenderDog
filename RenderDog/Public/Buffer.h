@@ -24,12 +24,12 @@ namespace RenderDog
 
 	struct BufferDesc
 	{
-		BufferBind	bufferBind;
-		uint32_t	byteWidth;
-		uint32_t	stride;
-		uint32_t	offset;
-		void*		pInitData;
-		bool		isDynamic;
+		BufferBind			bufferBind;
+		uint32_t			byteWidth;
+		uint32_t			stride;
+		uint32_t			offset;
+		void*				pInitData;
+		bool				isDynamic;
 
 		BufferDesc() :
 			bufferBind(BufferBind::NONE),
@@ -71,7 +71,6 @@ namespace RenderDog
 
 	public:
 		virtual void*		GetIndexBuffer() = 0;
-
 		virtual uint32_t	GetIndexNum() const = 0;
 	};
 

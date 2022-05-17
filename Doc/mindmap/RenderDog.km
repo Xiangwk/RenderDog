@@ -12,8 +12,8 @@
                     "created": 1620228324722,
                     "text": "SoftwareRenderer",
                     "layout_mind_offset": {
-                        "x": 225.08332997850255,
-                        "y": -233.33332907822415
+                        "x": 192.08332997850255,
+                        "y": -142.33332907822415
                     },
                     "layout": null
                 },
@@ -537,8 +537,8 @@
                     "created": 1620228338491,
                     "text": "DX11Renderer",
                     "layout_mind_offset": {
-                        "x": 263.24999633058917,
-                        "y": -679.7499937601384
+                        "x": 184.24999633058917,
+                        "y": -636.7499937601384
                     },
                     "layout": null
                 },
@@ -549,8 +549,8 @@
                             "created": 1634742361117,
                             "text": "根据DirectXSample的例子学习基本接口",
                             "layout_right_offset": {
-                                "x": 126.24999856576324,
-                                "y": -5.749998677522342
+                                "x": 134.24999856576324,
+                                "y": -56.74999867752234
                             }
                         },
                         "children": []
@@ -561,8 +561,8 @@
                             "created": 1634743477516,
                             "text": "将DX11的接口封装为一个渲染器",
                             "layout_right_offset": {
-                                "x": 149.74999860301614,
-                                "y": -20.24999923631549
+                                "x": 144.74999860301614,
+                                "y": -32.24999923631549
                             }
                         },
                         "children": [
@@ -596,7 +596,7 @@
                                             "text": "Release",
                                             "layout_right_offset": {
                                                 "x": 37,
-                                                "y": -43
+                                                "y": -28
                                             }
                                         },
                                         "children": []
@@ -607,8 +607,8 @@
                                             "created": 1641129383420,
                                             "text": "Render",
                                             "layout_right_offset": {
-                                                "x": 39,
-                                                "y": -33
+                                                "x": 42,
+                                                "y": -9
                                             }
                                         },
                                         "children": []
@@ -635,8 +635,8 @@
                             "created": 1642911929568,
                             "text": "增加一个资源管理器，用于统一创建渲染时需要的各种资源",
                             "layout_right_offset": {
-                                "x": 147,
-                                "y": 39
+                                "x": 135,
+                                "y": 31
                             }
                         },
                         "children": []
@@ -649,8 +649,8 @@
                     "created": 1620228349978,
                     "text": "DX12Renderer",
                     "layout_mind_offset": {
-                        "x": 293,
-                        "y": -496
+                        "x": 177,
+                        "y": -401
                     },
                     "layout": null
                 },
@@ -662,8 +662,8 @@
                     "created": 1620228369751,
                     "text": "VulkanRenderer",
                     "layout_mind_offset": {
-                        "x": 298.74999979510903,
-                        "y": -452.74999934807425
+                        "x": 689.749999795109,
+                        "y": 757.2500006519258
                     },
                     "layout": null
                 },
@@ -671,49 +671,12 @@
             },
             {
                 "data": {
-                    "id": "cgv88n2hfi00",
-                    "created": 1641130585813,
-                    "text": "Timer",
-                    "layout_mind_offset": {
-                        "x": 772,
-                        "y": 627
-                    }
-                },
-                "children": []
-            },
-            {
-                "data": {
-                    "id": "cgv89i4dxwg0",
-                    "created": 1641130653409,
-                    "text": "Profiler",
-                    "layout_mind_offset": {
-                        "x": 876,
-                        "y": 711
-                    }
-                },
-                "children": [
-                    {
-                        "data": {
-                            "id": "cgv8a9c7t5s0",
-                            "created": 1641130712655,
-                            "text": "显示帧率",
-                            "layout_right_offset": {
-                                "x": 63,
-                                "y": -15
-                            }
-                        },
-                        "children": []
-                    }
-                ]
-            },
-            {
-                "data": {
                     "id": "cgv9vu6eqw80",
                     "created": 1641135224774,
                     "text": "RenderDog",
                     "layout_mind_offset": {
-                        "x": 791,
-                        "y": 729
+                        "x": 813,
+                        "y": 426
                     }
                 },
                 "children": [
@@ -853,8 +816,8 @@
                             "created": 1641135345642,
                             "text": "Window",
                             "layout_right_offset": {
-                                "x": 513.9999988824129,
-                                "y": 473.9999952316284
+                                "x": 519.9999988824129,
+                                "y": 472.9999952316284
                             }
                         },
                         "children": [
@@ -864,8 +827,8 @@
                                     "created": 1641195217019,
                                     "text": "Init",
                                     "layout_right_offset": {
-                                        "x": 340,
-                                        "y": 13
+                                        "x": 365,
+                                        "y": 20
                                     }
                                 },
                                 "children": []
@@ -876,8 +839,8 @@
                                     "created": 1641195330125,
                                     "text": "Release",
                                     "layout_right_offset": {
-                                        "x": 356,
-                                        "y": 11
+                                        "x": 381,
+                                        "y": 18
                                     }
                                 },
                                 "children": []
@@ -888,8 +851,8 @@
                                     "created": 1641195339717,
                                     "text": "GetHandle",
                                     "layout_right_offset": {
-                                        "x": 365,
-                                        "y": 3
+                                        "x": 390,
+                                        "y": 10
                                     }
                                 },
                                 "children": []
@@ -900,8 +863,8 @@
                                     "created": 1641201932458,
                                     "text": "GetWidth",
                                     "layout_right_offset": {
-                                        "x": 364,
-                                        "y": -6
+                                        "x": 389,
+                                        "y": 1
                                     }
                                 },
                                 "children": []
@@ -912,8 +875,8 @@
                                     "created": 1641201939819,
                                     "text": "GetHeight",
                                     "layout_right_offset": {
-                                        "x": 369,
-                                        "y": -13
+                                        "x": 394,
+                                        "y": -6
                                     }
                                 },
                                 "children": []
@@ -926,8 +889,8 @@
                             "created": 1641135425023,
                             "text": "Math",
                             "layout_right_offset": {
-                                "x": 493.499999962747,
-                                "y": -371.9999985843896
+                                "x": 521.499999962747,
+                                "y": -394.9999985843896
                             }
                         },
                         "children": [
@@ -965,8 +928,8 @@
                                     "text": "Matrix",
                                     "progress": 6,
                                     "layout_right_offset": {
-                                        "x": 386.2499942444265,
-                                        "y": -36.24999945983279
+                                        "x": 360.2499942444265,
+                                        "y": -23.249999459832793
                                     }
                                 },
                                 "children": [
@@ -993,8 +956,8 @@
                                     "text": "Quaternion",
                                     "progress": 1,
                                     "layout_right_offset": {
-                                        "x": 393.74999413266755,
-                                        "y": -31.2499995343386
+                                        "x": 381.74999413266755,
+                                        "y": -24.2499995343386
                                     }
                                 },
                                 "children": []
@@ -1007,8 +970,8 @@
                                     "progress": null,
                                     "note": "随用随加；",
                                     "layout_right_offset": {
-                                        "x": 389.9999941885469,
-                                        "y": -21.249999683350325
+                                        "x": 361,
+                                        "y": -17
                                     }
                                 },
                                 "children": []
@@ -1022,8 +985,8 @@
                                     "priority": null,
                                     "progress": 9,
                                     "layout_right_offset": {
-                                        "x": 417.499993778765,
-                                        "y": -27.49999959021818
+                                        "x": 413,
+                                        "y": -1
                                     }
                                 },
                                 "children": []
@@ -1036,8 +999,8 @@
                             "created": 1641135477535,
                             "text": "Camera",
                             "layout_right_offset": {
-                                "x": 536.4999990686774,
-                                "y": 122.99999940395378
+                                "x": 520.4999990686774,
+                                "y": 125.99999940395378
                             }
                         },
                         "children": []
@@ -1048,8 +1011,8 @@
                             "created": 1641193284785,
                             "text": "Primitive",
                             "layout_right_offset": {
-                                "x": 513,
-                                "y": 431
+                                "x": 527,
+                                "y": 455
                             }
                         },
                         "children": [
@@ -1086,7 +1049,7 @@
                             "created": 1641481719830,
                             "text": "Scene",
                             "layout_right_offset": {
-                                "x": 519,
+                                "x": 517,
                                 "y": 127
                             }
                         },
@@ -1163,8 +1126,8 @@
                             "created": 1643382280934,
                             "text": "Material",
                             "layout_right_offset": {
-                                "x": 512,
-                                "y": 418
+                                "x": 537,
+                                "y": 459
                             },
                             "priority": 1
                         },
@@ -1212,8 +1175,8 @@
                                     "created": 1643386013975,
                                     "text": "Texture",
                                     "layout_right_offset": {
-                                        "x": 241,
-                                        "y": -34
+                                        "x": 322,
+                                        "y": -29
                                     }
                                 },
                                 "children": []
@@ -1224,13 +1187,25 @@
                                     "created": 1643386019598,
                                     "text": "Buffer",
                                     "layout_right_offset": {
-                                        "x": 239,
-                                        "y": -1
+                                        "x": 319,
+                                        "y": 6
                                     }
                                 },
                                 "children": []
                             }
                         ]
+                    },
+                    {
+                        "data": {
+                            "id": "ck22gldfpd40",
+                            "created": 1652793677393,
+                            "text": "GameTimer",
+                            "layout_right_offset": {
+                                "x": 529,
+                                "y": 437
+                            }
+                        },
+                        "children": []
                     }
                 ]
             }

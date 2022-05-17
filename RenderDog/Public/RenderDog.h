@@ -15,8 +15,8 @@ namespace RenderDog
 
 	struct InitDesc
 	{
-		WindowDesc	wndDesc;
-		FPSCamera*	pMainCamera;
+		WindowDesc		wndDesc;
+		FPSCamera*		pMainCamera;
 	};
 
 	class IRenderDog
@@ -24,8 +24,8 @@ namespace RenderDog
 	public:
 		virtual ~IRenderDog() = default;
 
-		virtual bool Init(const InitDesc& desc) = 0;
-		virtual void Release() = 0;
+		virtual bool	Init(const InitDesc& desc) = 0;
+		virtual void	Release() = 0;
 	};
 
 	bool CreateRenderDog(IRenderDog** ppRenderDog);

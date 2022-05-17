@@ -31,12 +31,12 @@ namespace RenderDog
 
 	struct TextureDesc
 	{
-		TextureBindFlag		bindFlag;
-		TextureFormat		format;
-		uint32_t			width;
-		uint32_t			height;
-		uint32_t			mipLevels;
-		bool				isDynamic;
+		TextureBindFlag			bindFlag;
+		TextureFormat			format;
+		uint32_t				width;
+		uint32_t				height;
+		uint32_t				mipLevels;
+		bool					isDynamic;
 	};
 
 	class ITexture : public RefCntObject
@@ -45,7 +45,7 @@ namespace RenderDog
 		virtual ~ITexture() = default;
 
 	public:
-		virtual void Release() = 0;
+		virtual void			Release() = 0;
 	};
 
 	class ITexture2D : public ITexture
@@ -54,10 +54,10 @@ namespace RenderDog
 		virtual ~ITexture2D() = default;
 		
 	public:
-		virtual bool	LoadFromFile(const std::wstring& filePath) = 0;
+		virtual bool			LoadFromFile(const std::wstring& filePath) = 0;
 
-		virtual void*	GetShaderResourceView() = 0;
-		virtual void*	GetRenderTargetView() = 0;
+		virtual void*			GetShaderResourceView() = 0;
+		virtual void*			GetRenderTargetView() = 0;
 	};
 
 
@@ -69,8 +69,8 @@ namespace RenderDog
 	public:
 		virtual ~ITextureManager() = default;
 
-		virtual ITexture2D* CreateTexture2D(const TextureDesc& desc) = 0;
-		virtual void		ReleaseTexture(ITexture* pTexture) = 0;
+		virtual ITexture2D*		CreateTexture2D(const TextureDesc& desc) = 0;
+		virtual void			ReleaseTexture(ITexture* pTexture) = 0;
 	};
 
 	extern ITextureManager* g_pITextureManager;
@@ -94,8 +94,8 @@ namespace RenderDog
 
 	struct SamplerDesc
 	{
-		SamplerFilterMode	filterMode;
-		SamplerAddressMode	addressMode;
+		SamplerFilterMode		filterMode;
+		SamplerAddressMode		addressMode;
 	};
 
 	class ISamplerState
@@ -103,10 +103,10 @@ namespace RenderDog
 	public:
 		virtual ~ISamplerState() = default;
 
-		virtual bool Init(const SamplerDesc& desc) = 0;
-		virtual void Release() = 0;
+		virtual bool			Init(const SamplerDesc& desc) = 0;
+		virtual void			Release() = 0;
 
-		virtual void SetToPixelShader(uint32_t startSlot) = 0;
+		virtual void			SetToPixelShader(uint32_t startSlot) = 0;
 	};
 
 	//==================================================

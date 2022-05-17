@@ -53,7 +53,7 @@ namespace RenderDog
 	public:
 		virtual ~IPrimitive() = default;
 
-		virtual void Render(IPrimitiveRenderer* pPrimitiveRenderer) = 0;
+		virtual void				Render(IPrimitiveRenderer* pPrimitiveRenderer) = 0;
 	};
 
 }// namespace RenderDog
