@@ -161,22 +161,22 @@ namespace RenderDog
 	bool D3D11SamplerState::Init(const SamplerDesc& desc)
 	{
 		D3D11_SAMPLER_DESC samplerDesc = {};
-		if (desc.filterMode == SamplerFilterMode::RD_SAMPLER_FILTER_POINT)
+		if (desc.filterMode == SAMPLER_FILTER::POINT)
 		{
 			samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
 		}
-		else if (desc.filterMode == SamplerFilterMode::RD_SAMPLER_FILTER_LINEAR)
+		else if (desc.filterMode == SAMPLER_FILTER::LINEAR)
 		{
 			samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 		}
 
-		if (desc.addressMode == SamplerAddressMode::RD_SAMPLER_ADDRESS_WRAP)
+		if (desc.addressMode == SAMPLER_ADDRESS::WRAP)
 		{
 			samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 			samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 			samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 		}
-		else if (desc.addressMode == SamplerAddressMode::RD_SAMPLER_ADDRESS_CLAMP)
+		else if (desc.addressMode == SAMPLER_ADDRESS::CLAMP)
 		{
 			samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
 			samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;

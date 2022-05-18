@@ -220,20 +220,20 @@ namespace RenderDog
 		IBuffer* pBuffer = nullptr;
 		switch (desc.bufferBind)
 		{
-		case BufferBind::NONE:
+		case BUFFER_BIND::NONE:
 			break;
 
-		case BufferBind::VERTEX:
+		case BUFFER_BIND::VERTEX:
 			pBuffer = new SRVertexBuffer(desc);
 			pBuffer->AddRef();
 			break;
 
-		case BufferBind::INDEX:
+		case BUFFER_BIND::INDEX:
 			pBuffer = new SRIndexBuffer(desc);
 			pBuffer->AddRef();
 			break;
 
-		case BufferBind::CONSTANT:
+		case BUFFER_BIND::CONSTANT:
 			pBuffer = new SRConstantBuffer(desc);
 			pBuffer->AddRef();
 			break;

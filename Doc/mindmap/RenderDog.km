@@ -816,8 +816,8 @@
                             "created": 1641135345642,
                             "text": "Window",
                             "layout_right_offset": {
-                                "x": 519.9999988824129,
-                                "y": 472.9999952316284
+                                "x": 526.9999988824129,
+                                "y": 457.9999952316284
                             }
                         },
                         "children": [
@@ -1003,7 +1003,46 @@
                                 "y": 125.99999940395378
                             }
                         },
-                        "children": []
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "ck2vlf2ft4g0",
+                                    "created": 1652875867675,
+                                    "text": "WASD控制移动",
+                                    "layout_right_offset": {
+                                        "x": 681,
+                                        "y": -29
+                                    }
+                                },
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "ck2vmnghhp40",
+                                            "created": 1652875964303,
+                                            "text": "移动速度不受帧率影响",
+                                            "layout_right_offset": {
+                                                "x": 376,
+                                                "y": -31
+                                            }
+                                        },
+                                        "children": []
+                                    }
+                                ]
+                            },
+                            {
+                                "data": {
+                                    "id": "ck2vlnlaw6g0",
+                                    "created": 1652875886230,
+                                    "text": "鼠标左键控制镜头旋转",
+                                    "layout_right_offset": {
+                                        "x": 719,
+                                        "y": -26
+                                    },
+                                    "priority": 1
+                                },
+                                "children": []
+                            }
+                        ]
                     },
                     {
                         "data": {
@@ -1022,8 +1061,8 @@
                                     "created": 1643382743369,
                                     "text": "StaticModel",
                                     "layout_right_offset": {
-                                        "x": 300,
-                                        "y": 26
+                                        "x": 350,
+                                        "y": 38
                                     }
                                 },
                                 "children": [
@@ -1084,8 +1123,8 @@
                                             "created": 1641486086683,
                                             "text": "用户只能看到IScene",
                                             "layout_right_offset": {
-                                                "x": 620,
-                                                "y": -43
+                                                "x": 666,
+                                                "y": -27
                                             }
                                         },
                                         "children": [
@@ -1095,8 +1134,8 @@
                                                     "created": 1641486106736,
                                                     "text": "需要一个SceneManager来负责创建和释放Scene",
                                                     "layout_right_offset": {
-                                                        "x": 517,
-                                                        "y": -39
+                                                        "x": 529,
+                                                        "y": -31
                                                     }
                                                 },
                                                 "children": [
@@ -1107,7 +1146,7 @@
                                                             "text": "创建和释放",
                                                             "layout_right_offset": {
                                                                 "x": 484,
-                                                                "y": -31
+                                                                "y": -26
                                                             }
                                                         },
                                                         "children": []
@@ -1126,8 +1165,8 @@
                             "created": 1643382280934,
                             "text": "Material",
                             "layout_right_offset": {
-                                "x": 537,
-                                "y": 459
+                                "x": 550,
+                                "y": 427
                             },
                             "priority": 1
                         },
@@ -1138,8 +1177,8 @@
                                     "created": 1643382669191,
                                     "text": "MaterialInstance",
                                     "layout_right_offset": {
-                                        "x": 296,
-                                        "y": 61
+                                        "x": 365,
+                                        "y": 72
                                     }
                                 },
                                 "children": []
@@ -1150,8 +1189,8 @@
                                     "created": 1643382714952,
                                     "text": "Material",
                                     "layout_right_offset": {
-                                        "x": 264,
-                                        "y": -81
+                                        "x": 344,
+                                        "y": -59
                                     }
                                 },
                                 "children": []
@@ -1175,8 +1214,8 @@
                                     "created": 1643386013975,
                                     "text": "Texture",
                                     "layout_right_offset": {
-                                        "x": 322,
-                                        "y": -29
+                                        "x": 351,
+                                        "y": -12
                                     }
                                 },
                                 "children": []
@@ -1187,8 +1226,8 @@
                                     "created": 1643386019598,
                                     "text": "Buffer",
                                     "layout_right_offset": {
-                                        "x": 319,
-                                        "y": 6
+                                        "x": 346,
+                                        "y": 7
                                     }
                                 },
                                 "children": []
@@ -1201,11 +1240,49 @@
                             "created": 1652793677393,
                             "text": "GameTimer",
                             "layout_right_offset": {
-                                "x": 529,
-                                "y": 437
+                                "x": 557,
+                                "y": 433
                             }
                         },
                         "children": []
+                    },
+                    {
+                        "data": {
+                            "id": "ck2vm4zx2kw0",
+                            "created": 1652875924119,
+                            "text": "Light",
+                            "layout_right_offset": {
+                                "x": 505,
+                                "y": 522
+                            }
+                        },
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "ck2vma1sg800",
+                                    "created": 1652875935116,
+                                    "text": "方向光",
+                                    "layout_right_offset": {
+                                        "x": 313,
+                                        "y": -43
+                                    }
+                                },
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "ck2vmczoalc0",
+                                            "created": 1652875941519,
+                                            "text": "鼠标右键控制光源方向改变",
+                                            "layout_right_offset": {
+                                                "x": 382,
+                                                "y": -34
+                                            }
+                                        },
+                                        "children": []
+                                    }
+                                ]
+                            }
+                        ]
                     }
                 ]
             }

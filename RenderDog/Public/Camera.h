@@ -25,11 +25,11 @@ namespace RenderDog
 	class FPSCamera
 	{
 	public:
-		enum MoveMode
+		enum class MOVE_MODE
 		{
-			FrontAndBack,
-			UpAndDown,
-			LeftAndRight
+			FRONT_BACK,
+			UP_DOWN,
+			LEFT_RIGHT
 		};
 
 	public:
@@ -41,7 +41,7 @@ namespace RenderDog
 		Matrix4x4		GetViewMatrix() const;
 		Matrix4x4		GetPerspProjectionMatrix() const;
 
-		void			Move(float speed, MoveMode moveMode);
+		void			Move(float speed, MOVE_MODE moveMode);
 		void			Rotate(float deltaYaw, float deltaPitch, float speed);
 
 		void			OnWindowResize(uint32_t width, uint32_t height);

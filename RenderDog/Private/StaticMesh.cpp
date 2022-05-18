@@ -86,8 +86,8 @@ namespace RenderDog
 
 		SamplerDesc samplerDesc = {};
 		//samplerDesc.filterMode = SamplerFilterMode::RD_SAMPLER_FILTER_LINEAR;
-		samplerDesc.filterMode = SamplerFilterMode::RD_SAMPLER_FILTER_POINT;
-		samplerDesc.addressMode = SamplerAddressMode::RD_SAMPLER_ADDRESS_WRAP;
+		samplerDesc.filterMode = SAMPLER_FILTER::POINT;
+		samplerDesc.addressMode = SAMPLER_ADDRESS::WRAP;
 		m_pLinearSampler = g_pISamplerStateManager->CreateSamplerState();
 		if (!m_pLinearSampler->Init(samplerDesc))
 		{
@@ -102,7 +102,7 @@ namespace RenderDog
 		m_pRenderData = new StaticMeshRenderData();
 
 		BufferDesc vbDesc = {};
-		vbDesc.bufferBind = BufferBind::VERTEX;
+		vbDesc.bufferBind = BUFFER_BIND::VERTEX;
 		vbDesc.byteWidth = sizeof(LocalVertex) * (uint32_t)m_Vertices.size();
 		vbDesc.stride = sizeof(LocalVertex);
 		vbDesc.offset = 0;
@@ -111,20 +111,20 @@ namespace RenderDog
 		m_pRenderData->pVB = (IVertexBuffer*)g_pIBufferManager->CreateBuffer(vbDesc);
 
 		BufferDesc ibDesc = {};
-		ibDesc.bufferBind = BufferBind::INDEX;
+		ibDesc.bufferBind = BUFFER_BIND::INDEX;
 		ibDesc.byteWidth = sizeof(uint32_t) * (uint32_t)m_Indices.size();
 		ibDesc.pInitData = &(m_Indices[0]);
 		ibDesc.isDynamic = false;
 		m_pRenderData->pIB = (IIndexBuffer*)g_pIBufferManager->CreateBuffer(ibDesc);
 
 		BufferDesc cbDesc = {};
-		cbDesc.bufferBind = BufferBind::CONSTANT;
+		cbDesc.bufferBind = BUFFER_BIND::CONSTANT;
 		cbDesc.byteWidth = sizeof(Matrix4x4);
 		cbDesc.pInitData = nullptr;
 		cbDesc.isDynamic = false;
 		m_pRenderData->pCB = (IConstantBuffer*)g_pIBufferManager->CreateBuffer(cbDesc);
 
-		m_pRenderData->pVS = g_pIShaderManager->CreateVertexShader(VertexType::RD_VERTEX_TYPE_STANDARD);
+		m_pRenderData->pVS = g_pIShaderManager->CreateVertexShader(VERTEX_TYPE::STANDARD);
 		m_pRenderData->pVS->CompileFromFile("Shaders/StaticModelVertexShader.hlsl", nullptr, "Main", "vs_5_0", 0);
 		m_pRenderData->pVS->Init();
 

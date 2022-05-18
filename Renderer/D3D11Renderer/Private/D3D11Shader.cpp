@@ -121,7 +121,7 @@ namespace RenderDog
 	{
 	public:
 		D3D11VertexShader();
-		D3D11VertexShader(VertexType vertexType);
+		D3D11VertexShader(VERTEX_TYPE vertexType);
 		virtual ~D3D11VertexShader();
 
 		virtual bool			Init() override;
@@ -132,17 +132,17 @@ namespace RenderDog
 	private:
 		ID3D11VertexShader*		m_pVS;
 		D3D11InputLayout*		m_pInputLayout;
-		VertexType				m_VertexType;
+		VERTEX_TYPE				m_VertexType;
 	};
 
 	D3D11VertexShader::D3D11VertexShader() :
 		D3D11Shader(),
 		m_pVS(nullptr),
 		m_pInputLayout(nullptr),
-		m_VertexType(VertexType::RD_VERTEX_TYPE_SIMPLE)
+		m_VertexType(VERTEX_TYPE::SIMPLE)
 	{}
 
-	D3D11VertexShader::D3D11VertexShader(VertexType vertexType):
+	D3D11VertexShader::D3D11VertexShader(VERTEX_TYPE vertexType):
 		D3D11Shader(),
 		m_pVS(nullptr),
 		m_pInputLayout(nullptr),
@@ -264,14 +264,14 @@ namespace RenderDog
 		D3D11ShaderManager() = default;
 		virtual ~D3D11ShaderManager() = default;
 
-		virtual IShader*	CreateVertexShader(VertexType vertexType) override;
+		virtual IShader*	CreateVertexShader(VERTEX_TYPE vertexType) override;
 		virtual IShader*	CreatePixelShader() override;
 	};
 
 	D3D11ShaderManager	g_D3D11ShaderManager;
 	IShaderManager*		g_pIShaderManager = &g_D3D11ShaderManager;
 
-	IShader* D3D11ShaderManager::CreateVertexShader(VertexType vertexType)
+	IShader* D3D11ShaderManager::CreateVertexShader(VERTEX_TYPE vertexType)
 	{
 		IShader* pVertexShader = new D3D11VertexShader(vertexType);
 

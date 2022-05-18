@@ -44,7 +44,7 @@ namespace RenderDog
 	public:
 		virtual	~IShaderManager() = default;
 
-		virtual IShader*	CreateVertexShader(VertexType vertexType) = 0;
+		virtual IShader*	CreateVertexShader(VERTEX_TYPE vertexType) = 0;
 		virtual IShader*	CreatePixelShader() = 0;
 	};
 

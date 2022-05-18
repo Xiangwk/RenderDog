@@ -50,17 +50,17 @@ namespace RenderDog
 		return GetPerspProjectionMatrixLH(m_Fov, m_Aspect, m_Near, m_Far);
 	}
 
-	void FPSCamera::Move(float speed, MoveMode moveMode)
+	void FPSCamera::Move(float speed, MOVE_MODE moveMode)
 	{
 		switch (moveMode)
 		{
-		case RenderDog::FPSCamera::FrontAndBack:
+		case MOVE_MODE::FRONT_BACK:
 			m_Postion += speed * m_Direction;
 			break;
-		case RenderDog::FPSCamera::UpAndDown:
+		case MOVE_MODE::UP_DOWN:
 			m_Postion += speed * m_Up;
 			break;
-		case RenderDog::FPSCamera::LeftAndRight:
+		case MOVE_MODE::LEFT_RIGHT:
 			m_Postion += speed * m_Right;
 			break;
 		default:

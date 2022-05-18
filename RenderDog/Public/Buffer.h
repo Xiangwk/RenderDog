@@ -14,7 +14,7 @@
 
 namespace RenderDog
 {
-	enum class BufferBind
+	enum class BUFFER_BIND
 	{
 		NONE,
 		VERTEX,
@@ -24,7 +24,7 @@ namespace RenderDog
 
 	struct BufferDesc
 	{
-		BufferBind			bufferBind;
+		BUFFER_BIND			bufferBind;
 		uint32_t			byteWidth;
 		uint32_t			stride;
 		uint32_t			offset;
@@ -32,7 +32,7 @@ namespace RenderDog
 		bool				isDynamic;
 
 		BufferDesc() :
-			bufferBind(BufferBind::NONE),
+			bufferBind(BUFFER_BIND::NONE),
 			byteWidth(0),
 			stride(0),
 			offset(0),

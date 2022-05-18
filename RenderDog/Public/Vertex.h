@@ -10,10 +10,10 @@
 
 namespace RenderDog
 {
-	enum class VertexType
+	enum class VERTEX_TYPE
 	{
-		RD_VERTEX_TYPE_SIMPLE,
-		RD_VERTEX_TYPE_STANDARD
+		SIMPLE,
+		STANDARD
 	};
 
 	struct SimpleVertex

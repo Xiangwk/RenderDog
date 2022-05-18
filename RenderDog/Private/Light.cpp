@@ -23,7 +23,7 @@ namespace RenderDog
 		virtual		bool		Init(const LightDesc& desc) override;
 		virtual		void		Release() override;
 
-		virtual		LightType	GetType() const override { return RD_LIGHT_TYPE_DIRECTIONAL; }
+		virtual		LIGHT_TYPE	GetType() const override { return LIGHT_TYPE::DIRECTIONAL; }
 		virtual		Vector3		GetDirection() const override { return m_Direction; }
 		virtual     Vector3		GetColor() const override { return m_Color; }
 		virtual		float		GetLuminance() const override { return m_Luminance; }
@@ -101,7 +101,7 @@ namespace RenderDog
 	ILight* LightManager::CreateLight(const LightDesc& desc)
 	{
 		ILight* pLight = nullptr;
-		if (desc.type == RD_LIGHT_TYPE_DIRECTIONAL)
+		if (desc.type == LIGHT_TYPE::DIRECTIONAL)
 		{
 			pLight = new DirectionalLight();
 			pLight->Init(desc);

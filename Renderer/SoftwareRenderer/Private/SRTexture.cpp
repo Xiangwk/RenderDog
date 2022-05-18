@@ -214,11 +214,11 @@ namespace RenderDog
 	bool SRSamplerState::Init(const SamplerDesc& desc)
 	{
 		SRSamplerDesc samplerDesc = {};
-		if (desc.filterMode == SamplerFilterMode::RD_SAMPLER_FILTER_POINT)
+		if (desc.filterMode == SAMPLER_FILTER::POINT)
 		{
 			samplerDesc.filter = SR_FILTER::POINT;
 		}
-		else if (desc.filterMode == SamplerFilterMode::RD_SAMPLER_FILTER_LINEAR)
+		else if (desc.filterMode == SAMPLER_FILTER::LINEAR)
 		{
 			samplerDesc.filter = SR_FILTER::BILINEAR;
 		}

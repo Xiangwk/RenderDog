@@ -72,7 +72,7 @@ bool DemoApp::Init(const DemoInitDesc& desc)
 	m_pModel->RegisterToScene(m_pScene);
 
 	RenderDog::LightDesc lightDesc = {};
-	lightDesc.type = RenderDog::LightType::RD_LIGHT_TYPE_DIRECTIONAL;
+	lightDesc.type = RenderDog::LIGHT_TYPE::DIRECTIONAL;
 	lightDesc.color = RenderDog::Vector3(1.0f, 1.0f, 1.0f);
 	lightDesc.eulerDir = RenderDog::Vector3(45.0f, 45.0f, 45.0f);
 	lightDesc.luminance = 1.0f;
@@ -235,32 +235,32 @@ void DemoApp::Update()
 	//W
 	if (m_Keys[0x57])
 	{
-		m_pFPSCamera->Move(cameraSpeed, RenderDog::FPSCamera::MoveMode::FrontAndBack);
+		m_pFPSCamera->Move(cameraSpeed, RenderDog::FPSCamera::MOVE_MODE::FRONT_BACK);
 	}
 	//S
 	if (m_Keys[0x53])
 	{
-		m_pFPSCamera->Move(-cameraSpeed, RenderDog::FPSCamera::MoveMode::FrontAndBack);
+		m_pFPSCamera->Move(-cameraSpeed, RenderDog::FPSCamera::MOVE_MODE::FRONT_BACK);
 	}
 	//A
 	if (m_Keys[0x41])
 	{
-		m_pFPSCamera->Move(-cameraSpeed, RenderDog::FPSCamera::MoveMode::LeftAndRight);
+		m_pFPSCamera->Move(-cameraSpeed, RenderDog::FPSCamera::MOVE_MODE::LEFT_RIGHT);
 	}
 	//D
 	if (m_Keys[0x44])
 	{
-		m_pFPSCamera->Move(cameraSpeed, RenderDog::FPSCamera::MoveMode::LeftAndRight);
+		m_pFPSCamera->Move(cameraSpeed, RenderDog::FPSCamera::MOVE_MODE::LEFT_RIGHT);
 	}
 	//Q
 	if (m_Keys[0x51])
 	{
-		m_pFPSCamera->Move(cameraSpeed, RenderDog::FPSCamera::MoveMode::UpAndDown);
+		m_pFPSCamera->Move(cameraSpeed, RenderDog::FPSCamera::MOVE_MODE::UP_DOWN);
 	}
 	//E
 	if (m_Keys[0x45])
 	{
-		m_pFPSCamera->Move(-cameraSpeed, RenderDog::FPSCamera::MoveMode::UpAndDown);
+		m_pFPSCamera->Move(-cameraSpeed, RenderDog::FPSCamera::MOVE_MODE::UP_DOWN);
 	}
 }
 

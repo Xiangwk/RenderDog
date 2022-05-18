@@ -33,17 +33,17 @@ namespace RenderDog
 	D3D11InputLayout::~D3D11InputLayout()
 	{}
 
-	bool D3D11InputLayout::Init(VertexType vertexType, void* compiledCode, uint32_t codeSize)
+	bool D3D11InputLayout::Init(VERTEX_TYPE vertexType, void* compiledCode, uint32_t codeSize)
 	{
 		D3D11_INPUT_ELEMENT_DESC* inputElemDesc = nullptr;
 		uint32_t elemNum = 0;
 		switch (vertexType)
 		{
-		case RenderDog::VertexType::RD_VERTEX_TYPE_SIMPLE:
+		case RenderDog::VERTEX_TYPE::SIMPLE:
 			inputElemDesc = SimpleInputLayout;
 			elemNum = 2;
 			break;
-		case RenderDog::VertexType::RD_VERTEX_TYPE_STANDARD:
+		case RenderDog::VERTEX_TYPE::STANDARD:
 			inputElemDesc = StandardInputLayout;
 			elemNum = 5;
 			break;

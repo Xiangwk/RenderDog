@@ -137,14 +137,14 @@ namespace RenderDog
 		SRShaderManager() = default;
 		virtual ~SRShaderManager() = default;
 
-		virtual IShader* CreateVertexShader(VertexType vertexType) override;
+		virtual IShader* CreateVertexShader(VERTEX_TYPE vertexType) override;
 		virtual IShader* CreatePixelShader() override;
 	};
 
 	SRShaderManager g_SRShaderManager;
 	IShaderManager* g_pIShaderManager = &g_SRShaderManager;
 
-	IShader* SRShaderManager::CreateVertexShader(VertexType vertexType)
+	IShader* SRShaderManager::CreateVertexShader(VERTEX_TYPE vertexType)
 	{
 		IShader* pVertexShader = new SRVertexShader();
 

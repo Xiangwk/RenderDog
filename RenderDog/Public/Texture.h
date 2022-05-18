@@ -17,22 +17,22 @@ namespace RenderDog
 	//		Texture
 	//==================================================
 
-	enum class TextureBindFlag
+	enum class TEXTURE_BIND_FLAG
 	{
-		RD_BIND_RENDER_TARGET,
-		RD_BIND_SHADER_RESOURCE,
-		RD_BIND_DEPTH_STENCIL
+		RENDER_TARGET,
+		SHADER_RESOURCE,
+		DEPTH_STENCIL
 	};
 
-	enum class TextureFormat
+	enum class TEXTURE_FORMAT
 	{
-		RD_FORMAT_R8G8B8A8_UNORM
+		R8G8B8A8_UNORM
 	};
 
 	struct TextureDesc
 	{
-		TextureBindFlag			bindFlag;
-		TextureFormat			format;
+		TEXTURE_BIND_FLAG		bindFlag;
+		TEXTURE_FORMAT			format;
 		uint32_t				width;
 		uint32_t				height;
 		uint32_t				mipLevels;
@@ -80,22 +80,22 @@ namespace RenderDog
 	//		SamplerState
 	//==================================================
 
-	enum class SamplerFilterMode
+	enum class SAMPLER_FILTER
 	{
-		RD_SAMPLER_FILTER_POINT,
-		RD_SAMPLER_FILTER_LINEAR
+		POINT,
+		LINEAR
 	};
 
-	enum class SamplerAddressMode
+	enum class SAMPLER_ADDRESS
 	{
-		RD_SAMPLER_ADDRESS_WRAP,
-		RD_SAMPLER_ADDRESS_CLAMP
+		WRAP,
+		CLAMP
 	};
 
 	struct SamplerDesc
 	{
-		SamplerFilterMode		filterMode;
-		SamplerAddressMode		addressMode;
+		SAMPLER_FILTER		filterMode;
+		SAMPLER_ADDRESS		addressMode;
 	};
 
 	class ISamplerState

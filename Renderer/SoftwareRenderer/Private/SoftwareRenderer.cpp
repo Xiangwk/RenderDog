@@ -260,7 +260,7 @@ namespace RenderDog
 		m_pSceneView = new SceneView(desc.pMainCamera);
 
 		BufferDesc cbDesc = {};
-		cbDesc.bufferBind = BufferBind::CONSTANT;
+		cbDesc.bufferBind = BUFFER_BIND::CONSTANT;
 		cbDesc.byteWidth = sizeof(GlobalConstantData);
 		cbDesc.pInitData = nullptr;
 		cbDesc.isDynamic = true;
@@ -460,7 +460,7 @@ namespace RenderDog
 		{
 			ILight* pLight = pScene->GetLight(i);
 
-			if (pLight->GetType() == LightType::RD_LIGHT_TYPE_DIRECTIONAL)
+			if (pLight->GetType() == LIGHT_TYPE::DIRECTIONAL)
 			{
 				m_pSceneView->AddLight(pLight);
 			}

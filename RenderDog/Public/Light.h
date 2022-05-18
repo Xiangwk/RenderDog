@@ -13,16 +13,16 @@ namespace RenderDog
 {
 	class IScene;
 
-	enum LightType
+	enum class LIGHT_TYPE
 	{
-		RD_LIGHT_TYPE_DIRECTIONAL,
-		RD_LIGHT_TYPE_POINT,
-		RD_LIGHT_TYPE_SPOT
+		DIRECTIONAL,
+		POINT,
+		SPOT
 	};
 
 	struct LightDesc
 	{
-		LightType	type;
+		LIGHT_TYPE	type;
 		Vector3		color;
 		Vector3		eulerDir;
 		float		luminance;
@@ -36,7 +36,7 @@ namespace RenderDog
 		virtual bool		Init(const LightDesc& desc) = 0;
 		virtual void		Release() = 0;
 
-		virtual LightType	GetType() const = 0;
+		virtual LIGHT_TYPE	GetType() const = 0;
 
 		virtual Vector3		GetDirection() const = 0;
 		virtual Vector3		GetColor() const = 0;
