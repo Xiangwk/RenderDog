@@ -23,4 +23,7 @@ namespace RenderDog
 	float		GetArea2(const Vector3& Pos1, const Vector3& Pos2, const Vector3& Pos3);
 
 	float		Clamp(float fValue, float fMin, float fMax);
-}
+
+	float		AngleToRadians(float angle);
+
+}// namespace RenderDog

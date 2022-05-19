@@ -398,8 +398,9 @@
                                 "x": 516.9999964237218,
                                 "y": -587.3332926697219
                             },
-                            "priority": 1,
-                            "note": "1. 使用引用计数来控制资源的释放；\n\n2. 将与渲染器无关的类型放到一个新的sln中；"
+                            "priority": null,
+                            "note": "1. 使用引用计数来控制资源的释放；\n\n2. 将与渲染器无关的类型放到一个新的sln中；",
+                            "progress": 9
                         },
                         "children": [
                             {
@@ -909,20 +910,6 @@
                             },
                             {
                                 "data": {
-                                    "id": "cbekiju16ao0",
-                                    "created": 1621157904269,
-                                    "text": "矩阵乘法",
-                                    "priority": 4,
-                                    "note": "改用更为清晰的实现方式（使用向量相乘）",
-                                    "layout_right_offset": {
-                                        "x": 382.49999430030584,
-                                        "y": -28.749999571591502
-                                    }
-                                },
-                                "children": []
-                            },
-                            {
-                                "data": {
                                     "id": "cb5g7ugtzf40",
                                     "created": 1620231741360,
                                     "text": "Matrix",
@@ -1099,8 +1086,8 @@
                                     "created": 1641481726955,
                                     "text": "组织Primitive",
                                     "layout_right_offset": {
-                                        "x": 351,
-                                        "y": -27
+                                        "x": 341,
+                                        "y": -54
                                     }
                                 },
                                 "children": []
@@ -1111,8 +1098,8 @@
                                     "created": 1641482072364,
                                     "text": "应用程序中Scene的数量可以超过1，如何管理Scene的创建和释放？",
                                     "layout_right_offset": {
-                                        "x": 594,
-                                        "y": -17
+                                        "x": 635,
+                                        "y": -22
                                     },
                                     "priority": 2
                                 },
@@ -1214,8 +1201,8 @@
                                     "created": 1643386013975,
                                     "text": "Texture",
                                     "layout_right_offset": {
-                                        "x": 351,
-                                        "y": -12
+                                        "x": 375,
+                                        "y": 24
                                     }
                                 },
                                 "children": []
@@ -1226,9 +1213,23 @@
                                     "created": 1643386019598,
                                     "text": "Buffer",
                                     "layout_right_offset": {
-                                        "x": 346,
-                                        "y": 7
+                                        "x": 368,
+                                        "y": 30
                                     }
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "ck2w9jhg5y00",
+                                    "created": 1652877758030,
+                                    "text": "ResourceManager",
+                                    "layout_right_offset": {
+                                        "x": 438,
+                                        "y": -136
+                                    },
+                                    "note": "负责管理引擎需要使用到的资源，如Buffer，Texture等；",
+                                    "priority": 1
                                 },
                                 "children": []
                             }

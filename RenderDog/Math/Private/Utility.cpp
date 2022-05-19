@@ -8,6 +8,7 @@ namespace RenderDog
 {
 	//const float RD_FLT_EPSILON = 1e-6f;
 	const float RD_FLT_EPSILON = FLT_EPSILON;
+	const float RD_PI = 3.1415927f;
 
 	bool FloatEqual(float lhs, float rhs, float epsilon)
 	{
@@ -51,4 +52,12 @@ namespace RenderDog
 			return value;
 		}
 	}
-}
+
+	float AngleToRadians(float angle)
+	{
+		float radians = angle / 180.0f * RD_PI;
+
+		return radians;
+	}
+
+}// namespace RenderDog

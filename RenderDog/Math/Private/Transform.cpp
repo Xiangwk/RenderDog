@@ -5,6 +5,7 @@
 ///////////////////////////////////
 
 #include "Transform.h"
+#include "Utility.h"
 
 namespace RenderDog
 {
@@ -34,7 +35,7 @@ namespace RenderDog
 
 	Matrix4x4 GetRotationMatrix(float fAngle, const Vector3& rotAxis)
 	{
-		float radian = fAngle / 180.0f * 3.1415926f;
+		float radian = AngleToRadians(fAngle);
 		float sinA = std::sinf(radian);
 		float cosA = std::cosf(radian);
 
@@ -88,7 +89,7 @@ namespace RenderDog
 
 	Matrix4x4 GetPerspProjectionMatrixLH(float fov, float aspectRatio, float near, float farPlane)
 	{
-		float radianHalfFov = 0.5f * fov / 180.0f * 3.1415926f;
+		float radianHalfFov = 0.5f * AngleToRadians(fov);
 		float sinHalfFov = std::sinf(radianHalfFov);
 		float cosHalfFov = std::cosf(radianHalfFov);
 
