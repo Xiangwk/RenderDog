@@ -30,12 +30,16 @@ public:
 
 	int							Run();
 
-	static LRESULT				MessageProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	LRESULT						MessageProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 private:
 	void						Update();
 
 	void						CalculateFrameStats();
+
+	void						OnMouseDown(WPARAM btnState, int x, int y);
+	void						OnMouseUp(WPARAM btnState, int x, int y);
+	void						OnMouseMove(WPARAM btnState, int x, int y);
 
 private:
 	RenderDog::IRenderDog*		m_pRenderDog;
@@ -50,6 +54,9 @@ private:
 	RenderDog::GameTimer*		m_pGameTimer;
 
 	static int					m_Keys[512];	// 当前键盘按下状态
+
+	int							m_LastMousePosX;
+	int							m_LastMousePosY;
 };
 
 extern DemoApp* g_pHelloWorldDemo;

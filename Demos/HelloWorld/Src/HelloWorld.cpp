@@ -7,7 +7,9 @@
 
 #include "HelloWorld.h"
 #include "Window.h"
+#include "Utility.h"
 
+#include <windowsx.h>
 #include <sstream>
 
 DemoApp g_HelloWorldDemo;
@@ -21,7 +23,9 @@ DemoApp::DemoApp():
 	m_pModel(nullptr),
 	m_pFPSCamera(nullptr),
 	m_pMainLight(nullptr),
-	m_pGameTimer(nullptr)
+	m_pGameTimer(nullptr),
+	m_LastMousePosX(0),
+	m_LastMousePosY(0)
 {
 	memset(m_Keys, 0, sizeof(int) * 512);
 }
@@ -194,16 +198,19 @@ LRESULT DemoApp::MessageProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_MBUTTONDOWN:
 	case WM_RBUTTONDOWN:
 	{
+		OnMouseDown(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 		break;
 	}
 	case WM_LBUTTONUP:
 	case WM_MBUTTONUP:
 	case WM_RBUTTONUP:
 	{
+		OnMouseUp(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 		break;
 	}
 	case WM_MOUSEMOVE:
 	{
+		OnMouseMove(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 		break;
 	}
 	case WM_MOUSEWHEEL:
@@ -231,7 +238,7 @@ LRESULT DemoApp::MessageProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 void DemoApp::Update()
 {
-	float cameraSpeed = 0.1f;
+	float cameraSpeed = 0.5f;
 	//W
 	if (m_Keys[0x57])
 	{
@@ -285,4 +292,32 @@ void DemoApp::CalculateFrameStats()
 		frameCnt = 0;
 		timeElapsed += 1.0;
 	}
+}
+
+void DemoApp::OnMouseDown(WPARAM btnState, int x, int y)
+{
+	m_LastMousePosX = x;
+	m_LastMousePosY = y;
+
+	SetCapture(RenderDog::g_pIWindow->GetHandle());
+}
+
+void DemoApp::OnMouseUp(WPARAM btnState, int x, int y)
+{
+	ReleaseCapture();
+}
+
+void DemoApp::OnMouseMove(WPARAM btnState, int x, int y)
+{
+	if ((btnState & MK_LBUTTON) != 0)
+	{
+		float dx = RenderDog::AngleToRadians((float)(x - m_LastMousePosX));
+		float dy = RenderDog::AngleToRadians((float)(y - m_LastMousePosY));
+
+		float speed = 4.0f;
+		m_pFPSCamera->Rotate(dx, dy, speed);
+	}
+
+	m_LastMousePosX = x;
+	m_LastMousePosY = y;
 }

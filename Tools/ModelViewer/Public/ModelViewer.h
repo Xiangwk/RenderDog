@@ -33,6 +33,7 @@ public:
 
 private:
 	void						Update();
+
 	void						CalculateFrameStats();
 
 	void						OnMouseDown(WPARAM btnState, int x, int y);

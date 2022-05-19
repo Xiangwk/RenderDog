@@ -1010,7 +1010,8 @@
                                             "layout_right_offset": {
                                                 "x": 376,
                                                 "y": -31
-                                            }
+                                            },
+                                            "priority": 2
                                         },
                                         "children": []
                                     }
@@ -1025,7 +1026,8 @@
                                         "x": 719,
                                         "y": -26
                                     },
-                                    "priority": 1
+                                    "priority": null,
+                                    "progress": 9
                                 },
                                 "children": []
                             }
