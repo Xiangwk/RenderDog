@@ -37,11 +37,14 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 {
 	RenderDog::CameraDesc camDesc;
 	camDesc.position = RenderDog::Vector3(0.0f, 0.0f, -100.0f);
-	camDesc.direction = RenderDog::Vector3(0.0f, 0.0f, 1.0f);
+	camDesc.yaw = 0.0f;
+	camDesc.pitch = 0.0f;
 	camDesc.fov = 45.0f;
 	camDesc.aspectRitio = (float)desc.wndDesc.width / (float)desc.wndDesc.height;
 	camDesc.nearPlane = 0.1f;
 	camDesc.farPlane = 1000.0f;
+	camDesc.moveSpeed = 0.01f;
+	camDesc.rotSpeed = 0.1f;
 	m_pFPSCamera = new RenderDog::FPSCamera(camDesc);
 
 	if (!RenderDog::CreateRenderDog(&m_pRenderDog))
@@ -241,36 +244,35 @@ LRESULT ModelViewer::MessageProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
 
 void ModelViewer::Update()
 {
-	float cameraSpeed = 0.05f;
 	//W
 	if (m_Keys[0x57])
 	{
-		m_pFPSCamera->Move(cameraSpeed, RenderDog::FPSCamera::MOVE_MODE::FRONT_BACK);
+		m_pFPSCamera->Move(RenderDog::FPSCamera::MOVE_MODE::FRONT);
 	}
 	//S
 	if (m_Keys[0x53])
 	{
-		m_pFPSCamera->Move(-cameraSpeed, RenderDog::FPSCamera::MOVE_MODE::FRONT_BACK);
+		m_pFPSCamera->Move(RenderDog::FPSCamera::MOVE_MODE::BACK);
 	}
 	//A
 	if (m_Keys[0x41])
 	{
-		m_pFPSCamera->Move(-cameraSpeed, RenderDog::FPSCamera::MOVE_MODE::LEFT_RIGHT);
+		m_pFPSCamera->Move(RenderDog::FPSCamera::MOVE_MODE::LEFT);
 	}
 	//D
 	if (m_Keys[0x44])
 	{
-		m_pFPSCamera->Move(cameraSpeed, RenderDog::FPSCamera::MOVE_MODE::LEFT_RIGHT);
+		m_pFPSCamera->Move(RenderDog::FPSCamera::MOVE_MODE::RIGHT);
 	}
 	//Q
 	if (m_Keys[0x51])
 	{
-		m_pFPSCamera->Move(cameraSpeed, RenderDog::FPSCamera::MOVE_MODE::UP_DOWN);
+		m_pFPSCamera->Move(RenderDog::FPSCamera::MOVE_MODE::UP);
 	}
 	//E
 	if (m_Keys[0x45])
 	{
-		m_pFPSCamera->Move(-cameraSpeed, RenderDog::FPSCamera::MOVE_MODE::UP_DOWN);
+		m_pFPSCamera->Move(RenderDog::FPSCamera::MOVE_MODE::DOWN);
 	}
 }
 
@@ -317,8 +319,8 @@ void ModelViewer::OnMouseMove(WPARAM btnState, int x, int y)
 		float dx = RenderDog::AngleToRadians((float)(x - m_LastMousePosX));
 		float dy = RenderDog::AngleToRadians((float)(y - m_LastMousePosY));
 
-		float speed = 4.0f;
-		m_pFPSCamera->Rotate(dx, dy, speed);
+		float speed = 1.0f;
+		m_pFPSCamera->Rotate(dx, -dy);
 	}
 	else if ((btnState & MK_RBUTTON) != 0)
 	{

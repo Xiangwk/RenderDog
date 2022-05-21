@@ -1029,7 +1029,20 @@
                                     "priority": null,
                                     "progress": 9
                                 },
-                                "children": []
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "ck5icosl10g0",
+                                            "created": 1653143189011,
+                                            "text": "按照俯仰角和偏航角来设置",
+                                            "layout_right_offset": {
+                                                "x": 424,
+                                                "y": 29
+                                            }
+                                        },
+                                        "children": []
+                                    }
+                                ]
                             }
                         ]
                     },
@@ -1103,7 +1116,7 @@
                                         "x": 635,
                                         "y": -22
                                     },
-                                    "priority": 2
+                                    "priority": 4
                                 },
                                 "children": [
                                     {
@@ -1157,7 +1170,7 @@
                                 "x": 550,
                                 "y": 427
                             },
-                            "priority": 1
+                            "priority": 2
                         },
                         "children": [
                             {
@@ -1279,9 +1292,23 @@
                                             "layout_right_offset": {
                                                 "x": 382,
                                                 "y": -34
-                                            }
+                                            },
+                                            "priority": 1
                                         },
-                                        "children": []
+                                        "children": [
+                                            {
+                                                "data": {
+                                                    "id": "ck5iczc8ewg0",
+                                                    "created": 1653143211967,
+                                                    "text": "按照欧拉角来控制",
+                                                    "layout_right_offset": {
+                                                        "x": 420,
+                                                        "y": -18
+                                                    }
+                                                },
+                                                "children": []
+                                            }
+                                        ]
                                     }
                                 ]
                             }

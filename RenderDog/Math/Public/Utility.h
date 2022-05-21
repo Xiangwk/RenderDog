@@ -14,6 +14,7 @@ namespace RenderDog
 	struct Vector4;
 
 	extern const float RD_FLT_EPSILON;
+	extern const float RD_PI;
 
 	bool		FloatEqual(float lhs, float rhs, float epsilon = RD_FLT_EPSILON);
 

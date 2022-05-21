@@ -11,6 +11,8 @@
 
 namespace RenderDog
 {
+	const Vector3 g_InitLightDir = Vector3(0.0f, 0.0f, 1.0f);
+
 	//================================================================
 	//        Directional Light
 	//================================================================
@@ -43,7 +45,7 @@ namespace RenderDog
 	};
 
 	DirectionalLight::DirectionalLight() :
-		m_Direction(0.0f, 0.0f, 1.0f),
+		m_Direction(g_InitLightDir),
 		m_Color(1.0f, 1.0f, 1.0f),
 		m_Luminance(1.0f),
 		m_eulerAngle(0.0f, 0.0f, 0.0f)
@@ -74,8 +76,7 @@ namespace RenderDog
 	{
 		Matrix4x4 rotMat = GetIdentityMatrix();
 		rotMat = GetRotationMatrix(eulerX, eulerY, eulerZ);
-		//Vector4 dir = Vector4(m_Direction, 0.0f);
-		Vector4 dir = Vector4(0.0f, 0.0f, 1.0f, 0.0f);
+		Vector4 dir = Vector4(g_InitLightDir, 0.0f);
 		dir = dir * rotMat;
 
 		m_Direction = Vector3(dir.x, dir.y, dir.z);

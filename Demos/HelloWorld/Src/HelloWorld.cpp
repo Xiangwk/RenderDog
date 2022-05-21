@@ -37,11 +37,14 @@ bool DemoApp::Init(const DemoInitDesc& desc)
 {
 	RenderDog::CameraDesc camDesc;
 	camDesc.position = RenderDog::Vector3(0.0f, 0.0f, -100.0f);
-	camDesc.direction = RenderDog::Vector3(0.0f, 0.0f, 1.0f);
+	camDesc.yaw = 0.0f;
+	camDesc.pitch = 0.0f;
 	camDesc.fov = 45.0f;
 	camDesc.aspectRitio = (float)desc.wndDesc.width / (float)desc.wndDesc.height;
 	camDesc.nearPlane = 0.1f;
 	camDesc.farPlane = 1000.0f;
+	camDesc.moveSpeed = 1.0f;
+	camDesc.rotSpeed = 0.1f;
 	m_pFPSCamera = new RenderDog::FPSCamera(camDesc);
 
 	if (!RenderDog::CreateRenderDog(&m_pRenderDog))
@@ -238,36 +241,35 @@ LRESULT DemoApp::MessageProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 void DemoApp::Update()
 {
-	float cameraSpeed = 0.5f;
 	//W
 	if (m_Keys[0x57])
 	{
-		m_pFPSCamera->Move(cameraSpeed, RenderDog::FPSCamera::MOVE_MODE::FRONT_BACK);
+		m_pFPSCamera->Move(RenderDog::FPSCamera::MOVE_MODE::FRONT);
 	}
 	//S
 	if (m_Keys[0x53])
 	{
-		m_pFPSCamera->Move(-cameraSpeed, RenderDog::FPSCamera::MOVE_MODE::FRONT_BACK);
+		m_pFPSCamera->Move(RenderDog::FPSCamera::MOVE_MODE::BACK);
 	}
 	//A
 	if (m_Keys[0x41])
 	{
-		m_pFPSCamera->Move(-cameraSpeed, RenderDog::FPSCamera::MOVE_MODE::LEFT_RIGHT);
+		m_pFPSCamera->Move(RenderDog::FPSCamera::MOVE_MODE::LEFT);
 	}
 	//D
 	if (m_Keys[0x44])
 	{
-		m_pFPSCamera->Move(cameraSpeed, RenderDog::FPSCamera::MOVE_MODE::LEFT_RIGHT);
+		m_pFPSCamera->Move(RenderDog::FPSCamera::MOVE_MODE::RIGHT);
 	}
 	//Q
 	if (m_Keys[0x51])
 	{
-		m_pFPSCamera->Move(cameraSpeed, RenderDog::FPSCamera::MOVE_MODE::UP_DOWN);
+		m_pFPSCamera->Move(RenderDog::FPSCamera::MOVE_MODE::UP);
 	}
 	//E
 	if (m_Keys[0x45])
 	{
-		m_pFPSCamera->Move(-cameraSpeed, RenderDog::FPSCamera::MOVE_MODE::UP_DOWN);
+		m_pFPSCamera->Move(RenderDog::FPSCamera::MOVE_MODE::DOWN);
 	}
 }
 
@@ -315,7 +317,19 @@ void DemoApp::OnMouseMove(WPARAM btnState, int x, int y)
 		float dy = RenderDog::AngleToRadians((float)(y - m_LastMousePosY));
 
 		float speed = 4.0f;
-		m_pFPSCamera->Rotate(dx, dy, speed);
+		m_pFPSCamera->Rotate(dx, -dy);
+	}
+	else if ((btnState & MK_RBUTTON) != 0)
+	{
+		float dx = (float)(x - m_LastMousePosX);
+		float dy = (float)(y - m_LastMousePosY);
+
+		RenderDog::Vector3 euler = m_pMainLight->GetEulerAngle();
+
+		euler.y -= dx;
+		euler.x -= dy;
+
+		m_pMainLight->SetDirection(euler.x, euler.y, euler.z);
 	}
 
 	m_LastMousePosX = x;

@@ -6,7 +6,6 @@
 
 namespace RenderDog
 {
-	//const float RD_FLT_EPSILON = 1e-6f;
 	const float RD_FLT_EPSILON = FLT_EPSILON;
 	const float RD_PI = 3.1415927f;
 
