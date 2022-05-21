@@ -39,6 +39,7 @@ namespace RenderDog
 		virtual LIGHT_TYPE	GetType() const = 0;
 
 		virtual Vector3		GetDirection() const = 0;
+		virtual Vector3		GetEulerAngle() const = 0;
 		virtual Vector3		GetColor() const = 0;
 		virtual float		GetLuminance() const = 0;
 		

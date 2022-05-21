@@ -320,6 +320,18 @@ void ModelViewer::OnMouseMove(WPARAM btnState, int x, int y)
 		float speed = 4.0f;
 		m_pFPSCamera->Rotate(dx, dy, speed);
 	}
+	else if ((btnState & MK_RBUTTON) != 0)
+	{
+		float dx = (float)(x - m_LastMousePosX);
+		float dy = (float)(y - m_LastMousePosY);
+
+		RenderDog::Vector3 euler = m_pMainLight->GetEulerAngle();
+
+		euler.y -= dx;
+		euler.x -= dy;
+
+		m_pMainLight->SetDirection(euler.x, euler.y, euler.z);
+	}
 
 	m_LastMousePosX = x;
 	m_LastMousePosY = y;

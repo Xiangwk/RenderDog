@@ -70,8 +70,8 @@ namespace RenderDog
 
 	void FPSCamera::Rotate(float deltaYaw, float deltaPitch, float speed)
 	{
-		Matrix4x4 matRotateY = GetRotationMatrix(deltaYaw * speed, Vector3(0, 1, 0));
-		Matrix4x4 matRotateX = GetRotationMatrix(deltaPitch * speed, Vector3(1, 0, 0));
+		Matrix4x4 matRotateX = GetRotationMatrix(deltaYaw * speed, Vector3(0, 1, 0));
+		Matrix4x4 matRotateY = GetRotationMatrix(deltaPitch * speed, Vector3(1, 0, 0));
 
 		Vector4 direction = Vector4(m_Direction, 0.0f);
 		direction = direction * matRotateX * matRotateY;

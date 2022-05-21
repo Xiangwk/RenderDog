@@ -25,17 +25,19 @@ namespace RenderDog
 
 		virtual		LIGHT_TYPE	GetType() const override { return LIGHT_TYPE::DIRECTIONAL; }
 		virtual		Vector3		GetDirection() const override { return m_Direction; }
+		virtual		Vector3		GetEulerAngle() const override { return m_eulerAngle; }
 		virtual     Vector3		GetColor() const override { return m_Color; }
 		virtual		float		GetLuminance() const override { return m_Luminance; }
 
-		virtual void			SetDirection(float eulerX, float eulerY, float eulerZ) override;
-		virtual void			SetColor(const Vector3& color) override { m_Color = color; }
-		virtual void			SetLuminance(float luma) override { m_Luminance = luma; }
+		virtual		void		SetDirection(float eulerX, float eulerY, float eulerZ) override;
+		virtual		void		SetColor(const Vector3& color) override { m_Color = color; }
+		virtual		void		SetLuminance(float luma) override { m_Luminance = luma; }
 
 		virtual void			RegisterToScene(IScene* pScene) override;
 
 	private:
 		Vector3					m_Direction;	//从光源发射光线的方向
+		Vector3					m_eulerAngle;
 		Vector3					m_Color;
 		float					m_Luminance;
 	};
@@ -43,7 +45,8 @@ namespace RenderDog
 	DirectionalLight::DirectionalLight() :
 		m_Direction(0.0f, 0.0f, 1.0f),
 		m_Color(1.0f, 1.0f, 1.0f),
-		m_Luminance(1.0f)
+		m_Luminance(1.0f),
+		m_eulerAngle(0.0f, 0.0f, 0.0f)
 	{}
 
 	bool DirectionalLight::Init(const LightDesc& desc)
@@ -52,6 +55,8 @@ namespace RenderDog
 		rotMat = GetRotationMatrix(desc.eulerDir.x, desc.eulerDir.y, desc.eulerDir.z);
 		Vector4 dir = Vector4(m_Direction, 0.0f);
 		dir = dir * rotMat;
+
+		m_eulerAngle = desc.eulerDir;
 
 		m_Direction = Vector3(dir.x, dir.y, dir.z);
 		m_Color = desc.color;
@@ -69,10 +74,15 @@ namespace RenderDog
 	{
 		Matrix4x4 rotMat = GetIdentityMatrix();
 		rotMat = GetRotationMatrix(eulerX, eulerY, eulerZ);
-		Vector4 dir = Vector4(m_Direction, 0.0f);
+		//Vector4 dir = Vector4(m_Direction, 0.0f);
+		Vector4 dir = Vector4(0.0f, 0.0f, 1.0f, 0.0f);
 		dir = dir * rotMat;
 
 		m_Direction = Vector3(dir.x, dir.y, dir.z);
+
+		m_eulerAngle.x = eulerX;
+		m_eulerAngle.y = eulerY;
+		m_eulerAngle.z = eulerZ;
 	}
 
 	void DirectionalLight::RegisterToScene(IScene* pScene)
