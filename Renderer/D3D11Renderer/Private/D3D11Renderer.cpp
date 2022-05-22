@@ -63,6 +63,8 @@ namespace RenderDog
 			return;
 		}
 
+		g_pD3D11ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
 		ID3D11Buffer* pVB = (ID3D11Buffer*)(renderParam.pVB->GetVertexBuffer());
 		ID3D11Buffer* pIB = (ID3D11Buffer*)(renderParam.pIB->GetIndexBuffer());
 
@@ -128,6 +130,8 @@ namespace RenderDog
 		{
 			return;
 		}
+
+		g_pD3D11ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		ID3D11Buffer* pVB = (ID3D11Buffer*)(renderParam.pVB->GetVertexBuffer());
 		ID3D11Buffer* pIB = (ID3D11Buffer*)(renderParam.pIB->GetIndexBuffer());
@@ -415,8 +419,6 @@ namespace RenderDog
 		m_pSceneView->ClearPrimitives();
 
 		AddPrisAndLightsToSceneView(pScene);
-
-		g_pD3D11ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		float clearColor[4] = { 0.74f, 0.89f, 0.99f, 1.0f };
 		ClearBackRenderTarget(clearColor);

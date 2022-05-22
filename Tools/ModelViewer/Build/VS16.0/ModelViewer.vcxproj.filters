@@ -12,18 +12,12 @@
     <ClInclude Include="..\..\Public\ModelViewer.h">
       <Filter>Public</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Public\GeometryGenerator.h">
-      <Filter>Public</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Private\Main.cpp">
       <Filter>Private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Private\ModelViewer.cpp">
-      <Filter>Private</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Private\GeometryGenerator.cpp">
       <Filter>Private</Filter>
     </ClCompile>
   </ItemGroup>

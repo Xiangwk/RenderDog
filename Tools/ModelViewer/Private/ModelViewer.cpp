@@ -20,6 +20,7 @@ int ModelViewer::m_Keys[512];
 ModelViewer::ModelViewer() :
 	m_pRenderDog(nullptr),
 	m_pScene(nullptr),
+	m_pGridLine(nullptr),
 	m_pModel(nullptr),
 	m_pFPSCamera(nullptr),
 	m_pMainLight(nullptr),
@@ -70,11 +71,13 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 		return false;
 	}
 
-	GeometryGenerator::LocalMeshData boxMeshData;
-	g_pGeometryGenerator->GenerateBox(1, 1, 1, boxMeshData);
+	RenderDog::GeometryGenerator::SimpleMeshData GridLineMeshData;
+	RenderDog::g_pGeometryGenerator->GenerateGridLine(50, 50, 1, RenderDog::Vector4(0.5f, 0.5f, 0.5f, 1.0f), GridLineMeshData);
+	m_pGridLine = new RenderDog::StaticModel();
+	//m_pGridLine->LoadFromData(GridLineMeshData.vertices, GridLineMeshData.indices);
 
 	m_pModel = new RenderDog::StaticModel();
-	//m_pModel->LoadFromData(boxMeshData.vertices, boxMeshData.indices);
+	
 	m_pModel->LoadFromFile("Models/generator/generator_small.obj");
 	//m_pModel->LoadTextureFromFile(L"EngineAsset/Textures/Brick_norm.dds");
 	m_pModel->LoadTextureFromFile(L"Textures/PolybumpTangent_DDN.tga");
@@ -101,6 +104,14 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 
 void ModelViewer::Release()
 {
+	if (m_pGridLine)
+	{
+		m_pGridLine->ReleaseRenderData();
+
+		delete m_pGridLine;
+		m_pGridLine = nullptr;
+	}
+
 	if (m_pModel)
 	{
 		m_pModel->ReleaseRenderData();
