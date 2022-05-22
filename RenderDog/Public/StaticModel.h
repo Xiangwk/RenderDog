@@ -28,8 +28,10 @@ namespace RenderDog
 		StaticModel(const StaticModel&) = default;
 		StaticModel& operator=(const StaticModel&) = default;
 
-		void						LoadFromData(const std::vector<LocalVertex>& vertices, const std::vector<uint32_t>& indices);
-		bool						LoadFromFile(const std::string& fileName);
+		void						LoadFromStandardData(const std::vector<StandardVertex>& vertices, const std::vector<uint32_t>& indices, 
+															VERTEX_TYPE vertType, const std::string& vsFile, const std::string& psFile);
+		bool						LoadFromFile(const std::string& fileName,
+													VERTEX_TYPE vertType, const std::string& vsFile, const std::string& psFile);
 		bool						LoadTextureFromFile(const std::wstring& diffuseTexturePath);
 		void						SetPosGesture(const Vector3& pos, const Vector3& euler, const Vector3& scale);
 		void						RegisterToScene(IScene* pScene);
@@ -43,10 +45,6 @@ namespace RenderDog
 
 	private:
 		std::vector<StaticMesh>		m_Meshes;
-
-		Vector3						m_Pos;
-		Vector3						m_Dir;
-		float						m_Scale;
 	};
 
 }// namespace RenderDog

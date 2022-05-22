@@ -30,7 +30,7 @@ namespace RenderDog
 		m_Indices.clear();
 	}
 
-	StaticMesh::StaticMesh(const std::vector<LocalVertex>& vertices, const std::vector<uint32_t>& indices) :
+	StaticMesh::StaticMesh(const std::vector<StandardVertex>& vertices, const std::vector<uint32_t>& indices) :
 		m_Vertices(0),
 		m_Indices(0),
 		m_RawVertices(0),
@@ -67,8 +67,7 @@ namespace RenderDog
 		pPrimitiveRenderer->Render(renderParam, m_pDiffuseTexture, m_pLinearSampler);
 	}
 
-	void StaticMesh::LoadFromData(const std::vector<LocalVertex>& vertices, 
-								  const std::vector<uint32_t>& indices)
+	void StaticMesh::LoadFromStandardData(const std::vector<StandardVertex>& vertices, const std::vector<uint32_t>& indices)
 	{
 		m_Vertices.assign(vertices.begin(), vertices.end());
 
@@ -97,14 +96,14 @@ namespace RenderDog
 		return true;
 	}
 
-	void StaticMesh::InitRenderData()
+	void StaticMesh::InitRenderData(VERTEX_TYPE vertType, const std::string& vsFile, const std::string& psFile)
 	{
 		m_pRenderData = new StaticMeshRenderData();
 
 		BufferDesc vbDesc = {};
 		vbDesc.bufferBind = BUFFER_BIND::VERTEX;
-		vbDesc.byteWidth = sizeof(LocalVertex) * (uint32_t)m_Vertices.size();
-		vbDesc.stride = sizeof(LocalVertex);
+		vbDesc.byteWidth = sizeof(StandardVertex) * (uint32_t)m_Vertices.size();
+		vbDesc.stride = sizeof(StandardVertex);
 		vbDesc.offset = 0;
 		vbDesc.pInitData = &(m_Vertices[0]);
 		vbDesc.isDynamic = false;
@@ -124,12 +123,12 @@ namespace RenderDog
 		cbDesc.isDynamic = false;
 		m_pRenderData->pCB = (IConstantBuffer*)g_pIBufferManager->CreateBuffer(cbDesc);
 
-		m_pRenderData->pVS = g_pIShaderManager->CreateVertexShader(VERTEX_TYPE::STANDARD);
-		m_pRenderData->pVS->CompileFromFile("Shaders/StaticModelVertexShader.hlsl", nullptr, "Main", "vs_5_0", 0);
+		m_pRenderData->pVS = g_pIShaderManager->CreateVertexShader(vertType);
+		m_pRenderData->pVS->CompileFromFile(vsFile, nullptr, "Main", "vs_5_0", 0);
 		m_pRenderData->pVS->Init();
 
 		m_pRenderData->pPS = g_pIShaderManager->CreatePixelShader();
-		m_pRenderData->pPS->CompileFromFile("Shaders/PhongLightingPixelShader.hlsl", nullptr, "Main", "ps_5_0", 0);
+		m_pRenderData->pPS->CompileFromFile(psFile, nullptr, "Main", "ps_5_0", 0);
 		m_pRenderData->pPS->Init();
 	}
 
@@ -177,7 +176,7 @@ namespace RenderDog
 	void StaticMesh::CalculateTangents()
 	{
 		//1. 按索引拆分顶点
-		std::vector<LocalVertex> tempVertices;
+		std::vector<StandardVertex> tempVertices;
 		tempVertices.reserve(m_RawIndices.size());
 
 		for (uint32_t i = 0; i < m_RawIndices.size(); ++i)
@@ -188,9 +187,9 @@ namespace RenderDog
 		//2. 按三角形计算TBN
 		for (uint32_t i = 0; i < tempVertices.size(); i += 3)
 		{
-			LocalVertex& v0 = tempVertices[i];
-			LocalVertex& v1 = tempVertices[i + 1];
-			LocalVertex& v2 = tempVertices[i + 2];
+			StandardVertex& v0 = tempVertices[i];
+			StandardVertex& v1 = tempVertices[i + 1];
+			StandardVertex& v2 = tempVertices[i + 2];
 
 			const Vector3& pos0 = v0.position;
 			const Vector3& pos1 = v1.position;
@@ -269,14 +268,14 @@ namespace RenderDog
 
 		for (uint32_t i = 3; i < tempVertices.size(); ++i)
 		{
-			LocalVertex& rawVert = tempVertices[i];
+			StandardVertex& rawVert = tempVertices[i];
 			Vector3 weightedAverNormal = rawVert.normal;
 
 			bool bHasSameVertex = false;
 			uint32_t theSameIndex = 0;
 			for (uint32_t j = 0; j < (uint32_t)m_Vertices.size(); ++j)
 			{
-				LocalVertex& vert = m_Vertices[j];
+				StandardVertex& vert = m_Vertices[j];
 				//TEMP!!! 暂时没有光滑组信息，临时增加一个夹角大于45度则不做法线的加权平均的条件
 				if (rawVert.position == vert.position &&
 					rawVert.texcoord == vert.texcoord &&
@@ -315,7 +314,7 @@ namespace RenderDog
 		//4. 将所有顶点的T和N规范正交化
 		for (uint32_t i = 0; i < m_Vertices.size(); ++i)
 		{
-			LocalVertex& vert = m_Vertices[i];
+			StandardVertex& vert = m_Vertices[i];
 			vert.normal.Normalize();
 			Vector3 tangent = Vector3(vert.tangent.x, vert.tangent.y, vert.tangent.z);
 			tangent = Normalize(tangent - vert.normal * DotProduct(vert.normal, tangent));

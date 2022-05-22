@@ -23,12 +23,15 @@ namespace RenderDog
 		m_Meshes.clear();
 	}
 
-	void StaticModel::LoadFromData(const std::vector<LocalVertex>& vertices, 
-								   const std::vector<uint32_t>& indices)
+	void StaticModel::LoadFromStandardData(const std::vector<StandardVertex>& vertices, 
+								   const std::vector<uint32_t>& indices,
+								   VERTEX_TYPE vertType, 
+								   const std::string& vsFile, 
+								   const std::string& psFile)
 	{
 		StaticMesh mesh;
-		mesh.LoadFromData(vertices, indices);
-		mesh.InitRenderData();
+		mesh.LoadFromStandardData(vertices, indices);
+		mesh.InitRenderData(vertType, vsFile, psFile);
 
 		m_Meshes.push_back(mesh);
 	}
@@ -47,7 +50,10 @@ namespace RenderDog
 		return true;
 	}
 
-	bool StaticModel::LoadFromFile(const std::string& fileName)
+	bool StaticModel::LoadFromFile(const std::string& fileName,
+								   VERTEX_TYPE vertType,
+								   const std::string& vsFile,
+								   const std::string& psFile)
 	{
 		Assimp::Importer modelImporter;
 		const aiScene* assimpModelScene = modelImporter.ReadFile(fileName, aiProcess_ConvertToLeftHanded);
@@ -63,7 +69,7 @@ namespace RenderDog
 		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
 		{
 			StaticMesh& mesh = m_Meshes[i];
-			mesh.InitRenderData();
+			mesh.InitRenderData(vertType, vsFile, psFile);
 		}
 
 		return true;
@@ -115,7 +121,7 @@ namespace RenderDog
 
 	StaticMesh StaticModel::ProcessMesh(const aiMesh* pAssimpMesh, const aiScene* pAssimpScene)
 	{
-		std::vector<LocalVertex> tempVertices;
+		std::vector<StandardVertex> tempVertices;
 		std::vector<uint32_t> tempIndices;
 
 		for (unsigned int i = 0; i < pAssimpMesh->mNumVertices; ++i)
@@ -124,7 +130,7 @@ namespace RenderDog
 			Vector3 normal = Vector3(pAssimpMesh->mNormals[i].x, pAssimpMesh->mNormals[i].y, pAssimpMesh->mNormals[i].z);
 			Vector2 texCoord = Vector2(pAssimpMesh->mTextureCoords[0][i].x, pAssimpMesh->mTextureCoords[0][i].y);
 
-			LocalVertex vert(position.x, position.y, position.z, 1.0f, 1.0f, 1.0f, 1.0f, normal.x, normal.y, normal.z, 0.0f, 0.0f, 0.0f, texCoord.x, texCoord.y);
+			StandardVertex vert(position.x, position.y, position.z, 1.0f, 1.0f, 1.0f, 1.0f, normal.x, normal.y, normal.z, 0.0f, 0.0f, 0.0f, texCoord.x, texCoord.y);
 
 			tempVertices.push_back(vert);
 		}

@@ -17,7 +17,7 @@ namespace RenderDog
 	public:
 		struct LocalMeshData
 		{
-			std::vector<RenderDog::LocalVertex> vertices;
+			std::vector<RenderDog::StandardVertex> vertices;
 			std::vector<unsigned int> indices;
 		};
 

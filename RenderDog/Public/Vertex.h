@@ -30,15 +30,15 @@ namespace RenderDog
 		{}
 	};
 
-	struct LocalVertex : public SimpleVertex
+	struct StandardVertex : public SimpleVertex
 	{
 		Vector3 normal;
 		Vector4 tangent;    //w: hand party
 		Vector2 texcoord;
 
-		LocalVertex() = default;
+		StandardVertex() = default;
 
-		LocalVertex(float px, float py, float pz,
+		StandardVertex(float px, float py, float pz,
 					float cx, float cy, float cz, float cw,
 					float nx, float ny, float nz,
 					float tx, float ty, float tz,
