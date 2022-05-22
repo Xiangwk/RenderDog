@@ -25,13 +25,12 @@ namespace RenderDog
 
 	void StaticModel::LoadFromStandardData(const std::vector<StandardVertex>& vertices, 
 								   const std::vector<uint32_t>& indices,
-								   VERTEX_TYPE vertType, 
 								   const std::string& vsFile, 
 								   const std::string& psFile)
 	{
 		StaticMesh mesh;
 		mesh.LoadFromStandardData(vertices, indices);
-		mesh.InitRenderData(vertType, vsFile, psFile);
+		mesh.InitRenderData(vsFile, psFile);
 
 		m_Meshes.push_back(mesh);
 	}
@@ -50,10 +49,7 @@ namespace RenderDog
 		return true;
 	}
 
-	bool StaticModel::LoadFromFile(const std::string& fileName,
-								   VERTEX_TYPE vertType,
-								   const std::string& vsFile,
-								   const std::string& psFile)
+	bool StaticModel::LoadFromFile(const std::string& fileName, const std::string& vsFile, const std::string& psFile)
 	{
 		Assimp::Importer modelImporter;
 		const aiScene* assimpModelScene = modelImporter.ReadFile(fileName, aiProcess_ConvertToLeftHanded);
@@ -69,7 +65,7 @@ namespace RenderDog
 		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
 		{
 			StaticMesh& mesh = m_Meshes[i];
-			mesh.InitRenderData(vertType, vsFile, psFile);
+			mesh.InitRenderData(vsFile, psFile);
 		}
 
 		return true;

@@ -78,7 +78,7 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 
 	m_pModel = new RenderDog::StaticModel();
 	
-	m_pModel->LoadFromFile("Models/generator/generator_small.obj", RenderDog::VERTEX_TYPE::STANDARD, "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl");
+	m_pModel->LoadFromFile("Models/generator/generator_small.obj", "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl");
 	m_pModel->LoadTextureFromFile(L"Textures/PolybumpTangent_DDN.tga");
 	m_pModel->SetPosGesture(RenderDog::Vector3(0.0f, -25.0f, 0.0f), RenderDog::Vector3(90.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
 

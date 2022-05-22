@@ -45,7 +45,7 @@ namespace RenderDog
 
 		void							LoadFromStandardData(const std::vector<StandardVertex>& vertices, const std::vector<uint32_t>& indices);
 		bool							LoadTextureFromFile(const std::wstring& diffuseTexturePath);
-		void							InitRenderData(VERTEX_TYPE vertType, const std::string& vsFile, const std::string& psFile);
+		void							InitRenderData(const std::string& vsFile, const std::string& psFile);
 		void							ReleaseRenderData();
 		void							SetPosGesture(const Vector3& pos, const Vector3& euler, const Vector3& scale);
 		void							CalculateTangents();

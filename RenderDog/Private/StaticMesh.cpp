@@ -96,7 +96,7 @@ namespace RenderDog
 		return true;
 	}
 
-	void StaticMesh::InitRenderData(VERTEX_TYPE vertType, const std::string& vsFile, const std::string& psFile)
+	void StaticMesh::InitRenderData(const std::string& vsFile, const std::string& psFile)
 	{
 		m_pRenderData = new StaticMeshRenderData();
 
@@ -123,7 +123,7 @@ namespace RenderDog
 		cbDesc.isDynamic = false;
 		m_pRenderData->pCB = (IConstantBuffer*)g_pIBufferManager->CreateBuffer(cbDesc);
 
-		m_pRenderData->pVS = g_pIShaderManager->CreateVertexShader(vertType);
+		m_pRenderData->pVS = g_pIShaderManager->CreateVertexShader(VERTEX_TYPE::STANDARD);
 		m_pRenderData->pVS->CompileFromFile(vsFile, nullptr, "Main", "vs_5_0", 0);
 		m_pRenderData->pVS->Init();
 
