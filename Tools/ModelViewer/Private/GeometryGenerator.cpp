@@ -68,5 +68,40 @@ void GeometryGenerator::GenerateBox(float width, float height, float depth, Loca
 	outputMesh.indices.assign(std::begin(indices), std::end(indices));
 }
 
+void GeometryGenerator::GenerateGridLine(int width, int depth, float gridUnit, const RenderDog::Vector4& lineColor, SimpleMeshData& outputMesh)
+{
+	outputMesh.vertices.clear();
+	outputMesh.indices.clear();
+
+	float widthLen = width * gridUnit;
+	float depthLen = depth * gridUnit;
+
+	float nearLeftX = -widthLen * 0.5f;
+	float nearLeftY = -depthLen * 0.5f;
+
+	for (int i = 0; i < width + 1; ++i)
+	{
+		float x1 = nearLeftX + i * gridUnit;
+		float y1 = nearLeftY;
+		float x2 = x1;
+		float y2 = nearLeftY + depth * gridUnit;
+
+		//线端的两个端点
+		outputMesh.vertices.push_back({ x1, -y1, 0, lineColor.x, lineColor.y, lineColor.z, lineColor.w });
+		outputMesh.vertices.push_back({ x2, -y2, 0, lineColor.x, lineColor.y, lineColor.z, lineColor.w });
+	}
+
+	for (int i = 0; i < depth + 1; ++i)
+	{
+		float x1 = nearLeftX;
+		float y1 = nearLeftY + i * gridUnit;
+		float x2 = nearLeftX + width * gridUnit;
+		float y2 = y1;
+
+		outputMesh.vertices.push_back({ x1, -y1, 0, lineColor.x, lineColor.y, lineColor.z, lineColor.w });
+		outputMesh.vertices.push_back({ x2, -y2, 0, lineColor.x, lineColor.y, lineColor.z, lineColor.w });
+	}
+}
+
 GeometryGenerator	g_GeometryGenerator;
 GeometryGenerator*	g_pGeometryGenerator = &g_GeometryGenerator;

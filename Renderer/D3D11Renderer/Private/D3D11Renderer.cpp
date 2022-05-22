@@ -418,7 +418,7 @@ namespace RenderDog
 
 		g_pD3D11ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		float clearColor[4] = { 0.3f, 0.3f, 0.3f, 1.0f };
+		float clearColor[4] = { 0.74f, 0.89f, 0.99f, 1.0f };
 		ClearBackRenderTarget(clearColor);
 
 		RenderPrimitives();

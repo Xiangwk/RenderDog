@@ -43,7 +43,7 @@ float4 Main(VSOutput vsOutput) : SV_Target
 	float NoL = saturate(dot(WorldNormal, -lightDirection));
 	float3 diffuse = ComFunc_Phong_Diffuse(lightColor.rgb, luminance, BaseColor, NoL);
 
-	float3 ambient = float3(0.05f, 0.05f, 0.05f);
+	float3 ambient = float3(0.3f, 0.3f, 0.3f);
 
 	float3 finalColor = saturate(diffuse + ambient);
 

@@ -86,7 +86,7 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 	lightDesc.type = RenderDog::LIGHT_TYPE::DIRECTIONAL;
 	lightDesc.color = RenderDog::Vector3(1.0f, 1.0f, 1.0f);
 	lightDesc.eulerDir = RenderDog::Vector3(45.0f, 45.0f, 45.0f);
-	lightDesc.luminance = 1.0f;
+	lightDesc.luminance = 0.8f;
 	m_pMainLight = RenderDog::g_pILightManager->CreateLight(lightDesc);
 
 	m_pMainLight->RegisterToScene(m_pScene);

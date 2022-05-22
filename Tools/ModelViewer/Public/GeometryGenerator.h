@@ -26,6 +26,8 @@ public:
 	};
 
 	void GenerateBox(float width, float height, float depth, LocalMeshData& outputMesh);
+	//生成网格线，使用LineList绘制
+	void GenerateGridLine(int width, int depth, float gridUnit, const RenderDog::Vector4& lineColor, SimpleMeshData& outputMesh);
 };
 
 extern GeometryGenerator* g_pGeometryGenerator;

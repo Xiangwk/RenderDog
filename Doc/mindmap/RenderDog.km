@@ -24,8 +24,8 @@
                             "created": 1620231626036,
                             "text": "Device",
                             "layout_right_offset": {
-                                "x": 460.6666656070287,
-                                "y": -322.83332813448385
+                                "x": 509.6666656070287,
+                                "y": -245.83332813448385
                             },
                             "layout": null,
                             "note": "参考DX11中的Device接口\n\n1. 将所有资源修改为从Resource中继承出来，Resouce中使用引用计数来管理内存的释放，Device使用工厂模式设计；\n"
@@ -196,8 +196,8 @@
                             "created": 1620231639649,
                             "text": "Buffer",
                             "layout_right_offset": {
-                                "x": 523.9999996026357,
-                                "y": -336.1666655076875
+                                "x": 507.99999960263574,
+                                "y": -383.1666655076875
                             },
                             "layout": null,
                             "note": "增加ContantBuffer"
@@ -271,24 +271,9 @@
                             "created": 1620231699247,
                             "text": "Texture",
                             "layout_right_offset": {
-                                "x": 505.8333329028553,
-                                "y": -284.8333360817696
+                                "x": 503.8333329028553,
+                                "y": -300.8333360817696
                             }
-                        },
-                        "children": []
-                    },
-                    {
-                        "data": {
-                            "id": "cbekexaf8f40",
-                            "created": 1621157620101,
-                            "text": "Camera",
-                            "layout_right_offset": {
-                                "x": 470,
-                                "y": -837
-                            },
-                            "priority": 4,
-                            "progress": 5,
-                            "note": "1. FPS相机完成\n\n2. 后面整理引擎架构的时候，将此功能拆分到Platform中；"
                         },
                         "children": []
                     },
@@ -344,59 +329,12 @@
                     },
                     {
                         "data": {
-                            "id": "cc4axcshjuo0",
-                            "created": 1623771412175,
-                            "text": "Light",
-                            "layout_right_offset": {
-                                "x": 481.9999937415122,
-                                "y": -303.7500047869978
-                            },
-                            "priority": 2,
-                            "note": "1. 先增加一个可以用鼠标控制的方向光；\n\n2. 该功能未来要迁移到Platform中；\n\n3. 迁移到Platform中之后完成光源应有的操作；",
-                            "progress": 1
-                        },
-                        "children": [
-                            {
-                                "data": {
-                                    "id": "cclavjriqs00",
-                                    "created": 1625497789889,
-                                    "text": "显示光源方向"
-                                },
-                                "children": []
-                            },
-                            {
-                                "data": {
-                                    "id": "cclavr5mamw0",
-                                    "created": 1625497805979,
-                                    "text": "控制光源方向变化"
-                                },
-                                "children": []
-                            }
-                        ]
-                    },
-                    {
-                        "data": {
-                            "id": "cc9dyexuxhk0",
-                            "created": 1624287758330,
-                            "text": "Timer",
-                            "layout_right_offset": {
-                                "x": 488,
-                                "y": -1065
-                            },
-                            "note": "1. Timer用于程序的时间控制，并且可以计算帧率等信息；\n\n2. 如何让相机的速度不受帧率影响，只与时间有关；",
-                            "priority": 1,
-                            "progress": 8
-                        },
-                        "children": []
-                    },
-                    {
-                        "data": {
                             "id": "cclaw8mr55s0",
                             "created": 1625497844020,
                             "text": "重构",
                             "layout_right_offset": {
-                                "x": 516.9999964237218,
-                                "y": -587.3332926697219
+                                "x": 460.99999642372177,
+                                "y": -577.3332926697219
                             },
                             "priority": null,
                             "note": "1. 使用引用计数来控制资源的释放；\n\n2. 将与渲染器无关的类型放到一个新的sln中；",
@@ -550,8 +488,8 @@
                             "created": 1634742361117,
                             "text": "根据DirectXSample的例子学习基本接口",
                             "layout_right_offset": {
-                                "x": 134.24999856576324,
-                                "y": -56.74999867752234
+                                "x": 143.24999856576324,
+                                "y": -2.749998677522342
                             }
                         },
                         "children": []
@@ -562,8 +500,8 @@
                             "created": 1634743477516,
                             "text": "将DX11的接口封装为一个渲染器",
                             "layout_right_offset": {
-                                "x": 144.74999860301614,
-                                "y": -32.24999923631549
+                                "x": 149.74999860301614,
+                                "y": -34.24999923631549
                             }
                         },
                         "children": [
@@ -636,11 +574,61 @@
                             "created": 1642911929568,
                             "text": "增加一个资源管理器，用于统一创建渲染时需要的各种资源",
                             "layout_right_offset": {
-                                "x": 135,
-                                "y": 31
+                                "x": 127,
+                                "y": -59
                             }
                         },
                         "children": []
+                    },
+                    {
+                        "data": {
+                            "id": "ck67n48urao0",
+                            "created": 1653214534036,
+                            "text": "添加渲染效果",
+                            "layout_right_offset": {
+                                "x": 138,
+                                "y": 34
+                            },
+                            "priority": 1
+                        },
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "ck67nde0d200",
+                                    "created": 1653214553938,
+                                    "text": "环境反射",
+                                    "layout_right_offset": {
+                                        "x": 46,
+                                        "y": -37
+                                    }
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "ck67np5rq0g0",
+                                    "created": 1653214579562,
+                                    "text": "阴影",
+                                    "layout_right_offset": {
+                                        "x": 55,
+                                        "y": -21
+                                    }
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "ck67nrus03c0",
+                                    "created": 1653214585427,
+                                    "text": "PBR",
+                                    "layout_right_offset": {
+                                        "x": 53,
+                                        "y": 11
+                                    }
+                                },
+                                "children": []
+                            }
+                        ]
                     }
                 ]
             },
@@ -702,9 +690,10 @@
                                     "created": 1641129129401,
                                     "text": "Init",
                                     "layout_right_offset": {
-                                        "x": 374.5000004842875,
-                                        "y": 34.49999914318323
-                                    }
+                                        "x": 380.5000004842875,
+                                        "y": -9.500000856816769
+                                    },
+                                    "expandState": "collapse"
                                 },
                                 "children": [
                                     {
@@ -727,8 +716,8 @@
                                     "created": 1641129135519,
                                     "text": "Release",
                                     "layout_right_offset": {
-                                        "x": 387.5000004842875,
-                                        "y": 28.49999914318323
+                                        "x": 393.5000004842875,
+                                        "y": -15.500000856816769
                                     }
                                 },
                                 "children": [
@@ -752,8 +741,8 @@
                                     "created": 1641129213221,
                                     "text": "Frame",
                                     "layout_right_offset": {
-                                        "x": 382.5000004842875,
-                                        "y": 26.49999914318323
+                                        "x": 388.5000004842875,
+                                        "y": -17.50000085681677
                                     }
                                 },
                                 "children": [
@@ -777,8 +766,8 @@
                                     "created": 1641129600623,
                                     "text": "OnResize",
                                     "layout_right_offset": {
-                                        "x": 400.5000004842875,
-                                        "y": 27.49999914318323
+                                        "x": 406.5000004842875,
+                                        "y": -16.50000085681677
                                     }
                                 },
                                 "children": [
@@ -828,8 +817,8 @@
                                     "created": 1641195217019,
                                     "text": "Init",
                                     "layout_right_offset": {
-                                        "x": 365,
-                                        "y": 20
+                                        "x": 368,
+                                        "y": -2
                                     }
                                 },
                                 "children": []
@@ -840,8 +829,8 @@
                                     "created": 1641195330125,
                                     "text": "Release",
                                     "layout_right_offset": {
-                                        "x": 381,
-                                        "y": 18
+                                        "x": 384,
+                                        "y": -4
                                     }
                                 },
                                 "children": []
@@ -852,8 +841,8 @@
                                     "created": 1641195339717,
                                     "text": "GetHandle",
                                     "layout_right_offset": {
-                                        "x": 390,
-                                        "y": 10
+                                        "x": 393,
+                                        "y": -12
                                     }
                                 },
                                 "children": []
@@ -864,8 +853,8 @@
                                     "created": 1641201932458,
                                     "text": "GetWidth",
                                     "layout_right_offset": {
-                                        "x": 389,
-                                        "y": 1
+                                        "x": 392,
+                                        "y": -21
                                     }
                                 },
                                 "children": []
@@ -876,8 +865,8 @@
                                     "created": 1641201939819,
                                     "text": "GetHeight",
                                     "layout_right_offset": {
-                                        "x": 394,
-                                        "y": -6
+                                        "x": 397,
+                                        "y": -28
                                     }
                                 },
                                 "children": []
@@ -915,8 +904,8 @@
                                     "text": "Matrix",
                                     "progress": 6,
                                     "layout_right_offset": {
-                                        "x": 360.2499942444265,
-                                        "y": -23.249999459832793
+                                        "x": 373.2499942444265,
+                                        "y": -19.249999459832793
                                     }
                                 },
                                 "children": [
@@ -957,8 +946,8 @@
                                     "progress": null,
                                     "note": "随用随加；",
                                     "layout_right_offset": {
-                                        "x": 361,
-                                        "y": -17
+                                        "x": 375,
+                                        "y": -13
                                     }
                                 },
                                 "children": []
@@ -972,8 +961,8 @@
                                     "priority": null,
                                     "progress": 9,
                                     "layout_right_offset": {
-                                        "x": 413,
-                                        "y": -1
+                                        "x": 404,
+                                        "y": -2
                                     }
                                 },
                                 "children": []
@@ -997,8 +986,8 @@
                                     "created": 1652875867675,
                                     "text": "WASD控制移动",
                                     "layout_right_offset": {
-                                        "x": 681,
-                                        "y": -29
+                                        "x": 687,
+                                        "y": -15
                                     }
                                 },
                                 "children": [
@@ -1170,7 +1159,7 @@
                                 "x": 550,
                                 "y": 427
                             },
-                            "priority": 2
+                            "priority": 3
                         },
                         "children": [
                             {
@@ -1244,7 +1233,7 @@
                                         "y": -136
                                     },
                                     "note": "负责管理引擎需要使用到的资源，如Buffer，Texture等；",
-                                    "priority": 1
+                                    "priority": 3
                                 },
                                 "children": []
                             }
@@ -1293,7 +1282,8 @@
                                                 "x": 382,
                                                 "y": -34
                                             },
-                                            "priority": 1
+                                            "priority": null,
+                                            "progress": 9
                                         },
                                         "children": [
                                             {
