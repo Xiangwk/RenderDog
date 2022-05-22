@@ -49,5 +49,8 @@
     <None Include="..\..\Shaders\StaticModelVertexShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\..\Shaders\SimpleModelVertexShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

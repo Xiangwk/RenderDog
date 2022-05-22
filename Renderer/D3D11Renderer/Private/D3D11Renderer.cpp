@@ -24,6 +24,71 @@ namespace RenderDog
 	//    Mesh Renderer
 	//===========================================================
 
+	class D3D11LineMeshRenderer : public IPrimitiveRenderer
+	{
+	public:
+		D3D11LineMeshRenderer();
+		D3D11LineMeshRenderer(IConstantBuffer* pVertexShaderCB);
+		virtual ~D3D11LineMeshRenderer();
+
+		virtual IConstantBuffer*		GetVSConstantBuffer() override { return m_pVertexShaderCB; }
+		virtual IConstantBuffer*		GetLightingConstantbuffer() override { return nullptr; }
+
+		virtual void					Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler) override;
+
+	protected:
+		IConstantBuffer*				m_pVertexShaderCB;
+	};
+
+	D3D11LineMeshRenderer::D3D11LineMeshRenderer() :
+		m_pVertexShaderCB(nullptr)
+	{}
+
+	D3D11LineMeshRenderer::~D3D11LineMeshRenderer()
+	{}
+
+	D3D11LineMeshRenderer::D3D11LineMeshRenderer(IConstantBuffer* pVertexShaderCB) :
+		m_pVertexShaderCB(pVertexShaderCB)
+	{}
+
+	void D3D11LineMeshRenderer::Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler)
+	{
+		if (!g_pD3D11ImmediateContext)
+		{
+			return;
+		}
+
+		if (!renderParam.pVB || !renderParam.pIB)
+		{
+			return;
+		}
+
+		g_pD3D11ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+
+		ID3D11Buffer* pVB = (ID3D11Buffer*)(renderParam.pVB->GetVertexBuffer());
+		ID3D11Buffer* pIB = (ID3D11Buffer*)(renderParam.pIB->GetIndexBuffer());
+
+		uint32_t indexNum = renderParam.pIB->GetIndexNum();
+
+		uint32_t stride = renderParam.pVB->GetStride();
+		uint32_t offset = renderParam.pVB->GetOffset();
+		g_pD3D11ImmediateContext->IASetVertexBuffers(0, 1, &pVB, &stride, &offset);
+		g_pD3D11ImmediateContext->IASetIndexBuffer(pIB, DXGI_FORMAT_R32_UINT, 0);
+
+		renderParam.pVS->SetToContext();
+
+		ID3D11Buffer* pGlobalCB = (ID3D11Buffer*)(renderParam.pGlobalCB->GetConstantBuffer());
+		g_pD3D11ImmediateContext->VSSetConstantBuffers(0, 1, &pGlobalCB);
+
+		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetConstantBuffer());
+		g_pD3D11ImmediateContext->VSSetConstantBuffers(1, 1, &pPerObjCB);
+
+		renderParam.pPS->SetToContext();
+
+		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
+	}
+
+
 	class D3D11MeshRenderer : public IPrimitiveRenderer
 	{
 	public:
@@ -542,12 +607,21 @@ namespace RenderDog
 
 	void D3D11Renderer::RenderPrimitives()
 	{
+		D3D11LineMeshRenderer lineRender(m_pGlobalConstantBuffer);
+
+		uint32_t simplePriNum = m_pSceneView->GetSimplePrisNum();
+		for (uint32_t i = 0; i < simplePriNum; ++i)
+		{
+			IPrimitive* pPri = m_pSceneView->GetSimplePri(i);
+			pPri->Render(&lineRender);
+		}
+
 		D3D11MeshLightingRenderer meshRender(m_pGlobalConstantBuffer, m_pLightingConstantBuffer);
 
-		uint32_t priNum = m_pSceneView->GetPrimitiveNum();
-		for (uint32_t i = 0; i < priNum; ++i)
+		uint32_t opaquePriNum = m_pSceneView->GetOpaquePrisNum();
+		for (uint32_t i = 0; i < opaquePriNum; ++i)
 		{
-			IPrimitive* pPri = m_pSceneView->GetPrimitive(i);
+			IPrimitive* pPri = m_pSceneView->GetOpaquePri(i);
 			pPri->Render(&meshRender);
 		}
 	}

@@ -19,6 +19,37 @@ namespace RenderDog
 {
 	class IScene;
 
+	//------------------------------------------------------------------------
+	//   SimpleModel
+	//------------------------------------------------------------------------
+
+	class SimpleModel
+	{
+	public:
+		SimpleModel();
+		~SimpleModel();
+
+		SimpleModel(const SimpleModel&) = default;
+		SimpleModel& operator=(const SimpleModel&) = default;
+
+		void						LoadFromSimpleData(const std::vector<SimpleVertex>& vertices, const std::vector<uint32_t>& indices,
+														const std::string& vsFile, const std::string& psFile);
+
+		void						RegisterToScene(IScene* pScene);
+
+		void						ReleaseRenderData();
+
+		void						SetPosGesture(const Vector3& pos, const Vector3& euler, const Vector3& scale);
+
+	private:
+		std::vector<SimpleMesh>		m_Meshes;
+	};
+
+
+	//------------------------------------------------------------------------
+	//   StaticModel
+	//------------------------------------------------------------------------
+
 	class StaticModel
 	{
 	public:
@@ -33,9 +64,12 @@ namespace RenderDog
 		bool						LoadFromFile(const std::string& fileName,
 													const std::string& vsFile, const std::string& psFile);
 		bool						LoadTextureFromFile(const std::wstring& diffuseTexturePath);
-		void						SetPosGesture(const Vector3& pos, const Vector3& euler, const Vector3& scale);
+		
 		void						RegisterToScene(IScene* pScene);
+
 		void						ReleaseRenderData();
+
+		void						SetPosGesture(const Vector3& pos, const Vector3& euler, const Vector3& scale);
 
 	private:
 		void						ProcessNode(const aiNode* pAssimpNode, const aiScene* pAssimpScene);

@@ -11,6 +11,129 @@
 
 namespace RenderDog
 {
+	//------------------------------------------------------------------------
+	//   SimpleMesh
+	//------------------------------------------------------------------------
+
+	SimpleMesh::SimpleMesh() :
+		m_Vertices(0),
+		m_Indices(0),
+		m_pRenderData(nullptr)
+	{}
+
+	SimpleMesh::~SimpleMesh()
+	{
+		m_Vertices.clear();
+		m_Indices.clear();
+	}
+
+	SimpleMesh::SimpleMesh(const std::vector<SimpleVertex>& vertices, const std::vector<uint32_t>& indices) :
+		m_Vertices(0),
+		m_Indices(0),
+		m_pRenderData(nullptr)
+	{
+		m_Vertices.reserve(vertices.size());
+		m_Indices.reserve(indices.size());
+
+		for (uint32_t i = 0; i < vertices.size(); ++i)
+		{
+			m_Vertices.push_back(vertices[i]);
+		}
+
+		for (uint32_t i = 0; i < indices.size(); ++i)
+		{
+			m_Indices.push_back(indices[i]);
+		}
+	}
+
+	void SimpleMesh::Render(IPrimitiveRenderer* pPrimitiveRenderer)
+	{
+		PrimitiveRenderParam renderParam = {};
+		renderParam.pVB			= m_pRenderData->pVB;
+		renderParam.pIB			= m_pRenderData->pIB;
+		renderParam.pGlobalCB	= pPrimitiveRenderer->GetVSConstantBuffer();
+		renderParam.pPerObjCB	= m_pRenderData->pCB;
+		renderParam.pLightingCB = pPrimitiveRenderer->GetLightingConstantbuffer();
+		renderParam.pVS			= m_pRenderData->pVS;
+		renderParam.pPS			= m_pRenderData->pPS;
+
+		pPrimitiveRenderer->Render(renderParam, nullptr, nullptr);
+	}
+
+	void SimpleMesh::LoadFromSimpleData(const std::vector<SimpleVertex>& vertices, const std::vector<uint32_t>& indices)
+	{
+		m_Vertices.assign(vertices.begin(), vertices.end());
+
+		m_Indices.assign(indices.begin(), indices.end());
+	}
+
+	void SimpleMesh::InitRenderData(const std::string& vsFile, const std::string& psFile)
+	{
+		m_pRenderData = new StaticMeshRenderData();
+
+		BufferDesc vbDesc = {};
+		vbDesc.bufferBind = BUFFER_BIND::VERTEX;
+		vbDesc.byteWidth = sizeof(SimpleVertex) * (uint32_t)m_Vertices.size();
+		vbDesc.stride = sizeof(SimpleVertex);
+		vbDesc.offset = 0;
+		vbDesc.pInitData = &(m_Vertices[0]);
+		vbDesc.isDynamic = false;
+		m_pRenderData->pVB = (IVertexBuffer*)g_pIBufferManager->CreateBuffer(vbDesc);
+
+		BufferDesc ibDesc = {};
+		ibDesc.bufferBind = BUFFER_BIND::INDEX;
+		ibDesc.byteWidth = sizeof(uint32_t) * (uint32_t)m_Indices.size();
+		ibDesc.pInitData = &(m_Indices[0]);
+		ibDesc.isDynamic = false;
+		m_pRenderData->pIB = (IIndexBuffer*)g_pIBufferManager->CreateBuffer(ibDesc);
+
+		BufferDesc cbDesc = {};
+		cbDesc.bufferBind = BUFFER_BIND::CONSTANT;
+		cbDesc.byteWidth = sizeof(Matrix4x4);
+		cbDesc.pInitData = nullptr;
+		cbDesc.isDynamic = false;
+		m_pRenderData->pCB = (IConstantBuffer*)g_pIBufferManager->CreateBuffer(cbDesc);
+
+		m_pRenderData->pVS = g_pIShaderManager->CreateVertexShader(VERTEX_TYPE::SIMPLE);
+		m_pRenderData->pVS->CompileFromFile(vsFile, nullptr, "Main", "vs_5_0", 0);
+		m_pRenderData->pVS->Init();
+
+		m_pRenderData->pPS = g_pIShaderManager->CreatePixelShader();
+		m_pRenderData->pPS->CompileFromFile(psFile, nullptr, "Main", "ps_5_0", 0);
+		m_pRenderData->pPS->Init();
+	}
+
+	void SimpleMesh::ReleaseRenderData()
+	{
+		if (m_pRenderData)
+		{
+			m_pRenderData->pVB->Release();
+			m_pRenderData->pIB->Release();
+			m_pRenderData->pCB->Release();
+			m_pRenderData->pVS->Release();
+			m_pRenderData->pPS->Release();
+
+			delete m_pRenderData;
+			m_pRenderData = nullptr;
+		}
+	}
+
+	void SimpleMesh::SetPosGesture(const Vector3& pos, const Vector3& euler, const Vector3& scale)
+	{
+		Matrix4x4 transMat = GetTranslationMatrix(pos.x, pos.y, pos.z);
+		Matrix4x4 rotMat = GetRotationMatrix(euler.x, euler.y, euler.z);
+		Matrix4x4 scaleMat = GetScaleMatrix(scale.x, scale.y, scale.z);
+
+		Matrix4x4 worldMat = scaleMat * rotMat * transMat;
+		worldMat = worldMat;
+
+		m_pRenderData->pCB->Update(&worldMat, sizeof(Matrix4x4));
+	}
+
+	//------------------------------------------------------------------------
+	//   StaticMesh
+	//------------------------------------------------------------------------
+
 	StaticMesh::StaticMesh() :
 		m_Vertices(0),
 		m_Indices(0),

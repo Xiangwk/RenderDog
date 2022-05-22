@@ -92,12 +92,14 @@ namespace RenderDog
 			float y2 = nearLeftY + depth * gridUnit;
 
 			//线端的两个端点
-			outputMesh.vertices.push_back({ x1, -y1, 0, lineColor.x, lineColor.y, lineColor.z, lineColor.w });
-			outputMesh.vertices.push_back({ x2, -y2, 0, lineColor.x, lineColor.y, lineColor.z, lineColor.w });
+			outputMesh.vertices.push_back({ x1, 0, -y1, lineColor.x, lineColor.y, lineColor.z, lineColor.w });
+			outputMesh.vertices.push_back({ x2, 0, -y2, lineColor.x, lineColor.y, lineColor.z, lineColor.w });
 
 			outputMesh.indices.push_back(2 * i);
 			outputMesh.indices.push_back(2 * i + 1);
 		}
+
+		int indiceNum = outputMesh.indices.size();
 
 		//纵向线
 		for (int i = 0; i < depth + 1; ++i)
@@ -107,11 +109,11 @@ namespace RenderDog
 			float x2 = nearLeftX + width * gridUnit;
 			float y2 = y1;
 
-			outputMesh.vertices.push_back({ x1, -y1, 0, lineColor.x, lineColor.y, lineColor.z, lineColor.w });
-			outputMesh.vertices.push_back({ x2, -y2, 0, lineColor.x, lineColor.y, lineColor.z, lineColor.w });
+			outputMesh.vertices.push_back({ x1, 0, -y1, lineColor.x, lineColor.y, lineColor.z, lineColor.w });
+			outputMesh.vertices.push_back({ x2, 0, -y2, lineColor.x, lineColor.y, lineColor.z, lineColor.w });
 
-			outputMesh.indices.push_back(2 * i);
-			outputMesh.indices.push_back(2 * i + 1);
+			outputMesh.indices.push_back(indiceNum + 2 * i);
+			outputMesh.indices.push_back(indiceNum + 2 * i + 1);
 		}
 	}
 

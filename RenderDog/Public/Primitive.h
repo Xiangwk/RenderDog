@@ -15,16 +15,22 @@ namespace RenderDog
 	class ITexture2D;
 	class ISamplerState;
 
+	enum class PRIMITIVE_TYPE
+	{
+		SIMPLE_PRI = 0,
+		OPAQUE_PRI
+	};
+
 	struct PrimitiveRenderParam
 	{
-		IVertexBuffer* pVB;
-		IIndexBuffer* pIB;
-		IConstantBuffer* pGlobalCB;
-		IConstantBuffer* pPerObjCB;
-		IConstantBuffer* pLightingCB;
+		IVertexBuffer*		pVB;
+		IIndexBuffer*		pIB;
+		IConstantBuffer*	pGlobalCB;
+		IConstantBuffer*	pPerObjCB;
+		IConstantBuffer*	pLightingCB;
 
-		IShader* pVS;
-		IShader* pPS;
+		IShader*			pVS;
+		IShader*			pPS;
 
 		PrimitiveRenderParam() :
 			pVB(nullptr),
@@ -54,6 +60,8 @@ namespace RenderDog
 		virtual ~IPrimitive() = default;
 
 		virtual void				Render(IPrimitiveRenderer* pPrimitiveRenderer) = 0;
+		
+		virtual PRIMITIVE_TYPE		GetPriType() const = 0;
 	};
 
 }// namespace RenderDog

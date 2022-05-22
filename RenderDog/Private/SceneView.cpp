@@ -6,36 +6,57 @@
 
 #include "SceneView.h"
 #include "Camera.h"
+#include "Primitive.h"
 
 namespace RenderDog
 {
 	SceneView::SceneView():
-		m_Primitives(0),
+		m_OpaquePris(0),
+		m_SimplePris(0),
 		m_Lights(0),
 		m_pCamera(nullptr)
 	{}
 
 	SceneView::SceneView(FPSCamera* pCamera) :
-		m_Primitives(0),
+		m_OpaquePris(0),
+		m_SimplePris(0),
 		m_Lights(0),
 		m_pCamera(pCamera)
 	{}
 
 	SceneView::~SceneView()
 	{
-		m_Primitives.clear();
+		m_OpaquePris.clear();
+		m_SimplePris.clear();
 
 		m_Lights.clear();
 	}
 
 	void SceneView::AddPrimitive(IPrimitive* pPri)
 	{
-		m_Primitives.push_back(pPri);
+		switch (pPri->GetPriType())
+		{
+		case PRIMITIVE_TYPE::SIMPLE_PRI:
+		{
+			m_SimplePris.push_back(pPri);
+			break;
+		}
+		case PRIMITIVE_TYPE::OPAQUE_PRI:
+			m_OpaquePris.push_back(pPri);
+			break;
+		default:
+			break;
+		}
 	}
 
-	IPrimitive* SceneView::GetPrimitive(uint32_t index)
+	IPrimitive* SceneView::GetOpaquePri(uint32_t index)
 	{
-		return m_Primitives[index];
+		return m_OpaquePris[index];
+	}
+
+	IPrimitive* SceneView::GetSimplePri(uint32_t index)
+	{
+		return m_SimplePris[index];
 	}
 
 	void SceneView::AddLight(ILight* pLight)
@@ -50,7 +71,8 @@ namespace RenderDog
 
 	void SceneView::ClearPrimitives() 
 	{ 
-		m_Primitives.clear(); 
+		m_OpaquePris.clear();
+		m_SimplePris.clear();
 	}
 
 	void SceneView::ClearLights() 
