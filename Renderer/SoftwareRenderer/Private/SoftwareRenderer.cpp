@@ -25,6 +25,70 @@ namespace RenderDog
 	//    Mesh Renderer
 	//===========================================================
 
+	class SoftwareLineMeshRenderer : public IPrimitiveRenderer
+	{
+	public:
+		SoftwareLineMeshRenderer();
+		SoftwareLineMeshRenderer(IConstantBuffer* pVertexShaderCB);
+		virtual ~SoftwareLineMeshRenderer();
+
+		virtual IConstantBuffer*		GetVSConstantBuffer() override { return m_pVertexShaderCB; }
+		virtual IConstantBuffer*		GetLightingConstantbuffer() override { return nullptr; }
+
+		virtual void					Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler) override;
+
+	protected:
+		IConstantBuffer*				m_pVertexShaderCB;
+	};
+
+	SoftwareLineMeshRenderer::SoftwareLineMeshRenderer() :
+		m_pVertexShaderCB(nullptr)
+	{}
+
+	SoftwareLineMeshRenderer::~SoftwareLineMeshRenderer()
+	{}
+
+	SoftwareLineMeshRenderer::SoftwareLineMeshRenderer(IConstantBuffer* pVertexShaderCB) :
+		m_pVertexShaderCB(pVertexShaderCB)
+	{}
+
+	void SoftwareLineMeshRenderer::Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler)
+	{
+		if (!g_pSRImmediateContext)
+		{
+			return;
+		}
+
+		if (!renderParam.pVB || !renderParam.pIB)
+		{
+			return;
+		}
+
+		g_pSRImmediateContext->IASetPrimitiveTopology(RenderDog::SR_PRIMITIVE_TOPOLOGY::LINE_LIST);
+
+		ISRBuffer* pVB = (ISRBuffer*)(renderParam.pVB->GetVertexBuffer());
+		ISRBuffer* pIB = (ISRBuffer*)(renderParam.pIB->GetIndexBuffer());
+
+		uint32_t indexNum = renderParam.pIB->GetIndexNum();
+
+		uint32_t stride = renderParam.pVB->GetStride();
+		uint32_t offset = renderParam.pVB->GetOffset();
+		g_pSRImmediateContext->IASetVertexBuffer(pVB);
+		g_pSRImmediateContext->IASetIndexBuffer(pIB);
+
+		renderParam.pVS->SetToContext();
+
+		ISRBuffer* pGlobalCB = (ISRBuffer*)(renderParam.pGlobalCB->GetConstantBuffer());
+		g_pSRImmediateContext->VSSetConstantBuffer(0, &pGlobalCB);
+
+		ISRBuffer* pPerObjCB = (ISRBuffer*)(renderParam.pPerObjCB->GetConstantBuffer());
+		g_pSRImmediateContext->VSSetConstantBuffer(1, &pPerObjCB);
+
+		renderParam.pPS->SetToContext();
+
+		g_pSRImmediateContext->DrawIndex(indexNum);
+	}
+
 	class SoftwareMeshRenderer : public IPrimitiveRenderer
 	{
 	public:
@@ -63,6 +127,8 @@ namespace RenderDog
 		{
 			return;
 		}
+
+		g_pSRImmediateContext->IASetPrimitiveTopology(RenderDog::SR_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST);
 
 		ISRBuffer* pVB = (ISRBuffer*)(renderParam.pVB->GetVertexBuffer());
 		ISRBuffer* pIB = (ISRBuffer*)(renderParam.pIB->GetIndexBuffer());
@@ -130,6 +196,8 @@ namespace RenderDog
 		{
 			return;
 		}
+
+		g_pSRImmediateContext->IASetPrimitiveTopology(RenderDog::SR_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST);
 
 		ISRBuffer* pVB = (ISRBuffer*)(renderParam.pVB->GetVertexBuffer());
 		ISRBuffer* pIB = (ISRBuffer*)(renderParam.pIB->GetIndexBuffer());
@@ -350,8 +418,6 @@ namespace RenderDog
 
 		AddPrisAndLightsToSceneView(pScene);
 
-		g_pSRImmediateContext->IASetPrimitiveTopology(RenderDog::SR_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST);
-
 		float clearColor[4] = { 0.74f, 0.89f, 0.99f, 1.0f };
 		ClearBackRenderTarget(clearColor);
 
@@ -469,13 +535,22 @@ namespace RenderDog
 
 	void SoftwareRenderer::RenderPrimitives()
 	{
-		//D3D11MeshRenderer meshRender(m_pGlobalConstantBuffer);
+		SoftwareLineMeshRenderer lineMeshRenderer(m_pGlobalConstantBuffer);
+
+		uint32_t simplePriNum = m_pSceneView->GetSimplePrisNum();
+		for (uint32_t i = 0; i < simplePriNum; ++i)
+		{
+			IPrimitive* pPri = m_pSceneView->GetSimplePri(i);
+			pPri->Render(&lineMeshRenderer);
+		}
+
+
 		SoftwareMeshLightingRenderer meshRender(m_pGlobalConstantBuffer, m_pLightingConstantBuffer);
 
-		uint32_t priNum = m_pSceneView->GetPrimitiveNum();
-		for (uint32_t i = 0; i < priNum; ++i)
+		uint32_t opaquePriNum = m_pSceneView->GetOpaquePrisNum();
+		for (uint32_t i = 0; i < opaquePriNum; ++i)
 		{
-			IPrimitive* pPri = m_pSceneView->GetPrimitive(i);
+			IPrimitive* pPri = m_pSceneView->GetOpaquePri(i);
 			pPri->Render(&meshRender);
 		}
 	}

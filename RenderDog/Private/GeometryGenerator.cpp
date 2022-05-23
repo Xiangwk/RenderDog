@@ -75,14 +75,15 @@ namespace RenderDog
 		outputMesh.vertices.clear();
 		outputMesh.indices.clear();
 
+		outputMesh.vertices.reserve(2 * width + 2);
+		outputMesh.indices.reserve(2 * width + 2);
+
 		float widthLen = width * gridUnit;
 		float depthLen = depth * gridUnit;
 
 		float nearLeftX = -widthLen * 0.5f;
 		float nearLeftY = -depthLen * 0.5f;
 
-		outputMesh.vertices.reserve(2 * width + 2);
-		outputMesh.indices.reserve(2 * width + 2);
 		//∫·œÚœﬂ
 		for (int i = 0; i < width + 1; ++i)
 		{

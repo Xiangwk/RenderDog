@@ -208,16 +208,39 @@
                                     "id": "cb5gamyj04w0",
                                     "created": 1620231960108,
                                     "text": "VertexBuffer",
-                                    "progress": 5
+                                    "progress": 5,
+                                    "layout_right_offset": {
+                                        "x": 5,
+                                        "y": -17
+                                    }
                                 },
-                                "children": []
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "ck78o8mbr6g0",
+                                            "created": 1653319002988,
+                                            "text": "其中保存的Data类型不能写死为StandardVertex*",
+                                            "layout_right_offset": {
+                                                "x": 39,
+                                                "y": -28
+                                            },
+                                            "priority": 2,
+                                            "note": "在加载使用SimpleVertex类型顶点的模型时，由于创建VertexBuffer时，传入大小为sizeof(SimpleVertex)，而VertexBuffer中的数据类型为StandardVertex，不匹配，因此会导致堆损坏；"
+                                        },
+                                        "children": []
+                                    }
+                                ]
                             },
                             {
                                 "data": {
                                     "id": "cb5gaq9l3xs0",
                                     "created": 1620231967307,
                                     "text": "IndexBuffer",
-                                    "progress": 5
+                                    "progress": 5,
+                                    "layout_right_offset": {
+                                        "x": 0,
+                                        "y": -2
+                                    }
                                 },
                                 "children": []
                             },
@@ -227,7 +250,11 @@
                                     "created": 1620231993594,
                                     "text": "ConstantBuffer",
                                     "priority": 2,
-                                    "progress": 1
+                                    "progress": 1,
+                                    "layout_right_offset": {
+                                        "x": -1,
+                                        "y": 24
+                                    }
                                 },
                                 "children": []
                             }

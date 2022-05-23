@@ -8,6 +8,7 @@
 #include "HelloWorld.h"
 #include "Window.h"
 #include "Utility.h"
+#include "GeometryGenerator.h"
 
 #include <windowsx.h>
 #include <sstream>
@@ -20,6 +21,7 @@ int DemoApp::m_Keys[512];
 DemoApp::DemoApp():
 	m_pRenderDog(nullptr),
 	m_pScene(nullptr),
+	m_pGridLine(nullptr),
 	m_pModel(nullptr),
 	m_pFPSCamera(nullptr),
 	m_pMainLight(nullptr),
@@ -36,7 +38,7 @@ DemoApp::~DemoApp()
 bool DemoApp::Init(const DemoInitDesc& desc)
 {
 	RenderDog::CameraDesc camDesc;
-	camDesc.position = RenderDog::Vector3(0.0f, 0.0f, -100.0f);
+	camDesc.position = RenderDog::Vector3(0.0f, 2.0f, -20.0f);
 	camDesc.yaw = 0.0f;
 	camDesc.pitch = 0.0f;
 	camDesc.fov = 45.0f;
@@ -70,11 +72,17 @@ bool DemoApp::Init(const DemoInitDesc& desc)
 		return false;
 	}
 
+	/*RenderDog::GeometryGenerator::SimpleMeshData GridLineMeshData;
+	RenderDog::g_pGeometryGenerator->GenerateGridLine(100, 100, 1, RenderDog::Vector4(0.8f, 0.8f, 0.8f, 1.0f), GridLineMeshData);
+	m_pGridLine = new RenderDog::SimpleModel();
+	m_pGridLine->LoadFromSimpleData(GridLineMeshData.vertices, GridLineMeshData.indices, "Shaders/SimpleModelVertexShader.hlsl", "Shaders/SingleColorPixelShader.hlsl");
+	m_pGridLine->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
+	m_pGridLine->RegisterToScene(m_pScene);*/
+
 	m_pModel = new RenderDog::StaticModel();
-	m_pModel->LoadFromFile("Models/generator/generator_small.obj");
-	//m_pModel->LoadTextureFromFile(L"EngineAsset/Textures/awesomeface.dds");
+	m_pModel->LoadFromFile("Models/generator/generator_small.obj", "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl");
 	m_pModel->LoadTextureFromFile(L"Textures/PolybumpTangent_DDN.tga");
-	m_pModel->SetPosGesture(RenderDog::Vector3(0.0f, -25.0f, 0.0f), RenderDog::Vector3(90.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
+	m_pModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(90.0f, 0.0f, 0.0f), RenderDog::Vector3(0.1f));
 
 	m_pModel->RegisterToScene(m_pScene);
 
@@ -97,6 +105,14 @@ bool DemoApp::Init(const DemoInitDesc& desc)
 
 void DemoApp::Release()
 {
+	if (m_pGridLine)
+	{
+		m_pGridLine->ReleaseRenderData();
+
+		delete m_pGridLine;
+		m_pGridLine = nullptr;
+	}
+
 	if (m_pModel)
 	{
 		m_pModel->ReleaseRenderData();

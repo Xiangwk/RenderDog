@@ -53,7 +53,7 @@ namespace RenderDog
 		virtual void	AddRef() override {}
 		virtual void	Release() override { delete this; }
 
-		VSOutputVertex	VSMain(const LocalVertex& inVertex, const Matrix4x4& matWorld, const Matrix4x4& matView, const Matrix4x4& matProj) const;
+		VSOutputVertex	VSMain(const StandardVertex& inVertex, const Matrix4x4& matWorld, const Matrix4x4& matView, const Matrix4x4& matProj) const;
 	};
 
 	class PixelShader : public ISRPixelShader
@@ -454,24 +454,24 @@ namespace RenderDog
 		~VertexBuffer()
 		{}
 
-		bool				Init(const SRBufferDesc* pDesc, const SRSubResourceData* pInitData);
+		bool					Init(const SRBufferDesc* pDesc, const SRSubResourceData* pInitData);
 
-		virtual void		AddRef() override { ++m_RefCnt; }
-		virtual void		Release() override;
+		virtual void			AddRef() override { ++m_RefCnt; }
+		virtual void			Release() override;
 
-		virtual void		GetType(SR_RESOURCE_DIMENSION* pResDimension) override { *pResDimension = SR_RESOURCE_DIMENSION::BUFFER; }
+		virtual void			GetType(SR_RESOURCE_DIMENSION* pResDimension) override { *pResDimension = SR_RESOURCE_DIMENSION::BUFFER; }
 
-		virtual void		GetDesc(SRBufferDesc* pDesc) override { *pDesc = m_Desc; }
+		virtual void			GetDesc(SRBufferDesc* pDesc) override { *pDesc = m_Desc; }
 
-		const LocalVertex*	GetData() const { return m_pData; }
-		const uint32_t		GetNum() const { return m_nVertsNum; }
+		const StandardVertex*	GetData() const { return m_pData; }
+		const uint32_t			GetNum() const { return m_nVertsNum; }
 
 	private:
-		int					m_RefCnt;
-		SRBufferDesc		m_Desc;
+		int						m_RefCnt;
+		SRBufferDesc			m_Desc;
 
-		LocalVertex*		m_pData;
-		uint32_t			m_nVertsNum;
+		StandardVertex*			m_pData;
+		uint32_t				m_nVertsNum;
 	};
 
 	bool VertexBuffer::Init(const SRBufferDesc* pDesc, const SRSubResourceData* pInitData)
@@ -483,8 +483,8 @@ namespace RenderDog
 
 		m_Desc = *pDesc;
 
-		m_nVertsNum = pDesc->byteWidth / sizeof(LocalVertex);
-		m_pData = new LocalVertex[m_nVertsNum];
+		m_nVertsNum = pDesc->byteWidth / sizeof(StandardVertex);
+		m_pData = new StandardVertex[m_nVertsNum];
 		if (!m_pData)
 		{
 			return false;
@@ -1276,11 +1276,11 @@ namespace RenderDog
 
 	void DeviceContext::DrawIndex(uint32_t indexNum)
 	{
-		const LocalVertex* pVerts = m_pVB->GetData();
+		const StandardVertex* pVerts = m_pVB->GetData();
 
 		for (uint32_t i = 0; i < m_pVB->GetNum(); ++i)
 		{
-			const LocalVertex& vert = pVerts[i];
+			const StandardVertex& vert = pVerts[i];
 
 			Matrix4x4* pWorldMatrix = (Matrix4x4*)m_pVertexShaderCB[1]->GetData();
 			Matrix4x4* pViewMatrix = (Matrix4x4*)m_pVertexShaderCB[0]->GetData() + 0;
@@ -2395,7 +2395,7 @@ namespace RenderDog
 	}
 
 #pragma region Shader
-	VSOutputVertex VertexShader::VSMain(const LocalVertex& inVertex, const Matrix4x4& matWorld, const Matrix4x4& matView, const Matrix4x4& matProj) const
+	VSOutputVertex VertexShader::VSMain(const StandardVertex& inVertex, const Matrix4x4& matWorld, const Matrix4x4& matView, const Matrix4x4& matProj) const
 	{
 		VSOutputVertex vOutput = {};
 		Vector4 inPos = Vector4(inVertex.position, 1.0f);

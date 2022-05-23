@@ -37,7 +37,7 @@ ModelViewer::~ModelViewer()
 bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 {
 	RenderDog::CameraDesc camDesc;
-	camDesc.position = RenderDog::Vector3(0.0f, 20.0f, -100.0f);
+	camDesc.position = RenderDog::Vector3(0.0f, 2.0f, -20.0f);
 	camDesc.yaw = 0.0f;
 	camDesc.pitch = 0.0f;
 	camDesc.fov = 45.0f;
@@ -72,7 +72,7 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 	}
 
 	RenderDog::GeometryGenerator::SimpleMeshData GridLineMeshData;
-	RenderDog::g_pGeometryGenerator->GenerateGridLine(100, 100, 10, RenderDog::Vector4(0.8f, 0.8f, 0.8f, 1.0f), GridLineMeshData);
+	RenderDog::g_pGeometryGenerator->GenerateGridLine(100, 100, 1, RenderDog::Vector4(0.8f, 0.8f, 0.8f, 1.0f), GridLineMeshData);
 	m_pGridLine = new RenderDog::SimpleModel();
 	m_pGridLine->LoadFromSimpleData(GridLineMeshData.vertices, GridLineMeshData.indices, "Shaders/SimpleModelVertexShader.hlsl", "Shaders/SingleColorPixelShader.hlsl");
 	m_pGridLine->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
@@ -81,7 +81,7 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 	m_pModel = new RenderDog::StaticModel();
 	m_pModel->LoadFromFile("Models/generator/generator_small.obj", "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl");
 	m_pModel->LoadTextureFromFile(L"Textures/PolybumpTangent_DDN.tga");
-	m_pModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(90.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
+	m_pModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(90.0f, 0.0f, 0.0f), RenderDog::Vector3(0.1f));
 	m_pModel->RegisterToScene(m_pScene);
 
 	RenderDog::LightDesc lightDesc = {};

@@ -18,13 +18,13 @@ namespace RenderDog
 		struct LocalMeshData
 		{
 			std::vector<RenderDog::StandardVertex> vertices;
-			std::vector<unsigned int> indices;
+			std::vector<uint32_t> indices;
 		};
 
 		struct SimpleMeshData
 		{
 			std::vector<RenderDog::SimpleVertex> vertices;
-			std::vector<unsigned int> indices;
+			std::vector<uint32_t> indices;
 		};
 
 		void GenerateBox(float width, float height, float depth, LocalMeshData& outputMesh);
