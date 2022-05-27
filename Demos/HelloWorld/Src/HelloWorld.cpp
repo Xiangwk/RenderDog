@@ -45,7 +45,7 @@ bool DemoApp::Init(const DemoInitDesc& desc)
 	camDesc.aspectRitio = (float)desc.wndDesc.width / (float)desc.wndDesc.height;
 	camDesc.nearPlane = 0.1f;
 	camDesc.farPlane = 1000.0f;
-	camDesc.moveSpeed = 1.0f;
+	camDesc.moveSpeed = 0.1f;
 	camDesc.rotSpeed = 0.1f;
 	m_pFPSCamera = new RenderDog::FPSCamera(camDesc);
 

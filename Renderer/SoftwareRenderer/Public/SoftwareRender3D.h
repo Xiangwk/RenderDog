@@ -297,7 +297,6 @@ namespace RenderDog
 		virtual void ClearDepthStencilView(ISRDepthStencilView* pDepthStencilView, float fDepth) = 0;
 		virtual void Draw() = 0;
 		virtual void DrawIndex(uint32_t nIndexNum) = 0;
-		virtual void DrawLineWithDDA(float fPos1X, float fPos1Y, float fPos2X, float fPos2Y, const float* lineColor) = 0;
 	};
 #pragma endregion Device
 

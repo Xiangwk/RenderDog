@@ -463,14 +463,14 @@ namespace RenderDog
 
 		virtual void			GetDesc(SRBufferDesc* pDesc) override { *pDesc = m_Desc; }
 
-		const StandardVertex*	GetData() const { return m_pData; }
+		const char*				GetData() const { return m_pData; }
 		const uint32_t			GetNum() const { return m_nVertsNum; }
 
 	private:
 		int						m_RefCnt;
 		SRBufferDesc			m_Desc;
 
-		StandardVertex*			m_pData;
+		char*					m_pData;
 		uint32_t				m_nVertsNum;
 	};
 
@@ -483,8 +483,7 @@ namespace RenderDog
 
 		m_Desc = *pDesc;
 
-		m_nVertsNum = pDesc->byteWidth / sizeof(StandardVertex);
-		m_pData = new StandardVertex[m_nVertsNum];
+		m_pData = new char[pDesc->byteWidth];
 		if (!m_pData)
 		{
 			return false;
@@ -918,9 +917,11 @@ namespace RenderDog
 		virtual void				ClearDepthStencilView(ISRDepthStencilView* pDepthStencilView, float fDepth) override;
 		virtual void				Draw() override;
 		virtual void				DrawIndex(uint32_t indexNum) override;
-		virtual void				DrawLineWithDDA(float fPos1X, float fPos1Y, float fPos2X, float fPos2Y, const float* lineColor) override;
+		
 
 	private:
+		void						DrawLineWithDDA(float fPos1X, float fPos1Y, float fPos2X, float fPos2Y, const float* lineColor);
+
 		void						DrawTriangleWithLine(const VSOutputVertex& v0, const VSOutputVertex& v1, const VSOutputVertex& v2);
 		void						DrawTriangleWithFlat(const VSOutputVertex& v0, const VSOutputVertex& v1, const VSOutputVertex& v2);
 
@@ -1031,8 +1032,10 @@ namespace RenderDog
 
 			m_pVB = dynamic_cast<VertexBuffer*>(pVB);
 
-			uint32_t nVertexNum = m_pVB->GetNum();
-			m_VSOutputs.resize(nVertexNum);
+			SRBufferDesc vbDesc;
+			m_pVB->GetDesc(&vbDesc);
+			uint32_t vertNum = vbDesc.byteWidth / sizeof(StandardVertex);
+			m_VSOutputs.resize(vertNum);
 		}
 	}
 	void DeviceContext::IASetIndexBuffer(ISRBuffer* pIB)
@@ -1276,9 +1279,13 @@ namespace RenderDog
 
 	void DeviceContext::DrawIndex(uint32_t indexNum)
 	{
-		const StandardVertex* pVerts = m_pVB->GetData();
+		StandardVertex* pVerts = (StandardVertex*)(m_pVB->GetData());
 
-		for (uint32_t i = 0; i < m_pVB->GetNum(); ++i)
+		SRBufferDesc vbDesc;
+		m_pVB->GetDesc(&vbDesc);
+		uint32_t vertNum = vbDesc.byteWidth / sizeof(StandardVertex);
+
+		for (uint32_t i = 0; i < vertNum; ++i)
 		{
 			const StandardVertex& vert = pVerts[i];
 
