@@ -21,6 +21,7 @@ ModelViewer::ModelViewer() :
 	m_pRenderDog(nullptr),
 	m_pScene(nullptr),
 	m_pGridLine(nullptr),
+	m_pFloor(nullptr),
 	m_pModel(nullptr),
 	m_pFPSCamera(nullptr),
 	m_pMainLight(nullptr),
@@ -76,7 +77,15 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 	m_pGridLine = new RenderDog::SimpleModel();
 	m_pGridLine->LoadFromSimpleData(GridLineMeshData.vertices, GridLineMeshData.indices, "Shaders/SimpleModelVertexShader.hlsl", "Shaders/SingleColorPixelShader.hlsl");
 	m_pGridLine->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
-	m_pGridLine->RegisterToScene(m_pScene);
+	//m_pGridLine->RegisterToScene(m_pScene);
+
+	RenderDog::GeometryGenerator::StandardMeshData GridMeshData;
+	RenderDog::g_pGeometryGenerator->GenerateGrid(100, 100, 1, GridMeshData);
+	m_pFloor = new RenderDog::StaticModel();
+	m_pFloor->LoadFromStandardData(GridMeshData.vertices, GridMeshData.indices, "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl");
+	m_pFloor->LoadTextureFromFile(L"Textures/FlatNormal_norm.dds");
+	m_pFloor->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
+	m_pFloor->RegisterToScene(m_pScene);
 
 	m_pModel = new RenderDog::StaticModel();
 	m_pModel->LoadFromFile("Models/generator/generator_small.obj", "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl");
@@ -87,7 +96,7 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 	RenderDog::LightDesc lightDesc = {};
 	lightDesc.type = RenderDog::LIGHT_TYPE::DIRECTIONAL;
 	lightDesc.color = RenderDog::Vector3(1.0f, 1.0f, 1.0f);
-	lightDesc.eulerDir = RenderDog::Vector3(45.0f, 45.0f, 45.0f);
+	lightDesc.eulerDir = RenderDog::Vector3(45.0f, 45.0f, 0.0f);
 	lightDesc.luminance = 0.8f;
 	m_pMainLight = RenderDog::g_pILightManager->CreateLight(lightDesc);
 
@@ -109,6 +118,14 @@ void ModelViewer::Release()
 
 		delete m_pGridLine;
 		m_pGridLine = nullptr;
+	}
+
+	if (m_pFloor)
+	{
+		m_pFloor->ReleaseRenderData();
+
+		delete m_pFloor;
+		m_pFloor = nullptr;
 	}
 
 	if (m_pModel)

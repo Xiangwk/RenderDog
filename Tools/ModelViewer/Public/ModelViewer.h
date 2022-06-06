@@ -45,6 +45,7 @@ private:
 	RenderDog::IScene*			m_pScene;
 
 	RenderDog::SimpleModel*		m_pGridLine;
+	RenderDog::StaticModel*		m_pFloor;
 	RenderDog::StaticModel*		m_pModel;
 
 	RenderDog::FPSCamera*		m_pFPSCamera;

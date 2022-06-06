@@ -184,7 +184,7 @@
                                     },
                                     "progress": 5,
                                     "note": "增加双缓存支持",
-                                    "priority": 4
+                                    "priority": 5
                                 },
                                 "children": []
                             }
@@ -238,8 +238,8 @@
                                     "text": "IndexBuffer",
                                     "progress": 5,
                                     "layout_right_offset": {
-                                        "x": 0,
-                                        "y": -2
+                                        "x": 15,
+                                        "y": -15
                                     }
                                 },
                                 "children": []
@@ -253,7 +253,7 @@
                                     "progress": 1,
                                     "layout_right_offset": {
                                         "x": -1,
-                                        "y": 24
+                                        "y": 1
                                     }
                                 },
                                 "children": []
@@ -266,10 +266,11 @@
                             "created": 1620231677362,
                             "text": "Shader",
                             "layout_right_offset": {
-                                "x": 502.16666610373386,
-                                "y": -305.8333336975839
+                                "x": 503.16666610373386,
+                                "y": -332.8333336975839
                             },
-                            "note": "暂时写成函数的形式，有机会的话尝试改变形式"
+                            "note": "暂时写成函数的形式，有机会的话尝试改变形式，如使用lambda或者function来表示shader函数，用户自定义这些函数后，设置到pipleline中；",
+                            "priority": 2
                         },
                         "children": [
                             {
@@ -279,7 +280,20 @@
                                     "text": "VertexShader",
                                     "progress": 8
                                 },
-                                "children": []
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "ckajn5uw5q00",
+                                            "created": 1653654630691,
+                                            "text": "InputLayout",
+                                            "layout_right_offset": {
+                                                "x": 24,
+                                                "y": -27
+                                            }
+                                        },
+                                        "children": []
+                                    }
+                                ]
                             },
                             {
                                 "data": {
@@ -298,8 +312,8 @@
                             "created": 1620231699247,
                             "text": "Texture",
                             "layout_right_offset": {
-                                "x": 503.8333329028553,
-                                "y": -300.8333360817696
+                                "x": 516.8333329028553,
+                                "y": -318.8333360817696
                             }
                         },
                         "children": []
@@ -613,8 +627,8 @@
                             "created": 1653214534036,
                             "text": "添加渲染效果",
                             "layout_right_offset": {
-                                "x": 138,
-                                "y": 34
+                                "x": 156,
+                                "y": -23
                             },
                             "priority": 1
                         },
@@ -625,8 +639,8 @@
                                     "created": 1653214553938,
                                     "text": "环境反射",
                                     "layout_right_offset": {
-                                        "x": 46,
-                                        "y": -37
+                                        "x": 42,
+                                        "y": 63
                                     }
                                 },
                                 "children": []
@@ -637,9 +651,10 @@
                                     "created": 1653214579562,
                                     "text": "阴影",
                                     "layout_right_offset": {
-                                        "x": 55,
-                                        "y": -21
-                                    }
+                                        "x": 54,
+                                        "y": -58
+                                    },
+                                    "priority": 1
                                 },
                                 "children": []
                             },
@@ -656,6 +671,18 @@
                                 "children": []
                             }
                         ]
+                    },
+                    {
+                        "data": {
+                            "id": "ckajmukkuyo0",
+                            "created": 1653654606122,
+                            "text": "增加一个延迟着色的渲染器",
+                            "layout_right_offset": {
+                                "x": 136,
+                                "y": 39
+                            }
+                        },
+                        "children": []
                     }
                 ]
             },

@@ -28,6 +28,11 @@ namespace RenderDog
 			position(px, py, pz),
 			color(cx, cy, cz, cw)
 		{}
+
+		SimpleVertex(const Vector3& pos, const Vector4& col) :
+			position(pos),
+			color(col)
+		{}
 	};
 
 	struct StandardVertex : public SimpleVertex
@@ -47,6 +52,13 @@ namespace RenderDog
 			normal(nx, ny, nz),
 			tangent(tx, ty, tz, 1.0f),
 			texcoord(tcx, tcy)
+		{}
+
+		StandardVertex(const Vector3& pos, const Vector4& color, const Vector3& norm, const Vector4& tan, const Vector2& tex) :
+			SimpleVertex(pos, color),
+			normal(norm),
+			tangent(tan),
+			texcoord(tex)
 		{}
 	};
 

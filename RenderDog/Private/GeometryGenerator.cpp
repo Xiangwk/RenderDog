@@ -8,7 +8,7 @@
 
 namespace RenderDog
 {
-	void GeometryGenerator::GenerateBox(float width, float height, float depth, LocalMeshData& outputMesh)
+	void GeometryGenerator::GenerateBox(float width, float height, float depth, StandardMeshData& outputMesh)
 	{
 		outputMesh.vertices.clear();
 		outputMesh.indices.clear();
@@ -70,6 +70,49 @@ namespace RenderDog
 		outputMesh.indices.assign(std::begin(indices), std::end(indices));
 	}
 
+	void GeometryGenerator::GenerateGrid(int width, int depth, float gridUnit, StandardMeshData& outputMesh)
+	{
+		outputMesh.vertices.clear();
+		outputMesh.indices.clear();
+
+		float WidthLen = width * gridUnit;
+		float DepthLen = depth * gridUnit;
+
+		float NearLeftX = -WidthLen * 0.5f;
+		float NearLeftZ = -DepthLen * 0.5f;
+
+		for (int i = 0; i < depth + 1; ++i)
+		{
+			for (int j = 0; j < width + 1; ++j)
+			{
+				float x = NearLeftX + j * gridUnit;
+				float z = NearLeftZ + i * gridUnit;
+				float u = static_cast<float>(j);
+				float v = static_cast<float>(depth - i);
+				Vector3 pos(x, 0.0f, z);
+				Vector4 color(1.0f, 1.0f, 1.0f, 1.0f);
+				Vector3 normal(0.0f, 1.0f, 0.0f);
+				Vector4 tangent(1.0f, 0.0f, 0.0f, 1.0f);
+				Vector2 texcoord(u, v);
+				outputMesh.vertices.push_back(StandardVertex(pos, color, normal, tangent, texcoord));
+			}
+		}
+
+		for (int i = 0; i < depth; ++i)
+		{
+			for (int j = 0; j < width; ++j)
+			{
+				outputMesh.indices.push_back(j + i * (width + 1));
+				outputMesh.indices.push_back(j + (i + 1) * (width + 1));
+				outputMesh.indices.push_back(j + (i + 1) * (width + 1) + 1);
+
+				outputMesh.indices.push_back(j + i * (width + 1));
+				outputMesh.indices.push_back(j + (i + 1) * (width + 1) + 1);
+				outputMesh.indices.push_back((j + 1) + i * (width + 1));
+			}
+		}
+	}
+
 	void GeometryGenerator::GenerateGridLine(int width, int depth, float gridUnit, const RenderDog::Vector4& lineColor, SimpleMeshData& outputMesh)
 	{
 		outputMesh.vertices.clear();
@@ -100,7 +143,7 @@ namespace RenderDog
 			outputMesh.indices.push_back(2 * i + 1);
 		}
 
-		int indiceNum = outputMesh.indices.size();
+		int indiceNum = static_cast<int>(outputMesh.indices.size());
 
 		//×ÝÏòÏß
 		for (int i = 0; i < depth + 1; ++i)
