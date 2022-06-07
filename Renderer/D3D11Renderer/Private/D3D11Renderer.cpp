@@ -309,17 +309,16 @@ namespace RenderDog
 		createDeviceFlag |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 		D3D_FEATURE_LEVEL featureLevel;
-		HRESULT hr = D3D11CreateDevice(
-			nullptr,
-			D3D_DRIVER_TYPE_HARDWARE,
-			0,
-			createDeviceFlag,
-			nullptr,
-			0,
-			D3D11_SDK_VERSION,
-			&g_pD3D11Device,
-			&featureLevel,
-			&g_pD3D11ImmediateContext);
+		HRESULT hr = D3D11CreateDevice(nullptr,
+									   D3D_DRIVER_TYPE_HARDWARE,
+									   0,
+									   createDeviceFlag,
+									   nullptr,
+									   0,
+									   D3D11_SDK_VERSION,
+									   &g_pD3D11Device,
+									   &featureLevel,
+									   &g_pD3D11ImmediateContext);
 		if (FAILED(hr))
 		{
 			MessageBox(nullptr, "D3D11CreateDevice Failed!", "ERROR", MB_OK);
