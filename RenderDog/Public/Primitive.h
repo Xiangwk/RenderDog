@@ -45,10 +45,6 @@ namespace RenderDog
 	public:
 		virtual ~IPrimitiveRenderer() = default;
 
-		virtual IConstantBuffer*	GetVSConstantBuffer() = 0;
-		virtual IConstantBuffer*	GetLightingConstantbuffer() = 0;
-		virtual IConstantBuffer*	GetShadowConstantBuffer() = 0;
-
 		virtual void				Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler) = 0;
 	};
 

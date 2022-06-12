@@ -27,72 +27,6 @@ namespace RenderDog
 	//    Mesh Renderer
 	//===========================================================
 
-	class D3D11LineMeshRenderer : public IPrimitiveRenderer
-	{
-	public:
-		D3D11LineMeshRenderer();
-		D3D11LineMeshRenderer(IConstantBuffer* pVertexShaderCB);
-		virtual ~D3D11LineMeshRenderer();
-
-		virtual IConstantBuffer*		GetVSConstantBuffer() override { return m_pVertexShaderCB; }
-		virtual IConstantBuffer*		GetLightingConstantbuffer() override { return nullptr; }
-		virtual IConstantBuffer*		GetShadowConstantBuffer() override { return nullptr; }
-
-		virtual void					Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler) override;
-
-	protected:
-		IConstantBuffer*				m_pVertexShaderCB;
-	};
-
-	D3D11LineMeshRenderer::D3D11LineMeshRenderer() :
-		m_pVertexShaderCB(nullptr)
-	{}
-
-	D3D11LineMeshRenderer::~D3D11LineMeshRenderer()
-	{}
-
-	D3D11LineMeshRenderer::D3D11LineMeshRenderer(IConstantBuffer* pVertexShaderCB) :
-		m_pVertexShaderCB(pVertexShaderCB)
-	{}
-
-	void D3D11LineMeshRenderer::Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler)
-	{
-		if (!g_pD3D11ImmediateContext)
-		{
-			return;
-		}
-
-		if (!renderParam.pVB || !renderParam.pIB)
-		{
-			return;
-		}
-
-		g_pD3D11ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-
-		ID3D11Buffer* pVB = (ID3D11Buffer*)(renderParam.pVB->GetVertexBuffer());
-		ID3D11Buffer* pIB = (ID3D11Buffer*)(renderParam.pIB->GetIndexBuffer());
-
-		uint32_t indexNum = renderParam.pIB->GetIndexNum();
-
-		uint32_t stride = renderParam.pVB->GetStride();
-		uint32_t offset = renderParam.pVB->GetOffset();
-		g_pD3D11ImmediateContext->IASetVertexBuffers(0, 1, &pVB, &stride, &offset);
-		g_pD3D11ImmediateContext->IASetIndexBuffer(pIB, DXGI_FORMAT_R32_UINT, 0);
-
-		renderParam.pVS->SetToContext();
-
-		ID3D11Buffer* pGlobalCB = (ID3D11Buffer*)(m_pVertexShaderCB->GetConstantBuffer());
-		g_pD3D11ImmediateContext->VSSetConstantBuffers(0, 1, &pGlobalCB);
-
-		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetConstantBuffer());
-		g_pD3D11ImmediateContext->VSSetConstantBuffers(1, 1, &pPerObjCB);
-
-		renderParam.pPS->SetToContext();
-
-		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
-	}
-
-
 	class D3D11MeshRenderer : public IPrimitiveRenderer
 	{
 	public:
@@ -100,25 +34,21 @@ namespace RenderDog
 		D3D11MeshRenderer(IConstantBuffer* pVertexShaderCB);
 		virtual ~D3D11MeshRenderer();
 
-		virtual IConstantBuffer*		GetVSConstantBuffer() override { return m_pVertexShaderCB; }
-		virtual IConstantBuffer*		GetLightingConstantbuffer() override { return nullptr; }
-		virtual IConstantBuffer*		GetShadowConstantBuffer() override { return nullptr; }
-
 		virtual void					Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler) override;
 
 	protected:
-		IConstantBuffer*				m_pVertexShaderCB;
+		IConstantBuffer*				m_pGlobalCB;
 	};
 
 	D3D11MeshRenderer::D3D11MeshRenderer() :
-		m_pVertexShaderCB(nullptr)
+		m_pGlobalCB(nullptr)
 	{}
 
 	D3D11MeshRenderer::~D3D11MeshRenderer()
 	{}
 
-	D3D11MeshRenderer::D3D11MeshRenderer(IConstantBuffer* pVertexShaderCB) :
-		m_pVertexShaderCB(pVertexShaderCB)
+	D3D11MeshRenderer::D3D11MeshRenderer(IConstantBuffer* pGlobalCB) :
+		m_pGlobalCB(pGlobalCB)
 	{}
 
 	void D3D11MeshRenderer::Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler)
@@ -147,7 +77,7 @@ namespace RenderDog
 
 		renderParam.pVS->SetToContext();
 
-		ID3D11Buffer* pGlobalCB = (ID3D11Buffer*)(m_pVertexShaderCB->GetConstantBuffer());
+		ID3D11Buffer* pGlobalCB = (ID3D11Buffer*)(m_pGlobalCB->GetConstantBuffer());
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(0, 1, &pGlobalCB);
 
 		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetConstantBuffer());
@@ -162,6 +92,66 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
 	}
 
+#pragma region LineMeshRenderer
+	//LineMeshRenderer: Use to draw line
+	class D3D11LineMeshRenderer : public D3D11MeshRenderer
+	{
+	public:
+		D3D11LineMeshRenderer();
+		D3D11LineMeshRenderer(IConstantBuffer* pVertexShaderCB);
+		virtual ~D3D11LineMeshRenderer();
+
+		virtual void					Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler) override;
+	};
+
+	D3D11LineMeshRenderer::D3D11LineMeshRenderer()
+	{}
+
+	D3D11LineMeshRenderer::~D3D11LineMeshRenderer()
+	{}
+
+	D3D11LineMeshRenderer::D3D11LineMeshRenderer(IConstantBuffer* pGlobalCB) :
+		D3D11MeshRenderer(pGlobalCB)
+	{}
+
+	void D3D11LineMeshRenderer::Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler)
+	{
+		if (!g_pD3D11ImmediateContext)
+		{
+			return;
+		}
+
+		if (!renderParam.pVB || !renderParam.pIB)
+		{
+			return;
+		}
+
+		g_pD3D11ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+
+		ID3D11Buffer* pVB = (ID3D11Buffer*)(renderParam.pVB->GetVertexBuffer());
+		ID3D11Buffer* pIB = (ID3D11Buffer*)(renderParam.pIB->GetIndexBuffer());
+
+		uint32_t indexNum = renderParam.pIB->GetIndexNum();
+
+		uint32_t stride = renderParam.pVB->GetStride();
+		uint32_t offset = renderParam.pVB->GetOffset();
+		g_pD3D11ImmediateContext->IASetVertexBuffers(0, 1, &pVB, &stride, &offset);
+		g_pD3D11ImmediateContext->IASetIndexBuffer(pIB, DXGI_FORMAT_R32_UINT, 0);
+
+		renderParam.pVS->SetToContext();
+
+		ID3D11Buffer* pGlobalCB = (ID3D11Buffer*)(m_pGlobalCB->GetConstantBuffer());
+		g_pD3D11ImmediateContext->VSSetConstantBuffers(0, 1, &pGlobalCB);
+
+		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetConstantBuffer());
+		g_pD3D11ImmediateContext->VSSetConstantBuffers(1, 1, &pPerObjCB);
+
+		renderParam.pPS->SetToContext();
+
+		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
+	}
+#pragma endregion LineMeshRenderer
+
 	class D3D11MeshLightingRenderer : public D3D11MeshRenderer
 	{
 	public:
@@ -169,8 +159,6 @@ namespace RenderDog
 		D3D11MeshLightingRenderer(IConstantBuffer* pVertexShaderCB, IConstantBuffer* pLightingCB, IConstantBuffer* pShadowCB, ID3D11ShaderResourceView* pShadowDepthSRV);
 		virtual ~D3D11MeshLightingRenderer();
 
-		virtual IConstantBuffer*		GetLightingConstantbuffer() override { return m_pLightingCB; }
-		virtual IConstantBuffer*		GetShadowConstantBuffer() override { return m_pShadowCB; }
 		virtual void					Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler) override;
 
 	protected:
@@ -222,7 +210,7 @@ namespace RenderDog
 
 		renderParam.pVS->SetToContext();
 
-		ID3D11Buffer* pGlobalCB = (ID3D11Buffer*)(m_pVertexShaderCB->GetConstantBuffer());
+		ID3D11Buffer* pGlobalCB = (ID3D11Buffer*)(m_pGlobalCB->GetConstantBuffer());
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(0, 1, &pGlobalCB);
 
 		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetConstantBuffer());
@@ -256,7 +244,6 @@ namespace RenderDog
 		D3D11MeshShadowRenderer(IConstantBuffer* pVertexShaderCB, IShader* pVS, IShader* pPS);
 		virtual ~D3D11MeshShadowRenderer();
 
-		virtual IConstantBuffer*		GetLightingConstantbuffer() override { return nullptr; }
 		virtual void					Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler) override;
 
 	private:
@@ -304,7 +291,7 @@ namespace RenderDog
 
 		m_pVS->SetToContext();
 
-		ID3D11Buffer* pGlobalCB = (ID3D11Buffer*)(m_pVertexShaderCB->GetConstantBuffer());
+		ID3D11Buffer* pGlobalCB = (ID3D11Buffer*)(m_pGlobalCB->GetConstantBuffer());
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(0, 1, &pGlobalCB);
 
 		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetConstantBuffer());
