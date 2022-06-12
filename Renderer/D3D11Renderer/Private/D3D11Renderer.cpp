@@ -155,11 +155,19 @@ namespace RenderDog
 #pragma endregion LineMeshRenderer
 
 #pragma region MeshLightingRenderer
+	struct MeshLightingGlobalData
+	{
+		IConstantBuffer*			pGlobalCB;
+		IConstantBuffer*			pLightingCB;
+		IConstantBuffer*			pShadowCB;
+		ID3D11ShaderResourceView*	pShadowDepthSRV;
+	};
+
 	class D3D11MeshLightingRenderer : public D3D11MeshRenderer
 	{
 	public:
 		D3D11MeshLightingRenderer();
-		D3D11MeshLightingRenderer(IConstantBuffer* pGlobalCB, IConstantBuffer* pLightingCB, IConstantBuffer* pShadowCB, ID3D11ShaderResourceView* pShadowDepthSRV);
+		D3D11MeshLightingRenderer(const MeshLightingGlobalData& globalData);
 		virtual ~D3D11MeshLightingRenderer();
 
 		virtual void					Render(const PrimitiveRenderParam& renderParam) override;
@@ -177,11 +185,11 @@ namespace RenderDog
 		m_pShadowDepthSRV(nullptr)
 	{}
 
-	D3D11MeshLightingRenderer::D3D11MeshLightingRenderer(IConstantBuffer* pGlobalCB, IConstantBuffer* pLightingCB, IConstantBuffer* pShadowCB, ID3D11ShaderResourceView* pShadowDepthTexture):
-		D3D11MeshRenderer(pGlobalCB),
-		m_pLightingCB(pLightingCB),
-		m_pShadowCB(pShadowCB),
-		m_pShadowDepthSRV(pShadowDepthTexture)
+	D3D11MeshLightingRenderer::D3D11MeshLightingRenderer(const MeshLightingGlobalData& globalData):
+		D3D11MeshRenderer(globalData.pGlobalCB),
+		m_pLightingCB(globalData.pLightingCB),
+		m_pShadowCB(globalData.pShadowCB),
+		m_pShadowDepthSRV(globalData.pShadowDepthSRV)
 	{}
 
 	D3D11MeshLightingRenderer::~D3D11MeshLightingRenderer()
@@ -312,6 +320,7 @@ namespace RenderDog
 	//    D3D11 Renderer
 	//===========================================================
 
+#pragma region PipelineRenderer
 	class D3D11Renderer : public IRenderer
 	{
 	private:
@@ -887,7 +896,12 @@ namespace RenderDog
 			pPri->Render(&lineRender);
 		}
 
-		D3D11MeshLightingRenderer meshRender(m_pGlobalConstantBuffer, m_pLightingConstantBuffer, m_pShadowConstantBuffer, m_pShadowDepthSRV);
+		MeshLightingGlobalData meshLightingData;
+		meshLightingData.pGlobalCB = m_pGlobalConstantBuffer;
+		meshLightingData.pLightingCB = m_pLightingConstantBuffer;
+		meshLightingData.pShadowCB = m_pShadowConstantBuffer;
+		meshLightingData.pShadowDepthSRV = m_pShadowDepthSRV;
+		D3D11MeshLightingRenderer meshRender(meshLightingData);
 
 		uint32_t opaquePriNum = m_pSceneView->GetOpaquePrisNum();
 		for (uint32_t i = 0; i < opaquePriNum; ++i)
@@ -896,5 +910,6 @@ namespace RenderDog
 			pPri->Render(&meshRender);
 		}
 	}
+#pragma endregion PipelineRenderer
 
 }// namespace RenderDog
