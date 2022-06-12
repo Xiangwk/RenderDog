@@ -36,6 +36,7 @@ namespace RenderDog
 
 		virtual IConstantBuffer*		GetVSConstantBuffer() override { return m_pVertexShaderCB; }
 		virtual IConstantBuffer*		GetLightingConstantbuffer() override { return nullptr; }
+		virtual IConstantBuffer*		GetShadowConstantBuffer() override { return nullptr; }
 
 		virtual void					Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler) override;
 
@@ -101,6 +102,7 @@ namespace RenderDog
 
 		virtual IConstantBuffer*		GetVSConstantBuffer() override { return m_pVertexShaderCB; }
 		virtual IConstantBuffer*		GetLightingConstantbuffer() override { return nullptr; }
+		virtual IConstantBuffer*		GetShadowConstantBuffer() override { return nullptr; }
 
 		virtual void					Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler) override;
 
@@ -164,24 +166,31 @@ namespace RenderDog
 	{
 	public:
 		D3D11MeshLightingRenderer();
-		D3D11MeshLightingRenderer(IConstantBuffer* pVertexShaderCB, IConstantBuffer* pLightingCB);
+		D3D11MeshLightingRenderer(IConstantBuffer* pVertexShaderCB, IConstantBuffer* pLightingCB, IConstantBuffer* pShadowCB, ID3D11ShaderResourceView* pShadowDepthSRV);
 		virtual ~D3D11MeshLightingRenderer();
 
-		virtual IConstantBuffer*		GetLightingConstantbuffer() override { return m_LightingCB; }
+		virtual IConstantBuffer*		GetLightingConstantbuffer() override { return m_pLightingCB; }
+		virtual IConstantBuffer*		GetShadowConstantBuffer() override { return m_pShadowCB; }
 		virtual void					Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler) override;
 
 	protected:
-		IConstantBuffer*				m_LightingCB;
+		IConstantBuffer*				m_pLightingCB;
+		IConstantBuffer*				m_pShadowCB;
+		ID3D11ShaderResourceView*		m_pShadowDepthSRV;
 	};
 
 	D3D11MeshLightingRenderer::D3D11MeshLightingRenderer() :
 		D3D11MeshRenderer(),
-		m_LightingCB(nullptr)
+		m_pLightingCB(nullptr),
+		m_pShadowCB(nullptr),
+		m_pShadowDepthSRV(nullptr)
 	{}
 
-	D3D11MeshLightingRenderer::D3D11MeshLightingRenderer(IConstantBuffer* pVertexShaderCB, IConstantBuffer* pLightingCB):
+	D3D11MeshLightingRenderer::D3D11MeshLightingRenderer(IConstantBuffer* pVertexShaderCB, IConstantBuffer* pLightingCB, IConstantBuffer* pShadowCB, ID3D11ShaderResourceView* pShadowDepthTexture):
 		D3D11MeshRenderer(pVertexShaderCB),
-		m_LightingCB(pLightingCB)
+		m_pLightingCB(pLightingCB),
+		m_pShadowCB(pShadowCB),
+		m_pShadowDepthSRV(pShadowDepthTexture)
 	{}
 
 	D3D11MeshLightingRenderer::~D3D11MeshLightingRenderer()
@@ -218,15 +227,20 @@ namespace RenderDog
 
 		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetConstantBuffer());
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(1, 1, &pPerObjCB);
+
+		ID3D11Buffer* pShadowCB = (ID3D11Buffer*)(renderParam.pShadowCB->GetConstantBuffer());
+		g_pD3D11ImmediateContext->VSSetConstantBuffers(2, 1, &pShadowCB);
 		
 		renderParam.pPS->SetToContext();
 
-		ID3D11Buffer* pLightingCB = (ID3D11Buffer*)(m_LightingCB->GetConstantBuffer());
+		ID3D11Buffer* pLightingCB = (ID3D11Buffer*)(m_pLightingCB->GetConstantBuffer());
 		g_pD3D11ImmediateContext->PSSetConstantBuffers(0, 1, &pLightingCB);
 
 		ID3D11ShaderResourceView* pSRV = (ID3D11ShaderResourceView*)(pDiffuseTexture->GetShaderResourceView());
 		g_pD3D11ImmediateContext->PSSetShaderResources(0, 1, &pSRV);
 		pSampler->SetToPixelShader(0);
+
+		g_pD3D11ImmediateContext->PSSetShaderResources(1, 1, &m_pShadowDepthSRV);
 
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
 	}
@@ -387,6 +401,7 @@ namespace RenderDog
 		m_pRenderTargetView(nullptr),
 		m_pDepthStencilView(nullptr),
 		m_ScreenViewport(),
+		m_ShadowViewport(),
 		m_pShadowSceneView(nullptr),
 		m_pSceneView(nullptr),
 		m_pGlobalConstantBuffer(nullptr),
@@ -878,7 +893,7 @@ namespace RenderDog
 			pPri->Render(&lineRender);
 		}
 
-		D3D11MeshLightingRenderer meshRender(m_pGlobalConstantBuffer, m_pLightingConstantBuffer);
+		D3D11MeshLightingRenderer meshRender(m_pGlobalConstantBuffer, m_pLightingConstantBuffer, m_pShadowConstantBuffer, m_pShadowDepthSRV);
 
 		uint32_t opaquePriNum = m_pSceneView->GetOpaquePrisNum();
 		for (uint32_t i = 0; i < opaquePriNum; ++i)

@@ -247,7 +247,20 @@
                                 "y": -46
                             }
                         },
-                        "children": []
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "cknyra6u6aw0",
+                                    "created": 1655017549662,
+                                    "text": "1. 将主视角下场景中的像素变换到光源空间中",
+                                    "layout_right_offset": {
+                                        "x": 76,
+                                        "y": -48
+                                    }
+                                },
+                                "children": []
+                            }
+                        ]
                     }
                 ]
             }

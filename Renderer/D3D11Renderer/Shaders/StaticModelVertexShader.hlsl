@@ -15,6 +15,12 @@ cbuffer PerObjCB : register(b1)
 	row_major matrix WorldMat;
 };
 
+cbuffer ShadowCB : register(b2)
+{
+	row_major matrix ShadowViewMat;
+	row_major matrix ShadowProjMat;
+}
+
 struct VSInput
 {
 	float3 Pos			: POSITION;
@@ -32,6 +38,7 @@ struct VSOutput
 	float3 Tangent		: TANGENT;
 	float3 BiTangent	: BITANGENT;
 	float2 Texcoord		: TEXCOORD0;
+	float4 ShadowPos	: TEXCOORD1;
 };
 
 VSOutput Main(VSInput vsInput)
@@ -56,6 +63,10 @@ VSOutput Main(VSInput vsInput)
 	vsOutput.Color = vsInput.Color;
 
 	vsOutput.Texcoord = vsInput.Texcoord;
+
+	vsOutput.ShadowPos = mul(PosL, WorldMat);
+	vsOutput.ShadowPos = mul(vsOutput.ShadowPos, ShadowViewMat);
+	vsOutput.ShadowPos = mul(vsOutput.ShadowPos, ShadowProjMat);
 
 	return vsOutput;
 }
