@@ -26,10 +26,7 @@ namespace RenderDog
 	{
 		IVertexBuffer* pVB;
 		IIndexBuffer* pIB;
-		IConstantBuffer* pGlobalCB;
 		IConstantBuffer* pPerObjCB;
-		IConstantBuffer* pLightingCB;
-		IConstantBuffer* pShadowCB;
 
 		IShader* pVS;
 		IShader* pPS;
@@ -37,10 +34,7 @@ namespace RenderDog
 		PrimitiveRenderParam() :
 			pVB(nullptr),
 			pIB(nullptr),
-			pGlobalCB(nullptr),
 			pPerObjCB(nullptr),
-			pLightingCB(nullptr),
-			pShadowCB(nullptr),
 			pVS(nullptr),
 			pPS(nullptr)
 		{}

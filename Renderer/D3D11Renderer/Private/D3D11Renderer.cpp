@@ -81,7 +81,7 @@ namespace RenderDog
 
 		renderParam.pVS->SetToContext();
 
-		ID3D11Buffer* pGlobalCB = (ID3D11Buffer*)(renderParam.pGlobalCB->GetConstantBuffer());
+		ID3D11Buffer* pGlobalCB = (ID3D11Buffer*)(m_pVertexShaderCB->GetConstantBuffer());
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(0, 1, &pGlobalCB);
 
 		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetConstantBuffer());
@@ -147,7 +147,7 @@ namespace RenderDog
 
 		renderParam.pVS->SetToContext();
 
-		ID3D11Buffer* pGlobalCB = (ID3D11Buffer*)(renderParam.pGlobalCB->GetConstantBuffer());
+		ID3D11Buffer* pGlobalCB = (ID3D11Buffer*)(m_pVertexShaderCB->GetConstantBuffer());
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(0, 1, &pGlobalCB);
 
 		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetConstantBuffer());
@@ -222,13 +222,13 @@ namespace RenderDog
 
 		renderParam.pVS->SetToContext();
 
-		ID3D11Buffer* pGlobalCB = (ID3D11Buffer*)(renderParam.pGlobalCB->GetConstantBuffer());
+		ID3D11Buffer* pGlobalCB = (ID3D11Buffer*)(m_pVertexShaderCB->GetConstantBuffer());
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(0, 1, &pGlobalCB);
 
 		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetConstantBuffer());
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(1, 1, &pPerObjCB);
 
-		ID3D11Buffer* pShadowCB = (ID3D11Buffer*)(renderParam.pShadowCB->GetConstantBuffer());
+		ID3D11Buffer* pShadowCB = (ID3D11Buffer*)(m_pShadowCB->GetConstantBuffer());
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(2, 1, &pShadowCB);
 		
 		renderParam.pPS->SetToContext();
@@ -244,6 +244,7 @@ namespace RenderDog
 
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
 
+		//Unbind ShadowDepthSRV
 		ID3D11ShaderResourceView* nullRes[] = { nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr };
 		g_pD3D11ImmediateContext->PSSetShaderResources(1, 8, nullRes);
 	}
@@ -303,7 +304,7 @@ namespace RenderDog
 
 		m_pVS->SetToContext();
 
-		ID3D11Buffer* pGlobalCB = (ID3D11Buffer*)(renderParam.pGlobalCB->GetConstantBuffer());
+		ID3D11Buffer* pGlobalCB = (ID3D11Buffer*)(m_pVertexShaderCB->GetConstantBuffer());
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(0, 1, &pGlobalCB);
 
 		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetConstantBuffer());
@@ -653,13 +654,11 @@ namespace RenderDog
 	void D3D11Renderer::Render(IScene* pScene)
 	{
 		m_pShadowSceneView->ClearPrimitives();
-
 		AddPrisToShadowView(pScene);
 
 		ShadowDepthPass();
 
 		m_pSceneView->ClearPrimitives();
-
 		AddPrisAndLightsToSceneView(pScene);
 
 		float clearColor[4] = { 0.74f, 0.89f, 0.99f, 1.0f };

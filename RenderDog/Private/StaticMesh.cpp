@@ -51,9 +51,7 @@ namespace RenderDog
 		PrimitiveRenderParam renderParam = {};
 		renderParam.pVB			= m_pRenderData->pVB;
 		renderParam.pIB			= m_pRenderData->pIB;
-		renderParam.pGlobalCB	= pPrimitiveRenderer->GetVSConstantBuffer();
 		renderParam.pPerObjCB	= m_pRenderData->pCB;
-		renderParam.pLightingCB = pPrimitiveRenderer->GetLightingConstantbuffer();
 		renderParam.pVS			= m_pRenderData->pVS;
 		renderParam.pPS			= m_pRenderData->pPS;
 
@@ -179,10 +177,7 @@ namespace RenderDog
 		PrimitiveRenderParam renderParam = {};
 		renderParam.pVB			= m_pRenderData->pVB;
 		renderParam.pIB			= m_pRenderData->pIB;
-		renderParam.pGlobalCB	= pPrimitiveRenderer->GetVSConstantBuffer();
 		renderParam.pPerObjCB	= m_pRenderData->pCB;
-		renderParam.pLightingCB = pPrimitiveRenderer->GetLightingConstantbuffer();
-		renderParam.pShadowCB	= pPrimitiveRenderer->GetShadowConstantBuffer();
 		renderParam.pVS			= m_pRenderData->pVS;
 		renderParam.pPS			= m_pRenderData->pPS;
 
