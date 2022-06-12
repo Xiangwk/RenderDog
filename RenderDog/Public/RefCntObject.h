@@ -17,7 +17,7 @@ namespace RenderDog
 		virtual ~RefCntObject();
 
 		void		AddRef();
-		void		SubRef();
+		uint32_t	SubRef();
 
 	protected:
 		uint32_t	m_RefCnt;

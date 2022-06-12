@@ -639,8 +639,8 @@
                                     "created": 1653214553938,
                                     "text": "环境反射",
                                     "layout_right_offset": {
-                                        "x": 42,
-                                        "y": 63
+                                        "x": 80,
+                                        "y": 80
                                     }
                                 },
                                 "children": []
@@ -651,8 +651,8 @@
                                     "created": 1653214579562,
                                     "text": "阴影",
                                     "layout_right_offset": {
-                                        "x": 54,
-                                        "y": -58
+                                        "x": 82,
+                                        "y": -43
                                     },
                                     "priority": 1
                                 },
@@ -664,8 +664,8 @@
                                     "created": 1653214585427,
                                     "text": "PBR",
                                     "layout_right_offset": {
-                                        "x": 53,
-                                        "y": 11
+                                        "x": 96,
+                                        "y": 31
                                     }
                                 },
                                 "children": []

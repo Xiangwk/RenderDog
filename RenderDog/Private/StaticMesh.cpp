@@ -94,13 +94,11 @@ namespace RenderDog
 		cbDesc.isDynamic = false;
 		m_pRenderData->pCB = (IConstantBuffer*)g_pIBufferManager->CreateBuffer(cbDesc);
 
-		m_pRenderData->pVS = g_pIShaderManager->CreateVertexShader(VERTEX_TYPE::SIMPLE);
-		m_pRenderData->pVS->CompileFromFile(vsFile, nullptr, "Main", "vs_5_0", 0);
-		m_pRenderData->pVS->Init();
+		ShaderCompileDesc vsDesc(vsFile, nullptr, "Main", "vs_5_0", 0);
+		m_pRenderData->pVS = g_pIShaderManager->CreateVertexShader(VERTEX_TYPE::SIMPLE, vsDesc);
 
-		m_pRenderData->pPS = g_pIShaderManager->CreatePixelShader();
-		m_pRenderData->pPS->CompileFromFile(psFile, nullptr, "Main", "ps_5_0", 0);
-		m_pRenderData->pPS->Init();
+		ShaderCompileDesc psDesc(psFile, nullptr, "Main", "ps_5_0", 0);
+		m_pRenderData->pPS = g_pIShaderManager->CreatePixelShader(psDesc);
 	}
 
 	void SimpleMesh::ReleaseRenderData()
@@ -246,13 +244,11 @@ namespace RenderDog
 		cbDesc.isDynamic = false;
 		m_pRenderData->pCB = (IConstantBuffer*)g_pIBufferManager->CreateBuffer(cbDesc);
 
-		m_pRenderData->pVS = g_pIShaderManager->CreateVertexShader(VERTEX_TYPE::STANDARD);
-		m_pRenderData->pVS->CompileFromFile(vsFile, nullptr, "Main", "vs_5_0", 0);
-		m_pRenderData->pVS->Init();
+		ShaderCompileDesc vsDesc(vsFile, nullptr, "Main", "vs_5_0", 0);
+		m_pRenderData->pVS = g_pIShaderManager->CreateVertexShader(VERTEX_TYPE::STANDARD, vsDesc);
 
-		m_pRenderData->pPS = g_pIShaderManager->CreatePixelShader();
-		m_pRenderData->pPS->CompileFromFile(psFile, nullptr, "Main", "ps_5_0", 0);
-		m_pRenderData->pPS->Init();
+		ShaderCompileDesc psDesc(psFile, nullptr, "Main", "ps_5_0", 0);
+		m_pRenderData->pPS = g_pIShaderManager->CreatePixelShader(psDesc);
 	}
 
 	void StaticMesh::ReleaseRenderData()

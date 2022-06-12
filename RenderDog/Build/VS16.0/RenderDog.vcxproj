@@ -19,6 +19,7 @@
     <ClCompile Include="..\..\Private\Framework.cpp" />
     <ClCompile Include="..\..\Private\GameTimer.cpp" />
     <ClCompile Include="..\..\Private\GeometryGenerator.cpp" />
+    <ClCompile Include="..\..\Private\GlobalValue.cpp" />
     <ClCompile Include="..\..\Private\Light.cpp" />
     <ClCompile Include="..\..\Private\RefCntObject.cpp" />
     <ClCompile Include="..\..\Private\RenderDog.cpp" />
@@ -33,11 +34,13 @@
     <ClInclude Include="..\..\Math\Public\Transform.h" />
     <ClInclude Include="..\..\Math\Public\Utility.h" />
     <ClInclude Include="..\..\Math\Public\Vector.h" />
+    <ClInclude Include="..\..\Public\Bounding.h" />
     <ClInclude Include="..\..\Public\Buffer.h" />
     <ClInclude Include="..\..\Public\Camera.h" />
     <ClInclude Include="..\..\Public\Framework.h" />
     <ClInclude Include="..\..\Public\GameTimer.h" />
     <ClInclude Include="..\..\Public\GeometryGenerator.h" />
+    <ClInclude Include="..\..\Public\GlobalValue.h" />
     <ClInclude Include="..\..\Public\Light.h" />
     <ClInclude Include="..\..\Public\Material.h" />
     <ClInclude Include="..\..\Public\Primitive.h" />

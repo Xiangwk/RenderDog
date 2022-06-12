@@ -87,7 +87,7 @@ namespace RenderDog
 		return Matrix4x4(vec0, vec1, vec2, vec3);
 	}
 
-	Matrix4x4 GetPerspProjectionMatrixLH(float fov, float aspectRatio, float near, float farPlane)
+	Matrix4x4 GetPerspectiveMatrixLH(float fov, float aspectRatio, float near, float farPlane)
 	{
 		float radianHalfFov = 0.5f * AngleToRadians(fov);
 		float sinHalfFov = std::sinf(radianHalfFov);
@@ -119,5 +119,31 @@ namespace RenderDog
 		perspectiveMatrix(3, 3) = 0.0f;
 
 		return perspectiveMatrix;
+	}
+
+	Matrix4x4 GetOrthographicMatrixLH(float viewLeft, float viewRight, float viewBottom, float viewTop, float nearZ, float farZ)
+	{
+		Matrix4x4 orthoMatrix;
+		orthoMatrix(0, 0) = 2.0f / (viewRight - viewLeft);
+		orthoMatrix(0, 1) = 0.0f;
+		orthoMatrix(0, 2) = 0.0f;
+		orthoMatrix(0, 3) = 0.0f;
+
+		orthoMatrix(1, 0) = 0.0f;
+		orthoMatrix(1, 1) = 2.0f / (viewTop - viewBottom);
+		orthoMatrix(1, 2) = 0.0f;
+		orthoMatrix(1, 3) = 0.0f;
+
+		orthoMatrix(2, 0) = 0.0f;
+		orthoMatrix(2, 1) = 0.0f;
+		orthoMatrix(2, 2) = 1.0f / (farZ - nearZ);
+		orthoMatrix(2, 3) = 0.0f;
+
+		orthoMatrix(3, 0) = -(viewRight + viewLeft) / (viewRight - viewLeft);
+		orthoMatrix(3, 1) = -(viewTop + viewBottom) / (viewTop - viewBottom);
+		orthoMatrix(3, 2) = -nearZ / (farZ - nearZ);
+		orthoMatrix(3, 3) = 1.0f;
+
+		return orthoMatrix;
 	}
 }

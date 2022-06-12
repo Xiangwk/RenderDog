@@ -19,5 +19,6 @@ namespace RenderDog
 
 	Matrix4x4	GetLookAtMatrixLH(const Vector3& eyePos, const Vector3& focusPos, const Vector3& upDir);
 
-	Matrix4x4	GetPerspProjectionMatrixLH(float fov, float aspectRatio, float near, float farPlane);
+	Matrix4x4	GetPerspectiveMatrixLH(float fov, float aspectRatio, float near, float farPlane);
+	Matrix4x4	GetOrthographicMatrixLH(float viewLeft, float viewRight, float viewBottom, float viewTop, float nearZ, float farZ);
 }

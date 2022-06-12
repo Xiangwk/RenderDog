@@ -8,6 +8,7 @@
 #include "Primitive.h"
 #include "Light.h"
 #include "Camera.h"
+#include "Bounding.h"
 
 #include <vector>
 
@@ -33,16 +34,21 @@ namespace RenderDog
 		virtual ILight*					GetLight(uint32_t index) override { return m_Lights[index]; }
 		virtual uint32_t				GetLightsNum() const override { return (uint32_t)m_Lights.size(); }
 
+		virtual BoundingSphere			GetBoundingSphere() const override { return m_BoundingSphere; }
+
 	private:
 		std::string						m_Name;
 		std::vector<IPrimitive*>		m_Primitives;
 		std::vector<ILight*>			m_Lights;
+
+		BoundingSphere					m_BoundingSphere;
 	};
 
 	Scene::Scene() :
 		m_Name(),
 		m_Primitives(0),
-		m_Lights(0)
+		m_Lights(0),
+		m_BoundingSphere()
 	{}
 
 	Scene::~Scene()

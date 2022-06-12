@@ -61,7 +61,7 @@ namespace RenderDog
 
 	Matrix4x4 FPSCamera::GetPerspProjectionMatrix() const
 	{
-		return GetPerspProjectionMatrixLH(m_Fov, m_Aspect, m_Near, m_Far);
+		return GetPerspectiveMatrixLH(m_Fov, m_Aspect, m_Near, m_Far);
 	}
 
 	void FPSCamera::Move(MOVE_MODE moveMode)

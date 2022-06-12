@@ -1,0 +1,259 @@
+{
+    "root": {
+        "data": {
+            "id": "ckk06xi4pdc0",
+            "created": 1654615357156,
+            "text": "ShadowMap"
+        },
+        "children": [
+            {
+                "data": {
+                    "id": "ckk07sbilr40",
+                    "created": 1654615424237,
+                    "text": "DirectionalLight",
+                    "layout_mind_offset": {
+                        "x": 55,
+                        "y": -213
+                    }
+                },
+                "children": [
+                    {
+                        "data": {
+                            "id": "ckk07vsm0sw0",
+                            "created": 1654615431801,
+                            "text": "ShadowDepthPass",
+                            "layout_right_offset": {
+                                "x": 153,
+                                "y": -36
+                            }
+                        },
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "ckk0yn13ka00",
+                                    "created": 1654617528555,
+                                    "text": "1. 使用正交投影的相机渲染场景，相机朝向与光源方向一致",
+                                    "layout_right_offset": {
+                                        "x": 60,
+                                        "y": -48
+                                    }
+                                },
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "ckmhyo6wsg00",
+                                            "created": 1654868609865,
+                                            "text": "需要确认的问题",
+                                            "layout_right_offset": {
+                                                "x": 136,
+                                                "y": -196
+                                            }
+                                        },
+                                        "children": [
+                                            {
+                                                "data": {
+                                                    "id": "ckk0zotqx480",
+                                                    "created": 1654617610829,
+                                                    "text": "相机位置如何确定？",
+                                                    "layout_right_offset": {
+                                                        "x": 108,
+                                                        "y": -89
+                                                    }
+                                                },
+                                                "children": []
+                                            },
+                                            {
+                                                "data": {
+                                                    "id": "ckk0zthrehk0",
+                                                    "created": 1654617620988,
+                                                    "text": "远平面设置为多少合适？",
+                                                    "layout_right_offset": {
+                                                        "x": 105,
+                                                        "y": -21
+                                                    }
+                                                },
+                                                "children": []
+                                            },
+                                            {
+                                                "data": {
+                                                    "id": "ckk109sdpkw0",
+                                                    "created": 1654617656458,
+                                                    "text": "渲染RT的大小为多少合适？",
+                                                    "layout_right_offset": {
+                                                        "x": 103,
+                                                        "y": -12
+                                                    }
+                                                },
+                                                "children": []
+                                            },
+                                            {
+                                                "data": {
+                                                    "id": "cklo7juti3s0",
+                                                    "created": 1654784672407,
+                                                    "text": "正交投影的视口大小如何确定",
+                                                    "layout_right_offset": {
+                                                        "x": 106,
+                                                        "y": -191
+                                                    }
+                                                },
+                                                "children": []
+                                            },
+                                            {
+                                                "data": {
+                                                    "id": "ckmhsfwjx280",
+                                                    "created": 1654868121640,
+                                                    "text": "RT的格式有什么讲究？",
+                                                    "layout_right_offset": {
+                                                        "x": 112,
+                                                        "y": -57
+                                                    }
+                                                },
+                                                "children": []
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "data": {
+                                            "id": "ckmhzowzsds0",
+                                            "created": 1654868689807,
+                                            "text": "需要的资源有哪些？",
+                                            "layout_right_offset": {
+                                                "x": 124,
+                                                "y": -148
+                                            }
+                                        },
+                                        "children": [
+                                            {
+                                                "data": {
+                                                    "id": "ckmhzsj7aug0",
+                                                    "created": 1654868697680,
+                                                    "text": "ShadowDepthTexture",
+                                                    "layout_right_offset": {
+                                                        "x": 29,
+                                                        "y": -20
+                                                    }
+                                                },
+                                                "children": [
+                                                    {
+                                                        "data": {
+                                                            "id": "ckmhzxga3540",
+                                                            "created": 1654868708387,
+                                                            "text": "DSV",
+                                                            "layout_right_offset": {
+                                                                "x": 17,
+                                                                "y": -6
+                                                            }
+                                                        },
+                                                        "children": []
+                                                    },
+                                                    {
+                                                        "data": {
+                                                            "id": "ckmi002mhq00",
+                                                            "created": 1654868714092,
+                                                            "text": "SRV",
+                                                            "layout_right_offset": {
+                                                                "x": 22,
+                                                                "y": -1
+                                                            }
+                                                        },
+                                                        "children": []
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "data": {
+                                                    "id": "ckmi029v4rk0",
+                                                    "created": 1654868718883,
+                                                    "text": "viewport",
+                                                    "layout_right_offset": {
+                                                        "x": 59,
+                                                        "y": 32
+                                                    }
+                                                },
+                                                "children": [
+                                                    {
+                                                        "data": {
+                                                            "id": "ckmi0v2o3ts0",
+                                                            "created": 1654868781575,
+                                                            "text": "宽高可根据场景包围球来确定",
+                                                            "layout_right_offset": {
+                                                                "x": 10,
+                                                                "y": -7
+                                                            }
+                                                        },
+                                                        "children": [
+                                                            {
+                                                                "data": {
+                                                                    "id": "ckn2885xzhc0",
+                                                                    "created": 1654925780818,
+                                                                    "text": "场景的包围球如何计算？"
+                                                                },
+                                                                "children": []
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "data": {
+                                                    "id": "ckmi05m7cg80",
+                                                    "created": 1654868726160,
+                                                    "text": "ConstantBuffer",
+                                                    "layout_right_offset": {
+                                                        "x": 39,
+                                                        "y": 116
+                                                    }
+                                                },
+                                                "children": [
+                                                    {
+                                                        "data": {
+                                                            "id": "ckmi0ad0k880",
+                                                            "created": 1654868736488,
+                                                            "text": "光源相机的ViewMatrix",
+                                                            "layout_right_offset": {
+                                                                "x": 44,
+                                                                "y": -46
+                                                            }
+                                                        },
+                                                        "children": []
+                                                    },
+                                                    {
+                                                        "data": {
+                                                            "id": "ckmi0hnr4lk0",
+                                                            "created": 1654868752375,
+                                                            "text": "光源相机的OrthoProjMatrix",
+                                                            "layout_right_offset": {
+                                                                "x": 42,
+                                                                "y": 11
+                                                            }
+                                                        },
+                                                        "children": []
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "data": {
+                            "id": "ckk082kskdc0",
+                            "created": 1654615446566,
+                            "text": "ShadowTestPass",
+                            "layout_right_offset": {
+                                "x": 151,
+                                "y": -46
+                            }
+                        },
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    },
+    "template": "default",
+    "theme": "fresh-blue",
+    "version": "1.4.43"
+}

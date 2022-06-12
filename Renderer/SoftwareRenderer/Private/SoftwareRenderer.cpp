@@ -257,7 +257,7 @@ namespace RenderDog
 		virtual bool				Init(const RendererInitDesc& desc) override;
 		virtual void				Release() override;
 
-		virtual void				Update() override;
+		virtual void				Update(IScene* pScene) override;
 		virtual void				Render(IScene* pScene) override;
 
 		virtual bool				OnResize(uint32_t width, uint32_t height);
@@ -391,7 +391,7 @@ namespace RenderDog
 		}
 	}
 
-	void SoftwareRenderer::Update()
+	void SoftwareRenderer::Update(IScene* pScene)
 	{
 		FPSCamera* pCamera = m_pSceneView->GetCamera();
 		GlobalConstantData globalCBData = {};

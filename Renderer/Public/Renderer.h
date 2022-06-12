@@ -30,7 +30,7 @@ namespace RenderDog
 		virtual bool	Init(const RendererInitDesc& desc) = 0;
 		virtual void	Release() = 0;
 		
-		virtual	void	Update() = 0;
+		virtual	void	Update(IScene* pScene) = 0;
 		virtual void	Render(IScene* pScene) = 0;
 
 		//这里暂时添加该接口来重新创建Renderer需要的资源，后续应使用一个资源管理器管理Renderer的资源

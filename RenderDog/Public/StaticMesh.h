@@ -8,6 +8,7 @@
 #include "Primitive.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "Bounding.h"
 
 #include <vector>
 
@@ -49,6 +50,8 @@ namespace RenderDog
 
 		virtual PRIMITIVE_TYPE			GetPriType() const override { return PRIMITIVE_TYPE::SIMPLE_PRI; }
 
+		virtual BoundingSphere			GetBoundingSphere() const override { return m_BoudingSphere; }
+
 		void							LoadFromSimpleData(const std::vector<SimpleVertex>& vertices, const std::vector<uint32_t>& indices);
 		void							InitRenderData(const std::string& vsFile, const std::string& psFile);
 		void							ReleaseRenderData();
@@ -60,6 +63,8 @@ namespace RenderDog
 		std::vector<uint32_t>			m_Indices;
 
 		StaticMeshRenderData*			m_pRenderData;
+
+		BoundingSphere					m_BoudingSphere;
 	};
 
 	//------------------------------------------------------------------------
@@ -77,6 +82,8 @@ namespace RenderDog
 		virtual void					Render(IPrimitiveRenderer* pPrimitiveRenderer) override;
 
 		virtual PRIMITIVE_TYPE			GetPriType() const override { return PRIMITIVE_TYPE::OPAQUE_PRI; }
+
+		virtual BoundingSphere			GetBoundingSphere() const override { return m_BoudingSphere; }
 
 		void							LoadFromStandardData(const std::vector<StandardVertex>& vertices, const std::vector<uint32_t>& indices);
 		bool							LoadTextureFromFile(const std::wstring& diffuseTexturePath);
@@ -96,6 +103,8 @@ namespace RenderDog
 
 		ITexture2D*						m_pDiffuseTexture;
 		ISamplerState*					m_pLinearSampler;
+
+		BoundingSphere					m_BoudingSphere;
 	};
 
 }// namespace RenderDog

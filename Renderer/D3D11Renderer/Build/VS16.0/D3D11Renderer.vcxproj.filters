@@ -52,5 +52,11 @@
     <None Include="..\..\Shaders\SimpleModelVertexShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\..\Shaders\ShadowDepthPixelShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\Shaders\ShadowDepthVertexShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

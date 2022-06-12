@@ -49,7 +49,10 @@ namespace RenderDog
 
 	void Framework::Frame()
 	{
-		g_pIRenderer->Update();
+		for (uint32_t i = 0; i < m_pScenes.size(); ++i)
+		{
+			g_pIRenderer->Update(m_pScenes[i]);
+		}
 
 		for (uint32_t i = 0; i < m_pScenes.size(); ++i)
 		{
