@@ -50,7 +50,8 @@ float4 Main(VSOutput vsOutput) : SV_Target
 	//Shadow
 	float2 ShadowTex = float2(vsOutput.ShadowPos.x * 0.5f + 0.5f, 0.5f - vsOutput.ShadowPos.y * 0.5f);
 	float ShadowDepth = ShadowDepthTexture.Sample(LinearSampler, ShadowTex).r;
-	float ShadowFactor = vsOutput.ShadowPos.z < ShadowDepth ? 1.0f : 0.0f;
+	ShadowDepth += 0.01f;
+	float ShadowFactor = vsOutput.ShadowPos.z <= ShadowDepth ? 1.0f : 0.0f;
 	Diffuse *= ShadowFactor;
 
 	float3 Ambient = float3(0.15f, 0.15f, 0.15f);

@@ -243,6 +243,9 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->PSSetShaderResources(1, 1, &m_pShadowDepthSRV);
 
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
+
+		ID3D11ShaderResourceView* nullRes[] = { nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr };
+		g_pD3D11ImmediateContext->PSSetShaderResources(1, 8, nullRes);
 	}
 
 	class D3D11MeshShadowRenderer : public D3D11MeshRenderer
@@ -851,10 +854,10 @@ namespace RenderDog
 
 	void D3D11Renderer::ClearBackRenderTarget(float* clearColor)
 	{
+		g_pD3D11ImmediateContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
+
 		g_pD3D11ImmediateContext->ClearRenderTargetView(m_pRenderTargetView, clearColor);
 		g_pD3D11ImmediateContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-
-		g_pD3D11ImmediateContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
 	}
 
 	void D3D11Renderer::AddPrisAndLightsToSceneView(IScene* pScene)
