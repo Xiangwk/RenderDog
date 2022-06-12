@@ -24,9 +24,12 @@ namespace RenderDog
 
 	struct PrimitiveRenderParam
 	{
-		IVertexBuffer* pVB;
-		IIndexBuffer* pIB;
-		IConstantBuffer* pPerObjCB;
+		IVertexBuffer*		pVB;
+		IIndexBuffer*		pIB;
+		IConstantBuffer*	pPerObjCB;
+
+		ITexture2D*			pTexture2D;
+		ISamplerState*		pSamplerState;
 
 		IShader* pVS;
 		IShader* pPS;
@@ -35,6 +38,8 @@ namespace RenderDog
 			pVB(nullptr),
 			pIB(nullptr),
 			pPerObjCB(nullptr),
+			pTexture2D(nullptr),
+			pSamplerState(nullptr),
 			pVS(nullptr),
 			pPS(nullptr)
 		{}
@@ -45,7 +50,7 @@ namespace RenderDog
 	public:
 		virtual ~IPrimitiveRenderer() = default;
 
-		virtual void				Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler) = 0;
+		virtual void				Render(const PrimitiveRenderParam& renderParam) = 0;
 	};
 
 	class IPrimitive

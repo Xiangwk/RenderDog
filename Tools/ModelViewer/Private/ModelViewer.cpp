@@ -77,7 +77,7 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 	m_pGridLine = new RenderDog::SimpleModel();
 	m_pGridLine->LoadFromSimpleData(GridLineMeshData.vertices, GridLineMeshData.indices, "Shaders/SimpleModelVertexShader.hlsl", "Shaders/SingleColorPixelShader.hlsl");
 	m_pGridLine->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
-	//m_pGridLine->RegisterToScene(m_pScene);
+	m_pGridLine->RegisterToScene(m_pScene);
 
 	RenderDog::GeometryGenerator::StandardMeshData GridMeshData;
 	RenderDog::g_pGeometryGenerator->GenerateGrid(100, 100, 1, GridMeshData);

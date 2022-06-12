@@ -27,14 +27,15 @@ namespace RenderDog
 	//    Mesh Renderer
 	//===========================================================
 
+#pragma region MeshRenderer
 	class D3D11MeshRenderer : public IPrimitiveRenderer
 	{
 	public:
 		D3D11MeshRenderer();
-		D3D11MeshRenderer(IConstantBuffer* pVertexShaderCB);
+		D3D11MeshRenderer(IConstantBuffer* pGlobalCB);
 		virtual ~D3D11MeshRenderer();
 
-		virtual void					Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler) override;
+		virtual void					Render(const PrimitiveRenderParam& renderParam) override;
 
 	protected:
 		IConstantBuffer*				m_pGlobalCB;
@@ -51,7 +52,7 @@ namespace RenderDog
 		m_pGlobalCB(pGlobalCB)
 	{}
 
-	void D3D11MeshRenderer::Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler)
+	void D3D11MeshRenderer::Render(const PrimitiveRenderParam& renderParam)
 	{
 		if (!g_pD3D11ImmediateContext)
 		{
@@ -85,12 +86,13 @@ namespace RenderDog
 
 		renderParam.pPS->SetToContext();
 
-		ID3D11ShaderResourceView* pSRV = (ID3D11ShaderResourceView*)(pDiffuseTexture->GetShaderResourceView());
+		ID3D11ShaderResourceView* pSRV = (ID3D11ShaderResourceView*)(renderParam.pTexture2D->GetShaderResourceView());
 		g_pD3D11ImmediateContext->PSSetShaderResources(0, 1, &pSRV);
-		pSampler->SetToPixelShader(0);
+		renderParam.pSamplerState->SetToPixelShader(0);
 
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
 	}
+#pragma endregion MeshRenderer
 
 #pragma region LineMeshRenderer
 	//LineMeshRenderer: Use to draw line
@@ -98,10 +100,10 @@ namespace RenderDog
 	{
 	public:
 		D3D11LineMeshRenderer();
-		D3D11LineMeshRenderer(IConstantBuffer* pVertexShaderCB);
+		D3D11LineMeshRenderer(IConstantBuffer* pGlobalCB);
 		virtual ~D3D11LineMeshRenderer();
 
-		virtual void					Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler) override;
+		virtual void					Render(const PrimitiveRenderParam& renderParam) override;
 	};
 
 	D3D11LineMeshRenderer::D3D11LineMeshRenderer()
@@ -114,7 +116,7 @@ namespace RenderDog
 		D3D11MeshRenderer(pGlobalCB)
 	{}
 
-	void D3D11LineMeshRenderer::Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler)
+	void D3D11LineMeshRenderer::Render(const PrimitiveRenderParam& renderParam)
 	{
 		if (!g_pD3D11ImmediateContext)
 		{
@@ -152,14 +154,15 @@ namespace RenderDog
 	}
 #pragma endregion LineMeshRenderer
 
+#pragma region MeshLightingRenderer
 	class D3D11MeshLightingRenderer : public D3D11MeshRenderer
 	{
 	public:
 		D3D11MeshLightingRenderer();
-		D3D11MeshLightingRenderer(IConstantBuffer* pVertexShaderCB, IConstantBuffer* pLightingCB, IConstantBuffer* pShadowCB, ID3D11ShaderResourceView* pShadowDepthSRV);
+		D3D11MeshLightingRenderer(IConstantBuffer* pGlobalCB, IConstantBuffer* pLightingCB, IConstantBuffer* pShadowCB, ID3D11ShaderResourceView* pShadowDepthSRV);
 		virtual ~D3D11MeshLightingRenderer();
 
-		virtual void					Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler) override;
+		virtual void					Render(const PrimitiveRenderParam& renderParam) override;
 
 	protected:
 		IConstantBuffer*				m_pLightingCB;
@@ -174,8 +177,8 @@ namespace RenderDog
 		m_pShadowDepthSRV(nullptr)
 	{}
 
-	D3D11MeshLightingRenderer::D3D11MeshLightingRenderer(IConstantBuffer* pVertexShaderCB, IConstantBuffer* pLightingCB, IConstantBuffer* pShadowCB, ID3D11ShaderResourceView* pShadowDepthTexture):
-		D3D11MeshRenderer(pVertexShaderCB),
+	D3D11MeshLightingRenderer::D3D11MeshLightingRenderer(IConstantBuffer* pGlobalCB, IConstantBuffer* pLightingCB, IConstantBuffer* pShadowCB, ID3D11ShaderResourceView* pShadowDepthTexture):
+		D3D11MeshRenderer(pGlobalCB),
 		m_pLightingCB(pLightingCB),
 		m_pShadowCB(pShadowCB),
 		m_pShadowDepthSRV(pShadowDepthTexture)
@@ -184,7 +187,7 @@ namespace RenderDog
 	D3D11MeshLightingRenderer::~D3D11MeshLightingRenderer()
 	{}
 
-	void D3D11MeshLightingRenderer::Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler)
+	void D3D11MeshLightingRenderer::Render(const PrimitiveRenderParam& renderParam)
 	{
 		if (!g_pD3D11ImmediateContext)
 		{
@@ -224,9 +227,9 @@ namespace RenderDog
 		ID3D11Buffer* pLightingCB = (ID3D11Buffer*)(m_pLightingCB->GetConstantBuffer());
 		g_pD3D11ImmediateContext->PSSetConstantBuffers(0, 1, &pLightingCB);
 
-		ID3D11ShaderResourceView* pSRV = (ID3D11ShaderResourceView*)(pDiffuseTexture->GetShaderResourceView());
+		ID3D11ShaderResourceView* pSRV = (ID3D11ShaderResourceView*)(renderParam.pTexture2D->GetShaderResourceView());
 		g_pD3D11ImmediateContext->PSSetShaderResources(0, 1, &pSRV);
-		pSampler->SetToPixelShader(0);
+		renderParam.pSamplerState->SetToPixelShader(0);
 
 		g_pD3D11ImmediateContext->PSSetShaderResources(1, 1, &m_pShadowDepthSRV);
 
@@ -236,15 +239,17 @@ namespace RenderDog
 		ID3D11ShaderResourceView* nullRes[] = { nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr };
 		g_pD3D11ImmediateContext->PSSetShaderResources(1, 8, nullRes);
 	}
+#pragma endregion MeshLightingRenderer
 
+#pragma region MeshShadowRenderer
 	class D3D11MeshShadowRenderer : public D3D11MeshRenderer
 	{
 	public:
 		D3D11MeshShadowRenderer();
-		D3D11MeshShadowRenderer(IConstantBuffer* pVertexShaderCB, IShader* pVS, IShader* pPS);
+		D3D11MeshShadowRenderer(IConstantBuffer* pGlobalCB, IShader* pVS, IShader* pPS);
 		virtual ~D3D11MeshShadowRenderer();
 
-		virtual void					Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler) override;
+		virtual void					Render(const PrimitiveRenderParam& renderParam) override;
 
 	private:
 		IShader*						m_pVS;
@@ -256,8 +261,8 @@ namespace RenderDog
 		m_pPS(nullptr)
 	{}
 
-	D3D11MeshShadowRenderer::D3D11MeshShadowRenderer(IConstantBuffer* pVertexShaderCB, IShader* pVS, IShader* pPS):
-		D3D11MeshRenderer(pVertexShaderCB),
+	D3D11MeshShadowRenderer::D3D11MeshShadowRenderer(IConstantBuffer* pGlobalCB, IShader* pVS, IShader* pPS):
+		D3D11MeshRenderer(pGlobalCB),
 		m_pVS(pVS),
 		m_pPS(pPS)
 	{}
@@ -265,7 +270,7 @@ namespace RenderDog
 	D3D11MeshShadowRenderer::~D3D11MeshShadowRenderer()
 	{}
 
-	void D3D11MeshShadowRenderer::Render(const PrimitiveRenderParam& renderParam, ITexture2D* pDiffuseTexture, ISamplerState* pSampler)
+	void D3D11MeshShadowRenderer::Render(const PrimitiveRenderParam& renderParam)
 	{
 		if (!g_pD3D11ImmediateContext)
 		{
@@ -301,7 +306,7 @@ namespace RenderDog
 
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
 	}
-
+#pragma endregion MeshShadowRenderer
 
 	//===========================================================
 	//    D3D11 Renderer

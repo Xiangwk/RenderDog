@@ -49,13 +49,15 @@ namespace RenderDog
 	void SimpleMesh::Render(IPrimitiveRenderer* pPrimitiveRenderer)
 	{
 		PrimitiveRenderParam renderParam = {};
-		renderParam.pVB			= m_pRenderData->pVB;
-		renderParam.pIB			= m_pRenderData->pIB;
-		renderParam.pPerObjCB	= m_pRenderData->pCB;
-		renderParam.pVS			= m_pRenderData->pVS;
-		renderParam.pPS			= m_pRenderData->pPS;
+		renderParam.pVB				= m_pRenderData->pVB;
+		renderParam.pIB				= m_pRenderData->pIB;
+		renderParam.pPerObjCB		= m_pRenderData->pCB;
+		renderParam.pTexture2D		= nullptr;
+		renderParam.pSamplerState	= nullptr;
+		renderParam.pVS				= m_pRenderData->pVS;
+		renderParam.pPS				= m_pRenderData->pPS;
 
-		pPrimitiveRenderer->Render(renderParam, nullptr, nullptr);
+		pPrimitiveRenderer->Render(renderParam);
 	}
 
 	void SimpleMesh::LoadFromSimpleData(const std::vector<SimpleVertex>& vertices, const std::vector<uint32_t>& indices)
@@ -175,13 +177,15 @@ namespace RenderDog
 	void StaticMesh::Render(IPrimitiveRenderer* pPrimitiveRenderer)
 	{
 		PrimitiveRenderParam renderParam = {};
-		renderParam.pVB			= m_pRenderData->pVB;
-		renderParam.pIB			= m_pRenderData->pIB;
-		renderParam.pPerObjCB	= m_pRenderData->pCB;
-		renderParam.pVS			= m_pRenderData->pVS;
-		renderParam.pPS			= m_pRenderData->pPS;
+		renderParam.pVB				= m_pRenderData->pVB;
+		renderParam.pIB				= m_pRenderData->pIB;
+		renderParam.pPerObjCB		= m_pRenderData->pCB;
+		renderParam.pTexture2D		= m_pDiffuseTexture;
+		renderParam.pSamplerState	= m_pLinearSampler;
+		renderParam.pVS				= m_pRenderData->pVS;
+		renderParam.pPS				= m_pRenderData->pPS;
 
-		pPrimitiveRenderer->Render(renderParam, m_pDiffuseTexture, m_pLinearSampler);
+		pPrimitiveRenderer->Render(renderParam);
 	}
 
 	void StaticMesh::LoadFromStandardData(const std::vector<StandardVertex>& vertices, const std::vector<uint32_t>& indices)
