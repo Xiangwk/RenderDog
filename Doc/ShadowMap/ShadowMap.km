@@ -45,8 +45,8 @@
                                             "created": 1654868609865,
                                             "text": "需要确认的问题",
                                             "layout_right_offset": {
-                                                "x": 136,
-                                                "y": -196
+                                                "x": 166,
+                                                "y": -211
                                             }
                                         },
                                         "children": [
@@ -120,7 +120,8 @@
                                             "layout_right_offset": {
                                                 "x": 124,
                                                 "y": -148
-                                            }
+                                            },
+                                            "progress": null
                                         },
                                         "children": [
                                             {
@@ -131,7 +132,8 @@
                                                     "layout_right_offset": {
                                                         "x": 29,
                                                         "y": -20
-                                                    }
+                                                    },
+                                                    "progress": 9
                                                 },
                                                 "children": [
                                                     {
@@ -186,9 +188,22 @@
                                                                 "data": {
                                                                     "id": "ckn2885xzhc0",
                                                                     "created": 1654925780818,
-                                                                    "text": "场景的包围球如何计算？"
+                                                                    "text": "场景的包围球如何计算？",
+                                                                    "layout_right_offset": {
+                                                                        "x": 16,
+                                                                        "y": -22
+                                                                    }
                                                                 },
-                                                                "children": []
+                                                                "children": [
+                                                                    {
+                                                                        "data": {
+                                                                            "id": "ckp1j3vboyg0",
+                                                                            "created": 1655126932278,
+                                                                            "text": "计算包围球首先需要包围盒"
+                                                                        },
+                                                                        "children": []
+                                                                    }
+                                                                ]
                                                             }
                                                         ]
                                                     }
@@ -202,7 +217,8 @@
                                                     "layout_right_offset": {
                                                         "x": 39,
                                                         "y": 116
-                                                    }
+                                                    },
+                                                    "progress": 9
                                                 },
                                                 "children": [
                                                     {
@@ -252,10 +268,62 @@
                                 "data": {
                                     "id": "cknyra6u6aw0",
                                     "created": 1655017549662,
-                                    "text": "1. 将主视角下场景中的像素变换到光源空间中",
+                                    "text": "1. 使用主相机渲染场景中的物体",
                                     "layout_right_offset": {
                                         "x": 76,
                                         "y": -48
+                                    },
+                                    "progress": 9
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "ckp1jtonvt40",
+                                    "created": 1655126988472,
+                                    "text": "2. 在渲染场景物体的VS中，使用阴影相机的变换矩阵计算物体在光源的NDC空间中的深度",
+                                    "layout_right_offset": {
+                                        "x": 80,
+                                        "y": -20
+                                    },
+                                    "progress": 9
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "ckp1kqoo3080",
+                                    "created": 1655127060306,
+                                    "text": "3. 将物体在光源NDC中的xy坐标 变换到ShadowMap空间，对ShadowMap进行采样",
+                                    "layout_right_offset": {
+                                        "x": 68,
+                                        "y": 7
+                                    },
+                                    "progress": 9
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "ckp1m82xpao0",
+                                    "created": 1655127176538,
+                                    "text": "4. 将采样得到的深度值与物体在光源NDC空间中的深度值进行比较，即可得到当前像素是否在阴影中的结论",
+                                    "layout_right_offset": {
+                                        "x": 61,
+                                        "y": 44
+                                    },
+                                    "progress": 9
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "ckp1mw8h60o0",
+                                    "created": 1655127229116,
+                                    "text": "PCF",
+                                    "layout_right_offset": {
+                                        "x": 83,
+                                        "y": 115
                                     }
                                 },
                                 "children": []

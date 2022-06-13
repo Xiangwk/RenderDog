@@ -27,18 +27,19 @@ namespace RenderDog
 	public:
 		virtual ~IScene() = default;
 
-		virtual bool			Init(const SceneInitDesc& desc) = 0;
-		virtual void			Release() = 0;
+		virtual bool					Init(const SceneInitDesc& desc) = 0;
+		virtual void					Release() = 0;
 
-		virtual void			RegisterPrimitive(IPrimitive* pPrimitive) = 0;
-		virtual IPrimitive*		GetPrimitive(uint32_t index) = 0;
-		virtual uint32_t		GetPrimitivesNum() const = 0;
+		virtual void					RegisterPrimitive(IPrimitive* pPrimitive) = 0;
+		virtual IPrimitive*				GetPrimitive(uint32_t index) = 0;
+		virtual uint32_t				GetPrimitivesNum() const = 0;
 
-		virtual	void			RegisterLight(ILight* pLight) = 0;
-		virtual ILight*			GetLight(uint32_t index) = 0;
-		virtual uint32_t		GetLightsNum() const = 0;
+		virtual	void					RegisterLight(ILight* pLight) = 0;
+		virtual ILight*					GetLight(uint32_t index) = 0;
+		virtual uint32_t				GetLightsNum() const = 0;
 
-		virtual BoundingSphere	GetBoundingSphere() const = 0;
+		virtual const BoundingSphere&	GetBoundingSphere() const = 0;
+		virtual BoundingSphere&			GetBoundingSphere() = 0;
 	};
 
 	class ISceneManager

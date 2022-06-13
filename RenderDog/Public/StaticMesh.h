@@ -16,6 +16,8 @@
 
 namespace RenderDog
 {
+	class Matrix4x4;
+
 	struct StaticMeshRenderData
 	{
 		IVertexBuffer*		pVB;
@@ -50,7 +52,7 @@ namespace RenderDog
 
 		virtual PRIMITIVE_TYPE			GetPriType() const override { return PRIMITIVE_TYPE::SIMPLE_PRI; }
 
-		virtual BoundingSphere			GetBoundingSphere() const override { return m_BoudingSphere; }
+		virtual const AABB&				GetAABB() const override { return m_AABB; }
 
 		void							LoadFromSimpleData(const std::vector<SimpleVertex>& vertices, const std::vector<uint32_t>& indices);
 		void							InitRenderData(const std::string& vsFile, const std::string& psFile);
@@ -64,7 +66,7 @@ namespace RenderDog
 
 		StaticMeshRenderData*			m_pRenderData;
 
-		BoundingSphere					m_BoudingSphere;
+		AABB							m_AABB;
 	};
 
 	//------------------------------------------------------------------------
@@ -83,14 +85,22 @@ namespace RenderDog
 
 		virtual PRIMITIVE_TYPE			GetPriType() const override { return PRIMITIVE_TYPE::OPAQUE_PRI; }
 
-		virtual BoundingSphere			GetBoundingSphere() const override { return m_BoudingSphere; }
+		virtual const AABB&				GetAABB() const override { return m_AABB; }
 
 		void							LoadFromStandardData(const std::vector<StandardVertex>& vertices, const std::vector<uint32_t>& indices);
 		bool							LoadTextureFromFile(const std::wstring& diffuseTexturePath);
+
 		void							InitRenderData(const std::string& vsFile, const std::string& psFile);
 		void							ReleaseRenderData();
+
 		void							SetPosGesture(const Vector3& pos, const Vector3& euler, const Vector3& scale);
+
 		void							CalculateTangents();
+		void							CalculateAABB();
+		
+	private:
+		// Use to update aabb when setPosGesture;
+		void							UpdateAABB(const Matrix4x4& absTransMatrix);
 
 	private:
 		std::vector<StandardVertex>		m_RawVertices;
@@ -104,7 +114,7 @@ namespace RenderDog
 		ITexture2D*						m_pDiffuseTexture;
 		ISamplerState*					m_pLinearSampler;
 
-		BoundingSphere					m_BoudingSphere;
+		AABB							m_AABB;
 	};
 
 }// namespace RenderDog

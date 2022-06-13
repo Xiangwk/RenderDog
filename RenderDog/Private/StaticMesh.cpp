@@ -18,7 +18,8 @@ namespace RenderDog
 	SimpleMesh::SimpleMesh() :
 		m_Vertices(0),
 		m_Indices(0),
-		m_pRenderData(nullptr)
+		m_pRenderData(nullptr),
+		m_AABB()
 	{}
 
 	SimpleMesh::~SimpleMesh()
@@ -139,7 +140,8 @@ namespace RenderDog
 		m_RawIndices(0),
 		m_pRenderData(nullptr),
 		m_pDiffuseTexture(nullptr),
-		m_pLinearSampler(nullptr)
+		m_pLinearSampler(nullptr),
+		m_AABB()
 	{}
 
 	StaticMesh::~StaticMesh()
@@ -287,7 +289,8 @@ namespace RenderDog
 		Matrix4x4 scaleMat = GetScaleMatrix(scale.x, scale.y, scale.z);
 
 		Matrix4x4 worldMat = scaleMat * rotMat * transMat;
-		worldMat = worldMat;
+
+		UpdateAABB(worldMat);
 
 		m_pRenderData->pCB->Update(&worldMat, sizeof(Matrix4x4));
 	}
@@ -438,6 +441,40 @@ namespace RenderDog
 			Vector3 tangent = Vector3(vert.tangent.x, vert.tangent.y, vert.tangent.z);
 			tangent = Normalize(tangent - vert.normal * DotProduct(vert.normal, tangent));
 			vert.tangent = Vector4(tangent, vert.tangent.w);
+		}
+	}
+
+	void StaticMesh::CalculateAABB()
+	{
+		m_AABB.Reset();
+		for (uint32_t i = 0; i < m_Vertices.size(); ++i)
+		{
+			const Vector3 pos = m_Vertices[i].position;
+			m_AABB.minPoint.x = m_AABB.minPoint.x < pos.x ? m_AABB.minPoint.x : pos.x;
+			m_AABB.minPoint.y = m_AABB.minPoint.y < pos.y ? m_AABB.minPoint.y : pos.y;
+			m_AABB.minPoint.z = m_AABB.minPoint.z < pos.z ? m_AABB.minPoint.z : pos.z;
+
+			m_AABB.maxPoint.x = m_AABB.maxPoint.x > pos.x ? m_AABB.maxPoint.x : pos.x;
+			m_AABB.maxPoint.y = m_AABB.maxPoint.y > pos.y ? m_AABB.maxPoint.y : pos.y;
+			m_AABB.maxPoint.z = m_AABB.maxPoint.z > pos.z ? m_AABB.maxPoint.z : pos.z;
+		}
+	}
+
+	void StaticMesh::UpdateAABB(const Matrix4x4& absTransMatrix)
+	{
+		m_AABB.Reset();
+		for (uint32_t i = 0; i < m_Vertices.size(); ++i)
+		{
+			Vector4 pos = Vector4(m_Vertices[i].position, 1.0f);
+			pos = pos * absTransMatrix;
+
+			m_AABB.minPoint.x = m_AABB.minPoint.x < pos.x ? m_AABB.minPoint.x : pos.x;
+			m_AABB.minPoint.y = m_AABB.minPoint.y < pos.y ? m_AABB.minPoint.y : pos.y;
+			m_AABB.minPoint.z = m_AABB.minPoint.z < pos.z ? m_AABB.minPoint.z : pos.z;
+
+			m_AABB.maxPoint.x = m_AABB.maxPoint.x > pos.x ? m_AABB.maxPoint.x : pos.x;
+			m_AABB.maxPoint.y = m_AABB.maxPoint.y > pos.y ? m_AABB.maxPoint.y : pos.y;
+			m_AABB.maxPoint.z = m_AABB.maxPoint.z > pos.z ? m_AABB.maxPoint.z : pos.z;
 		}
 	}
 

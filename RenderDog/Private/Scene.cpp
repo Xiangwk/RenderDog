@@ -34,7 +34,8 @@ namespace RenderDog
 		virtual ILight*					GetLight(uint32_t index) override { return m_Lights[index]; }
 		virtual uint32_t				GetLightsNum() const override { return (uint32_t)m_Lights.size(); }
 
-		virtual BoundingSphere			GetBoundingSphere() const override { return m_BoundingSphere; }
+		virtual const BoundingSphere&	GetBoundingSphere() const override { return m_BoundingSphere; }
+		virtual BoundingSphere&			GetBoundingSphere() override { return m_BoundingSphere; }
 
 	private:
 		std::string						m_Name;

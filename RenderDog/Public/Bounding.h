@@ -11,6 +11,19 @@
 
 namespace RenderDog
 {
+	struct AABB
+	{
+		Vector3 minPoint;
+		Vector3 maxPoint;
+
+		AABB() :
+			minPoint(FLT_MAX),
+			maxPoint(FLT_MIN)
+		{}
+
+		void Reset() { minPoint = Vector3(FLT_MAX); maxPoint = Vector3(FLT_MIN); }
+	};
+
 	struct BoundingSphere
 	{
 		Vector3	center;
@@ -18,8 +31,10 @@ namespace RenderDog
 
 		BoundingSphere() :
 			center(0.0f, 0.0f, 0.0f),
-			radius(100.0f)
+			radius(0.0f)
 		{}
+
+		void Reset() { center = Vector3(0.0f, 0.0f, 0.0f); radius = 0.0f; }
 	};
 
 }// namespace RenderDog

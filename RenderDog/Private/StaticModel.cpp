@@ -71,7 +71,9 @@ namespace RenderDog
 	//------------------------------------------------------------------------
 
 	StaticModel::StaticModel() :
-		m_Meshes(0)
+		m_Meshes(0),
+		m_AABB(),
+		m_BoundingSphere()
 	{}
 
 	StaticModel::~StaticModel()
@@ -87,6 +89,8 @@ namespace RenderDog
 		StaticMesh mesh;
 		mesh.LoadFromStandardData(vertices, indices);
 		mesh.InitRenderData(vsFile, psFile);
+
+		CalculateBoundings();
 
 		m_Meshes.push_back(mesh);
 	}
@@ -124,6 +128,8 @@ namespace RenderDog
 			mesh.InitRenderData(vsFile, psFile);
 		}
 
+		CalculateBoundings();
+
 		return true;
 	}
 
@@ -134,6 +140,8 @@ namespace RenderDog
 			StaticMesh* pMesh = &(m_Meshes[i]);
 			pMesh->SetPosGesture(pos, euler, scale);
 		}
+
+		UpdateBoundings();
 	}
 
 	void StaticModel::RegisterToScene(IScene* pScene)
@@ -143,6 +151,10 @@ namespace RenderDog
 			IPrimitive* pMesh = &(m_Meshes[i]);
 			pScene->RegisterPrimitive(pMesh);
 		}
+
+		BoundingSphere& sceneBoundingSphere = pScene->GetBoundingSphere();
+		float modelMaxDisToSceneCenter = m_BoundingSphere.center.Length() + m_BoundingSphere.radius;
+		sceneBoundingSphere.radius = sceneBoundingSphere.radius > modelMaxDisToSceneCenter ? sceneBoundingSphere.radius : modelMaxDisToSceneCenter;
 	}
 
 	void StaticModel::ReleaseRenderData()
@@ -205,6 +217,49 @@ namespace RenderDog
 		{
 			m_Meshes[i].CalculateTangents();
 		}
+	}
+
+	void StaticModel::CalculateBoundings()
+	{
+		m_AABB.Reset();
+		m_BoundingSphere.Reset();
+		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
+		{
+			m_Meshes[i].CalculateAABB();
+			const AABB& meshAABB = m_Meshes[i].GetAABB();
+
+			m_AABB.minPoint.x = m_AABB.minPoint.x < meshAABB.minPoint.x ? m_AABB.minPoint.x : meshAABB.minPoint.x;
+			m_AABB.minPoint.y = m_AABB.minPoint.y < meshAABB.minPoint.y ? m_AABB.minPoint.y : meshAABB.minPoint.y;
+			m_AABB.minPoint.z = m_AABB.minPoint.z < meshAABB.minPoint.z ? m_AABB.minPoint.z : meshAABB.minPoint.z;
+
+			m_AABB.maxPoint.x = m_AABB.maxPoint.x > meshAABB.maxPoint.x ? m_AABB.maxPoint.x : meshAABB.maxPoint.x;
+			m_AABB.maxPoint.y = m_AABB.maxPoint.y > meshAABB.maxPoint.y ? m_AABB.maxPoint.y : meshAABB.maxPoint.y;
+			m_AABB.maxPoint.z = m_AABB.maxPoint.z > meshAABB.maxPoint.z ? m_AABB.maxPoint.z : meshAABB.maxPoint.z;
+		}
+
+		m_BoundingSphere.center = (m_AABB.minPoint + m_AABB.maxPoint) * 0.5f;
+		m_BoundingSphere.radius = (m_AABB.maxPoint - m_AABB.minPoint).Length() * 0.5f;
+	}
+
+	void StaticModel::UpdateBoundings()
+	{
+		m_AABB.Reset();
+		m_BoundingSphere.Reset();
+		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
+		{
+			const AABB& meshAABB = m_Meshes[i].GetAABB();
+
+			m_AABB.minPoint.x = m_AABB.minPoint.x < meshAABB.minPoint.x ? m_AABB.minPoint.x : meshAABB.minPoint.x;
+			m_AABB.minPoint.y = m_AABB.minPoint.y < meshAABB.minPoint.y ? m_AABB.minPoint.y : meshAABB.minPoint.y;
+			m_AABB.minPoint.z = m_AABB.minPoint.z < meshAABB.minPoint.z ? m_AABB.minPoint.z : meshAABB.minPoint.z;
+
+			m_AABB.maxPoint.x = m_AABB.maxPoint.x > meshAABB.maxPoint.x ? m_AABB.maxPoint.x : meshAABB.maxPoint.x;
+			m_AABB.maxPoint.y = m_AABB.maxPoint.y > meshAABB.maxPoint.y ? m_AABB.maxPoint.y : meshAABB.maxPoint.y;
+			m_AABB.maxPoint.z = m_AABB.maxPoint.z > meshAABB.maxPoint.z ? m_AABB.maxPoint.z : meshAABB.maxPoint.z;
+		}
+
+		m_BoundingSphere.center = (m_AABB.minPoint + m_AABB.maxPoint) * 0.5f;
+		m_BoundingSphere.radius = (m_AABB.maxPoint - m_AABB.minPoint).Length() * 0.5f;
 	}
 
 

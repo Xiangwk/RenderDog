@@ -15,6 +15,7 @@ namespace RenderDog
 	class	ITexture2D;
 	class	ISamplerState;
 	struct	BoundingSphere;
+	struct	AABB;
 
 	enum class PRIMITIVE_TYPE
 	{
@@ -58,10 +59,10 @@ namespace RenderDog
 	public:
 		virtual ~IPrimitive() = default;
 
-		virtual void				Render(IPrimitiveRenderer* pPrimitiveRenderer) = 0;
+		virtual void					Render(IPrimitiveRenderer* pPrimitiveRenderer) = 0;
 
-		virtual PRIMITIVE_TYPE		GetPriType() const = 0;
-		virtual BoundingSphere		GetBoundingSphere() const = 0;
+		virtual PRIMITIVE_TYPE			GetPriType() const = 0;
+		virtual const AABB&				GetAABB() const = 0;
 	};
 
 }// namespace RenderDog

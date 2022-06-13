@@ -71,14 +71,23 @@ namespace RenderDog
 
 		void						SetPosGesture(const Vector3& pos, const Vector3& euler, const Vector3& scale);
 
+		const AABB&					GetAABB() const { return m_AABB; }
+		const BoundingSphere&		GetBoundingSphere() const { return m_BoundingSphere; }
+
 	private:
 		void						ProcessNode(const aiNode* pAssimpNode, const aiScene* pAssimpScene);
 		StaticMesh					ProcessMesh(const aiMesh* pAssimpMesh, const aiScene* pAssimpScene);
 
 		void						CalculateMeshTangents();
+		void						CalculateBoundings();
+		//Use to update aabb and bounding sphere when set pos and gesture
+		void						UpdateBoundings();
 
 	private:
 		std::vector<StaticMesh>		m_Meshes;
+
+		AABB						m_AABB;
+		BoundingSphere				m_BoundingSphere;
 	};
 
 }// namespace RenderDog
