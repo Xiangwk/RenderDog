@@ -27,20 +27,63 @@ namespace RenderDog
 		virtual void				Release() override;
 
 		virtual void*				GetRenderTargetView() override { return (void*)m_pRTV; }
+		virtual void*				GetDepthStencilView() override { return (void*)m_pDSV; }
 		virtual void*				GetShaderResourceView() override { return (void*)m_pSRV; }
+		
 
 	private:
 		ID3D11Texture2D*			m_pTexture2D;
 		ID3D11RenderTargetView*		m_pRTV;
+		ID3D11DepthStencilView*		m_pDSV;
 		ID3D11ShaderResourceView*	m_pSRV;
 	};
 
 	D3D11Texture2D::D3D11Texture2D(const TextureDesc& desc) :
 		m_pTexture2D(nullptr),
 		m_pRTV(nullptr),
+		m_pDSV(nullptr),
 		m_pSRV(nullptr)
 	{
-		//TODO!!!
+		/*
+		D3D11_TEXTURE2D_DESC texDesc;
+		texDesc.Width = desc.width;
+		texDesc.Height = desc.height;
+		texDesc.MipLevels = desc.mipLevels;
+		texDesc.ArraySize = desc.arraySize;
+		texDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
+		texDesc.SampleDesc.Count = 1;
+		texDesc.SampleDesc.Quality = 0;
+		texDesc.Usage = desc.isDynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
+		texDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+		texDesc.CPUAccessFlags = 0;
+		texDesc.MiscFlags = 0;
+		if (FAILED(g_pD3D11Device->CreateTexture2D(&texDesc, nullptr, &m_pTexture2D)))
+		{
+			return;
+		}
+
+		D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
+		dsvDesc.Flags = 0;
+		dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+		dsvDesc.Texture2D.MipSlice = 0;
+		if (FAILED(g_pD3D11Device->CreateDepthStencilView(m_pShadowDepthTexture, &dsvDesc, &m_pShadowDepthDSV)))
+		{
+			return false;
+		}
+
+		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+		srvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		srvDesc.Texture2D.MipLevels = texDesc.MipLevels;
+		srvDesc.Texture2D.MostDetailedMip = 0;
+		if (FAILED(g_pD3D11Device->CreateShaderResourceView(m_pShadowDepthTexture, &srvDesc, &m_pShadowDepthSRV)))
+		{
+			return false;
+		}
+
+		return true;
+		*/
 	}
 
 	D3D11Texture2D::~D3D11Texture2D()
@@ -55,6 +98,12 @@ namespace RenderDog
 		{
 			m_pRTV->Release();
 			m_pRTV = nullptr;
+		}
+
+		if (m_pDSV)
+		{
+			m_pDSV->Release();
+			m_pDSV = nullptr;
 		}
 
 		if (m_pSRV)
@@ -99,7 +148,7 @@ namespace RenderDog
 
 	void D3D11Texture2D::Release()
 	{
-		
+		g_pITextureManager->ReleaseTexture(this);
 	}
 
 	//==================================================

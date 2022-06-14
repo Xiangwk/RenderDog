@@ -58,6 +58,7 @@ namespace RenderDog
 
 		virtual void*			GetShaderResourceView() = 0;
 		virtual void*			GetRenderTargetView() = 0;
+		virtual void*			GetDepthStencilView() = 0;
 	};
 
 
