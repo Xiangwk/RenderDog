@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "RefCntObject.h"
 #include "Vertex.h"
 
 #include <string>
@@ -58,8 +57,8 @@ namespace RenderDog
 	public:
 		virtual	~IShaderManager() = default;
 
-		virtual IShader*			CreateVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc) = 0;
-		virtual IShader*			CreatePixelShader(const ShaderCompileDesc& desc) = 0;
+		virtual IShader*			GetVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc) = 0;
+		virtual IShader*			GetPixelShader(const ShaderCompileDesc& desc) = 0;
 	};
 
 	extern IShaderManager* g_pIShaderManager;

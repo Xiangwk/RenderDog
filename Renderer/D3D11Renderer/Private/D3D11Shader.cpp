@@ -5,6 +5,7 @@
 ////////////////////////////////////////
 
 #include "Shader.h"
+#include "RefCntObject.h"
 #include "D3D11InputLayout.h"
 #include "D3D11Renderer.h"
 
@@ -18,7 +19,7 @@ namespace RenderDog
 	//=========================================================================
 	//    D3D11Shader
 	//=========================================================================
-	class D3D11Shader : public IShader
+	class D3D11Shader : public IShader, public RefCntObject
 	{
 		friend class D3D11ShaderManager;
 
@@ -76,19 +77,25 @@ namespace RenderDog
 	//=========================================================================
 	class D3D11ShaderManager : public IShaderManager
 	{
+	private:
+		typedef std::unordered_map<std::string, D3D11Shader*> ShaderHashMap;
+
 	public:
 		D3D11ShaderManager() = default;
 		virtual ~D3D11ShaderManager() = default;
 
-		virtual IShader*	CreateVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc) override;
-		virtual IShader*	CreatePixelShader(const ShaderCompileDesc& desc) override;
+		virtual IShader*	GetVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc) override;
+		virtual IShader*	GetPixelShader(const ShaderCompileDesc& desc) override;
 
-		void				ReleaseVertexShader(D3D11VertexShader* pShader);
-		void				ReleasePixelShader(D3D11PixelShader* pShader);
+		void				ReleaseShader(D3D11Shader* pShader);
+
+	private:
+		ShaderHashMap		m_ShaderMap;
 	};
 
 	D3D11ShaderManager	g_D3D11ShaderManager;
-	IShaderManager* g_pIShaderManager = &g_D3D11ShaderManager;
+	IShaderManager*		g_pIShaderManager = &g_D3D11ShaderManager;
+
 
 	//=========================================================================
 	//    Function Implementation
@@ -216,7 +223,7 @@ namespace RenderDog
 
 	void D3D11VertexShader::Release()
 	{
-		g_D3D11ShaderManager.ReleaseVertexShader(this);
+		g_D3D11ShaderManager.ReleaseShader(this);
 	}
 
 	void D3D11VertexShader::SetToContext()
@@ -259,7 +266,7 @@ namespace RenderDog
 
 	void D3D11PixelShader::Release()
 	{
-		g_D3D11ShaderManager.ReleasePixelShader(this);
+		g_D3D11ShaderManager.ReleaseShader(this);
 	}
 
 	void D3D11PixelShader::SetToContext()
@@ -268,39 +275,57 @@ namespace RenderDog
 	}
 
 
-	IShader* D3D11ShaderManager::CreateVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc)
+	IShader* D3D11ShaderManager::GetVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc)
 	{
-		D3D11VertexShader* pVertexShader = new D3D11VertexShader(vertexType);
-		pVertexShader->CompileFromFile(desc);
-		pVertexShader->Init();
+		D3D11Shader* pVertexShader = nullptr;
+
+		auto shader = m_ShaderMap.find(desc.fileName);
+		if (shader != m_ShaderMap.end())
+		{
+			pVertexShader = shader->second;
+		}
+		else
+		{
+			pVertexShader = new D3D11VertexShader(vertexType);
+			pVertexShader->CompileFromFile(desc);
+			pVertexShader->Init();
+
+			m_ShaderMap.insert({ desc.fileName, pVertexShader });
+		}
+
+		pVertexShader->AddRef();
 
 		return pVertexShader;
 	}
 
-	IShader* D3D11ShaderManager::CreatePixelShader(const ShaderCompileDesc& desc)
+	IShader* D3D11ShaderManager::GetPixelShader(const ShaderCompileDesc& desc)
 	{
-		D3D11PixelShader* pPixelShader = new D3D11PixelShader();
-		pPixelShader->CompileFromFile(desc);
-		pPixelShader->Init();
+		D3D11Shader* pPixelShader = nullptr;
+
+		auto shader = m_ShaderMap.find(desc.fileName);
+		if (shader != m_ShaderMap.end())
+		{
+			pPixelShader = shader->second;
+		}
+		else
+		{
+			pPixelShader = new D3D11PixelShader();
+			pPixelShader->CompileFromFile(desc);
+			pPixelShader->Init();
+
+			m_ShaderMap.insert({ desc.fileName, pPixelShader });
+		}
+
+		pPixelShader->AddRef();
 
 		return pPixelShader;
 	}
 
-	void D3D11ShaderManager::ReleaseVertexShader(D3D11VertexShader* pShader)
+	void D3D11ShaderManager::ReleaseShader(D3D11Shader* pShader)
 	{
 		if (pShader)
 		{
-			delete pShader;
-			pShader = nullptr;
-		}
-	}
-
-	void D3D11ShaderManager::ReleasePixelShader(D3D11PixelShader* pShader)
-	{
-		if (pShader)
-		{
-			delete pShader;
-			pShader = nullptr;
+			pShader->SubRef();
 		}
 	}
 

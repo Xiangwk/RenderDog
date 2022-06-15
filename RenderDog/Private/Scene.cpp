@@ -60,8 +60,8 @@ namespace RenderDog
 		virtual void	ReleaseScene(Scene* pScene);
 	};
 
-	SceneManager g_SceneManager;
-	ISceneManager* g_pISceneManager = &g_SceneManager;
+	SceneManager	g_SceneManager;
+	ISceneManager*	g_pISceneManager = &g_SceneManager;
 
 	//==============================================================
 	//                Function Implementation

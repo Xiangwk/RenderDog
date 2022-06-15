@@ -518,10 +518,10 @@ namespace RenderDog
 		CreateShadowResources(ShadowMapSize, ShadowMapSize);
 
 		ShaderCompileDesc vsDesc("Shaders/ShadowDepthVertexShader.hlsl", nullptr, "Main", "vs_5_0", 0);
-		m_pShadowDepthVS = g_pIShaderManager->CreateVertexShader(VERTEX_TYPE::STANDARD, vsDesc);
+		m_pShadowDepthVS = g_pIShaderManager->GetVertexShader(VERTEX_TYPE::STANDARD, vsDesc);
 
 		ShaderCompileDesc psDesc("Shaders/ShadowDepthPixelShader.hlsl", nullptr, "Main", "vs_5_0", 0);
-		m_pShadowDepthPS = g_pIShaderManager->CreatePixelShader(psDesc);
+		m_pShadowDepthPS = g_pIShaderManager->GetPixelShader(psDesc);
 
 		return true;
 	}
