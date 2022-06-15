@@ -18,7 +18,7 @@ namespace RenderDog
 	//==============================================================
 	//                   Scene
 	//==============================================================
-	class Scene : public IScene, public RefCntObject
+	class Scene : public IScene
 	{
 		friend class SceneManager;
 
@@ -110,14 +110,16 @@ namespace RenderDog
 			return nullptr;
 		}
 
-		pScene->AddRef();
-
 		return pScene;
 	}
 
 	void SceneManager::ReleaseScene(Scene* pScene)
 	{
-		pScene->SubRef();
+		if (pScene)
+		{
+			delete pScene;
+			pScene = nullptr;
+		}
 	}
 
 }// namespace RenderDog
