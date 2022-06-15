@@ -147,7 +147,12 @@ void ModelViewer::Release()
 		m_pFPSCamera = nullptr;
 	}
 
-	m_pScene->Release();
+	if (m_pScene)
+	{
+		m_pScene->Release();
+		m_pScene = nullptr;
+	}
+	
 
 	if (m_pGameTimer)
 	{

@@ -638,11 +638,12 @@ namespace RenderDog
 			if (pMainLight->GetType() == LIGHT_TYPE::DIRECTIONAL)
 			{
 				BoundingSphere sceneBoundingSphere = pScene->GetBoundingSphere();
-				Vector3 dirLightPos = -(pMainLight->GetDirection() * sceneBoundingSphere.radius);
+				float lightFrustumSize = sceneBoundingSphere.radius;
+				Vector3 dirLightPos = -(pMainLight->GetDirection() * lightFrustumSize);
 				Matrix4x4 lightViewMatrix = GetLookAtMatrixLH(dirLightPos, Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f));
-				Matrix4x4 lightOrthoMatrix = GetOrthographicMatrixLH(-sceneBoundingSphere.radius, sceneBoundingSphere.radius, 
-																		-sceneBoundingSphere.radius, sceneBoundingSphere.radius,
-																		0.0f, 2.0f * sceneBoundingSphere.radius);
+				Matrix4x4 lightOrthoMatrix = GetOrthographicMatrixLH(-lightFrustumSize, lightFrustumSize, 
+																		-lightFrustumSize, lightFrustumSize,
+																		0.0f, 2.0f * lightFrustumSize);
 				ShadowConstantData shadowData = {};
 				shadowData.viewMatrix = lightViewMatrix;
 				shadowData.orthoMatrix = lightOrthoMatrix;

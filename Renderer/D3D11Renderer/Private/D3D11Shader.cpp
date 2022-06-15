@@ -15,21 +15,84 @@
 
 namespace RenderDog
 {
+	//=========================================================================
+	//    D3D11Shader
+	//=========================================================================
 	class D3D11Shader : public IShader
 	{
+		friend class D3D11ShaderManager;
+
 	public:
 		D3D11Shader();
 		virtual ~D3D11Shader();
 
-		virtual void				CompileFromFile(const ShaderCompileDesc& desc) override;
-
-		virtual void*				GetCompiledCode() const override;
-		virtual uint32_t			GetCompiledCodeSize() const override;
+		void						CompileFromFile(const ShaderCompileDesc& desc);
 
 	protected:
 		ID3DBlob*					m_pCompiledCode;
 	};
 
+	//=========================================================================
+	//    D3D11VertexShader
+	//=========================================================================
+	class D3D11VertexShader : public D3D11Shader
+	{
+	public:
+		D3D11VertexShader();
+		D3D11VertexShader(VERTEX_TYPE vertexType);
+		virtual ~D3D11VertexShader();
+
+		virtual bool				Init() override;
+		virtual void				Release() override;
+
+		virtual void				SetToContext() override;
+
+	private:
+		ID3D11VertexShader* m_pVS;
+		D3D11InputLayout* m_pInputLayout;
+		VERTEX_TYPE					m_VertexType;
+	};
+
+	//=========================================================================
+	//    D3D11PixelShader
+	//=========================================================================
+	class D3D11PixelShader : public D3D11Shader
+	{
+	public:
+		D3D11PixelShader();
+		virtual ~D3D11PixelShader();
+
+		virtual bool				Init() override;
+		virtual void				Release() override;
+
+		virtual void				SetToContext() override;
+
+	private:
+		ID3D11PixelShader* m_pPS;
+	};
+
+	//=========================================================================
+	//    D3D11ShaderManager
+	//=========================================================================
+	class D3D11ShaderManager : public IShaderManager
+	{
+	public:
+		D3D11ShaderManager() = default;
+		virtual ~D3D11ShaderManager() = default;
+
+		virtual IShader*	CreateVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc) override;
+		virtual IShader*	CreatePixelShader(const ShaderCompileDesc& desc) override;
+
+		void				ReleaseVertexShader(D3D11VertexShader* pShader);
+		void				ReleasePixelShader(D3D11PixelShader* pShader);
+	};
+
+	D3D11ShaderManager	g_D3D11ShaderManager;
+	IShaderManager* g_pIShaderManager = &g_D3D11ShaderManager;
+
+	//=========================================================================
+	//    Function Implementation
+	//=========================================================================
 	D3D11Shader::D3D11Shader() :
 		m_pCompiledCode(nullptr)
 	{}
@@ -96,37 +159,7 @@ namespace RenderDog
 		}
 	}
 
-	void* D3D11Shader::GetCompiledCode() const
-	{
-		return m_pCompiledCode->GetBufferPointer();
-	}
-
-	uint32_t D3D11Shader::GetCompiledCodeSize() const
-	{
-		return (uint32_t)m_pCompiledCode->GetBufferSize();
-	}
-
-	//=========================================================================
-	//    VertexShader
-	//=========================================================================
-
-	class D3D11VertexShader : public D3D11Shader
-	{
-	public:
-		D3D11VertexShader();
-		D3D11VertexShader(VERTEX_TYPE vertexType);
-		virtual ~D3D11VertexShader();
-
-		virtual bool				Init() override;
-		virtual void				Release() override;
-
-		virtual void				SetToContext() override;
-
-	private:
-		ID3D11VertexShader*			m_pVS;
-		D3D11InputLayout*			m_pInputLayout;
-		VERTEX_TYPE					m_VertexType;
-	};
+	
 
 	D3D11VertexShader::D3D11VertexShader() :
 		D3D11Shader(),
@@ -183,7 +216,7 @@ namespace RenderDog
 
 	void D3D11VertexShader::Release()
 	{
-		g_pIShaderManager->ReleaseShader(this);
+		g_D3D11ShaderManager.ReleaseVertexShader(this);
 	}
 
 	void D3D11VertexShader::SetToContext()
@@ -193,23 +226,7 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->VSSetShader(m_pVS, nullptr, 0);
 	}
 
-	//=========================================================================
-	//    PixelShader
-	//=========================================================================
-	class D3D11PixelShader : public D3D11Shader
-	{
-	public:
-		D3D11PixelShader();
-		virtual ~D3D11PixelShader();
-
-		virtual bool				Init() override;
-		virtual void				Release() override;
-
-		virtual void				SetToContext() override;
-
-	private:
-		ID3D11PixelShader*			m_pPS;
-	};
+	
 
 	D3D11PixelShader::D3D11PixelShader() :
 		m_pPS(nullptr)
@@ -242,7 +259,7 @@ namespace RenderDog
 
 	void D3D11PixelShader::Release()
 	{
-		g_pIShaderManager->ReleaseShader(this);
+		g_D3D11ShaderManager.ReleasePixelShader(this);
 	}
 
 	void D3D11PixelShader::SetToContext()
@@ -251,28 +268,9 @@ namespace RenderDog
 	}
 
 
-	//=========================================================================
-	//    ShaderManager
-	//=========================================================================
-
-	class D3D11ShaderManager : public IShaderManager
-	{
-	public:
-		D3D11ShaderManager() = default;
-		virtual ~D3D11ShaderManager() = default;
-
-		virtual IShader*	CreateVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc) override;
-		virtual IShader*	CreatePixelShader(const ShaderCompileDesc& desc) override;
-
-		virtual void		ReleaseShader(IShader* pShader) override;
-	};
-
-	D3D11ShaderManager	g_D3D11ShaderManager;
-	IShaderManager*		g_pIShaderManager = &g_D3D11ShaderManager;
-
 	IShader* D3D11ShaderManager::CreateVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc)
 	{
-		IShader* pVertexShader = new D3D11VertexShader(vertexType);
+		D3D11VertexShader* pVertexShader = new D3D11VertexShader(vertexType);
 		pVertexShader->CompileFromFile(desc);
 		pVertexShader->Init();
 
@@ -281,14 +279,23 @@ namespace RenderDog
 
 	IShader* D3D11ShaderManager::CreatePixelShader(const ShaderCompileDesc& desc)
 	{
-		IShader* pPixelShader = new D3D11PixelShader();
+		D3D11PixelShader* pPixelShader = new D3D11PixelShader();
 		pPixelShader->CompileFromFile(desc);
 		pPixelShader->Init();
 
 		return pPixelShader;
 	}
 
-	void D3D11ShaderManager::ReleaseShader(IShader* pShader)
+	void D3D11ShaderManager::ReleaseVertexShader(D3D11VertexShader* pShader)
+	{
+		if (pShader)
+		{
+			delete pShader;
+			pShader = nullptr;
+		}
+	}
+
+	void D3D11ShaderManager::ReleasePixelShader(D3D11PixelShader* pShader)
 	{
 		if (pShader)
 		{

@@ -13,6 +13,7 @@
 
 namespace RenderDog
 {
+
 	struct ShaderMacro
 	{
 		std::string	name;
@@ -42,14 +43,10 @@ namespace RenderDog
 
 	class IShader
 	{
-	public:
+	protected:
 		virtual	~IShader() = default;
 
-		virtual void				CompileFromFile(const ShaderCompileDesc& desc) = 0;
-
-		virtual void*				GetCompiledCode() const = 0;
-		virtual uint32_t			GetCompiledCodeSize() const = 0;
-
+	public:
 		virtual bool				Init() = 0;
 		virtual void				Release() = 0;
 
@@ -63,8 +60,6 @@ namespace RenderDog
 
 		virtual IShader*			CreateVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc) = 0;
 		virtual IShader*			CreatePixelShader(const ShaderCompileDesc& desc) = 0;
-
-		virtual void				ReleaseShader(IShader* pShader) = 0;
 	};
 
 	extern IShaderManager* g_pIShaderManager;

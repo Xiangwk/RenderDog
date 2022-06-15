@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "RefCntObject.h"
-
 #include <string>
 
 namespace RenderDog
@@ -22,12 +20,12 @@ namespace RenderDog
 		std::string name;
 	};
 
-	class IScene : public RefCntObject
+	class IScene
 	{
-	public:
+	protected:
 		virtual ~IScene() = default;
 
-		virtual bool					Init(const SceneInitDesc& desc) = 0;
+	public:
 		virtual void					Release() = 0;
 
 		virtual void					RegisterPrimitive(IPrimitive* pPrimitive) = 0;
@@ -47,8 +45,7 @@ namespace RenderDog
 	public:
 		virtual ~ISceneManager() = default;
 
-		virtual IScene*			CreateScene(const SceneInitDesc& sceneDesc) = 0;
-		virtual void			ReleaseScene(IScene* pScene) = 0;
+		virtual IScene*					CreateScene(const SceneInitDesc& sceneDesc) = 0;
 	};
 
 	extern ISceneManager* g_pISceneManager;
