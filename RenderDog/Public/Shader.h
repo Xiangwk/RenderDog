@@ -12,7 +12,6 @@
 
 namespace RenderDog
 {
-
 	struct ShaderMacro
 	{
 		std::string	name;

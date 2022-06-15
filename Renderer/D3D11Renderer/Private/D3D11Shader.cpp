@@ -84,13 +84,13 @@ namespace RenderDog
 		D3D11ShaderManager() = default;
 		virtual ~D3D11ShaderManager() = default;
 
-		virtual IShader*	GetVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc) override;
-		virtual IShader*	GetPixelShader(const ShaderCompileDesc& desc) override;
+		virtual IShader*			GetVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc) override;
+		virtual IShader*			GetPixelShader(const ShaderCompileDesc& desc) override;
 
-		void				ReleaseShader(D3D11Shader* pShader);
+		void						ReleaseShader(D3D11Shader* pShader);
 
 	private:
-		ShaderHashMap		m_ShaderMap;
+		ShaderHashMap				m_ShaderMap;
 	};
 
 	D3D11ShaderManager	g_D3D11ShaderManager;
@@ -165,8 +165,6 @@ namespace RenderDog
 			}
 		}
 	}
-
-	
 
 	D3D11VertexShader::D3D11VertexShader() :
 		D3D11Shader(),
