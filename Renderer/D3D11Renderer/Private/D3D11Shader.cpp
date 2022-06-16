@@ -27,10 +27,13 @@ namespace RenderDog
 		D3D11Shader();
 		virtual ~D3D11Shader();
 
+		virtual const std::string&	GetFileName() const { return m_fileName; }
+
 		void						CompileFromFile(const ShaderCompileDesc& desc);
 
 	protected:
 		ID3DBlob*					m_pCompiledCode;
+		std::string					m_fileName;
 	};
 
 	//=========================================================================
@@ -49,8 +52,8 @@ namespace RenderDog
 		virtual void				SetToContext() override;
 
 	private:
-		ID3D11VertexShader* m_pVS;
-		D3D11InputLayout* m_pInputLayout;
+		ID3D11VertexShader*			m_pVS;
+		D3D11InputLayout*			m_pInputLayout;
 		VERTEX_TYPE					m_VertexType;
 	};
 
@@ -69,7 +72,7 @@ namespace RenderDog
 		virtual void				SetToContext() override;
 
 	private:
-		ID3D11PixelShader* m_pPS;
+		ID3D11PixelShader*			m_pPS;
 	};
 
 	//=========================================================================
@@ -101,7 +104,8 @@ namespace RenderDog
 	//    Function Implementation
 	//=========================================================================
 	D3D11Shader::D3D11Shader() :
-		m_pCompiledCode(nullptr)
+		m_pCompiledCode(nullptr),
+		m_fileName("")
 	{}
 
 	D3D11Shader::~D3D11Shader()
@@ -164,6 +168,8 @@ namespace RenderDog
 				return;
 			}
 		}
+
+		m_fileName = desc.fileName;
 	}
 
 	D3D11VertexShader::D3D11VertexShader() :
@@ -323,7 +329,13 @@ namespace RenderDog
 	{
 		if (pShader)
 		{
-			pShader->SubRef();
+			std::string shaderName = pShader->GetFileName();
+
+			int refCnt = pShader->SubRef();
+			if (refCnt == 0)
+			{
+				m_ShaderMap.erase(shaderName);
+			}
 		}
 	}
 
