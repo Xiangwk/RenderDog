@@ -7,8 +7,6 @@
 
 #pragma once
 
-#include "RefCntObject.h"
-
 #include <string>
 
 namespace RenderDog
@@ -16,7 +14,6 @@ namespace RenderDog
 	//==================================================
 	//		Texture
 	//==================================================
-
 	enum class TEXTURE_BIND_FLAG
 	{
 		RENDER_TARGET,
@@ -39,7 +36,7 @@ namespace RenderDog
 		bool					isDynamic;
 	};
 
-	class ITexture : public RefCntObject
+	class ITexture
 	{
 	protected:
 		virtual ~ITexture() = default;
@@ -71,7 +68,6 @@ namespace RenderDog
 		virtual ~ITextureManager() = default;
 
 		virtual ITexture2D*		CreateTexture2D(const TextureDesc& desc) = 0;
-		virtual void			ReleaseTexture(ITexture* pTexture) = 0;
 	};
 
 	extern ITextureManager* g_pITextureManager;
@@ -80,7 +76,6 @@ namespace RenderDog
 	//==================================================
 	//		SamplerState
 	//==================================================
-
 	enum class SAMPLER_FILTER
 	{
 		POINT,
@@ -95,16 +90,21 @@ namespace RenderDog
 
 	struct SamplerDesc
 	{
-		SAMPLER_FILTER		filterMode;
-		SAMPLER_ADDRESS		addressMode;
+		SAMPLER_FILTER			filterMode;
+		SAMPLER_ADDRESS			addressMode;
+
+		SamplerDesc() :
+			filterMode(SAMPLER_FILTER::POINT),
+			addressMode(SAMPLER_ADDRESS::WRAP)
+		{}
 	};
 
 	class ISamplerState
 	{
-	public:
+	protected:
 		virtual ~ISamplerState() = default;
 
-		virtual bool			Init(const SamplerDesc& desc) = 0;
+	public:
 		virtual void			Release() = 0;
 
 		virtual void			SetToPixelShader(uint32_t startSlot) = 0;
@@ -113,14 +113,12 @@ namespace RenderDog
 	//==================================================
 	//		SamplerState Manager
 	//==================================================
-
 	class ISamplerStateManager
 	{
 	public:
 		virtual ~ISamplerStateManager() = default;
 
-		virtual ISamplerState*	CreateSamplerState() = 0;
-		virtual void			ReleaseSamplerState(ISamplerState* pSampler) = 0;
+		virtual ISamplerState*	CreateSamplerState(const SamplerDesc& desc) = 0;
 	};
 
 	extern ISamplerStateManager* g_pISamplerStateManager;

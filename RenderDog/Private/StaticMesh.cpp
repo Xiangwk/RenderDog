@@ -210,8 +210,8 @@ namespace RenderDog
 		//samplerDesc.filterMode = SamplerFilterMode::RD_SAMPLER_FILTER_LINEAR;
 		samplerDesc.filterMode = SAMPLER_FILTER::POINT;
 		samplerDesc.addressMode = SAMPLER_ADDRESS::WRAP;
-		m_pLinearSampler = g_pISamplerStateManager->CreateSamplerState();
-		if (!m_pLinearSampler->Init(samplerDesc))
+		m_pLinearSampler = g_pISamplerStateManager->CreateSamplerState(samplerDesc);
+		if (!m_pLinearSampler)
 		{
 			return false;
 		}
@@ -270,15 +270,13 @@ namespace RenderDog
 		if (m_pDiffuseTexture)
 		{
 			m_pDiffuseTexture->Release();
-
-			g_pITextureManager->ReleaseTexture(m_pDiffuseTexture);
+			m_pDiffuseTexture = nullptr;
 		}
 
 		if (m_pLinearSampler)
 		{
 			m_pLinearSampler->Release();
-
-			g_pISamplerStateManager->ReleaseSamplerState(m_pLinearSampler);
+			m_pLinearSampler = nullptr;
 		}
 	}
 

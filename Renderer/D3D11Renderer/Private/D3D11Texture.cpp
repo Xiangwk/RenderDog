@@ -5,6 +5,7 @@
 ////////////////////////////////////////
 
 #include "Texture.h"
+#include "RefCntObject.h"
 #include "D3D11Renderer.h"
 
 #include <d3d11.h>
@@ -15,9 +16,10 @@ namespace RenderDog
 	//==================================================
 	//		Texture2D
 	//==================================================
-
-	class D3D11Texture2D : public ITexture2D
+	class D3D11Texture2D : public ITexture2D, public RefCntObject
 	{
+		friend class D3D11TextureManager;
+
 	public:
 		D3D11Texture2D(const TextureDesc& desc);
 		virtual ~D3D11Texture2D();
@@ -30,7 +32,6 @@ namespace RenderDog
 		virtual void*				GetDepthStencilView() override { return (void*)m_pDSV; }
 		virtual void*				GetShaderResourceView() override { return (void*)m_pSRV; }
 		
-
 	private:
 		ID3D11Texture2D*			m_pTexture2D;
 		ID3D11RenderTargetView*		m_pRTV;
@@ -38,6 +39,26 @@ namespace RenderDog
 		ID3D11ShaderResourceView*	m_pSRV;
 	};
 
+	//==================================================
+	//		Texture Manager
+	//==================================================
+	class D3D11TextureManager : public ITextureManager
+	{
+	public:
+		D3D11TextureManager() = default;
+		virtual ~D3D11TextureManager() = default;
+
+		virtual ITexture2D*			CreateTexture2D(const TextureDesc& desc) override;
+
+		void						ReleaseTexture2D(D3D11Texture2D* pTexture);
+	};
+
+	D3D11TextureManager	g_D3D11TextureManager;
+	ITextureManager*	g_pITextureManager = &g_D3D11TextureManager;
+
+	//==================================================
+	//		Function Implementation
+	//==================================================
 	D3D11Texture2D::D3D11Texture2D(const TextureDesc& desc) :
 		m_pTexture2D(nullptr),
 		m_pRTV(nullptr),
@@ -148,50 +169,37 @@ namespace RenderDog
 
 	void D3D11Texture2D::Release()
 	{
-		g_pITextureManager->ReleaseTexture(this);
+		g_D3D11TextureManager.ReleaseTexture2D(this);
 	}
-
-	//==================================================
-	//		Texture Manager
-	//==================================================
-
-	class D3D11TextureManager : public ITextureManager
-	{
-	public:
-		D3D11TextureManager() = default;
-		virtual ~D3D11TextureManager() = default;
-
-		virtual ITexture2D* CreateTexture2D(const TextureDesc& desc) override;
-		virtual void		ReleaseTexture(ITexture* pTexture) override;
-	};
-
-	D3D11TextureManager	g_D3D11TextureManager;
-	ITextureManager*	g_pITextureManager = &g_D3D11TextureManager;
 
 	ITexture2D* D3D11TextureManager::CreateTexture2D(const TextureDesc& desc)
 	{
 		ITexture2D* pTexture = new D3D11Texture2D(desc);
-		pTexture->AddRef();
 
 		return pTexture;
 	}
 
-	void D3D11TextureManager::ReleaseTexture(ITexture* pTexture)
+	void D3D11TextureManager::ReleaseTexture2D(D3D11Texture2D* pTexture)
 	{
-		pTexture->SubRef();
+		if (pTexture)
+		{
+			delete pTexture;
+			pTexture = nullptr;
+		}
 	}
 
 	//==================================================
 	//		SamplerState
 	//==================================================
-
 	class D3D11SamplerState : public ISamplerState
 	{
+		friend class D3D11SamplerStateManager;
+
 	public:
 		D3D11SamplerState();
+		D3D11SamplerState(const SamplerDesc& desc);
 		virtual ~D3D11SamplerState();
 
-		virtual bool			Init(const SamplerDesc& desc) override;
 		virtual void			Release() override;
 
 		virtual void			SetToPixelShader(uint32_t startSlot) override;
@@ -200,14 +208,31 @@ namespace RenderDog
 		ID3D11SamplerState*		m_pSamplerState;
 	};
 
-	D3D11SamplerState::D3D11SamplerState() :
+	//==================================================
+	//		SamplerState Manager
+	//==================================================
+	class D3D11SamplerStateManager : public ISamplerStateManager
+	{
+	public:
+		D3D11SamplerStateManager() = default;
+		virtual ~D3D11SamplerStateManager() = default;
+
+		virtual ISamplerState*	CreateSamplerState(const SamplerDesc& desc) override;
+		virtual void			ReleaseSamplerState(D3D11SamplerState* pSampler);
+	};
+
+	D3D11SamplerStateManager	g_D3D11SamplerStateManager;
+	ISamplerStateManager* g_pISamplerStateManager = &g_D3D11SamplerStateManager;
+
+	//==================================================
+	//		Function Implementation
+	//==================================================
+	D3D11SamplerState::D3D11SamplerState():
 		m_pSamplerState(nullptr)
 	{}
 
-	D3D11SamplerState::~D3D11SamplerState()
-	{}
-
-	bool D3D11SamplerState::Init(const SamplerDesc& desc)
+	D3D11SamplerState::D3D11SamplerState(const SamplerDesc& desc):
+		m_pSamplerState(nullptr)
 	{
 		D3D11_SAMPLER_DESC samplerDesc = {};
 		if (desc.filterMode == SAMPLER_FILTER::POINT)
@@ -240,15 +265,11 @@ namespace RenderDog
 		samplerDesc.MinLOD = 0;
 		samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-		if (FAILED(g_pD3D11Device->CreateSamplerState(&samplerDesc, &m_pSamplerState)))
-		{
-			return false;
-		}
-
-		return true;
+		g_pD3D11Device->CreateSamplerState(&samplerDesc, &m_pSamplerState);
 	}
 
-	void D3D11SamplerState::Release()
+
+	D3D11SamplerState::~D3D11SamplerState()
 	{
 		if (m_pSamplerState)
 		{
@@ -257,36 +278,24 @@ namespace RenderDog
 		}
 	}
 
+	void D3D11SamplerState::Release()
+	{
+		g_D3D11SamplerStateManager.ReleaseSamplerState(this);
+	}
+
 	void D3D11SamplerState::SetToPixelShader(uint32_t startSlot)
 	{
 		g_pD3D11ImmediateContext->PSSetSamplers(startSlot, 1, &m_pSamplerState);
 	}
 
-	//==================================================
-	//		SamplerState Manager
-	//==================================================
-
-	class D3D11SamplerStateManager : public ISamplerStateManager
+	ISamplerState* D3D11SamplerStateManager::CreateSamplerState(const SamplerDesc& desc)
 	{
-	public:
-		D3D11SamplerStateManager() = default;
-		virtual ~D3D11SamplerStateManager() = default;
-
-		virtual ISamplerState*	CreateSamplerState() override;
-		virtual void			ReleaseSamplerState(ISamplerState* pSampler) override;
-	};
-
-	D3D11SamplerStateManager	g_D3D11SamplerStateManager;
-	ISamplerStateManager*		g_pISamplerStateManager = &g_D3D11SamplerStateManager;
-
-	ISamplerState* D3D11SamplerStateManager::CreateSamplerState()
-	{
-		ISamplerState* pSampler = new D3D11SamplerState();
+		ISamplerState* pSampler = new D3D11SamplerState(desc);
 
 		return pSampler;
 	}
 
-	void D3D11SamplerStateManager::ReleaseSamplerState(ISamplerState* pSampler)
+	void D3D11SamplerStateManager::ReleaseSamplerState(D3D11SamplerState* pSampler)
 	{
 		if (pSampler)
 		{
