@@ -18,8 +18,6 @@ namespace RenderDog
 	//================================================================
 	class D3D11VertexBuffer : public IVertexBuffer, public RefCntObject
 	{
-		friend class D3D11BufferManager;
-
 	public:
 		D3D11VertexBuffer(const BufferDesc& desc);
 

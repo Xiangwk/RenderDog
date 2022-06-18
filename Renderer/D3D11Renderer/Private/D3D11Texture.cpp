@@ -19,8 +19,6 @@ namespace RenderDog
 	//==================================================
 	class D3D11Texture2D : public ITexture2D, public RefCntObject
 	{
-		friend class D3D11TextureManager;
-
 	public:
 		D3D11Texture2D();
 		D3D11Texture2D(const TextureDesc& desc);
@@ -74,6 +72,7 @@ namespace RenderDog
 	//==================================================
 	D3D11Texture2D::D3D11Texture2D() :
 		RefCntObject(),
+		m_Name(L""),
 		m_pTexture2D(nullptr),
 		m_pRTV(nullptr),
 		m_pDSV(nullptr),
@@ -82,6 +81,7 @@ namespace RenderDog
 
 	D3D11Texture2D::D3D11Texture2D(const TextureDesc& desc) :
 		RefCntObject(),
+		m_Name(desc.name),
 		m_pTexture2D(nullptr),
 		m_pRTV(nullptr),
 		m_pDSV(nullptr),
@@ -212,6 +212,8 @@ namespace RenderDog
 			return false;
 		}
 
+		m_Name = filePath;
+
 		return true;
 	}
 
@@ -255,7 +257,6 @@ namespace RenderDog
 			//NOTE!!! 这里用强转是否合适？
 			pTexture = (D3D11Texture2D*)(texture->second);
 			pTexture->AddRef();
-		
 		}
 		else
 		{
@@ -282,8 +283,6 @@ namespace RenderDog
 	//==================================================
 	class D3D11SamplerState : public ISamplerState
 	{
-		friend class D3D11SamplerStateManager;
-
 	public:
 		D3D11SamplerState();
 		D3D11SamplerState(const SamplerDesc& desc);
@@ -307,11 +306,13 @@ namespace RenderDog
 		virtual ~D3D11SamplerStateManager() = default;
 
 		virtual ISamplerState*	CreateSamplerState(const SamplerDesc& desc) override;
-		virtual void			ReleaseSamplerState(D3D11SamplerState* pSampler);
+
+		void					ReleaseSamplerState(D3D11SamplerState* pSampler);
 	};
 
 	D3D11SamplerStateManager	g_D3D11SamplerStateManager;
-	ISamplerStateManager* g_pISamplerStateManager = &g_D3D11SamplerStateManager;
+	ISamplerStateManager*		g_pISamplerStateManager = &g_D3D11SamplerStateManager;
+
 
 	//==================================================
 	//		Function Implementation

@@ -21,8 +21,6 @@ namespace RenderDog
 	//=========================================================================
 	class D3D11Shader : public IShader, public RefCntObject
 	{
-		friend class D3D11ShaderManager;
-
 	public:
 		D3D11Shader();
 		virtual ~D3D11Shader();
@@ -32,8 +30,9 @@ namespace RenderDog
 		void						CompileFromFile(const ShaderCompileDesc& desc);
 
 	protected:
-		ID3DBlob*					m_pCompiledCode;
 		std::string					m_fileName;
+
+		ID3DBlob*					m_pCompiledCode;
 	};
 
 	//=========================================================================

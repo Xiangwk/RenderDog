@@ -6,46 +6,90 @@
 ////////////////////////////////////////
 
 #include "Shader.h"
+#include "RefCntObject.h"
 #include "SoftwareRender3D.h"
 #include "SoftwareRenderer.h"
 
+#include <unordered_map>
+
 namespace RenderDog
 {
-	class SRShader : public IShader
+	class SRShader : public IShader, public RefCntObject
 	{
 	public:
 		SRShader() = default;
 		virtual ~SRShader() = default;
 
-		virtual void			CompileFromFile(const std::string& fileName,
-												const ShaderMacro* shaderMacros,
-												const std::string& entryPoint,
-												const std::string& target,
-												unsigned int compileFlag) override {}
+		virtual const std::string&	GetFileName() const { return m_fileName; }
 
-		virtual void*			GetCompiledCode() const override { return nullptr; }
-		virtual uint32_t		GetCompiledCodeSize() const override { return 0; }
+	protected:
+		std::string					m_fileName;
 	};
 
 	//=========================================================================
 	//    VertexShader
 	//=========================================================================
-
 	class SRVertexShader : public SRShader
 	{
 	public:
 		SRVertexShader();
 		virtual ~SRVertexShader();
 
-		virtual bool			Init() override;
-		virtual void			Release() override;
+		virtual bool				Init() override;
+		virtual void				Release() override;
 
-		virtual void			SetToContext() override;
+		virtual void				SetToContext() override;
 
 	private:
-		ISRVertexShader*		m_pVS;
+		ISRVertexShader*			m_pVS;
 	};
 
+	//=========================================================================
+	//    PixelShader
+	//=========================================================================
+	class SRPixelShader : public SRShader
+	{
+	public:
+		SRPixelShader();
+		virtual ~SRPixelShader();
+
+		virtual bool				Init() override;
+		virtual void				Release() override;
+
+		virtual void				SetToContext() override;
+
+	private:
+		ISRPixelShader* m_pPS;
+	};
+
+	//=========================================================================
+	//    ShaderManager
+	//=========================================================================
+	class SRShaderManager : public IShaderManager
+	{
+	private:
+		typedef std::unordered_map<std::string, SRShader*> ShaderHashMap;
+
+	public:
+		SRShaderManager() = default;
+		virtual ~SRShaderManager() = default;
+
+		virtual IShader*			GetVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc) override;
+		virtual IShader*			GetPixelShader(const ShaderCompileDesc& desc) override;
+
+		void						ReleaseShader(SRShader* pShader);
+
+	private:
+		ShaderHashMap				m_ShaderMap;
+	};
+
+	SRShaderManager g_SRShaderManager;
+	IShaderManager* g_pIShaderManager = &g_SRShaderManager;
+
+
+	//=========================================================================
+	//		Function Implementation
+	//=========================================================================
 	SRVertexShader::SRVertexShader() :
 		m_pVS(nullptr)
 	{}
@@ -77,24 +121,6 @@ namespace RenderDog
 		g_pSRImmediateContext->VSSetShader(m_pVS);
 	}
 
-	//=========================================================================
-	//    PixelShader
-	//=========================================================================
-
-	class SRPixelShader : public SRShader
-	{
-	public:
-		SRPixelShader();
-		virtual ~SRPixelShader();
-
-		virtual bool			Init() override;
-		virtual void			Release() override;
-
-		virtual void			SetToContext() override;
-
-	private:
-		ISRPixelShader*			m_pPS;
-	};
 
 	SRPixelShader::SRPixelShader() :
 		m_pPS(nullptr)
@@ -126,34 +152,46 @@ namespace RenderDog
 	{
 		g_pSRImmediateContext->PSSetShader(m_pPS);
 	}
+	
 
-	//=========================================================================
-	//    ShaderManager
-	//=========================================================================
-
-	class SRShaderManager : public IShaderManager
+	IShader* SRShaderManager::GetVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc)
 	{
-	public:
-		SRShaderManager() = default;
-		virtual ~SRShaderManager() = default;
+		SRShader* pVertexShader = nullptr;
 
-		virtual IShader* CreateVertexShader(VERTEX_TYPE vertexType) override;
-		virtual IShader* CreatePixelShader() override;
-	};
+		auto shader = m_ShaderMap.find(desc.fileName);
+		if (shader != m_ShaderMap.end())
+		{
+			pVertexShader = shader->second;
+			pVertexShader->AddRef();
+		}
+		else
+		{
+			pVertexShader = new SRVertexShader();
+			pVertexShader->Init();
 
-	SRShaderManager g_SRShaderManager;
-	IShaderManager* g_pIShaderManager = &g_SRShaderManager;
-
-	IShader* SRShaderManager::CreateVertexShader(VERTEX_TYPE vertexType)
-	{
-		IShader* pVertexShader = new SRVertexShader();
+			m_ShaderMap.insert({ desc.fileName, pVertexShader });
+		}
 
 		return pVertexShader;
 	}
 
-	IShader* SRShaderManager::CreatePixelShader()
+	IShader* SRShaderManager::GetPixelShader(const ShaderCompileDesc& desc)
 	{
-		IShader* pPixelShader = new SRPixelShader();
+		SRShader* pPixelShader = nullptr;
+
+		auto shader = m_ShaderMap.find(desc.fileName);
+		if (shader != m_ShaderMap.end())
+		{
+			pPixelShader = shader->second;
+			pPixelShader->AddRef();
+		}
+		else
+		{
+			pPixelShader = new SRPixelShader();
+			pPixelShader->Init();
+
+			m_ShaderMap.insert({ desc.fileName, pPixelShader });
+		}
 
 		return pPixelShader;
 	}

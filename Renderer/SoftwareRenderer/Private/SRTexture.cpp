@@ -6,6 +6,7 @@
 ////////////////////////////////////////
 
 #include "Texture.h"
+#include "RefCntObject.h"
 #include "Vector.h"
 #include "SoftwareRender3D.h"
 #include "SoftwareRenderer.h"
@@ -13,30 +14,75 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "StbImage/stb_image.h"
 
+#include <unordered_map>
+
 namespace RenderDog
 {
 	//==================================================
 	//		Texture2D
 	//==================================================
-
-	class SRTexture2D : public ITexture2D
+	class SRTexture2D : public ITexture2D, public RefCntObject
 	{
 	public:
+		SRTexture2D();
 		SRTexture2D(const TextureDesc& desc);
 		virtual ~SRTexture2D();
-
-		virtual bool				LoadFromFile(const std::wstring& filePath) override;
-
+		
 		virtual void				Release() override;
 
+		virtual const std::wstring& GetName() const override { return m_Name; }
+
 		virtual void*				GetRenderTargetView() override { return (void*)m_pRTV; }
+		virtual void*				GetDepthStencilView() override { return (void*)m_pDSV; }
 		virtual void*				GetShaderResourceView() override { return (void*)m_pSRV; }
 
+		bool						LoadFromFile(const std::wstring& filePath);
+
 	private:
+		std::wstring				m_Name;
+
 		ISRTexture2D*				m_pTexture2D;
 		ISRRenderTargetView*		m_pRTV;
+		ISRDepthStencilView*		m_pDSV;
 		ISRShaderResourceView*		m_pSRV;
 	};
+
+	//==================================================
+	//		Texture Manager
+	//==================================================
+	class SRTextureManager : public ITextureManager
+	{
+	private:
+		typedef std::unordered_map<std::wstring, ITexture*> TextureMap;
+
+	public:
+		SRTextureManager() = default;
+		virtual ~SRTextureManager() = default;
+
+		virtual ITexture2D*			CreateTexture2D(const std::wstring& filePath) override;
+		virtual ITexture2D*			GetTexture2D(const TextureDesc& desc) override;
+
+		void						ReleaseTexture2D(SRTexture2D* pTexture);
+
+	private:
+		TextureMap					m_TextureMap;
+	};
+
+	SRTextureManager g_SRTextureManager;
+	ITextureManager* g_pITextureManager = &g_SRTextureManager;
+
+
+	//==================================================
+	//		Function Implementation
+	//==================================================
+	SRTexture2D::SRTexture2D() :
+		RefCntObject(),
+		m_Name(L""),
+		m_pTexture2D(nullptr),
+		m_pRTV(nullptr),
+		m_pDSV(nullptr),
+		m_pSRV(nullptr)
+	{}
 
 	SRTexture2D::SRTexture2D(const TextureDesc& desc) :
 		m_pTexture2D(nullptr),
@@ -147,71 +193,117 @@ namespace RenderDog
 
 		delete[] pColor;
 
+		m_Name = filePath;
+
 		return true;
 	}
 
 	void SRTexture2D::Release()
 	{
-
+		g_SRTextureManager.ReleaseTexture2D(this);
 	}
-
-	//==================================================
-	//		Texture Manager
-	//==================================================
-
-	class SRTextureManager : public ITextureManager
+	
+	ITexture2D* SRTextureManager::CreateTexture2D(const std::wstring& filePath)
 	{
-	public:
-		SRTextureManager() = default;
-		virtual ~SRTextureManager() = default;
+		SRTexture2D* pTexture = nullptr;
 
-		virtual ITexture2D* CreateTexture2D(const TextureDesc& desc) override;
-		virtual void		ReleaseTexture(ITexture* pTexture) override;
-	};
+		auto texture = m_TextureMap.find(filePath);
+		if (texture != m_TextureMap.end())
+		{
+			//NOTE!!! 这里用强转是否合适？
+			pTexture = (SRTexture2D*)(texture->second);
+			pTexture->AddRef();
+		}
+		else
+		{
+			pTexture = new SRTexture2D();
+			if (pTexture)
+			{
+				pTexture->LoadFromFile(filePath);
+			}
 
-	SRTextureManager g_SRTextureManager;
-	ITextureManager* g_pITextureManager = &g_SRTextureManager;
-
-	ITexture2D* SRTextureManager::CreateTexture2D(const TextureDesc& desc)
-	{
-		ITexture2D* pTexture = new SRTexture2D(desc);
-		pTexture->AddRef();
+			m_TextureMap.insert({ filePath, pTexture });
+		}
 
 		return pTexture;
 	}
 
-	void SRTextureManager::ReleaseTexture(ITexture* pTexture)
+	ITexture2D* SRTextureManager::GetTexture2D(const TextureDesc& desc)
 	{
-		pTexture->SubRef();
+		SRTexture2D* pTexture = nullptr;
+
+		auto texture = m_TextureMap.find(desc.name);
+		if (texture != m_TextureMap.end())
+		{
+			//NOTE!!! 这里用强转是否合适？
+			pTexture = (SRTexture2D*)(texture->second);
+			pTexture->AddRef();
+		}
+		else
+		{
+			pTexture = new SRTexture2D(desc);
+		}
+
+		return pTexture;
+	}
+
+	void SRTextureManager::ReleaseTexture2D(SRTexture2D* pTexture)
+	{
+		if (pTexture)
+		{
+			std::wstring texName = pTexture->GetName();
+			if (pTexture->SubRef() == 0)
+			{
+				m_TextureMap.erase(texName);
+			}
+		}
 	}
 
 	//==================================================
 	//		SamplerState
 	//==================================================
-
 	class SRSamplerState : public ISamplerState
 	{
 	public:
 		SRSamplerState();
+		SRSamplerState(const SamplerDesc& desc);
 		virtual ~SRSamplerState();
 
-		virtual bool		Init(const SamplerDesc& desc) override;
-		virtual void		Release() override;
+		virtual void			Release() override;
 
-		virtual void		SetToPixelShader(uint32_t startSlot) override;
+		virtual void			SetToPixelShader(uint32_t startSlot) override;
 
 	private:
-		ISRSamplerState*	m_pSamplerState;
+		ISRSamplerState*		m_pSamplerState;
 	};
 
+	//==================================================
+	//		SamplerState Manager
+	//==================================================
+	class SRSamplerStateManager : public ISamplerStateManager
+	{
+	public:
+		SRSamplerStateManager() = default;
+		virtual ~SRSamplerStateManager() = default;
+
+		virtual ISamplerState*	CreateSamplerState(const SamplerDesc& desc) override;
+
+		void					ReleaseSamplerState(SRSamplerState* pSampler);
+	};
+
+	SRSamplerStateManager	g_SRSamplerStateManager;
+	ISamplerStateManager*	g_pISamplerStateManager = &g_SRSamplerStateManager;
+
+
+	//==================================================
+	//		Function Implementation
+	//==================================================
 	SRSamplerState::SRSamplerState() :
 		m_pSamplerState(nullptr)
 	{}
 
-	SRSamplerState::~SRSamplerState()
-	{}
-
-	bool SRSamplerState::Init(const SamplerDesc& desc)
+	SRSamplerState::SRSamplerState(const SamplerDesc& desc):
+		m_pSamplerState(nullptr)
 	{
 		SRSamplerDesc samplerDesc = {};
 		if (desc.filterMode == SAMPLER_FILTER::POINT)
@@ -223,13 +315,11 @@ namespace RenderDog
 			samplerDesc.filter = SR_FILTER::BILINEAR;
 		}
 
-		if (!g_pSRDevice->CreateSamplerState(&samplerDesc, &m_pSamplerState))
-		{
-			return false;
-		}
-
-		return true;
+		g_pSRDevice->CreateSamplerState(&samplerDesc, &m_pSamplerState);
 	}
+
+	SRSamplerState::~SRSamplerState()
+	{}
 
 	void SRSamplerState::Release()
 	{
@@ -245,31 +335,16 @@ namespace RenderDog
 		g_pSRImmediateContext->PSSetSampler(startSlot, &m_pSamplerState);
 	}
 
-	//==================================================
-	//		SamplerState Manager
-	//==================================================
+	
 
-	class SRSamplerStateManager : public ISamplerStateManager
+	ISamplerState* SRSamplerStateManager::CreateSamplerState(const SamplerDesc& desc)
 	{
-	public:
-		SRSamplerStateManager() = default;
-		virtual ~SRSamplerStateManager() = default;
-
-		virtual ISamplerState*	CreateSamplerState() override;
-		virtual void			ReleaseSamplerState(ISamplerState* pSampler) override;
-	};
-
-	SRSamplerStateManager g_SRSamplerStateManager;
-	ISamplerStateManager* g_pISamplerStateManager = &g_SRSamplerStateManager;
-
-	ISamplerState* SRSamplerStateManager::CreateSamplerState()
-	{
-		ISamplerState* pSampler = new SRSamplerState();
+		ISamplerState* pSampler = new SRSamplerState(desc);
 
 		return pSampler;
 	}
 
-	void SRSamplerStateManager::ReleaseSamplerState(ISamplerState* pSampler)
+	void SRSamplerStateManager::ReleaseSamplerState(SRSamplerState* pSampler)
 	{
 		if (pSampler)
 		{

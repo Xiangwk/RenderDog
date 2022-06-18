@@ -26,7 +26,6 @@ namespace RenderDog
 	//===========================================================
 	//    Mesh Renderer
 	//===========================================================
-
 #pragma region MeshRenderer
 	class D3D11MeshRenderer : public IPrimitiveRenderer
 	{
