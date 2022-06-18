@@ -160,7 +160,7 @@ namespace RenderDog
 		IConstantBuffer*			pGlobalCB;
 		IConstantBuffer*			pLightingCB;
 		IConstantBuffer*			pShadowCB;
-		ID3D11ShaderResourceView*	pShadowDepthSRV;
+		ITexture2D*					pShadowDepthTexture;
 	};
 
 	class D3D11MeshLightingRenderer : public D3D11MeshRenderer
@@ -175,21 +175,21 @@ namespace RenderDog
 	protected:
 		IConstantBuffer*				m_pLightingCB;
 		IConstantBuffer*				m_pShadowCB;
-		ID3D11ShaderResourceView*		m_pShadowDepthSRV;
+		ITexture2D*						m_pShadowDepthTexture;
 	};
 
 	D3D11MeshLightingRenderer::D3D11MeshLightingRenderer() :
 		D3D11MeshRenderer(),
 		m_pLightingCB(nullptr),
 		m_pShadowCB(nullptr),
-		m_pShadowDepthSRV(nullptr)
+		m_pShadowDepthTexture(nullptr)
 	{}
 
 	D3D11MeshLightingRenderer::D3D11MeshLightingRenderer(const MeshLightingGlobalData& globalData):
 		D3D11MeshRenderer(globalData.pGlobalCB),
 		m_pLightingCB(globalData.pLightingCB),
 		m_pShadowCB(globalData.pShadowCB),
-		m_pShadowDepthSRV(globalData.pShadowDepthSRV)
+		m_pShadowDepthTexture(globalData.pShadowDepthTexture)
 	{}
 
 	D3D11MeshLightingRenderer::~D3D11MeshLightingRenderer()
@@ -239,7 +239,8 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->PSSetShaderResources(0, 1, &pSRV);
 		renderParam.pSamplerState->SetToPixelShader(0);
 
-		g_pD3D11ImmediateContext->PSSetShaderResources(1, 1, &m_pShadowDepthSRV);
+		ID3D11ShaderResourceView* pShadowDepthSRV = (ID3D11ShaderResourceView*)m_pShadowDepthTexture->GetShaderResourceView();
+		g_pD3D11ImmediateContext->PSSetShaderResources(1, 1, &pShadowDepthSRV);
 
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
 
@@ -386,9 +387,7 @@ namespace RenderDog
 
 		D3D11_VIEWPORT				m_ShadowViewport;
 
-		ID3D11Texture2D*			m_pShadowDepthTexture;
-		ID3D11DepthStencilView*		m_pShadowDepthDSV;
-		ID3D11ShaderResourceView*	m_pShadowDepthSRV;
+		ITexture2D*					m_pShadowDepthTexture;
 
 		IShader*					m_pShadowDepthVS;
 		IShader*					m_pShadowDepthPS;
@@ -413,8 +412,6 @@ namespace RenderDog
 		m_pLightingConstantBuffer(nullptr),
 		m_pShadowConstantBuffer(nullptr),
 		m_pShadowDepthTexture(nullptr),
-		m_pShadowDepthDSV(nullptr),
-		m_pShadowDepthSRV(nullptr),
 		m_pShadowDepthVS(nullptr),
 		m_pShadowDepthPS(nullptr)
 	{}
@@ -763,39 +760,17 @@ namespace RenderDog
 	//------------------------------------------------------------------------
 	bool D3D11Renderer::CreateShadowResources(uint32_t width, uint32_t height)
 	{
-		D3D11_TEXTURE2D_DESC texDesc;
-		texDesc.Width = width;
-		texDesc.Height = height;
-		texDesc.MipLevels = 1;
-		texDesc.ArraySize = 1;
-		texDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
-		texDesc.SampleDesc.Count = 1;
-		texDesc.SampleDesc.Quality = 0;
-		texDesc.Usage = D3D11_USAGE_DEFAULT;
-		texDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
-		texDesc.CPUAccessFlags = 0;
-		texDesc.MiscFlags = 0;
-		if (FAILED(g_pD3D11Device->CreateTexture2D(&texDesc, nullptr, &m_pShadowDepthTexture)))
-		{
-			return false;
-		}
+		TextureDesc desc;
+		desc.name = L"ShadowDepthTexture";
+		desc.format = TEXTURE_FORMAT::R24G8_TYPELESS;
+		desc.width = width;
+		desc.height = height;
+		desc.mipLevels = 1;
+		desc.isDynamic = false;
+		desc.isDepthTexture = true;
 
-		D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
-		dsvDesc.Flags = 0;
-		dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-		dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-		dsvDesc.Texture2D.MipSlice = 0;
-		if (FAILED(g_pD3D11Device->CreateDepthStencilView(m_pShadowDepthTexture, &dsvDesc, &m_pShadowDepthDSV)))
-		{
-			return false;
-		}
-
-		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-		srvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
-		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-		srvDesc.Texture2D.MipLevels = texDesc.MipLevels;
-		srvDesc.Texture2D.MostDetailedMip = 0;
-		if (FAILED(g_pD3D11Device->CreateShaderResourceView(m_pShadowDepthTexture, &srvDesc, &m_pShadowDepthSRV)))
+		m_pShadowDepthTexture = g_pITextureManager->GetTexture2D(desc);
+		if (!m_pShadowDepthTexture)
 		{
 			return false;
 		}
@@ -809,18 +784,6 @@ namespace RenderDog
 		{
 			m_pShadowDepthTexture->Release();
 			m_pShadowDepthTexture = nullptr;
-		}
-
-		if (m_pShadowDepthDSV)
-		{
-			m_pShadowDepthDSV->Release();
-			m_pShadowDepthDSV = nullptr;
-		}
-
-		if (m_pShadowDepthSRV)
-		{
-			m_pShadowDepthSRV->Release();
-			m_pShadowDepthSRV = nullptr;
 		}
 	}
 
@@ -840,8 +803,9 @@ namespace RenderDog
 	{
 		g_pD3D11ImmediateContext->RSSetViewports(1, &m_ShadowViewport);
 
-		g_pD3D11ImmediateContext->ClearDepthStencilView(m_pShadowDepthDSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
-		g_pD3D11ImmediateContext->OMSetRenderTargets(0, nullptr, m_pShadowDepthDSV);
+		ID3D11DepthStencilView* pShadowDSV = (ID3D11DepthStencilView*)m_pShadowDepthTexture->GetDepthStencilView();
+		g_pD3D11ImmediateContext->ClearDepthStencilView(pShadowDSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
+		g_pD3D11ImmediateContext->OMSetRenderTargets(0, nullptr, pShadowDSV);
 
 		D3D11MeshShadowRenderer shadowRenderer(m_pShadowConstantBuffer, m_pShadowDepthVS, m_pShadowDepthPS);
 
@@ -901,7 +865,7 @@ namespace RenderDog
 		meshLightingData.pGlobalCB = m_pGlobalConstantBuffer;
 		meshLightingData.pLightingCB = m_pLightingConstantBuffer;
 		meshLightingData.pShadowCB = m_pShadowConstantBuffer;
-		meshLightingData.pShadowDepthSRV = m_pShadowDepthSRV;
+		meshLightingData.pShadowDepthTexture = m_pShadowDepthTexture;
 		D3D11MeshLightingRenderer meshRender(meshLightingData);
 
 		uint32_t opaquePriNum = m_pSceneView->GetOpaquePrisNum();
