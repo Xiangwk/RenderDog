@@ -54,7 +54,7 @@ float4 Main(VSOutput vsOutput) : SV_Target
 	float ShadowFactor = vsOutput.ShadowPos.z <= ShadowDepth ? 1.0f : 0.0f;
 	Diffuse *= ShadowFactor;
 
-	float3 Ambient = float3(0.15f, 0.15f, 0.15f);
+	float3 Ambient = float3(0.2f, 0.2f, 0.2f);
 
 	float3 finalColor = saturate(Diffuse + Ambient);
 
