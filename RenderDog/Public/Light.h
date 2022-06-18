@@ -28,12 +28,12 @@ namespace RenderDog
 		float		luminance;
 	};
 
-	class ILight : public RefCntObject
+	class ILight
 	{
-	public:
+	protected:
 		virtual ~ILight() = default;
 
-		virtual bool		Init(const LightDesc& desc) = 0;
+	public:
 		virtual void		Release() = 0;
 
 		virtual LIGHT_TYPE	GetType() const = 0;
@@ -56,7 +56,6 @@ namespace RenderDog
 		virtual ~ILightManager() = default;
 
 		virtual	ILight*		CreateLight(const LightDesc& desc) = 0;
-		virtual void		ReleaseLight(ILight* pLight) = 0;
 	};
 
 	extern ILightManager* g_pILightManager;

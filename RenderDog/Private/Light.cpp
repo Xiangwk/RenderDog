@@ -18,11 +18,13 @@ namespace RenderDog
 	//================================================================
 	class DirectionalLight : public ILight
 	{
+		friend class LightManager;
+
 	public:
 		DirectionalLight();
+		DirectionalLight(const LightDesc& desc);
 		virtual ~DirectionalLight() {}
 
-		virtual		bool		Init(const LightDesc& desc) override;
 		virtual		void		Release() override;
 
 		virtual		LIGHT_TYPE	GetType() const override { return LIGHT_TYPE::DIRECTIONAL; }
@@ -44,6 +46,27 @@ namespace RenderDog
 		float					m_Luminance;
 	};
 
+	//================================================================
+	//        Light Manager
+	//================================================================
+	class LightManager : public ILightManager
+	{
+	public:
+		LightManager() = default;
+		virtual ~LightManager() = default;
+
+		virtual	ILight*			CreateLight(const LightDesc& desc) override;
+
+		void					ReleaseDirLight(DirectionalLight* pLight);
+	};
+
+	LightManager g_LightManager;
+	ILightManager* g_pILightManager = &g_LightManager;
+
+
+	//================================================================
+	//        Function Implementation
+	//================================================================
 	DirectionalLight::DirectionalLight() :
 		m_Direction(g_InitLightDir),
 		m_Color(1.0f, 1.0f, 1.0f),
@@ -51,25 +74,23 @@ namespace RenderDog
 		m_eulerAngle(0.0f, 0.0f, 0.0f)
 	{}
 
-	bool DirectionalLight::Init(const LightDesc& desc)
+	DirectionalLight::DirectionalLight(const LightDesc& desc) :
+		m_Direction(g_InitLightDir),
+		m_Color(desc.color),
+		m_Luminance(desc.luminance),
+		m_eulerAngle(desc.eulerDir)
 	{
 		Matrix4x4 rotMat = GetIdentityMatrix();
 		rotMat = GetRotationMatrix(desc.eulerDir.x, desc.eulerDir.y, desc.eulerDir.z);
 		Vector4 dir = Vector4(m_Direction, 0.0f);
 		dir = dir * rotMat;
 
-		m_eulerAngle = desc.eulerDir;
-
 		m_Direction = Vector3(dir.x, dir.y, dir.z);
-		m_Color = desc.color;
-		m_Luminance = desc.luminance;
-
-		return true;
 	}
 
 	void DirectionalLight::Release()
 	{
-		g_pILightManager->ReleaseLight(this);
+		g_LightManager.ReleaseDirLight(this);
 	}
 
 	void DirectionalLight::SetDirection(float eulerX, float eulerY, float eulerZ)
@@ -91,38 +112,23 @@ namespace RenderDog
 		pScene->RegisterLight(this);
 	}
 
-
-	//================================================================
-	//        Light Manager
-	//================================================================
-
-	class LightManager : public ILightManager
-	{
-	public:
-		LightManager() = default;
-		virtual ~LightManager() = default;
-
-		virtual	ILight*		CreateLight(const LightDesc& desc) override;
-		virtual void		ReleaseLight(ILight* pLight) override;
-	};
-
-	LightManager g_LightManager;
-	ILightManager* g_pILightManager = &g_LightManager;
-
 	ILight* LightManager::CreateLight(const LightDesc& desc)
 	{
 		ILight* pLight = nullptr;
 		if (desc.type == LIGHT_TYPE::DIRECTIONAL)
 		{
-			pLight = new DirectionalLight();
-			pLight->Init(desc);
+			pLight = new DirectionalLight(desc);
 		}
 
 		return pLight;
 	}
 
-	void LightManager::ReleaseLight(ILight* pLight)
+	void LightManager::ReleaseDirLight(DirectionalLight* pLight)
 	{
-		pLight->SubRef();
+		if (pLight)
+		{
+			delete pLight;
+			pLight = nullptr;
+		}
 	}
 }
