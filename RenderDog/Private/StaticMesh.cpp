@@ -199,9 +199,8 @@ namespace RenderDog
 
 	bool StaticMesh::LoadTextureFromFile(const std::wstring& diffuseTexturePath)
 	{
-		TextureDesc texDesc;
-		m_pDiffuseTexture = g_pITextureManager->CreateTexture2D(texDesc);
-		if (!m_pDiffuseTexture->LoadFromFile(diffuseTexturePath))
+		m_pDiffuseTexture = g_pITextureManager->CreateTexture2D(diffuseTexturePath);
+		if (!m_pDiffuseTexture)
 		{
 			return false;
 		}

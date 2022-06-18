@@ -9,7 +9,7 @@
 namespace RenderDog
 {
 	RefCntObject::RefCntObject() :
-		m_RefCnt(0)
+		m_RefCnt(1)
 	{}
 
 	RefCntObject::~RefCntObject()

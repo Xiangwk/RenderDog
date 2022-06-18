@@ -10,6 +10,7 @@
 
 #include <d3d11.h>
 #include <DirectXTex.h>
+#include <unordered_map>
 
 namespace RenderDog
 {
@@ -21,18 +22,23 @@ namespace RenderDog
 		friend class D3D11TextureManager;
 
 	public:
+		D3D11Texture2D();
 		D3D11Texture2D(const TextureDesc& desc);
 		virtual ~D3D11Texture2D();
 
-		virtual bool				LoadFromFile(const std::wstring& filePath) override;
-
 		virtual void				Release() override;
+
+		virtual const std::wstring& GetName() const override { return m_Name; }
 
 		virtual void*				GetRenderTargetView() override { return (void*)m_pRTV; }
 		virtual void*				GetDepthStencilView() override { return (void*)m_pDSV; }
 		virtual void*				GetShaderResourceView() override { return (void*)m_pSRV; }
+
+		bool						LoadFromFile(const std::wstring& filePath);
 		
 	private:
+		std::wstring				m_Name;
+
 		ID3D11Texture2D*			m_pTexture2D;
 		ID3D11RenderTargetView*		m_pRTV;
 		ID3D11DepthStencilView*		m_pDSV;
@@ -44,13 +50,20 @@ namespace RenderDog
 	//==================================================
 	class D3D11TextureManager : public ITextureManager
 	{
+	private:
+		typedef std::unordered_map<std::wstring, ITexture*> TextureMap;
+
 	public:
 		D3D11TextureManager() = default;
 		virtual ~D3D11TextureManager() = default;
 
-		virtual ITexture2D*			CreateTexture2D(const TextureDesc& desc) override;
+		virtual ITexture2D*			CreateTexture2D(const std::wstring& filePath) override;
+		virtual ITexture2D*			GetTexture2D(const TextureDesc& desc) override;
 
 		void						ReleaseTexture2D(D3D11Texture2D* pTexture);
+
+	private:
+		TextureMap					m_TextureMap;
 	};
 
 	D3D11TextureManager	g_D3D11TextureManager;
@@ -59,23 +72,39 @@ namespace RenderDog
 	//==================================================
 	//		Function Implementation
 	//==================================================
+	D3D11Texture2D::D3D11Texture2D() :
+		RefCntObject(),
+		m_pTexture2D(nullptr),
+		m_pRTV(nullptr),
+		m_pDSV(nullptr),
+		m_pSRV(nullptr)
+	{}
+
 	D3D11Texture2D::D3D11Texture2D(const TextureDesc& desc) :
+		RefCntObject(),
 		m_pTexture2D(nullptr),
 		m_pRTV(nullptr),
 		m_pDSV(nullptr),
 		m_pSRV(nullptr)
 	{
-		/*
 		D3D11_TEXTURE2D_DESC texDesc;
 		texDesc.Width = desc.width;
 		texDesc.Height = desc.height;
 		texDesc.MipLevels = desc.mipLevels;
-		texDesc.ArraySize = desc.arraySize;
-		texDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
+		texDesc.ArraySize = 1;
+		switch (desc.format)
+		{
+		case TEXTURE_FORMAT::R24G8_TYPELESS:
+			texDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
+			break;
+		default:
+			texDesc.Format = DXGI_FORMAT_UNKNOWN;
+			break;
+		}
 		texDesc.SampleDesc.Count = 1;
 		texDesc.SampleDesc.Quality = 0;
 		texDesc.Usage = desc.isDynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
-		texDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+		texDesc.BindFlags = (desc.isDepthTexture ? D3D11_BIND_DEPTH_STENCIL : D3D11_BIND_RENDER_TARGET) | D3D11_BIND_SHADER_RESOURCE;
 		texDesc.CPUAccessFlags = 0;
 		texDesc.MiscFlags = 0;
 		if (FAILED(g_pD3D11Device->CreateTexture2D(&texDesc, nullptr, &m_pTexture2D)))
@@ -83,28 +112,47 @@ namespace RenderDog
 			return;
 		}
 
-		D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
-		dsvDesc.Flags = 0;
-		dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-		dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-		dsvDesc.Texture2D.MipSlice = 0;
-		if (FAILED(g_pD3D11Device->CreateDepthStencilView(m_pShadowDepthTexture, &dsvDesc, &m_pShadowDepthDSV)))
+		if (desc.isDepthTexture)
 		{
-			return false;
+			D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
+			dsvDesc.Flags = 0;
+			dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+			dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+			dsvDesc.Texture2D.MipSlice = 0;
+			if (FAILED(g_pD3D11Device->CreateDepthStencilView(m_pTexture2D, &dsvDesc, &m_pDSV)))
+			{
+				return;
+			}
+		}
+		else
+		{
+			D3D11_RENDER_TARGET_VIEW_DESC rtvDesc;
+			rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+			rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+			rtvDesc.Texture2D.MipSlice = 0;
+			if (FAILED(g_pD3D11Device->CreateRenderTargetView(m_pTexture2D, &rtvDesc, &m_pRTV)))
+			{
+				return;
+			}
 		}
 
 		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-		srvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+		switch (desc.format)
+		{
+		case TEXTURE_FORMAT::R24G8_TYPELESS:
+			srvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+			break;
+		default:
+			srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+			break;
+		}
 		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 		srvDesc.Texture2D.MipLevels = texDesc.MipLevels;
 		srvDesc.Texture2D.MostDetailedMip = 0;
-		if (FAILED(g_pD3D11Device->CreateShaderResourceView(m_pShadowDepthTexture, &srvDesc, &m_pShadowDepthSRV)))
+		if (FAILED(g_pD3D11Device->CreateShaderResourceView(m_pTexture2D, &srvDesc, &m_pSRV)))
 		{
-			return false;
+			return;
 		}
-
-		return true;
-		*/
 	}
 
 	D3D11Texture2D::~D3D11Texture2D()
@@ -172,9 +220,47 @@ namespace RenderDog
 		g_D3D11TextureManager.ReleaseTexture2D(this);
 	}
 
-	ITexture2D* D3D11TextureManager::CreateTexture2D(const TextureDesc& desc)
+	ITexture2D* D3D11TextureManager::CreateTexture2D(const std::wstring& filePath)
 	{
-		ITexture2D* pTexture = new D3D11Texture2D(desc);
+		D3D11Texture2D* pTexture = nullptr;
+
+		auto texture = m_TextureMap.find(filePath);
+		if (texture != m_TextureMap.end())
+		{
+			//NOTE!!! 这里用强转是否合适？
+			pTexture = (D3D11Texture2D*)(texture->second);
+			pTexture->AddRef();
+		}
+		else
+		{
+			pTexture = new D3D11Texture2D();
+			if (pTexture)
+			{
+				pTexture->LoadFromFile(filePath);
+			}
+
+			m_TextureMap.insert({ filePath, pTexture });
+		}
+
+		return pTexture;
+	}
+
+	ITexture2D* D3D11TextureManager::GetTexture2D(const TextureDesc& desc)
+	{
+		D3D11Texture2D* pTexture = nullptr;
+
+		auto texture = m_TextureMap.find(desc.name);
+		if (texture != m_TextureMap.end())
+		{
+			//NOTE!!! 这里用强转是否合适？
+			pTexture = (D3D11Texture2D*)(texture->second);
+			pTexture->AddRef();
+		
+		}
+		else
+		{
+			pTexture = new D3D11Texture2D(desc);
+		}
 
 		return pTexture;
 	}
@@ -183,8 +269,11 @@ namespace RenderDog
 	{
 		if (pTexture)
 		{
-			delete pTexture;
-			pTexture = nullptr;
+			std::wstring texName = pTexture->GetName();
+			if (pTexture->SubRef() == 0)
+			{
+				m_TextureMap.erase(texName);
+			}
 		}
 	}
 

@@ -242,17 +242,14 @@ namespace RenderDog
 
 		case BUFFER_BIND::VERTEX:
 			pBuffer = new D3D11VertexBuffer(desc);
-			pBuffer->AddRef();
 			break;
 
 		case BUFFER_BIND::INDEX:
 			pBuffer = new D3D11IndexBuffer(desc);
-			pBuffer->AddRef();
 			break;
 
 		case BUFFER_BIND::CONSTANT:
 			pBuffer = new D3D11ConstantBuffer(desc);
-			pBuffer->AddRef();
 			break;
 
 		default:

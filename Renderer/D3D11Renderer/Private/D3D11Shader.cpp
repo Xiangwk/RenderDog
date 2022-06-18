@@ -287,6 +287,7 @@ namespace RenderDog
 		if (shader != m_ShaderMap.end())
 		{
 			pVertexShader = shader->second;
+			pVertexShader->AddRef();
 		}
 		else
 		{
@@ -296,8 +297,6 @@ namespace RenderDog
 
 			m_ShaderMap.insert({ desc.fileName, pVertexShader });
 		}
-
-		pVertexShader->AddRef();
 
 		return pVertexShader;
 	}
@@ -310,6 +309,7 @@ namespace RenderDog
 		if (shader != m_ShaderMap.end())
 		{
 			pPixelShader = shader->second;
+			pPixelShader->AddRef();
 		}
 		else
 		{
@@ -319,8 +319,6 @@ namespace RenderDog
 
 			m_ShaderMap.insert({ desc.fileName, pPixelShader });
 		}
-
-		pPixelShader->AddRef();
 
 		return pPixelShader;
 	}

@@ -116,7 +116,6 @@ namespace RenderDog
 		{
 			pLight = new DirectionalLight();
 			pLight->Init(desc);
-			pLight->AddRef();
 		}
 
 		return pLight;

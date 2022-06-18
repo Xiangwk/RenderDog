@@ -14,26 +14,31 @@ namespace RenderDog
 	//==================================================
 	//		Texture
 	//==================================================
-	enum class TEXTURE_BIND_FLAG
-	{
-		RENDER_TARGET,
-		SHADER_RESOURCE,
-		DEPTH_STENCIL
-	};
-
 	enum class TEXTURE_FORMAT
 	{
-		R8G8B8A8_UNORM
+		UNKNOWN,
+		R8G8B8A8_UNORM,
+		R24G8_TYPELESS
 	};
 
 	struct TextureDesc
 	{
-		TEXTURE_BIND_FLAG		bindFlag;
+		std::wstring			name;
 		TEXTURE_FORMAT			format;
 		uint32_t				width;
 		uint32_t				height;
 		uint32_t				mipLevels;
 		bool					isDynamic;
+		bool					isDepthTexture;
+
+		TextureDesc() :
+			format(TEXTURE_FORMAT::UNKNOWN),
+			width(0),
+			height(0),
+			mipLevels(0),
+			isDynamic(false),
+			isDepthTexture(false)
+		{}
 	};
 
 	class ITexture
@@ -42,7 +47,9 @@ namespace RenderDog
 		virtual ~ITexture() = default;
 
 	public:
-		virtual void			Release() = 0;
+		virtual void				Release() = 0;
+
+		virtual const std::wstring& GetName() const = 0;
 	};
 
 	class ITexture2D : public ITexture
@@ -51,11 +58,10 @@ namespace RenderDog
 		virtual ~ITexture2D() = default;
 		
 	public:
-		virtual bool			LoadFromFile(const std::wstring& filePath) = 0;
-
-		virtual void*			GetShaderResourceView() = 0;
-		virtual void*			GetRenderTargetView() = 0;
-		virtual void*			GetDepthStencilView() = 0;
+		
+		virtual void*				GetShaderResourceView() = 0;
+		virtual void*				GetRenderTargetView() = 0;
+		virtual void*				GetDepthStencilView() = 0;
 	};
 
 
@@ -67,7 +73,8 @@ namespace RenderDog
 	public:
 		virtual ~ITextureManager() = default;
 
-		virtual ITexture2D*		CreateTexture2D(const TextureDesc& desc) = 0;
+		virtual	ITexture2D*			CreateTexture2D(const std::wstring& filePath) = 0;
+		virtual ITexture2D*			GetTexture2D(const TextureDesc& desc) = 0;
 	};
 
 	extern ITextureManager* g_pITextureManager;
