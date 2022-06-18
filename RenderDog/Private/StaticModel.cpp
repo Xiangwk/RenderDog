@@ -30,10 +30,11 @@ namespace RenderDog
 	void SimpleModel::LoadFromSimpleData(const std::vector<SimpleVertex>& vertices,
 		const std::vector<uint32_t>& indices,
 		const std::string& vsFile,
-		const std::string& psFile)
+		const std::string& psFile,
+		const std::string& name)
 	{
 		SimpleMesh mesh;
-		mesh.LoadFromSimpleData(vertices, indices);
+		mesh.LoadFromSimpleData(vertices, indices, name);
 		mesh.InitRenderData(vsFile, psFile);
 
 		m_Meshes.push_back(mesh);
@@ -84,10 +85,11 @@ namespace RenderDog
 	void StaticModel::LoadFromStandardData(const std::vector<StandardVertex>& vertices, 
 								   const std::vector<uint32_t>& indices,
 								   const std::string& vsFile, 
-								   const std::string& psFile)
+								   const std::string& psFile,
+								   const std::string& name)
 	{
 		StaticMesh mesh;
-		mesh.LoadFromStandardData(vertices, indices);
+		mesh.LoadFromStandardData(vertices, indices, name);
 		mesh.InitRenderData(vsFile, psFile);
 
 		CalculateBoundings();
@@ -118,7 +120,7 @@ namespace RenderDog
 			return false;
 		}
 
-		ProcessNode(assimpModelScene->mRootNode, assimpModelScene);
+		ProcessNode(assimpModelScene->mRootNode, assimpModelScene, fileName);
 
 		CalculateMeshTangents();
 
@@ -167,32 +169,34 @@ namespace RenderDog
 	}
 
 
-	void StaticModel::ProcessNode(const aiNode* pAssimpNode, const aiScene* pAssimpScene)
+	void StaticModel::ProcessNode(const aiNode* pAssimpNode, const aiScene* pAssimpScene, const std::string& modelName)
 	{
 		for (uint32_t i = 0; i < pAssimpNode->mNumMeshes; ++i)
 		{
 			aiMesh* pMesh = pAssimpScene->mMeshes[pAssimpNode->mMeshes[i]];
 
-			StaticMesh mesh = ProcessMesh(pMesh, pAssimpScene);
+			StaticMesh mesh = ProcessMesh(pMesh, pAssimpScene, modelName);
 			m_Meshes.push_back(mesh);
 		}
 
 		for (uint32_t i = 0; i < pAssimpNode->mNumChildren; ++i)
 		{
-			ProcessNode(pAssimpNode->mChildren[i], pAssimpScene);
+			ProcessNode(pAssimpNode->mChildren[i], pAssimpScene, modelName);
 		}
 	}
 
-	StaticMesh StaticModel::ProcessMesh(const aiMesh* pAssimpMesh, const aiScene* pAssimpScene)
+	StaticMesh StaticModel::ProcessMesh(const aiMesh* pAssimpMesh, const aiScene* pAssimpScene, const std::string& modelName)
 	{
 		std::vector<StandardVertex> tempVertices;
 		std::vector<uint32_t> tempIndices;
+		std::string meshName;
 
 		for (unsigned int i = 0; i < pAssimpMesh->mNumVertices; ++i)
 		{
 			Vector3 position = Vector3(pAssimpMesh->mVertices[i].x, pAssimpMesh->mVertices[i].y, pAssimpMesh->mVertices[i].z);
 			Vector3 normal = Vector3(pAssimpMesh->mNormals[i].x, pAssimpMesh->mNormals[i].y, pAssimpMesh->mNormals[i].z);
 			Vector2 texCoord = Vector2(pAssimpMesh->mTextureCoords[0][i].x, pAssimpMesh->mTextureCoords[0][i].y);
+			meshName = std::string(pAssimpMesh->mName.C_Str());
 
 			StandardVertex vert(position.x, position.y, position.z, 1.0f, 1.0f, 1.0f, 1.0f, normal.x, normal.y, normal.z, 0.0f, 0.0f, 0.0f, texCoord.x, texCoord.y);
 
@@ -208,7 +212,7 @@ namespace RenderDog
 			}
 		}
 
-		return StaticMesh(tempVertices, tempIndices);
+		return StaticMesh(tempVertices, tempIndices, modelName + meshName);
 	}
 
 	void StaticModel::CalculateMeshTangents()

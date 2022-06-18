@@ -66,8 +66,8 @@ namespace RenderDog
 
 		g_pD3D11ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		ID3D11Buffer* pVB = (ID3D11Buffer*)(renderParam.pVB->GetVertexBuffer());
-		ID3D11Buffer* pIB = (ID3D11Buffer*)(renderParam.pIB->GetIndexBuffer());
+		ID3D11Buffer* pVB = (ID3D11Buffer*)(renderParam.pVB->GetResource());
+		ID3D11Buffer* pIB = (ID3D11Buffer*)(renderParam.pIB->GetResource());
 
 		uint32_t indexNum = renderParam.pIB->GetIndexNum();
 
@@ -78,10 +78,10 @@ namespace RenderDog
 
 		renderParam.pVS->SetToContext();
 
-		ID3D11Buffer* pGlobalCB = (ID3D11Buffer*)(m_pGlobalCB->GetConstantBuffer());
+		ID3D11Buffer* pGlobalCB = (ID3D11Buffer*)(m_pGlobalCB->GetResource());
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(0, 1, &pGlobalCB);
 
-		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetConstantBuffer());
+		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetResource());
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(1, 1, &pPerObjCB);
 
 		renderParam.pPS->SetToContext();
@@ -130,8 +130,8 @@ namespace RenderDog
 
 		g_pD3D11ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 
-		ID3D11Buffer* pVB = (ID3D11Buffer*)(renderParam.pVB->GetVertexBuffer());
-		ID3D11Buffer* pIB = (ID3D11Buffer*)(renderParam.pIB->GetIndexBuffer());
+		ID3D11Buffer* pVB = (ID3D11Buffer*)(renderParam.pVB->GetResource());
+		ID3D11Buffer* pIB = (ID3D11Buffer*)(renderParam.pIB->GetResource());
 
 		uint32_t indexNum = renderParam.pIB->GetIndexNum();
 
@@ -142,10 +142,10 @@ namespace RenderDog
 
 		renderParam.pVS->SetToContext();
 
-		ID3D11Buffer* pGlobalCB = (ID3D11Buffer*)(m_pGlobalCB->GetConstantBuffer());
+		ID3D11Buffer* pGlobalCB = (ID3D11Buffer*)(m_pGlobalCB->GetResource());
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(0, 1, &pGlobalCB);
 
-		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetConstantBuffer());
+		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetResource());
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(1, 1, &pPerObjCB);
 
 		renderParam.pPS->SetToContext();
@@ -209,8 +209,8 @@ namespace RenderDog
 
 		g_pD3D11ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		ID3D11Buffer* pVB = (ID3D11Buffer*)(renderParam.pVB->GetVertexBuffer());
-		ID3D11Buffer* pIB = (ID3D11Buffer*)(renderParam.pIB->GetIndexBuffer());
+		ID3D11Buffer* pVB = (ID3D11Buffer*)(renderParam.pVB->GetResource());
+		ID3D11Buffer* pIB = (ID3D11Buffer*)(renderParam.pIB->GetResource());
 		
 		uint32_t indexNum = renderParam.pIB->GetIndexNum();
 
@@ -221,18 +221,18 @@ namespace RenderDog
 
 		renderParam.pVS->SetToContext();
 
-		ID3D11Buffer* pGlobalCB = (ID3D11Buffer*)(m_pGlobalCB->GetConstantBuffer());
+		ID3D11Buffer* pGlobalCB = (ID3D11Buffer*)(m_pGlobalCB->GetResource());
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(0, 1, &pGlobalCB);
 
-		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetConstantBuffer());
+		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetResource());
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(1, 1, &pPerObjCB);
 
-		ID3D11Buffer* pShadowCB = (ID3D11Buffer*)(m_pShadowCB->GetConstantBuffer());
+		ID3D11Buffer* pShadowCB = (ID3D11Buffer*)(m_pShadowCB->GetResource());
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(2, 1, &pShadowCB);
 		
 		renderParam.pPS->SetToContext();
 
-		ID3D11Buffer* pLightingCB = (ID3D11Buffer*)(m_pLightingCB->GetConstantBuffer());
+		ID3D11Buffer* pLightingCB = (ID3D11Buffer*)(m_pLightingCB->GetResource());
 		g_pD3D11ImmediateContext->PSSetConstantBuffers(0, 1, &pLightingCB);
 
 		ID3D11ShaderResourceView* pSRV = (ID3D11ShaderResourceView*)(renderParam.pTexture2D->GetShaderResourceView());
@@ -293,8 +293,8 @@ namespace RenderDog
 
 		g_pD3D11ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		ID3D11Buffer* pVB = (ID3D11Buffer*)(renderParam.pVB->GetVertexBuffer());
-		ID3D11Buffer* pIB = (ID3D11Buffer*)(renderParam.pIB->GetIndexBuffer());
+		ID3D11Buffer* pVB = (ID3D11Buffer*)(renderParam.pVB->GetResource());
+		ID3D11Buffer* pIB = (ID3D11Buffer*)(renderParam.pIB->GetResource());
 
 		uint32_t indexNum = renderParam.pIB->GetIndexNum();
 
@@ -305,10 +305,10 @@ namespace RenderDog
 
 		m_pVS->SetToContext();
 
-		ID3D11Buffer* pGlobalCB = (ID3D11Buffer*)(m_pGlobalCB->GetConstantBuffer());
+		ID3D11Buffer* pGlobalCB = (ID3D11Buffer*)(m_pGlobalCB->GetResource());
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(0, 1, &pGlobalCB);
 
-		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetConstantBuffer());
+		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetResource());
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(1, 1, &pPerObjCB);
 
 		m_pPS->SetToContext();
@@ -498,18 +498,20 @@ namespace RenderDog
 		m_pSceneView = new SceneView(desc.pMainCamera);
 
 		BufferDesc cbDesc = {};
-		cbDesc.bufferBind = BUFFER_BIND::CONSTANT;
+		cbDesc.name = "GlobalConstantBuffer";
 		cbDesc.byteWidth = sizeof(GlobalConstantData);
 		cbDesc.pInitData = nullptr;
 		cbDesc.isDynamic = true;
-		m_pGlobalConstantBuffer = (IConstantBuffer*)g_pIBufferManager->CreateBuffer(cbDesc);
+		m_pGlobalConstantBuffer = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
 
+		cbDesc.name = "MainLightingConstantBuffer";
 		cbDesc.byteWidth = sizeof(DirectionalLightData);
-		m_pLightingConstantBuffer = (IConstantBuffer*)g_pIBufferManager->CreateBuffer(cbDesc);
+		m_pLightingConstantBuffer = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
 
+		cbDesc.name = "MainLightShadowConstantBuffer";
 		cbDesc.byteWidth = sizeof(ShadowConstantData);
 		cbDesc.isDynamic = false;
-		m_pShadowConstantBuffer = (IConstantBuffer*)g_pIBufferManager->CreateBuffer(cbDesc);
+		m_pShadowConstantBuffer = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
 
 		int ShadowMapSize = g_CVarShadowMapRTSize;
 		CreateShadowResources(ShadowMapSize, ShadowMapSize);

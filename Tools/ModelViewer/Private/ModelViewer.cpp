@@ -75,14 +75,14 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 	RenderDog::GeometryGenerator::SimpleMeshData GridLineMeshData;
 	RenderDog::g_pGeometryGenerator->GenerateGridLine(100, 100, 1, RenderDog::Vector4(0.8f, 0.8f, 0.8f, 1.0f), GridLineMeshData);
 	m_pGridLine = new RenderDog::SimpleModel();
-	m_pGridLine->LoadFromSimpleData(GridLineMeshData.vertices, GridLineMeshData.indices, "Shaders/SimpleModelVertexShader.hlsl", "Shaders/SingleColorPixelShader.hlsl");
+	m_pGridLine->LoadFromSimpleData(GridLineMeshData.vertices, GridLineMeshData.indices, "Shaders/SimpleModelVertexShader.hlsl", "Shaders/SingleColorPixelShader.hlsl", "MainSceneGridLine");
 	m_pGridLine->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
 	m_pGridLine->RegisterToScene(m_pScene);
 
 	RenderDog::GeometryGenerator::StandardMeshData GridMeshData;
 	RenderDog::g_pGeometryGenerator->GenerateGrid(100, 100, 1, GridMeshData);
 	m_pFloor = new RenderDog::StaticModel();
-	m_pFloor->LoadFromStandardData(GridMeshData.vertices, GridMeshData.indices, "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl");
+	m_pFloor->LoadFromStandardData(GridMeshData.vertices, GridMeshData.indices, "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl", "MainSceneFloor");
 	m_pFloor->LoadTextureFromFile(L"Textures/FlatNormal_norm.dds");
 	m_pFloor->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
 	m_pFloor->RegisterToScene(m_pScene);

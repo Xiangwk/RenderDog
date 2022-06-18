@@ -33,7 +33,8 @@ namespace RenderDog
 		SimpleModel& operator=(const SimpleModel&) = default;
 
 		void						LoadFromSimpleData(const std::vector<SimpleVertex>& vertices, const std::vector<uint32_t>& indices,
-														const std::string& vsFile, const std::string& psFile);
+														const std::string& vsFile, const std::string& psFile,
+														const std::string& name);
 
 		void						RegisterToScene(IScene* pScene);
 
@@ -60,9 +61,13 @@ namespace RenderDog
 		StaticModel& operator=(const StaticModel&) = default;
 
 		void						LoadFromStandardData(const std::vector<StandardVertex>& vertices, const std::vector<uint32_t>& indices, 
-															const std::string& vsFile, const std::string& psFile);
+														 const std::string& vsFile, const std::string& psFile,
+														 const std::string& name);
+
 		bool						LoadFromFile(const std::string& fileName,
-													const std::string& vsFile, const std::string& psFile);
+												 const std::string& vsFile, 
+												 const std::string& psFile);
+
 		bool						LoadTextureFromFile(const std::wstring& diffuseTexturePath);
 		
 		void						RegisterToScene(IScene* pScene);
@@ -75,8 +80,8 @@ namespace RenderDog
 		const BoundingSphere&		GetBoundingSphere() const { return m_BoundingSphere; }
 
 	private:
-		void						ProcessNode(const aiNode* pAssimpNode, const aiScene* pAssimpScene);
-		StaticMesh					ProcessMesh(const aiMesh* pAssimpMesh, const aiScene* pAssimpScene);
+		void						ProcessNode(const aiNode* pAssimpNode, const aiScene* pAssimpScene, const std::string& modelName);
+		StaticMesh					ProcessMesh(const aiMesh* pAssimpMesh, const aiScene* pAssimpScene, const std::string& modelName);
 
 		void						CalculateMeshTangents();
 		void						CalculateBoundings();

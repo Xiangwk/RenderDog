@@ -32,6 +32,7 @@ namespace RenderDog
 		bool					isDepthTexture;
 
 		TextureDesc() :
+			name(L""),
 			format(TEXTURE_FORMAT::UNKNOWN),
 			width(0),
 			height(0),

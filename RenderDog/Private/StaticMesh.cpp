@@ -16,6 +16,7 @@ namespace RenderDog
 	//------------------------------------------------------------------------
 
 	SimpleMesh::SimpleMesh() :
+		m_Name(""),
 		m_Vertices(0),
 		m_Indices(0),
 		m_pRenderData(nullptr),
@@ -28,7 +29,7 @@ namespace RenderDog
 		m_Indices.clear();
 	}
 
-	SimpleMesh::SimpleMesh(const std::vector<SimpleVertex>& vertices, const std::vector<uint32_t>& indices) :
+	/*SimpleMesh::SimpleMesh(const std::vector<SimpleVertex>& vertices, const std::vector<uint32_t>& indices) :
 		m_Vertices(0),
 		m_Indices(0),
 		m_pRenderData(nullptr)
@@ -45,7 +46,7 @@ namespace RenderDog
 		{
 			m_Indices.push_back(indices[i]);
 		}
-	}
+	}*/
 
 	void SimpleMesh::Render(IPrimitiveRenderer* pPrimitiveRenderer)
 	{
@@ -61,11 +62,13 @@ namespace RenderDog
 		pPrimitiveRenderer->Render(renderParam);
 	}
 
-	void SimpleMesh::LoadFromSimpleData(const std::vector<SimpleVertex>& vertices, const std::vector<uint32_t>& indices)
+	void SimpleMesh::LoadFromSimpleData(const std::vector<SimpleVertex>& vertices, const std::vector<uint32_t>& indices, const std::string& name)
 	{
 		m_Vertices.assign(vertices.begin(), vertices.end());
 
 		m_Indices.assign(indices.begin(), indices.end());
+
+		m_Name = name;
 	}
 
 	void SimpleMesh::InitRenderData(const std::string& vsFile, const std::string& psFile)
@@ -73,27 +76,27 @@ namespace RenderDog
 		m_pRenderData = new StaticMeshRenderData();
 
 		BufferDesc vbDesc = {};
-		vbDesc.bufferBind = BUFFER_BIND::VERTEX;
+		vbDesc.name = m_Name + "_VertexBuffer";
 		vbDesc.byteWidth = sizeof(SimpleVertex) * (uint32_t)m_Vertices.size();
 		vbDesc.stride = sizeof(SimpleVertex);
 		vbDesc.offset = 0;
 		vbDesc.pInitData = &(m_Vertices[0]);
 		vbDesc.isDynamic = false;
-		m_pRenderData->pVB = (IVertexBuffer*)g_pIBufferManager->CreateBuffer(vbDesc);
+		m_pRenderData->pVB = (IVertexBuffer*)g_pIBufferManager->GetVertexBuffer(vbDesc);
 
 		BufferDesc ibDesc = {};
-		ibDesc.bufferBind = BUFFER_BIND::INDEX;
+		ibDesc.name = m_Name + "_IndexBuffer";
 		ibDesc.byteWidth = sizeof(uint32_t) * (uint32_t)m_Indices.size();
 		ibDesc.pInitData = &(m_Indices[0]);
 		ibDesc.isDynamic = false;
-		m_pRenderData->pIB = (IIndexBuffer*)g_pIBufferManager->CreateBuffer(ibDesc);
+		m_pRenderData->pIB = (IIndexBuffer*)g_pIBufferManager->GetIndexBuffer(ibDesc);
 
 		BufferDesc cbDesc = {};
-		cbDesc.bufferBind = BUFFER_BIND::CONSTANT;
+		cbDesc.name = m_Name + "_ConstantBuffer";
 		cbDesc.byteWidth = sizeof(Matrix4x4);
 		cbDesc.pInitData = nullptr;
 		cbDesc.isDynamic = false;
-		m_pRenderData->pCB = (IConstantBuffer*)g_pIBufferManager->CreateBuffer(cbDesc);
+		m_pRenderData->pCB = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
 
 		ShaderCompileDesc vsDesc(vsFile, nullptr, "Main", "vs_5_0", 0);
 		m_pRenderData->pVS = g_pIShaderManager->GetVertexShader(VERTEX_TYPE::SIMPLE, vsDesc);
@@ -134,6 +137,7 @@ namespace RenderDog
 	//------------------------------------------------------------------------
 
 	StaticMesh::StaticMesh() :
+		m_Name(""),
 		m_Vertices(0),
 		m_Indices(0),
 		m_RawVertices(0),
@@ -153,7 +157,8 @@ namespace RenderDog
 		m_Indices.clear();
 	}
 
-	StaticMesh::StaticMesh(const std::vector<StandardVertex>& vertices, const std::vector<uint32_t>& indices) :
+	StaticMesh::StaticMesh(const std::vector<StandardVertex>& vertices, const std::vector<uint32_t>& indices, const std::string& name) :
+		m_Name(name),
 		m_Vertices(0),
 		m_Indices(0),
 		m_RawVertices(0),
@@ -190,11 +195,13 @@ namespace RenderDog
 		pPrimitiveRenderer->Render(renderParam);
 	}
 
-	void StaticMesh::LoadFromStandardData(const std::vector<StandardVertex>& vertices, const std::vector<uint32_t>& indices)
+	void StaticMesh::LoadFromStandardData(const std::vector<StandardVertex>& vertices, const std::vector<uint32_t>& indices, const std::string& name)
 	{
 		m_Vertices.assign(vertices.begin(), vertices.end());
 
 		m_Indices.assign(indices.begin(), indices.end());
+
+		m_Name = name;
 	}
 
 	bool StaticMesh::LoadTextureFromFile(const std::wstring& diffuseTexturePath)
@@ -206,7 +213,6 @@ namespace RenderDog
 		}
 
 		SamplerDesc samplerDesc = {};
-		//samplerDesc.filterMode = SamplerFilterMode::RD_SAMPLER_FILTER_LINEAR;
 		samplerDesc.filterMode = SAMPLER_FILTER::POINT;
 		samplerDesc.addressMode = SAMPLER_ADDRESS::WRAP;
 		m_pLinearSampler = g_pISamplerStateManager->CreateSamplerState(samplerDesc);
@@ -223,27 +229,24 @@ namespace RenderDog
 		m_pRenderData = new StaticMeshRenderData();
 
 		BufferDesc vbDesc = {};
-		vbDesc.bufferBind = BUFFER_BIND::VERTEX;
 		vbDesc.byteWidth = sizeof(StandardVertex) * (uint32_t)m_Vertices.size();
 		vbDesc.stride = sizeof(StandardVertex);
 		vbDesc.offset = 0;
 		vbDesc.pInitData = &(m_Vertices[0]);
 		vbDesc.isDynamic = false;
-		m_pRenderData->pVB = (IVertexBuffer*)g_pIBufferManager->CreateBuffer(vbDesc);
+		m_pRenderData->pVB = (IVertexBuffer*)g_pIBufferManager->GetVertexBuffer(vbDesc);
 
 		BufferDesc ibDesc = {};
-		ibDesc.bufferBind = BUFFER_BIND::INDEX;
 		ibDesc.byteWidth = sizeof(uint32_t) * (uint32_t)m_Indices.size();
 		ibDesc.pInitData = &(m_Indices[0]);
 		ibDesc.isDynamic = false;
-		m_pRenderData->pIB = (IIndexBuffer*)g_pIBufferManager->CreateBuffer(ibDesc);
+		m_pRenderData->pIB = (IIndexBuffer*)g_pIBufferManager->GetIndexBuffer(ibDesc);
 
 		BufferDesc cbDesc = {};
-		cbDesc.bufferBind = BUFFER_BIND::CONSTANT;
 		cbDesc.byteWidth = sizeof(Matrix4x4);
 		cbDesc.pInitData = nullptr;
 		cbDesc.isDynamic = false;
-		m_pRenderData->pCB = (IConstantBuffer*)g_pIBufferManager->CreateBuffer(cbDesc);
+		m_pRenderData->pCB = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
 
 		ShaderCompileDesc vsDesc(vsFile, nullptr, "Main", "vs_5_0", 0);
 		m_pRenderData->pVS = g_pIShaderManager->GetVertexShader(VERTEX_TYPE::STANDARD, vsDesc);
