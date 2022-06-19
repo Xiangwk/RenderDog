@@ -816,7 +816,7 @@ namespace RenderDog
 		}
 
 		SamplerDesc shadowMapSamplerDesc;
-		shadowMapSamplerDesc.filterMode = SAMPLER_FILTER::LINEAR;
+		shadowMapSamplerDesc.filterMode = SAMPLER_FILTER::POINT;
 		shadowMapSamplerDesc.addressMode = SAMPLER_ADDRESS::CLAMP;
 		//shadowMapSamplerDesc.addressMode = SAMPLER_ADDRESS::WRAP;
 		shadowMapSamplerDesc.borderColor[0] = 0.0f;

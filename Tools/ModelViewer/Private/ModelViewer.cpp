@@ -45,8 +45,8 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 	camDesc.aspectRitio = (float)desc.wndDesc.width / (float)desc.wndDesc.height;
 	camDesc.nearPlane = 0.1f;
 	camDesc.farPlane = 1000.0f;
-	camDesc.moveSpeed = 0.01f;
-	camDesc.rotSpeed = 0.1f;
+	camDesc.moveSpeed = 0.002f;
+	camDesc.rotSpeed = 0.05f;
 	m_pFPSCamera = new RenderDog::FPSCamera(camDesc);
 
 	if (!RenderDog::CreateRenderDog(&m_pRenderDog))
