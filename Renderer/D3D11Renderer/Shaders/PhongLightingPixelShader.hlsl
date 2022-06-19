@@ -48,7 +48,7 @@ float4 Main(VSOutput vsOutput) : SV_Target
 
 	//Shadow
 	float ShadowFactor = ComFunc_ShadowDepth_GetShadowFactor(vsOutput.ShadowPos);
-	Diffuse *= (1.0f - ShadowFactor);
+	Diffuse *= ShadowFactor;
 
 	float3 Ambient = float3(0.2f, 0.2f, 0.2f);
 

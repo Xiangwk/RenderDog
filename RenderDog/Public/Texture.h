@@ -87,7 +87,8 @@ namespace RenderDog
 	enum class SAMPLER_FILTER
 	{
 		POINT,
-		LINEAR
+		LINEAR,
+		COMPARISON_LINEAR
 	};
 
 	enum class SAMPLER_ADDRESS

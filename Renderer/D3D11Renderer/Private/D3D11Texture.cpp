@@ -328,10 +328,17 @@ namespace RenderDog
 		if (desc.filterMode == SAMPLER_FILTER::POINT)
 		{
 			samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+			samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 		}
 		else if (desc.filterMode == SAMPLER_FILTER::LINEAR)
 		{
 			samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+			samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+		}
+		else if (desc.filterMode == SAMPLER_FILTER::COMPARISON_LINEAR)
+		{
+			samplerDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
+			samplerDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
 		}
 
 		if (desc.addressMode == SAMPLER_ADDRESS::WRAP)
@@ -351,7 +358,6 @@ namespace RenderDog
 			samplerDesc.BorderColor[2] = desc.borderColor[0];
 			samplerDesc.BorderColor[3] = desc.borderColor[0];
 		}
-		samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 		samplerDesc.MinLOD = 0;
 		samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 

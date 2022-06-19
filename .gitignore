@@ -26,3 +26,4 @@
 *.dll
 /Bin/Tools/ModelViewer/EngineAsset/Textures
 /Bin/Tools/ModelViewer/Shaders
+*.png

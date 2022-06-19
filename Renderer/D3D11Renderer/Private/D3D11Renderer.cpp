@@ -657,7 +657,7 @@ namespace RenderDog
 			if (pMainLight->GetType() == LIGHT_TYPE::DIRECTIONAL)
 			{
 				BoundingSphere sceneBoundingSphere = pScene->GetBoundingSphere();
-				float lightFrustumSize = sceneBoundingSphere.radius * 0.3f;
+				float lightFrustumSize = sceneBoundingSphere.radius;
 				Vector3 dirLightPos = -(pMainLight->GetDirection() * lightFrustumSize);
 				Matrix4x4 lightViewMatrix = GetLookAtMatrixLH(dirLightPos, Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f));
 				Matrix4x4 lightOrthoMatrix = GetOrthographicMatrixLH(-lightFrustumSize, lightFrustumSize, 
@@ -670,7 +670,7 @@ namespace RenderDog
 
 				ShadowTestConstantData shadowTestData = {};
 				shadowTestData.param0.x = g_CVarShadowDepthOffset;
-				shadowTestData.param0.y = g_CVarShadowDistance;
+				shadowTestData.param0.y = g_CVarShadowMapRTSize;
 				m_pShadowTestConstantBuffer->Update(&shadowTestData, sizeof(shadowTestData));
 			}
 		}
@@ -816,9 +816,8 @@ namespace RenderDog
 		}
 
 		SamplerDesc shadowMapSamplerDesc;
-		shadowMapSamplerDesc.filterMode = SAMPLER_FILTER::POINT;
+		shadowMapSamplerDesc.filterMode = SAMPLER_FILTER::COMPARISON_LINEAR;
 		shadowMapSamplerDesc.addressMode = SAMPLER_ADDRESS::CLAMP;
-		//shadowMapSamplerDesc.addressMode = SAMPLER_ADDRESS::WRAP;
 		shadowMapSamplerDesc.borderColor[0] = 0.0f;
 		shadowMapSamplerDesc.borderColor[1] = 0.0f;
 		shadowMapSamplerDesc.borderColor[2] = 0.0f;
