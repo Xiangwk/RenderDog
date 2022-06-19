@@ -5,18 +5,17 @@
 ////////////////////////////////////////
 
 #include "PhongLightingCommon.hlsl"
+#include "ShadowTestCommon.hlsl"
 
 Texture2D		NormalTexture		: register(t0);
 SamplerState	LinearSampler		: register(s0);
 
-Texture2D		ShadowDepthTexture	: register(t1);
-
 
 cbuffer LightingParam : register(b0)
 {
-	float4	lightColor;
-	float3	lightDirection;
-	float	luminance;
+	float4	LightColor;
+	float3	LightDirection;
+	float	Luminance;
 };
 
 struct VSOutput
@@ -44,15 +43,12 @@ float4 Main(VSOutput vsOutput) : SV_Target
 
 	float3 WorldNormal = normalize(mul(TangentNormal, TBN));
 	
-	float NoL = saturate(dot(WorldNormal, -lightDirection));
-	float3 Diffuse = ComFunc_Phong_Diffuse(lightColor.rgb, luminance, BaseColor, NoL);
+	float NoL = saturate(dot(WorldNormal, -LightDirection));
+	float3 Diffuse = ComFunc_Phong_Diffuse(LightColor.rgb, Luminance, BaseColor, NoL);
 
 	//Shadow
-	float2 ShadowTex = float2(vsOutput.ShadowPos.x * 0.5f + 0.5f, 0.5f - vsOutput.ShadowPos.y * 0.5f);
-	float ShadowDepth = ShadowDepthTexture.Sample(LinearSampler, ShadowTex).r;
-	ShadowDepth += 0.01f;
-	float ShadowFactor = vsOutput.ShadowPos.z <= ShadowDepth ? 1.0f : 0.0f;
-	Diffuse *= ShadowFactor;
+	float ShadowFactor = ComFunc_ShadowDepth_GetShadowFactor(vsOutput.ShadowPos);
+	Diffuse *= (1.0f - ShadowFactor);
 
 	float3 Ambient = float3(0.2f, 0.2f, 0.2f);
 

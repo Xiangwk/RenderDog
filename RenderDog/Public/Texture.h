@@ -100,11 +100,17 @@ namespace RenderDog
 	{
 		SAMPLER_FILTER			filterMode;
 		SAMPLER_ADDRESS			addressMode;
+		float					borderColor[4];
 
 		SamplerDesc() :
 			filterMode(SAMPLER_FILTER::POINT),
 			addressMode(SAMPLER_ADDRESS::WRAP)
-		{}
+		{
+			borderColor[0] = 0.0f;
+			borderColor[1] = 0.0f;
+			borderColor[2] = 0.0f;
+			borderColor[3] = 0.0f;
+		}
 	};
 
 	class ISamplerState
