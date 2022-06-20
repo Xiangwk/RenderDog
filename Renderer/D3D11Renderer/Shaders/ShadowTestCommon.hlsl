@@ -23,7 +23,7 @@ float ComFunc_ShadowDepth_GetShadowFactor(float3 ShadowPos)
 	float2 ShadowTex = float2(ShadowPos.x * 0.5f + 0.5f, 0.5f - ShadowPos.y * 0.5f);
 
 	float sceneDepthInLightSpace = ShadowPos.z - ComVar_ShadowDepth_Offset;
-
+	
 	const float dx = 1.0f / ComVar_ShadowDepth_RTSize;
 	const float2 sampleOffset[PCF_SAMPLE_COUNT] =
 	{

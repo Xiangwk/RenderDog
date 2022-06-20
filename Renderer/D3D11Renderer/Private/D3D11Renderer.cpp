@@ -670,7 +670,7 @@ namespace RenderDog
 
 				ShadowTestConstantData shadowTestData = {};
 				shadowTestData.param0.x = g_CVarShadowDepthOffset;
-				shadowTestData.param0.y = g_CVarShadowMapRTSize;
+				shadowTestData.param0.y = static_cast<float>(g_CVarShadowMapRTSize);
 				m_pShadowTestConstantBuffer->Update(&shadowTestData, sizeof(shadowTestData));
 			}
 		}
@@ -817,11 +817,11 @@ namespace RenderDog
 
 		SamplerDesc shadowMapSamplerDesc;
 		shadowMapSamplerDesc.filterMode = SAMPLER_FILTER::COMPARISON_LINEAR;
-		shadowMapSamplerDesc.addressMode = SAMPLER_ADDRESS::CLAMP;
-		shadowMapSamplerDesc.borderColor[0] = 0.0f;
-		shadowMapSamplerDesc.borderColor[1] = 0.0f;
-		shadowMapSamplerDesc.borderColor[2] = 0.0f;
-		shadowMapSamplerDesc.borderColor[3] = 0.0f;
+		shadowMapSamplerDesc.addressMode = SAMPLER_ADDRESS::BORDER;
+		shadowMapSamplerDesc.borderColor[0] = 1.0f;
+		shadowMapSamplerDesc.borderColor[1] = 1.0f;
+		shadowMapSamplerDesc.borderColor[2] = 1.0f;
+		shadowMapSamplerDesc.borderColor[3] = 1.0f;
 		m_pShadowDepthTextureSampler = g_pISamplerStateManager->CreateSamplerState(shadowMapSamplerDesc);
 		if (!m_pShadowDepthTextureSampler)
 		{

@@ -352,11 +352,17 @@ namespace RenderDog
 			samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
 			samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
 			samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+		}
+		else if (desc.addressMode == SAMPLER_ADDRESS::BORDER)
+		{
+			samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+			samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+			samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
 
 			samplerDesc.BorderColor[0] = desc.borderColor[0];
-			samplerDesc.BorderColor[1] = desc.borderColor[0];
-			samplerDesc.BorderColor[2] = desc.borderColor[0];
-			samplerDesc.BorderColor[3] = desc.borderColor[0];
+			samplerDesc.BorderColor[1] = desc.borderColor[1];
+			samplerDesc.BorderColor[2] = desc.borderColor[2];
+			samplerDesc.BorderColor[3] = desc.borderColor[3];
 		}
 		samplerDesc.MinLOD = 0;
 		samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
