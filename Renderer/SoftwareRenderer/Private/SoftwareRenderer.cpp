@@ -417,7 +417,7 @@ namespace RenderDog
 
 		AddPrisAndLightsToSceneView(pScene);
 
-		float clearColor[4] = { 0.74f, 0.89f, 0.99f, 1.0f };
+		float clearColor[4] = { 0.85f, 0.92f, 0.99f, 1.0f };
 		ClearBackRenderTarget(clearColor);
 
 		RenderPrimitives();

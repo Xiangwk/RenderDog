@@ -340,7 +340,7 @@ namespace RenderDog
 			samplerDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
 			samplerDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
 		}
-
+		
 		if (desc.addressMode == SAMPLER_ADDRESS::WRAP)
 		{
 			samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;

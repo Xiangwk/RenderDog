@@ -19,6 +19,12 @@ cbuffer ShadowParam : register(b1)
 
 float ComFunc_ShadowDepth_GetShadowFactor(float3 ShadowPos)
 {
+	//no need to do this manually, to DXGI_FORMAT_R24_UNORM_X8_TYPELESS srv, SampleCmpLevelZero can clamp sceneDepthInLightSpace to 0~1;
+	/*if (ShadowPos.z > 1.0f)
+	{
+		return 1.0f;
+	}*/
+
 	//Shadow
 	float2 ShadowTex = float2(ShadowPos.x * 0.5f + 0.5f, 0.5f - ShadowPos.y * 0.5f);
 

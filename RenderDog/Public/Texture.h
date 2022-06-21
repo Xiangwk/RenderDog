@@ -94,7 +94,8 @@ namespace RenderDog
 	enum class SAMPLER_ADDRESS
 	{
 		WRAP,
-		CLAMP
+		CLAMP,
+		BORDER
 	};
 
 	struct SamplerDesc
