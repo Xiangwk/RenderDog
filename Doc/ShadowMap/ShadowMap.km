@@ -408,6 +408,18 @@
                                             }
                                         },
                                         "children": []
+                                    },
+                                    {
+                                        "data": {
+                                            "id": "ckvx9w0gkso0",
+                                            "created": 1655825845154,
+                                            "text": "使用SampleCmp函数，当阴影SRV为UNORM格式时，会自动clamp参与比较的参数（也就是SceneDepthInLightSpace），这样的话，超出光源视锥原平面的像素得到的阴影效果也是正确的；",
+                                            "layout_right_offset": {
+                                                "x": 58,
+                                                "y": 82
+                                            }
+                                        },
+                                        "children": []
                                     }
                                 ]
                             },
@@ -417,26 +429,12 @@
                                     "created": 1655654922014,
                                     "text": "阴影距离如何作用？",
                                     "layout_right_offset": {
-                                        "x": 98,
-                                        "y": 300
+                                        "x": 135,
+                                        "y": 384
                                     },
-                                    "priority": 1
+                                    "priority": 2
                                 },
-                                "children": [
-                                    {
-                                        "data": {
-                                            "id": "ckv4jp75k880",
-                                            "created": 1655744801776,
-                                            "text": "对于超出阴影相机视锥范围的场景物体似乎还有点解释不通，按理说应该这部分像素的深度大于1.0，必然比ShadowMap中取到的深度大，因此必然会被判定为在阴影中，但是实际程序中并没有表现出这样的效果",
-                                            "priority": 1,
-                                            "layout_right_offset": {
-                                                "x": 6,
-                                                "y": 42
-                                            }
-                                        },
-                                        "children": []
-                                    }
-                                ]
+                                "children": []
                             }
                         ]
                     }

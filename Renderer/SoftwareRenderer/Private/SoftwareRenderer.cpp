@@ -287,7 +287,6 @@ namespace RenderDog
 	//------------------------------------------------------------------------
 	//   Public Function
 	//------------------------------------------------------------------------
-
 	SoftwareRenderer::SoftwareRenderer() :
 		m_pSwapChain(nullptr),
 		m_pDepthStencilTexture(nullptr),

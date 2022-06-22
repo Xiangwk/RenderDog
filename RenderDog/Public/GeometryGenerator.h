@@ -27,11 +27,11 @@ namespace RenderDog
 			std::vector<uint32_t> indices;
 		};
 
-		void GenerateBox(float width, float height, float depth, StandardMeshData& outputMesh);
-
 		void GenerateGrid(int width, int depth, float gridUnit, StandardMeshData& outputMesh);
 		//生成网格线，使用LineList绘制
 		void GenerateGridLine(int width, int depth, float gridUnit, const RenderDog::Vector4& lineColor, SimpleMeshData& outputMesh);
+
+		void GenerateBox(float width, float height, float depth, StandardMeshData& outputMesh);
 	};
 
 	extern GeometryGenerator* g_pGeometryGenerator;
