@@ -5,70 +5,12 @@
 ///////////////////////////////////////////
 
 #include "GeometryGenerator.h"
+#include "Utility.h"
 
 namespace RenderDog
 {
-	void GeometryGenerator::GenerateBox(float width, float height, float depth, StandardMeshData& outputMesh)
-	{
-		outputMesh.vertices.clear();
-		outputMesh.indices.clear();
-
-		float w = 0.5f * width;
-		float h = 0.5f * height;
-		float d = 0.5f * depth;
-
-		RenderDog::StandardVertex vertices[24];
-		//Front										//Position		//Color		                //Normal					//Tangent					//TexCoord
-		vertices[0]		= RenderDog::StandardVertex(-w, -h, -d,		1.0f, 1.0f, 1.0f, 1.0f,		 0.0f,  0.0f, -1.0f,		 1.0f,  0.0f,  0.0f,		0.0f, 1.0f);
-		vertices[1]		= RenderDog::StandardVertex(-w,  h, -d,		1.0f, 1.0f, 1.0f, 1.0f,		 0.0f,  0.0f, -1.0f,		 1.0f,  0.0f,  0.0f,		0.0f, 0.0f);
-		vertices[2]		= RenderDog::StandardVertex( w,  h, -d,		1.0f, 1.0f, 1.0f, 1.0f,		 0.0f,  0.0f, -1.0f,		 1.0f,  0.0f,  0.0f,		1.0f, 0.0f);
-		vertices[3]		= RenderDog::StandardVertex( w, -h, -d,		1.0f, 1.0f, 1.0f, 1.0f,		 0.0f,  0.0f, -1.0f,		 1.0f,  0.0f,  0.0f,		1.0f, 1.0f);
-		//Back			 									   			   		 	  				    								   
-		vertices[4]		= RenderDog::StandardVertex( w, -h,  d,		1.0f, 1.0f, 1.0f, 1.0f,		 0.0f,  0.0f,  1.0f,		-1.0f,  0.0f,  0.0f,		0.0f, 1.0f);
-		vertices[5]		= RenderDog::StandardVertex( w,  h,  d,		1.0f, 1.0f, 1.0f, 1.0f,		 0.0f,  0.0f,  1.0f,		-1.0f,  0.0f,  0.0f,		0.0f, 0.0f);
-		vertices[6]		= RenderDog::StandardVertex(-w,  h,  d,		1.0f, 1.0f, 1.0f, 1.0f,		 0.0f,  0.0f,  1.0f,		-1.0f,  0.0f,  0.0f,		1.0f, 0.0f);
-		vertices[7]		= RenderDog::StandardVertex(-w, -h,  d,		1.0f, 1.0f, 1.0f, 1.0f,		 0.0f,  0.0f,  1.0f,		-1.0f,  0.0f,  0.0f,		1.0f, 1.0f);
-		//Left										   	   					 	  					    								   
-		vertices[8]		= RenderDog::StandardVertex(-w, -h,  d,		1.0f, 1.0f, 1.0f, 1.0f,		-1.0f,  0.0f,  0.0f,		 0.0f,  0.0f, -1.0f,		0.0f, 1.0f);
-		vertices[9]		= RenderDog::StandardVertex(-w,  h,  d,		1.0f, 1.0f, 1.0f, 1.0f,		-1.0f,  0.0f,  0.0f,		 0.0f,  0.0f, -1.0f,		0.0f, 0.0f);
-		vertices[10]	= RenderDog::StandardVertex(-w,  h, -d,		1.0f, 1.0f, 1.0f, 1.0f,		-1.0f,  0.0f,  0.0f,		 0.0f,  0.0f, -1.0f,		1.0f, 0.0f);
-		vertices[11]	= RenderDog::StandardVertex(-w, -h, -d,		1.0f, 1.0f, 1.0f, 1.0f,		-1.0f,  0.0f,  0.0f,		 0.0f,  0.0f, -1.0f,		1.0f, 1.0f);
-		//Right										   	   			 		 	  					    	   							   
-		vertices[12]	= RenderDog::StandardVertex( w, -h, -d,		1.0f, 1.0f, 1.0f, 1.0f,		 1.0f,  0.0f,  0.0f,		 0.0f,  0.0f,  1.0f,		0.0f, 1.0f);
-		vertices[13]	= RenderDog::StandardVertex( w,  h, -d,		1.0f, 1.0f, 1.0f, 1.0f,		 1.0f,  0.0f,  0.0f,		 0.0f,  0.0f,  1.0f,		0.0f, 0.0f);
-		vertices[14]	= RenderDog::StandardVertex( w,  h,  d,		1.0f, 1.0f, 1.0f, 1.0f,		 1.0f,  0.0f,  0.0f,		 0.0f,  0.0f,  1.0f,		1.0f, 0.0f);
-		vertices[15]	= RenderDog::StandardVertex( w, -h,  d,		1.0f, 1.0f, 1.0f, 1.0f,		 1.0f,  0.0f,  0.0f,		 0.0f,  0.0f,  1.0f,		1.0f, 1.0f);
-		//Top														   	    	 	  				    								   
-		vertices[16]	= RenderDog::StandardVertex(-w,  h, -d,		1.0f, 1.0f, 1.0f, 1.0f,		 0.0f,  1.0f,  0.0f,		 1.0f,  0.0f,  0.0f,		0.0f, 1.0f);
-		vertices[17]	= RenderDog::StandardVertex(-w,  h,  d,		1.0f, 1.0f, 1.0f, 1.0f,		 0.0f,  1.0f,  0.0f,		 1.0f,  0.0f,  0.0f,		0.0f, 0.0f);
-		vertices[18]	= RenderDog::StandardVertex( w,  h,  d,		1.0f, 1.0f, 1.0f, 1.0f,		 0.0f,  1.0f,  0.0f,		 1.0f,  0.0f,  0.0f,		1.0f, 0.0f);
-		vertices[19]	= RenderDog::StandardVertex( w,  h, -d,		1.0f, 1.0f, 1.0f, 1.0f,		 0.0f,  1.0f,  0.0f,		 1.0f,  0.0f,  0.0f,		1.0f, 1.0f);
-		//Bottom									    				   			  			 		 					    		   
-		vertices[20]	= RenderDog::StandardVertex(-w, -h,  d,		1.0f, 1.0f, 1.0f, 1.0f,		 0.0f, -1.0f,  0.0f,		 1.0f,  0.0f,  0.0f,		0.0f, 1.0f);
-		vertices[21]	= RenderDog::StandardVertex(-w, -h, -d,		1.0f, 1.0f, 1.0f, 1.0f,		 0.0f, -1.0f,  0.0f,		 1.0f,  0.0f,  0.0f,		0.0f, 0.0f);
-		vertices[22]	= RenderDog::StandardVertex( w, -h, -d,		1.0f, 1.0f, 1.0f, 1.0f,		 0.0f, -1.0f,  0.0f,		 1.0f,  0.0f,  0.0f,		1.0f, 0.0f);
-		vertices[23]	= RenderDog::StandardVertex( w, -h,  d,		1.0f, 1.0f, 1.0f, 1.0f,		 0.0f, -1.0f,  0.0f,		 1.0f,  0.0f,  0.0f,		1.0f, 1.0f);
-
-		outputMesh.vertices.assign(std::begin(vertices), std::end(vertices));
-
-		unsigned int indices[36] =
-		{
-			//Front
-			0,  1,  2,  0,  2,  3,
-			//Back
-			4,  5,  6,  4,  6,  7,
-			//Left
-			8,  9,  10, 8, 10, 11,
-			//Right
-			12, 13, 14, 12, 14, 15,
-			//Top
-			16, 17, 18, 16, 18, 19,
-			//Bottom
-			20, 21, 22, 20, 22, 23
-		};
-
-		outputMesh.indices.assign(std::begin(indices), std::end(indices));
-	}
+	GeometryGenerator	g_GeometryGenerator;
+	GeometryGenerator*	g_pGeometryGenerator = &g_GeometryGenerator;
 
 	void GeometryGenerator::GenerateGrid(int width, int depth, float gridUnit, StandardMeshData& outputMesh)
 	{
@@ -89,11 +31,11 @@ namespace RenderDog
 				float z = NearLeftZ + i * gridUnit;
 				float u = static_cast<float>(j);
 				float v = static_cast<float>(depth - i);
-				Vector3 pos(x, 0.0f, z);
-				Vector4 color(1.0f, 1.0f, 1.0f, 1.0f);
-				Vector3 normal(0.0f, 1.0f, 0.0f);
-				Vector4 tangent(1.0f, 0.0f, 0.0f, 1.0f);
-				Vector2 texcoord(u, v);
+				Vector3 pos			= Vector3(x, 0.0f, z);
+				Vector4 color		= Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+				Vector3 normal		= Vector3(0.0f, 1.0f, 0.0f);
+				Vector4 tangent		= Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+				Vector2 texcoord	= Vector2(u, v);
 				outputMesh.vertices.push_back(StandardVertex(pos, color, normal, tangent, texcoord));
 			}
 		}
@@ -113,7 +55,7 @@ namespace RenderDog
 		}
 	}
 
-	void GeometryGenerator::GenerateGridLine(int width, int depth, float gridUnit, const RenderDog::Vector4& lineColor, SimpleMeshData& outputMesh)
+	void GeometryGenerator::GenerateGridLine(int width, int depth, float gridUnit, const Vector4& lineColor, SimpleMeshData& outputMesh)
 	{
 		outputMesh.vertices.clear();
 		outputMesh.indices.clear();
@@ -161,7 +103,149 @@ namespace RenderDog
 		}
 	}
 
-	GeometryGenerator	g_GeometryGenerator;
-	GeometryGenerator*	g_pGeometryGenerator = &g_GeometryGenerator;
+	void GeometryGenerator::GenerateBox(float width, float height, float depth, StandardMeshData& outputMesh)
+	{
+		outputMesh.vertices.clear();
+		outputMesh.indices.clear();
+
+		float w = 0.5f * width;
+		float h = 0.5f * height;
+		float d = 0.5f * depth;
+
+		StandardVertex vertices[24];
+		//Front							//Position			//Color		                //Normal					//Tangent					//TexCoord
+		vertices[0]		= StandardVertex(-w, -h, -d,		1.0f, 1.0f, 1.0f, 1.0f,		 0.0f,  0.0f, -1.0f,		 1.0f,  0.0f,  0.0f,		0.0f, 1.0f);
+		vertices[1]		= StandardVertex(-w,  h, -d,		1.0f, 1.0f, 1.0f, 1.0f,		 0.0f,  0.0f, -1.0f,		 1.0f,  0.0f,  0.0f,		0.0f, 0.0f);
+		vertices[2]		= StandardVertex( w,  h, -d,		1.0f, 1.0f, 1.0f, 1.0f,		 0.0f,  0.0f, -1.0f,		 1.0f,  0.0f,  0.0f,		1.0f, 0.0f);
+		vertices[3]		= StandardVertex( w, -h, -d,		1.0f, 1.0f, 1.0f, 1.0f,		 0.0f,  0.0f, -1.0f,		 1.0f,  0.0f,  0.0f,		1.0f, 1.0f);
+		//Back			 									   			   		 	  				    								   
+		vertices[4]		= StandardVertex( w, -h,  d,		1.0f, 1.0f, 1.0f, 1.0f,		 0.0f,  0.0f,  1.0f,		-1.0f,  0.0f,  0.0f,		0.0f, 1.0f);
+		vertices[5]		= StandardVertex( w,  h,  d,		1.0f, 1.0f, 1.0f, 1.0f,		 0.0f,  0.0f,  1.0f,		-1.0f,  0.0f,  0.0f,		0.0f, 0.0f);
+		vertices[6]		= StandardVertex(-w,  h,  d,		1.0f, 1.0f, 1.0f, 1.0f,		 0.0f,  0.0f,  1.0f,		-1.0f,  0.0f,  0.0f,		1.0f, 0.0f);
+		vertices[7]		= StandardVertex(-w, -h,  d,		1.0f, 1.0f, 1.0f, 1.0f,		 0.0f,  0.0f,  1.0f,		-1.0f,  0.0f,  0.0f,		1.0f, 1.0f);
+		//Left										   	   					 	  					    								   
+		vertices[8]		= StandardVertex(-w, -h,  d,		1.0f, 1.0f, 1.0f, 1.0f,		-1.0f,  0.0f,  0.0f,		 0.0f,  0.0f, -1.0f,		0.0f, 1.0f);
+		vertices[9]		= StandardVertex(-w,  h,  d,		1.0f, 1.0f, 1.0f, 1.0f,		-1.0f,  0.0f,  0.0f,		 0.0f,  0.0f, -1.0f,		0.0f, 0.0f);
+		vertices[10]	= StandardVertex(-w,  h, -d,		1.0f, 1.0f, 1.0f, 1.0f,		-1.0f,  0.0f,  0.0f,		 0.0f,  0.0f, -1.0f,		1.0f, 0.0f);
+		vertices[11]	= StandardVertex(-w, -h, -d,		1.0f, 1.0f, 1.0f, 1.0f,		-1.0f,  0.0f,  0.0f,		 0.0f,  0.0f, -1.0f,		1.0f, 1.0f);
+		//Right										   	   			 		 	  					    	   							   
+		vertices[12]	= StandardVertex( w, -h, -d,		1.0f, 1.0f, 1.0f, 1.0f,		 1.0f,  0.0f,  0.0f,		 0.0f,  0.0f,  1.0f,		0.0f, 1.0f);
+		vertices[13]	= StandardVertex( w,  h, -d,		1.0f, 1.0f, 1.0f, 1.0f,		 1.0f,  0.0f,  0.0f,		 0.0f,  0.0f,  1.0f,		0.0f, 0.0f);
+		vertices[14]	= StandardVertex( w,  h,  d,		1.0f, 1.0f, 1.0f, 1.0f,		 1.0f,  0.0f,  0.0f,		 0.0f,  0.0f,  1.0f,		1.0f, 0.0f);
+		vertices[15]	= StandardVertex( w, -h,  d,		1.0f, 1.0f, 1.0f, 1.0f,		 1.0f,  0.0f,  0.0f,		 0.0f,  0.0f,  1.0f,		1.0f, 1.0f);
+		//Top														   	    	 	  				    								   
+		vertices[16]	= StandardVertex(-w,  h, -d,		1.0f, 1.0f, 1.0f, 1.0f,		 0.0f,  1.0f,  0.0f,		 1.0f,  0.0f,  0.0f,		0.0f, 1.0f);
+		vertices[17]	= StandardVertex(-w,  h,  d,		1.0f, 1.0f, 1.0f, 1.0f,		 0.0f,  1.0f,  0.0f,		 1.0f,  0.0f,  0.0f,		0.0f, 0.0f);
+		vertices[18]	= StandardVertex( w,  h,  d,		1.0f, 1.0f, 1.0f, 1.0f,		 0.0f,  1.0f,  0.0f,		 1.0f,  0.0f,  0.0f,		1.0f, 0.0f);
+		vertices[19]	= StandardVertex( w,  h, -d,		1.0f, 1.0f, 1.0f, 1.0f,		 0.0f,  1.0f,  0.0f,		 1.0f,  0.0f,  0.0f,		1.0f, 1.0f);
+		//Bottom									    				   			  			 		 					    		   
+		vertices[20]	= StandardVertex(-w, -h,  d,		1.0f, 1.0f, 1.0f, 1.0f,		 0.0f, -1.0f,  0.0f,		 1.0f,  0.0f,  0.0f,		0.0f, 1.0f);
+		vertices[21]	= StandardVertex(-w, -h, -d,		1.0f, 1.0f, 1.0f, 1.0f,		 0.0f, -1.0f,  0.0f,		 1.0f,  0.0f,  0.0f,		0.0f, 0.0f);
+		vertices[22]	= StandardVertex( w, -h, -d,		1.0f, 1.0f, 1.0f, 1.0f,		 0.0f, -1.0f,  0.0f,		 1.0f,  0.0f,  0.0f,		1.0f, 0.0f);
+		vertices[23]	= StandardVertex( w, -h,  d,		1.0f, 1.0f, 1.0f, 1.0f,		 0.0f, -1.0f,  0.0f,		 1.0f,  0.0f,  0.0f,		1.0f, 1.0f);
+
+		outputMesh.vertices.assign(std::begin(vertices), std::end(vertices));
+
+		unsigned int indices[36] =
+		{
+			//Front
+			0,  1,  2,  0,  2,  3,
+			//Back
+			4,  5,  6,  4,  6,  7,
+			//Left
+			8,  9,  10, 8, 10, 11,
+			//Right
+			12, 13, 14, 12, 14, 15,
+			//Top
+			16, 17, 18, 16, 18, 19,
+			//Bottom
+			20, 21, 22, 20, 22, 23
+		};
+
+		outputMesh.indices.assign(std::begin(indices), std::end(indices));
+	}
+
+	void GeometryGenerator::GenerateSphere(float longitudeNum, float latitudeNum, float radius, StandardMeshData& outputMesh)
+	{
+		outputMesh.vertices.clear();
+		outputMesh.indices.clear();
+
+		//Vertice
+		//Top Pole
+		Vector3 topPolePos = Vector3(0.0f, radius, 0.0f);
+
+		StandardVertex topPoleVert;
+		topPoleVert.position	= topPolePos;
+		topPoleVert.color		= Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+		topPoleVert.normal		= Vector3(0.0f, 1.0f, 0.0f);
+		topPoleVert.tangent		= Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+		topPoleVert.texcoord	= Vector2(0.0f, 0.0f);
+		outputMesh.vertices.push_back(topPoleVert);
+
+		//Rings
+		for (uint32_t i = 0; i < latitudeNum - 1; ++i)
+		{
+			float alpha = (i + 1) * (RD_PI / latitudeNum);
+			float ringRadius = radius * sinf(alpha);
+			float ringY = radius * cosf(alpha);
+			for (uint32_t j = 0; j < longitudeNum + 1; ++j)
+			{
+				float beta = j * (2.0f * RD_PI / longitudeNum);
+
+				Vector3 position = Vector3(ringRadius * cosf(beta), ringY, ringRadius * sinf(beta));
+				Vector4 color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+				Vector3 normal = Normalize(position);
+				Vector3 tangent = Vector3(-position.z, 0.0f, position.x);
+				tangent = Normalize(tangent);
+				Vector2 texcoord = Vector2(j / longitudeNum, (i + 1) / latitudeNum);
+
+				outputMesh.vertices.push_back({ position, color, normal, Vector4(tangent, 1.0f), texcoord });
+			}
+		}
+
+		//Bottom
+		Vector3 bottomPolePos = Vector3(0.0f, -radius, 0.0f);
+
+		StandardVertex bottomPoleVert;
+		bottomPoleVert.position = bottomPolePos;
+		bottomPoleVert.color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+		bottomPoleVert.normal = Vector3(0.0f, -1.0f, 0.0f);
+		bottomPoleVert.tangent = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+		bottomPoleVert.texcoord = Vector2(0.0f, 1.0f);
+		outputMesh.vertices.push_back(bottomPoleVert);
+
+
+		//Indices
+		//Top Cap
+		for (uint32_t i = 0; i < longitudeNum; ++i)
+		{
+			outputMesh.indices.push_back(0);
+			outputMesh.indices.push_back(i + 2);
+			outputMesh.indices.push_back(i + 1);
+		}
+
+		//Mid
+		for (uint32_t i = 0; i < latitudeNum - 2; ++i)
+		{
+			for (uint32_t j = 0; j < longitudeNum; ++j)
+			{
+				outputMesh.indices.push_back(j + 1 + (i + 1) * (longitudeNum + 1));
+				outputMesh.indices.push_back(j + 1 + i * (longitudeNum + 1));
+				outputMesh.indices.push_back(j + 1 + i * (longitudeNum + 1) + 1);
+
+				outputMesh.indices.push_back(j + 1 + (i + 1) * (longitudeNum + 1));
+				outputMesh.indices.push_back(j + 1 + i * (longitudeNum + 1) + 1);
+				outputMesh.indices.push_back(j + 1 + (i + 1) * (longitudeNum + 1) + 1);
+			}
+		}
+
+		//Bottom
+		for (uint32_t i = 0; i < longitudeNum; ++i)
+		{
+			outputMesh.indices.push_back(outputMesh.vertices.size() - 1);
+			outputMesh.indices.push_back(outputMesh.vertices.size() - 1 - longitudeNum + i - 1);
+			outputMesh.indices.push_back(outputMesh.vertices.size() - 1 - longitudeNum + i);
+		}
+	}
 
 }// namespace RenderDog

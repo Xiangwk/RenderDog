@@ -87,17 +87,18 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 	m_pFloor->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
 	m_pFloor->RegisterToScene(m_pScene);
 
-	m_pModel = new RenderDog::StaticModel();
+	/*m_pModel = new RenderDog::StaticModel();
 	m_pModel->LoadFromFile("Models/generator/generator_small.obj", "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl");
 	m_pModel->LoadTextureFromFile(L"Textures/PolybumpTangent_DDN.tga");
 	m_pModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(90.0f, 0.0f, 0.0f), RenderDog::Vector3(0.1f));
-	m_pModel->RegisterToScene(m_pScene);
-	/*RenderDog::GeometryGenerator::StandardMeshData BoxMeshData;
-	RenderDog::g_pGeometryGenerator->GenerateBox(10, 10, 10, BoxMeshData);
-	m_pModel->LoadFromStandardData(BoxMeshData.vertices, BoxMeshData.indices, "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl", "Box");
-	m_pModel->LoadTextureFromFile(L"Textures/PolybumpTangent_DDN.tga");
-	m_pModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
 	m_pModel->RegisterToScene(m_pScene);*/
+	RenderDog::GeometryGenerator::StandardMeshData SphereMeshData;
+	RenderDog::g_pGeometryGenerator->GenerateSphere(40, 40, 5, SphereMeshData);
+	m_pModel = new RenderDog::StaticModel();
+	m_pModel->LoadFromStandardData(SphereMeshData.vertices, SphereMeshData.indices, "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl", "Sphere");
+	m_pModel->LoadTextureFromFile(L"Textures/Brick_n.tga");
+	m_pModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
+	m_pModel->RegisterToScene(m_pScene);
 
 	RenderDog::LightDesc lightDesc = {};
 	lightDesc.type = RenderDog::LIGHT_TYPE::DIRECTIONAL;
