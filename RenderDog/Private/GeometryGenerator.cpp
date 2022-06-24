@@ -165,7 +165,7 @@ namespace RenderDog
 		outputMesh.indices.assign(std::begin(indices), std::end(indices));
 	}
 
-	void GeometryGenerator::GenerateSphere(float longitudeNum, float latitudeNum, float radius, StandardMeshData& outputMesh)
+	void GeometryGenerator::GenerateSphere(uint32_t longitudeNum, uint32_t latitudeNum, float radius, StandardMeshData& outputMesh)
 	{
 		outputMesh.vertices.clear();
 		outputMesh.indices.clear();
@@ -179,8 +179,11 @@ namespace RenderDog
 		topPoleVert.color		= Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 		topPoleVert.normal		= Vector3(0.0f, 1.0f, 0.0f);
 		topPoleVert.tangent		= Vector4(1.0f, 0.0f, 0.0f, 1.0f);
-		topPoleVert.texcoord	= Vector2(0.0f, 0.0f);
-		outputMesh.vertices.push_back(topPoleVert);
+		for (uint32_t i = 0; i < longitudeNum; ++i)
+		{
+			topPoleVert.texcoord = Vector2((float)i / longitudeNum, 0.0f);
+			outputMesh.vertices.push_back(topPoleVert);
+		}
 
 		//Rings
 		for (uint32_t i = 0; i < latitudeNum - 1; ++i)
@@ -197,7 +200,7 @@ namespace RenderDog
 				Vector3 normal = Normalize(position);
 				Vector3 tangent = Vector3(-position.z, 0.0f, position.x);
 				tangent = Normalize(tangent);
-				Vector2 texcoord = Vector2(j / longitudeNum, (i + 1) / latitudeNum);
+				Vector2 texcoord = Vector2((float)j / longitudeNum, (float)(i + 1) / latitudeNum);
 
 				outputMesh.vertices.push_back({ position, color, normal, Vector4(tangent, 1.0f), texcoord });
 			}
@@ -211,17 +214,20 @@ namespace RenderDog
 		bottomPoleVert.color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 		bottomPoleVert.normal = Vector3(0.0f, -1.0f, 0.0f);
 		bottomPoleVert.tangent = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
-		bottomPoleVert.texcoord = Vector2(0.0f, 1.0f);
-		outputMesh.vertices.push_back(bottomPoleVert);
-
+		for (uint32_t i = 0; i < longitudeNum; ++i)
+		{
+			bottomPoleVert.texcoord = Vector2((float)i / longitudeNum, 1.0f);
+			outputMesh.vertices.push_back(bottomPoleVert);
+		}
+		
 
 		//Indices
 		//Top Cap
 		for (uint32_t i = 0; i < longitudeNum; ++i)
 		{
-			outputMesh.indices.push_back(0);
-			outputMesh.indices.push_back(i + 2);
-			outputMesh.indices.push_back(i + 1);
+			outputMesh.indices.push_back(i);
+			outputMesh.indices.push_back(i + longitudeNum + 1);
+			outputMesh.indices.push_back(i + longitudeNum);
 		}
 
 		//Mid
@@ -229,22 +235,22 @@ namespace RenderDog
 		{
 			for (uint32_t j = 0; j < longitudeNum; ++j)
 			{
-				outputMesh.indices.push_back(j + 1 + (i + 1) * (longitudeNum + 1));
-				outputMesh.indices.push_back(j + 1 + i * (longitudeNum + 1));
-				outputMesh.indices.push_back(j + 1 + i * (longitudeNum + 1) + 1);
+				outputMesh.indices.push_back(j + longitudeNum + (i + 1) * (longitudeNum + 1));
+				outputMesh.indices.push_back(j + longitudeNum + i * (longitudeNum + 1));
+				outputMesh.indices.push_back(j + longitudeNum + i * (longitudeNum + 1) + 1);
 
-				outputMesh.indices.push_back(j + 1 + (i + 1) * (longitudeNum + 1));
-				outputMesh.indices.push_back(j + 1 + i * (longitudeNum + 1) + 1);
-				outputMesh.indices.push_back(j + 1 + (i + 1) * (longitudeNum + 1) + 1);
+				outputMesh.indices.push_back(j + longitudeNum + (i + 1) * (longitudeNum + 1));
+				outputMesh.indices.push_back(j + longitudeNum + i * (longitudeNum + 1) + 1);
+				outputMesh.indices.push_back(j + longitudeNum + (i + 1) * (longitudeNum + 1) + 1);
 			}
 		}
 
 		//Bottom
 		for (uint32_t i = 0; i < longitudeNum; ++i)
 		{
-			outputMesh.indices.push_back(outputMesh.vertices.size() - 1);
-			outputMesh.indices.push_back(outputMesh.vertices.size() - 1 - longitudeNum + i - 1);
-			outputMesh.indices.push_back(outputMesh.vertices.size() - 1 - longitudeNum + i);
+			outputMesh.indices.push_back((uint32_t)outputMesh.vertices.size() - 1 - longitudeNum + 1 + i);
+			outputMesh.indices.push_back((uint32_t)outputMesh.vertices.size() - 1 - longitudeNum - longitudeNum + i);
+			outputMesh.indices.push_back((uint32_t)outputMesh.vertices.size() - 1 - longitudeNum - longitudeNum + i + 1);
 		}
 	}
 

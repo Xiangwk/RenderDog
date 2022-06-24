@@ -32,7 +32,7 @@ namespace RenderDog
 		void GenerateGridLine(int width, int depth, float gridUnit, const Vector4& lineColor, SimpleMeshData& outputMesh);
 		void GenerateBox(float width, float height, float depth, StandardMeshData& outputMesh);
 		//longitudeNum: 经度上的分块数量（横分）	latitudeNum: 纬度上的分块数量（纵分）
-		void GenerateSphere(float longitudeNum, float latitudeNum, float radius, StandardMeshData& outputMesh);
+		void GenerateSphere(uint32_t longitudeNum, uint32_t latitudeNum, float radius, StandardMeshData& outputMesh);
 	};
 
 	extern GeometryGenerator* g_pGeometryGenerator;
