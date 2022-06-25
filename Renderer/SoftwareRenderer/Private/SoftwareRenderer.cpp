@@ -32,8 +32,6 @@ namespace RenderDog
 		SoftwareMeshRenderer(IConstantBuffer* pGlobalCB);
 		virtual ~SoftwareMeshRenderer();
 
-		virtual void				Render(const PrimitiveRenderParam& renderParam) override;
-
 	protected:
 		IConstantBuffer*			m_pGlobalCB;
 	};
@@ -48,47 +46,6 @@ namespace RenderDog
 	SoftwareMeshRenderer::SoftwareMeshRenderer(IConstantBuffer* pGlobalCB) :
 		m_pGlobalCB(pGlobalCB)
 	{}
-
-	void SoftwareMeshRenderer::Render(const PrimitiveRenderParam& renderParam)
-	{
-		if (!g_pSRImmediateContext)
-		{
-			return;
-		}
-
-		if (!renderParam.pVB || !renderParam.pIB)
-		{
-			return;
-		}
-
-		g_pSRImmediateContext->IASetPrimitiveTopology(RenderDog::SR_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST);
-
-		ISRBuffer* pVB = (ISRBuffer*)(renderParam.pVB->GetResource());
-		ISRBuffer* pIB = (ISRBuffer*)(renderParam.pIB->GetResource());
-
-		uint32_t indexNum = renderParam.pIB->GetIndexNum();
-
-		uint32_t stride = renderParam.pVB->GetStride();
-		uint32_t offset = renderParam.pVB->GetOffset();
-		g_pSRImmediateContext->IASetVertexBuffer(pVB);
-		g_pSRImmediateContext->IASetIndexBuffer(pIB);
-
-		renderParam.pVS->SetToContext();
-
-		ISRBuffer* pGlobalCB = (ISRBuffer*)(m_pGlobalCB->GetResource());
-		g_pSRImmediateContext->VSSetConstantBuffer(0, &pGlobalCB);
-
-		ISRBuffer* pPerObjCB = (ISRBuffer*)(renderParam.pPerObjCB->GetResource());
-		g_pSRImmediateContext->VSSetConstantBuffer(1, &pPerObjCB);
-
-		renderParam.pPS->SetToContext();
-
-		ISRShaderResourceView* pSRV = (ISRShaderResourceView*)(renderParam.pDiffuseTexture->GetShaderResourceView());
-		g_pSRImmediateContext->PSSetShaderResource(&pSRV);
-		renderParam.pDiffuseTextureSampler->SetToPixelShader(0);
-
-		g_pSRImmediateContext->DrawIndex(indexNum);
-	}
 #pragma endregion MeshRenderer
 
 #pragma region LineMeshRenderer

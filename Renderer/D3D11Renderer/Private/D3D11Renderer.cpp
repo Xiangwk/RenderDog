@@ -34,8 +34,6 @@ namespace RenderDog
 		D3D11MeshRenderer(IConstantBuffer* pGlobalCB);
 		virtual ~D3D11MeshRenderer();
 
-		virtual void					Render(const PrimitiveRenderParam& renderParam) override;
-
 	protected:
 		IConstantBuffer*				m_pGlobalCB;
 	};
@@ -50,51 +48,6 @@ namespace RenderDog
 	D3D11MeshRenderer::D3D11MeshRenderer(IConstantBuffer* pGlobalCB) :
 		m_pGlobalCB(pGlobalCB)
 	{}
-
-	void D3D11MeshRenderer::Render(const PrimitiveRenderParam& renderParam)
-	{
-		if (!g_pD3D11ImmediateContext)
-		{
-			return;
-		}
-
-		if (!renderParam.pVB || !renderParam.pIB)
-		{
-			return;
-		}
-
-		g_pD3D11ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-		ID3D11Buffer* pVB = (ID3D11Buffer*)(renderParam.pVB->GetResource());
-		ID3D11Buffer* pIB = (ID3D11Buffer*)(renderParam.pIB->GetResource());
-
-		uint32_t indexNum = renderParam.pIB->GetIndexNum();
-
-		uint32_t stride = renderParam.pVB->GetStride();
-		uint32_t offset = renderParam.pVB->GetOffset();
-		g_pD3D11ImmediateContext->IASetVertexBuffers(0, 1, &pVB, &stride, &offset);
-		g_pD3D11ImmediateContext->IASetIndexBuffer(pIB, DXGI_FORMAT_R32_UINT, 0);
-
-		renderParam.pVS->SetToContext();
-
-		ID3D11Buffer* pGlobalCB = (ID3D11Buffer*)(m_pGlobalCB->GetResource());
-		g_pD3D11ImmediateContext->VSSetConstantBuffers(0, 1, &pGlobalCB);
-
-		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetResource());
-		g_pD3D11ImmediateContext->VSSetConstantBuffers(1, 1, &pPerObjCB);
-
-		renderParam.pPS->SetToContext();
-
-		ID3D11ShaderResourceView* pDiffSRV = (ID3D11ShaderResourceView*)(renderParam.pDiffuseTexture->GetShaderResourceView());
-		g_pD3D11ImmediateContext->PSSetShaderResources(0, 1, &pDiffSRV);
-		renderParam.pDiffuseTextureSampler->SetToPixelShader(0);
-
-		ID3D11ShaderResourceView* pNormSRV = (ID3D11ShaderResourceView*)(renderParam.pNormalTexture->GetShaderResourceView());
-		g_pD3D11ImmediateContext->PSSetShaderResources(1, 1, &pNormSRV);
-		renderParam.pNormalTextureSampler->SetToPixelShader(1);
-
-		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
-	}
 #pragma endregion MeshRenderer
 
 #pragma region LineMeshRenderer
