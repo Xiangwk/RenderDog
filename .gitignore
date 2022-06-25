@@ -27,3 +27,9 @@
 /Bin/Tools/ModelViewer/EngineAsset/Textures
 /Bin/Tools/ModelViewer/Shaders
 *.png
+/Bin/Tools/ModelViewer/Models/Head
+/Bin/Tools/ModelViewer/Models/nanosuit/nanosuit.obj
+/Bin/Tools/ModelViewer/Models/nanosuit/nanosuit.mtl
+/Bin/Tools/ModelViewer/Models/nanosuit/nanosuit.blend
+/Bin/Tools/ModelViewer/Models/nanosuit/LICENSE.txt
+/Bin/Tools/ModelViewer/Models/nanosuit/helmet_diff.dds

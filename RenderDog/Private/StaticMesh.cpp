@@ -411,9 +411,8 @@ namespace RenderDog
 			{
 				StandardVertex& vert = m_Vertices[j];
 				//TEMP!!! 暂时没有光滑组信息，临时增加一个夹角大于45度则不做法线的加权平均的条件
-				if (rawVert.position == vert.position &&
-					rawVert.texcoord == vert.texcoord &&
-					abs(DotProduct(Normalize(rawVert.normal), Normalize(vert.normal))) > 0.7f)
+				if (rawVert.position == vert.position
+					&& abs(DotProduct(Normalize(rawVert.normal), Normalize(vert.normal))) > 0.7f)
 				{
 					weightedAverNormal = rawVert.normal + vert.normal;
 					vert.normal = weightedAverNormal;

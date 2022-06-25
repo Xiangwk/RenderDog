@@ -194,11 +194,11 @@ namespace RenderDog
 		for (unsigned int i = 0; i < pAssimpMesh->mNumVertices; ++i)
 		{
 			Vector3 position = Vector3(pAssimpMesh->mVertices[i].x, pAssimpMesh->mVertices[i].y, pAssimpMesh->mVertices[i].z);
-			Vector3 normal = Vector3(pAssimpMesh->mNormals[i].x, pAssimpMesh->mNormals[i].y, pAssimpMesh->mNormals[i].z);
 			Vector2 texCoord = Vector2(pAssimpMesh->mTextureCoords[0][i].x, pAssimpMesh->mTextureCoords[0][i].y);
+			//Vector3 normal = Vector3(pAssimpMesh->mNormals[i].x, pAssimpMesh->mNormals[i].y, pAssimpMesh->mNormals[i].z);
 			meshName = std::string(pAssimpMesh->mName.C_Str());
 
-			StandardVertex vert(position.x, position.y, position.z, 1.0f, 1.0f, 1.0f, 1.0f, normal.x, normal.y, normal.z, 0.0f, 0.0f, 0.0f, texCoord.x, texCoord.y);
+			StandardVertex vert(position.x, position.y, position.z, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, texCoord.x, texCoord.y);
 
 			tempVertices.push_back(vert);
 		}
