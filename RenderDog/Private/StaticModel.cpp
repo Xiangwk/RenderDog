@@ -97,12 +97,12 @@ namespace RenderDog
 		m_Meshes.push_back(mesh);
 	}
 
-	bool StaticModel::LoadTextureFromFile(const std::wstring& diffuseTexturePath)
+	bool StaticModel::LoadTextureFromFile(const std::wstring& diffuseTexturePath, const std::wstring& normalTexturePath)
 	{
 		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
 		{
 			StaticMesh& mesh = m_Meshes[i];
-			if (!mesh.LoadTextureFromFile(diffuseTexturePath))
+			if (!mesh.LoadTextureFromFile(diffuseTexturePath, normalTexturePath))
 			{
 				return false;
 			}

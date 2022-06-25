@@ -6,8 +6,8 @@
 
 #define PCF_SAMPLE_COUNT 9
 
-Texture2D				ShadowDepthTexture			: register(t1);
-SamplerComparisonState	ShadowDepthTextureSampler	: register(s1);
+Texture2D				ShadowDepthTexture			: register(t2);
+SamplerComparisonState	ShadowDepthTextureSampler	: register(s2);
 
 cbuffer ShadowParam : register(b1)
 {

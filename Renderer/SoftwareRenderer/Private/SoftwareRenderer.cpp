@@ -83,9 +83,9 @@ namespace RenderDog
 
 		renderParam.pPS->SetToContext();
 
-		ISRShaderResourceView* pSRV = (ISRShaderResourceView*)(renderParam.pTexture2D->GetShaderResourceView());
+		ISRShaderResourceView* pSRV = (ISRShaderResourceView*)(renderParam.pDiffuseTexture->GetShaderResourceView());
 		g_pSRImmediateContext->PSSetShaderResource(&pSRV);
-		renderParam.pSamplerState->SetToPixelShader(0);
+		renderParam.pDiffuseTextureSampler->SetToPixelShader(0);
 
 		g_pSRImmediateContext->DrawIndex(indexNum);
 	}
@@ -220,9 +220,9 @@ namespace RenderDog
 		ISRBuffer* pLightingCB = (ISRBuffer*)(m_LightingCB->GetResource());
 		g_pSRImmediateContext->PSSetConstantBuffer(0, &pLightingCB);
 
-		ISRShaderResourceView* pSRV = (ISRShaderResourceView*)(renderParam.pTexture2D->GetShaderResourceView());
+		ISRShaderResourceView* pSRV = (ISRShaderResourceView*)(renderParam.pNormalTexture->GetShaderResourceView());
 		g_pSRImmediateContext->PSSetShaderResource(&pSRV);
-		renderParam.pSamplerState->SetToPixelShader(0);
+		renderParam.pNormalTextureSampler->SetToPixelShader(0);
 
 		g_pSRImmediateContext->DrawIndex(indexNum);
 	}

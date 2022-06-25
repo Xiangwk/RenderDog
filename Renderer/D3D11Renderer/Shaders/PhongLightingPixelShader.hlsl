@@ -7,8 +7,11 @@
 #include "PhongLightingCommon.hlsl"
 #include "ShadowTestCommon.hlsl"
 
-Texture2D		NormalTexture		: register(t0);
-SamplerState	LinearSampler		: register(s0);
+Texture2D		DiffuseTexture				: register(t0);
+SamplerState	DiffuseTextureSampler		: register(s0);
+
+Texture2D		NormalTexture				: register(t1);
+SamplerState	NormalTextureSampler		: register(s1);
 
 
 cbuffer LightingParam : register(b0)
@@ -31,10 +34,10 @@ struct VSOutput
 
 float4 Main(VSOutput vsOutput) : SV_Target
 {
-	float3 BaseColor = float3(1.0f, 1.0f, 1.0f);
+	float3 BaseColor = DiffuseTexture.Sample(DiffuseTextureSampler, vsOutput.TexCoord).rgb;
 	BaseColor *= vsOutput.Color.rgb;
 
-	float2 TangentNormalXY = NormalTexture.Sample(LinearSampler, vsOutput.TexCoord).xy;
+	float2 TangentNormalXY = NormalTexture.Sample(NormalTextureSampler, vsOutput.TexCoord).xy;
 	TangentNormalXY = TangentNormalXY * 2.0f - 1.0f;
 	float TangentNormalZ = sqrt(1.0f - TangentNormalXY.x * TangentNormalXY.x - TangentNormalXY.y * TangentNormalXY.y);
 	float3 TangentNormal = normalize(float3(TangentNormalXY, TangentNormalZ));

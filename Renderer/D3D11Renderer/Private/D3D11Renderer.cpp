@@ -85,9 +85,13 @@ namespace RenderDog
 
 		renderParam.pPS->SetToContext();
 
-		ID3D11ShaderResourceView* pSRV = (ID3D11ShaderResourceView*)(renderParam.pTexture2D->GetShaderResourceView());
-		g_pD3D11ImmediateContext->PSSetShaderResources(0, 1, &pSRV);
-		renderParam.pSamplerState->SetToPixelShader(0);
+		ID3D11ShaderResourceView* pDiffSRV = (ID3D11ShaderResourceView*)(renderParam.pDiffuseTexture->GetShaderResourceView());
+		g_pD3D11ImmediateContext->PSSetShaderResources(0, 1, &pDiffSRV);
+		renderParam.pDiffuseTextureSampler->SetToPixelShader(0);
+
+		ID3D11ShaderResourceView* pNormSRV = (ID3D11ShaderResourceView*)(renderParam.pNormalTexture->GetShaderResourceView());
+		g_pD3D11ImmediateContext->PSSetShaderResources(1, 1, &pNormSRV);
+		renderParam.pNormalTextureSampler->SetToPixelShader(1);
 
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
 	}
@@ -254,13 +258,17 @@ namespace RenderDog
 		ID3D11Buffer* pShadowTestCB = (ID3D11Buffer*)(m_pShadowTestCB->GetResource());
 		g_pD3D11ImmediateContext->PSSetConstantBuffers(1, 1, &pShadowTestCB);
 
-		ID3D11ShaderResourceView* pSRV = (ID3D11ShaderResourceView*)(renderParam.pTexture2D->GetShaderResourceView());
-		g_pD3D11ImmediateContext->PSSetShaderResources(0, 1, &pSRV);
-		renderParam.pSamplerState->SetToPixelShader(0);
+		ID3D11ShaderResourceView* pDiffSRV = (ID3D11ShaderResourceView*)(renderParam.pDiffuseTexture->GetShaderResourceView());
+		g_pD3D11ImmediateContext->PSSetShaderResources(0, 1, &pDiffSRV);
+		renderParam.pDiffuseTextureSampler->SetToPixelShader(0);
+
+		ID3D11ShaderResourceView* pNormSRV = (ID3D11ShaderResourceView*)(renderParam.pNormalTexture->GetShaderResourceView());
+		g_pD3D11ImmediateContext->PSSetShaderResources(1, 1, &pNormSRV);
+		renderParam.pNormalTextureSampler->SetToPixelShader(1);
 
 		ID3D11ShaderResourceView* pShadowDepthSRV = (ID3D11ShaderResourceView*)m_pShadowDepthTexture->GetShaderResourceView();
-		g_pD3D11ImmediateContext->PSSetShaderResources(1, 1, &pShadowDepthSRV);
-		m_pShadowDepthTextureSampler->SetToPixelShader(1);
+		g_pD3D11ImmediateContext->PSSetShaderResources(2, 1, &pShadowDepthSRV);
+		m_pShadowDepthTextureSampler->SetToPixelShader(2);
 
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
 
@@ -545,7 +553,7 @@ namespace RenderDog
 		ShaderCompileDesc vsDesc("Shaders/ShadowDepthVertexShader.hlsl", nullptr, "Main", "vs_5_0", 0);
 		m_pShadowDepthVS = g_pIShaderManager->GetVertexShader(VERTEX_TYPE::STANDARD, vsDesc);
 
-		ShaderCompileDesc psDesc("Shaders/ShadowDepthPixelShader.hlsl", nullptr, "Main", "vs_5_0", 0);
+		ShaderCompileDesc psDesc("Shaders/ShadowDepthPixelShader.hlsl", nullptr, "Main", "ps_5_0", 0);
 		m_pShadowDepthPS = g_pIShaderManager->GetPixelShader(psDesc);
 
 		return true;

@@ -2436,14 +2436,14 @@ namespace RenderDog
 		return vOutput;
 	}
 
-	Vector4 PixelShader::PSMain(const VSOutputVertex& psInput, const ShaderResourceTexture* pSRTexture) const
+	Vector4 PixelShader::PSMain(const VSOutputVertex& psInput, const ShaderResourceTexture* pNormalTexture) const
 	{
 		Vector2 uv = psInput.texcoord;
 
-		Vector4 textureColor = m_pSampler->Sample(pSRTexture, uv);
+		Vector4 normalColor = m_pSampler->Sample(pNormalTexture, uv);
 
-		float tangentNormalX = textureColor.x;
-		float tangentNormalY = textureColor.y;
+		float tangentNormalX = normalColor.x;
+		float tangentNormalY = normalColor.y;
 		tangentNormalX = tangentNormalX * 2.0f - 1.0f;
 		tangentNormalY = tangentNormalY * 2.0f - 1.0f;
 

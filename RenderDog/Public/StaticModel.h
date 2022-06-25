@@ -68,7 +68,7 @@ namespace RenderDog
 												 const std::string& vsFile, 
 												 const std::string& psFile);
 
-		bool						LoadTextureFromFile(const std::wstring& diffuseTexturePath);
+		bool						LoadTextureFromFile(const std::wstring& diffuseTexturePath, const std::wstring& normalTexturePath);
 		
 		void						RegisterToScene(IScene* pScene);
 

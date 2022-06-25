@@ -238,7 +238,10 @@ namespace RenderDog
 			pTexture = new D3D11Texture2D();
 			if (pTexture)
 			{
-				pTexture->LoadFromFile(filePath);
+				if (!pTexture->LoadFromFile(filePath))
+				{
+					return nullptr;
+				}
 			}
 
 			m_TextureMap.insert({ filePath, pTexture });

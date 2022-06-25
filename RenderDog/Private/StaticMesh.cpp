@@ -29,35 +29,16 @@ namespace RenderDog
 		m_Indices.clear();
 	}
 
-	/*SimpleMesh::SimpleMesh(const std::vector<SimpleVertex>& vertices, const std::vector<uint32_t>& indices) :
-		m_Vertices(0),
-		m_Indices(0),
-		m_pRenderData(nullptr)
-	{
-		m_Vertices.reserve(vertices.size());
-		m_Indices.reserve(indices.size());
-
-		for (uint32_t i = 0; i < vertices.size(); ++i)
-		{
-			m_Vertices.push_back(vertices[i]);
-		}
-
-		for (uint32_t i = 0; i < indices.size(); ++i)
-		{
-			m_Indices.push_back(indices[i]);
-		}
-	}*/
-
 	void SimpleMesh::Render(IPrimitiveRenderer* pPrimitiveRenderer)
 	{
 		PrimitiveRenderParam renderParam = {};
-		renderParam.pVB				= m_pRenderData->pVB;
-		renderParam.pIB				= m_pRenderData->pIB;
-		renderParam.pPerObjCB		= m_pRenderData->pCB;
-		renderParam.pTexture2D		= nullptr;
-		renderParam.pSamplerState	= nullptr;
-		renderParam.pVS				= m_pRenderData->pVS;
-		renderParam.pPS				= m_pRenderData->pPS;
+		renderParam.pVB						= m_pRenderData->pVB;
+		renderParam.pIB						= m_pRenderData->pIB;
+		renderParam.pPerObjCB				= m_pRenderData->pCB;
+		renderParam.pDiffuseTexture			= nullptr;
+		renderParam.pDiffuseTextureSampler	= nullptr;
+		renderParam.pVS						= m_pRenderData->pVS;
+		renderParam.pPS						= m_pRenderData->pPS;
 
 		pPrimitiveRenderer->Render(renderParam);
 	}
@@ -144,7 +125,9 @@ namespace RenderDog
 		m_RawIndices(0),
 		m_pRenderData(nullptr),
 		m_pDiffuseTexture(nullptr),
-		m_pLinearSampler(nullptr),
+		m_pDiffuseTextureSampler(nullptr),
+		m_pNormalTexture(nullptr),
+		m_pNormalTextureSampler(nullptr),
 		m_AABB()
 	{}
 
@@ -165,7 +148,10 @@ namespace RenderDog
 		m_RawIndices(0),
 		m_pRenderData(nullptr),
 		m_pDiffuseTexture(nullptr),
-		m_pLinearSampler(nullptr)
+		m_pDiffuseTextureSampler(nullptr),
+		m_pNormalTexture(nullptr),
+		m_pNormalTextureSampler(nullptr),
+		m_AABB()
 	{
 		m_RawVertices.reserve(vertices.size());
 		m_RawIndices.reserve(indices.size());
@@ -184,13 +170,15 @@ namespace RenderDog
 	void StaticMesh::Render(IPrimitiveRenderer* pPrimitiveRenderer)
 	{
 		PrimitiveRenderParam renderParam = {};
-		renderParam.pVB				= m_pRenderData->pVB;
-		renderParam.pIB				= m_pRenderData->pIB;
-		renderParam.pPerObjCB		= m_pRenderData->pCB;
-		renderParam.pTexture2D		= m_pDiffuseTexture;
-		renderParam.pSamplerState	= m_pLinearSampler;
-		renderParam.pVS				= m_pRenderData->pVS;
-		renderParam.pPS				= m_pRenderData->pPS;
+		renderParam.pVB						= m_pRenderData->pVB;
+		renderParam.pIB						= m_pRenderData->pIB;
+		renderParam.pPerObjCB				= m_pRenderData->pCB;
+		renderParam.pDiffuseTexture			= m_pDiffuseTexture;
+		renderParam.pDiffuseTextureSampler	= m_pDiffuseTextureSampler;
+		renderParam.pNormalTexture			= m_pNormalTexture;
+		renderParam.pNormalTextureSampler	= m_pNormalTextureSampler;
+		renderParam.pVS						= m_pRenderData->pVS;
+		renderParam.pPS						= m_pRenderData->pPS;
 
 		pPrimitiveRenderer->Render(renderParam);
 	}
@@ -204,7 +192,7 @@ namespace RenderDog
 		m_Name = name;
 	}
 
-	bool StaticMesh::LoadTextureFromFile(const std::wstring& diffuseTexturePath)
+	bool StaticMesh::LoadTextureFromFile(const std::wstring& diffuseTexturePath, const std::wstring& normalTexturePath)
 	{
 		m_pDiffuseTexture = g_pITextureManager->CreateTexture2D(diffuseTexturePath);
 		if (!m_pDiffuseTexture)
@@ -212,11 +200,23 @@ namespace RenderDog
 			return false;
 		}
 
+		m_pNormalTexture = g_pITextureManager->CreateTexture2D(normalTexturePath);
+		if (!m_pNormalTexture)
+		{
+			return false;
+		}
+
 		SamplerDesc samplerDesc = {};
 		samplerDesc.filterMode = SAMPLER_FILTER::LINEAR;
 		samplerDesc.addressMode = SAMPLER_ADDRESS::WRAP;
-		m_pLinearSampler = g_pISamplerStateManager->CreateSamplerState(samplerDesc);
-		if (!m_pLinearSampler)
+		m_pDiffuseTextureSampler = g_pISamplerStateManager->CreateSamplerState(samplerDesc);
+		if (!m_pDiffuseTextureSampler)
+		{
+			return false;
+		}
+
+		m_pNormalTextureSampler = g_pISamplerStateManager->CreateSamplerState(samplerDesc);
+		if (!m_pNormalTextureSampler)
 		{
 			return false;
 		}
@@ -275,10 +275,22 @@ namespace RenderDog
 			m_pDiffuseTexture = nullptr;
 		}
 
-		if (m_pLinearSampler)
+		if (m_pDiffuseTextureSampler)
 		{
-			m_pLinearSampler->Release();
-			m_pLinearSampler = nullptr;
+			m_pDiffuseTextureSampler->Release();
+			m_pDiffuseTextureSampler = nullptr;
+		}
+
+		if (m_pNormalTexture)
+		{
+			m_pNormalTexture->Release();
+			m_pNormalTexture = nullptr;
+		}
+
+		if (m_pNormalTextureSampler)
+		{
+			m_pNormalTextureSampler->Release();
+			m_pNormalTextureSampler = nullptr;
 		}
 	}
 
