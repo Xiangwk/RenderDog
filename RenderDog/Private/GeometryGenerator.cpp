@@ -170,7 +170,9 @@ namespace RenderDog
 		outputMesh.vertices.clear();
 		outputMesh.indices.clear();
 
-		//Vertice
+		//===============================================
+		//					Vertice
+		//===============================================
 		//Top Pole
 		Vector3 topPolePos = Vector3(0.0f, radius, 0.0f);
 
@@ -181,7 +183,7 @@ namespace RenderDog
 		topPoleVert.tangent		= Vector4(1.0f, 0.0f, 0.0f, 1.0f);
 		for (uint32_t i = 0; i < longitudeNum; ++i)
 		{
-			topPoleVert.texcoord = Vector2((float)i / longitudeNum, 0.0f);
+			topPoleVert.texcoord = Vector2((i * 2 + 1) / (longitudeNum * 2.0f), 0.0f);
 			outputMesh.vertices.push_back(topPoleVert);
 		}
 
@@ -216,12 +218,14 @@ namespace RenderDog
 		bottomPoleVert.tangent = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
 		for (uint32_t i = 0; i < longitudeNum; ++i)
 		{
-			bottomPoleVert.texcoord = Vector2((float)i / longitudeNum, 1.0f);
+			bottomPoleVert.texcoord = Vector2((i * 2.0f + 1.0f) / (longitudeNum * 2.0f), 1.0f);
 			outputMesh.vertices.push_back(bottomPoleVert);
 		}
-		
 
-		//Indices
+
+		//===============================================
+		//					Indices
+		//===============================================
 		//Top Cap
 		for (uint32_t i = 0; i < longitudeNum; ++i)
 		{
