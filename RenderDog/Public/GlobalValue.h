@@ -9,8 +9,8 @@
 namespace RenderDog
 {
 	//Shadow
-	extern int		g_CVarShadowMapRTSize;
-	extern float	g_CVarShadowDepthOffset;
-	extern float	g_CVarShadowDistance;
+	extern int		g_ShadowMapRTSize;
+	extern float	g_ShadowDepthOffset;
+	extern float	g_ShadowDistance;
 
 }// namespace RenderDog

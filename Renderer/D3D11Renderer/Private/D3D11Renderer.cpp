@@ -539,7 +539,7 @@ namespace RenderDog
 		cbDesc.isDynamic = true;
 		m_pLightingConstantBuffer = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
 
-		int ShadowMapSize = g_CVarShadowMapRTSize;
+		int ShadowMapSize = g_ShadowMapRTSize;
 		CreateShadowResources(ShadowMapSize, ShadowMapSize);
 
 		ShaderCompileDesc vsDesc("Shaders/ShadowDepthVertexShader.hlsl", nullptr, "Main", "vs_5_0", 0);
@@ -669,8 +669,8 @@ namespace RenderDog
 				m_pShadowDepthConstantBuffer->Update(&shadowDepthData, sizeof(shadowDepthData));
 
 				ShadowTestConstantData shadowTestData = {};
-				shadowTestData.param0.x = g_CVarShadowDepthOffset;
-				shadowTestData.param0.y = static_cast<float>(g_CVarShadowMapRTSize);
+				shadowTestData.param0.x = g_ShadowDepthOffset;
+				shadowTestData.param0.y = static_cast<float>(g_ShadowMapRTSize);
 				m_pShadowTestConstantBuffer->Update(&shadowTestData, sizeof(shadowTestData));
 			}
 		}
@@ -764,7 +764,7 @@ namespace RenderDog
 		m_ScreenViewport.MaxDepth = 1;
 		g_pD3D11ImmediateContext->RSSetViewports(1, &m_ScreenViewport);
 
-		float shadowMapSize = static_cast<float>(g_CVarShadowMapRTSize);
+		float shadowMapSize = static_cast<float>(g_ShadowMapRTSize);
 		m_ShadowViewport.TopLeftX = 0;
 		m_ShadowViewport.TopLeftY = 0;
 		m_ShadowViewport.Width = shadowMapSize;

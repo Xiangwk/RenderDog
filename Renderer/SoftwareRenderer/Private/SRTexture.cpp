@@ -25,7 +25,7 @@ namespace RenderDog
 	{
 	public:
 		SRTexture2D();
-		SRTexture2D(const TextureDesc& desc);
+		explicit SRTexture2D(const TextureDesc& desc);
 		virtual ~SRTexture2D();
 		
 		virtual void				Release() override;

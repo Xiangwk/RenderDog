@@ -42,7 +42,7 @@ namespace RenderDog
 	{
 	public:
 		D3D11VertexShader();
-		D3D11VertexShader(VERTEX_TYPE vertexType);
+		explicit D3D11VertexShader(VERTEX_TYPE vertexType);
 		virtual ~D3D11VertexShader();
 
 		virtual bool				Init() override;

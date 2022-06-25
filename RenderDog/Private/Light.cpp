@@ -22,7 +22,7 @@ namespace RenderDog
 
 	public:
 		DirectionalLight();
-		DirectionalLight(const LightDesc& desc);
+		explicit DirectionalLight(const LightDesc& desc);
 		virtual ~DirectionalLight() {}
 
 		virtual		void		Release() override;

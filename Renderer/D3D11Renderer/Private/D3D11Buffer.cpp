@@ -19,7 +19,7 @@ namespace RenderDog
 	class D3D11VertexBuffer : public IVertexBuffer, public RefCntObject
 	{
 	public:
-		D3D11VertexBuffer(const BufferDesc& desc);
+		explicit D3D11VertexBuffer(const BufferDesc& desc);
 
 		virtual ~D3D11VertexBuffer();
 
@@ -47,7 +47,7 @@ namespace RenderDog
 	class D3D11IndexBuffer : public IIndexBuffer, public RefCntObject
 	{
 	public:
-		D3D11IndexBuffer(const BufferDesc& desc);
+		explicit D3D11IndexBuffer(const BufferDesc& desc);
 		virtual ~D3D11IndexBuffer();
 
 		virtual void				Release() override;
@@ -72,7 +72,7 @@ namespace RenderDog
 	class D3D11ConstantBuffer : public IConstantBuffer, public RefCntObject
 	{
 	public:
-		D3D11ConstantBuffer(const BufferDesc& desc);
+		explicit D3D11ConstantBuffer(const BufferDesc& desc);
 		virtual ~D3D11ConstantBuffer();
 
 		virtual void				Release() override;

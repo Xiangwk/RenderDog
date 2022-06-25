@@ -20,7 +20,7 @@ namespace RenderDog
 	class SRVertexBuffer : public IVertexBuffer, public RefCntObject
 	{
 	public:
-		SRVertexBuffer(const BufferDesc& desc);
+		explicit SRVertexBuffer(const BufferDesc& desc);
 
 		virtual ~SRVertexBuffer();
 
@@ -48,7 +48,7 @@ namespace RenderDog
 	class SRIndexBuffer : public IIndexBuffer, public RefCntObject
 	{
 	public:
-		SRIndexBuffer(const BufferDesc& desc);
+		explicit SRIndexBuffer(const BufferDesc& desc);
 		virtual ~SRIndexBuffer();
 
 		virtual void				Release() override;
@@ -73,7 +73,7 @@ namespace RenderDog
 	class SRConstantBuffer : public IConstantBuffer, public RefCntObject
 	{
 	public:
-		SRConstantBuffer(const BufferDesc& desc);
+		explicit SRConstantBuffer(const BufferDesc& desc);
 		virtual ~SRConstantBuffer();
 
 		virtual void				Release() override;

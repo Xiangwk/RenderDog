@@ -21,7 +21,7 @@ namespace RenderDog
 	{
 	public:
 		D3D11Texture2D();
-		D3D11Texture2D(const TextureDesc& desc);
+		explicit D3D11Texture2D(const TextureDesc& desc);
 		virtual ~D3D11Texture2D();
 
 		virtual void				Release() override;
