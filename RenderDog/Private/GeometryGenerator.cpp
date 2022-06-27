@@ -12,7 +12,7 @@ namespace RenderDog
 	GeometryGenerator	g_GeometryGenerator;
 	GeometryGenerator*	g_pGeometryGenerator = &g_GeometryGenerator;
 
-	void GeometryGenerator::GenerateGrid(int width, int depth, float gridUnit, StandardMeshData& outputMesh)
+	void GeometryGenerator::GenerateGrid(uint32_t width, uint32_t depth, float gridUnit, StandardMeshData& outputMesh)
 	{
 		outputMesh.vertices.clear();
 		outputMesh.indices.clear();
@@ -23,9 +23,9 @@ namespace RenderDog
 		float NearLeftX = -WidthLen * 0.5f;
 		float NearLeftZ = -DepthLen * 0.5f;
 
-		for (int i = 0; i < depth + 1; ++i)
+		for (uint32_t i = 0; i < depth + 1; ++i)
 		{
-			for (int j = 0; j < width + 1; ++j)
+			for (uint32_t j = 0; j < width + 1; ++j)
 			{
 				float x = NearLeftX + j * gridUnit;
 				float z = NearLeftZ + i * gridUnit;
@@ -40,9 +40,9 @@ namespace RenderDog
 			}
 		}
 
-		for (int i = 0; i < depth; ++i)
+		for (uint32_t i = 0; i < depth; ++i)
 		{
-			for (int j = 0; j < width; ++j)
+			for (uint32_t j = 0; j < width; ++j)
 			{
 				outputMesh.indices.push_back(j + i * (width + 1));
 				outputMesh.indices.push_back(j + (i + 1) * (width + 1));
@@ -55,7 +55,7 @@ namespace RenderDog
 		}
 	}
 
-	void GeometryGenerator::GenerateGridLine(int width, int depth, float gridUnit, const Vector4& lineColor, SimpleMeshData& outputMesh)
+	void GeometryGenerator::GenerateGridLine(uint32_t width, uint32_t depth, float gridUnit, const Vector4& lineColor, SimpleMeshData& outputMesh)
 	{
 		outputMesh.vertices.clear();
 		outputMesh.indices.clear();
@@ -70,7 +70,7 @@ namespace RenderDog
 		float nearLeftY = -depthLen * 0.5f;
 
 		//横向线
-		for (int i = 0; i < width + 1; ++i)
+		for (uint32_t i = 0; i < width + 1; ++i)
 		{
 			float x1 = nearLeftX + i * gridUnit;
 			float y1 = nearLeftY;
@@ -88,7 +88,7 @@ namespace RenderDog
 		int indiceNum = static_cast<int>(outputMesh.indices.size());
 
 		//纵向线
-		for (int i = 0; i < depth + 1; ++i)
+		for (uint32_t i = 0; i < depth + 1; ++i)
 		{
 			float x1 = nearLeftX;
 			float y1 = nearLeftY + i * gridUnit;

@@ -365,14 +365,13 @@ namespace RenderDog
 
 			m_pLightingConstantBuffer->Update(&dirLightData, sizeof(dirLightData));
 		}
+
+		m_pSceneView->ClearPrimitives();
+		AddPrisAndLightsToSceneView(pScene);
 	}
 
 	void SoftwareRenderer::Render(IScene* pScene)
 	{
-		m_pSceneView->ClearPrimitives();
-
-		AddPrisAndLightsToSceneView(pScene);
-
 		float clearColor[4] = { 0.85f, 0.92f, 0.99f, 1.0f };
 		ClearBackRenderTarget(clearColor);
 

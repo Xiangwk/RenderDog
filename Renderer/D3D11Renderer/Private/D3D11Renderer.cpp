@@ -635,18 +635,18 @@ namespace RenderDog
 				m_pShadowTestConstantBuffer->Update(&shadowTestData, sizeof(shadowTestData));
 			}
 		}
+
+		m_pShadowSceneView->ClearPrimitives();
+		AddPrisToShadowView(pScene);
+
+		m_pSceneView->ClearPrimitives();
+		AddPrisAndLightsToSceneView(pScene);
 	}
 
 
 	void D3D11Renderer::Render(IScene* pScene)
 	{
-		m_pShadowSceneView->ClearPrimitives();
-		AddPrisToShadowView(pScene);
-
 		ShadowDepthPass();
-
-		m_pSceneView->ClearPrimitives();
-		AddPrisAndLightsToSceneView(pScene);
 
 		float clearColor[4] = { 0.85f, 0.92f, 0.99f, 1.0f };
 		ClearBackRenderTarget(clearColor);
