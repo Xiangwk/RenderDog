@@ -83,7 +83,7 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 	RenderDog::g_pGeometryGenerator->GenerateGrid(100, 100, 1, GridMeshData);
 	m_pFloor = new RenderDog::StaticModel();
 	m_pFloor->LoadFromStandardData(GridMeshData.vertices, GridMeshData.indices, "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl", "MainSceneFloor");
-	if (!m_pFloor->LoadTextureFromFile(L"Textures/White_diff.dds", L"Textures/FlatNormal_norm.dds"))
+	if (!m_pFloor->LoadTextureFromFile(L"EngineAsset/Textures/White_diff.dds", L"EngineAsset/Textures/FlatNormal_norm.dds"))
 	{
 		MessageBox(nullptr, "Load Texture Failed!", "ERROR", MB_OK);
 	}
@@ -91,8 +91,8 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 	m_pFloor->RegisterToScene(m_pScene);
 
 	m_pModel = new RenderDog::StaticModel();
-	m_pModel->LoadFromFile("Models/generator/generator_small.obj", "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl");
-	if (!m_pModel->LoadTextureFromFile(L"Textures/White_diff.dds", L"Textures/PolybumpTangent_norm.tga"))
+	m_pModel->LoadFromFile("Models/Generator/Generator_small.obj", "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl");
+	if (!m_pModel->LoadTextureFromFile(L"EngineAsset/Textures/White_diff.dds", L"Models/Generator/Textures/PolybumpTangent_norm.tga"))
 	{
 		MessageBox(nullptr, "Load Texture Failed!", "ERROR", MB_OK);
 	}
@@ -100,7 +100,7 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 	m_pModel->RegisterToScene(m_pScene);
 
 	/*m_pModel->LoadFromFile("Models/nanosuit/nanosuit.obj", "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl");
-	if(!m_pModel->LoadTextureFromFile(L"Textures/White_diff.dds", L"Textures/Brick_norm.tga"))
+	if(!m_pModel->LoadTextureFromFile(L"EngineAsset/Textures/White_diff.dds", L"EngineAsset/Textures/Brick_norm.tga"))
 	{
 		MessageBox(nullptr, "Load Texture Failed!", "ERROR", MB_OK);
 	}
@@ -111,7 +111,7 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 	RenderDog::g_pGeometryGenerator->GenerateSphere(40, 40, 5, SphereMeshData);
 	m_pModel = new RenderDog::StaticModel();
 	m_pModel->LoadFromStandardData(SphereMeshData.vertices, SphereMeshData.indices, "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl", "Sphere");
-	if (!m_pModel->LoadTextureFromFile(L"Textures/ErrorTexture_diff.dds", L"Textures/FlatNormal_norm.dds"))
+	if (!m_pModel->LoadTextureFromFile(L"EngineAsset/Textures/ErrorTexture_diff.dds", L"EngineAsset/Textures/FlatNormal_norm.dds"))
 	{
 		MessageBox(nullptr, "Load Texture Failed!", "ERROR", MB_OK);
 	}

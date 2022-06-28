@@ -111,6 +111,8 @@
       <Command>xcopy $(TargetDir)*.lib ..\..\..\EngineSDK\RenderDog\Libs\ /i /s /y
 xcopy ..\..\Public\*.* ..\..\..\EngineSDK\RenderDog\Public\$(ProjectName)\ /i /s /y
 xcopy ..\..\Math\Public\*.* ..\..\..\EngineSDK\RenderDog\Public\Math\ /i /s /y
+
+del ..\..\..\EngineSDK\RenderDog\EngineAsset\Textures\*.* /f /s /q
 xcopy ..\..\EngineAsset\*.* ..\..\..\EngineSDK\RenderDog\EngineAsset\ /i /s /y</Command>
     </PostBuildEvent>
     <Lib>
@@ -138,6 +140,8 @@ xcopy ..\..\EngineAsset\*.* ..\..\..\EngineSDK\RenderDog\EngineAsset\ /i /s /y</
       <Command>xcopy $(TargetDir)*.lib ..\..\..\EngineSDK\RenderDog\Libs\ /i /s /y
 xcopy ..\..\Public\*.* ..\..\..\EngineSDK\RenderDog\Public\$(ProjectName)\ /i /s /y
 xcopy ..\..\Math\Public\*.* ..\..\..\EngineSDK\RenderDog\Public\Math\ /i /s /y
+
+del ..\..\..\EngineSDK\RenderDog\EngineAsset\Textures\*.* /f /s /q
 xcopy ..\..\EngineAsset\*.* ..\..\..\EngineSDK\RenderDog\EngineAsset\ /i /s /y</Command>
     </PostBuildEvent>
     <Lib>
