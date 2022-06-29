@@ -25,8 +25,39 @@ namespace RenderDog
 
 	SimpleMesh::~SimpleMesh()
 	{
+		ReleaseRenderData();
+
 		m_Vertices.clear();
 		m_Indices.clear();
+	}
+
+	SimpleMesh::SimpleMesh(const SimpleMesh& mesh):
+		m_Name(mesh.m_Name),
+		m_Vertices(mesh.m_Vertices),
+		m_Indices(mesh.m_Indices),
+		m_pRenderData(nullptr),
+		m_AABB(mesh.m_AABB)
+	{
+		CloneRenderData(mesh);
+	}
+
+	SimpleMesh& SimpleMesh::operator=(const SimpleMesh& mesh)
+	{
+		if (&mesh == this)
+		{
+			return *this;
+		}
+
+		m_Name = mesh.m_Name;
+		m_Vertices = mesh.m_Vertices;
+		m_Indices = mesh.m_Indices;
+		m_AABB = mesh.m_AABB;
+
+		ReleaseRenderData();
+
+		CloneRenderData(mesh);
+
+		return *this;
 	}
 
 	void SimpleMesh::Render(IPrimitiveRenderer* pPrimitiveRenderer)
@@ -113,6 +144,17 @@ namespace RenderDog
 		m_pRenderData->pCB->Update(&worldMat, sizeof(Matrix4x4));
 	}
 
+	void SimpleMesh::CloneRenderData(const SimpleMesh& mesh)
+	{
+		if (mesh.m_pRenderData)
+		{
+			const std::string& vsFile = mesh.m_pRenderData->pVS->GetFileName();
+			const std::string& psFile = mesh.m_pRenderData->pPS->GetFileName();
+
+			InitRenderData(vsFile, psFile);
+		}
+	}
+
 	//------------------------------------------------------------------------
 	//   StaticMesh
 	//------------------------------------------------------------------------
@@ -133,11 +175,50 @@ namespace RenderDog
 
 	StaticMesh::~StaticMesh()
 	{
+		ReleaseRenderData();
+
 		m_RawVertices.clear();
 		m_RawIndices.clear();
 
 		m_Vertices.clear();
 		m_Indices.clear();
+	}
+
+	StaticMesh::StaticMesh(const StaticMesh& mesh):
+		m_Name(mesh.m_Name),
+		m_Vertices(mesh.m_Vertices),
+		m_Indices(mesh.m_Indices),
+		m_RawVertices(mesh.m_RawVertices),
+		m_RawIndices(mesh.m_RawIndices),
+		m_pRenderData(nullptr),
+		m_pDiffuseTexture(nullptr),
+		m_pDiffuseTextureSampler(nullptr),
+		m_pNormalTexture(nullptr),
+		m_pNormalTextureSampler(nullptr),
+		m_AABB(mesh.m_AABB)
+	{
+		CloneRenderData(mesh);
+	}
+
+	StaticMesh& StaticMesh::operator=(const StaticMesh& mesh)
+	{
+		if (&mesh == this)
+		{
+			return *this;
+		}
+
+		m_Name = mesh.m_Name;
+		m_Vertices = mesh.m_Vertices;
+		m_Indices = mesh.m_Indices;
+		m_RawVertices = mesh.m_RawVertices;
+		m_RawIndices = mesh.m_RawIndices;
+		m_AABB = mesh.m_AABB;
+
+		ReleaseRenderData();
+
+		CloneRenderData(mesh);
+
+		return *this;
 	}
 
 	StaticMesh::StaticMesh(const std::vector<StandardVertex>& vertices, const std::vector<uint32_t>& indices, const std::string& name) :
@@ -194,31 +275,40 @@ namespace RenderDog
 
 	bool StaticMesh::LoadTextureFromFile(const std::wstring& diffuseTexturePath, const std::wstring& normalTexturePath)
 	{
-		m_pDiffuseTexture = g_pITextureManager->CreateTexture2D(diffuseTexturePath);
-		if (!m_pDiffuseTexture)
+		if (!diffuseTexturePath.empty())
 		{
-			return false;
+			m_pDiffuseTexture = g_pITextureManager->CreateTexture2D(diffuseTexturePath);
+			if (!m_pDiffuseTexture)
+			{
+				return false;
+			}
+
+			SamplerDesc samplerDesc = {};
+			samplerDesc.filterMode = SAMPLER_FILTER::LINEAR;
+			samplerDesc.addressMode = SAMPLER_ADDRESS::WRAP;
+			m_pDiffuseTextureSampler = g_pISamplerStateManager->CreateSamplerState(samplerDesc);
+			if (!m_pDiffuseTextureSampler)
+			{
+				return false;
+			}
 		}
 
-		m_pNormalTexture = g_pITextureManager->CreateTexture2D(normalTexturePath);
-		if (!m_pNormalTexture)
+		if (!normalTexturePath.empty())
 		{
-			return false;
-		}
+			m_pNormalTexture = g_pITextureManager->CreateTexture2D(normalTexturePath);
+			if (!m_pNormalTexture)
+			{
+				return false;
+			}
 
-		SamplerDesc samplerDesc = {};
-		samplerDesc.filterMode = SAMPLER_FILTER::LINEAR;
-		samplerDesc.addressMode = SAMPLER_ADDRESS::WRAP;
-		m_pDiffuseTextureSampler = g_pISamplerStateManager->CreateSamplerState(samplerDesc);
-		if (!m_pDiffuseTextureSampler)
-		{
-			return false;
-		}
-
-		m_pNormalTextureSampler = g_pISamplerStateManager->CreateSamplerState(samplerDesc);
-		if (!m_pNormalTextureSampler)
-		{
-			return false;
+			SamplerDesc samplerDesc = {};
+			samplerDesc.filterMode = SAMPLER_FILTER::LINEAR;
+			samplerDesc.addressMode = SAMPLER_ADDRESS::WRAP;
+			m_pNormalTextureSampler = g_pISamplerStateManager->CreateSamplerState(samplerDesc);
+			if (!m_pNormalTextureSampler)
+			{
+				return false;
+			}
 		}
 
 		return true;
@@ -470,6 +560,40 @@ namespace RenderDog
 			m_AABB.maxPoint.z = m_AABB.maxPoint.z > pos.z ? m_AABB.maxPoint.z : pos.z;
 		}
 	}
+
+	void StaticMesh::CloneRenderData(const StaticMesh& mesh)
+	{
+		if (mesh.m_pRenderData)
+		{
+			const std::string& vsFile = mesh.m_pRenderData->pVS->GetFileName();
+			const std::string& psFile = mesh.m_pRenderData->pPS->GetFileName();
+
+			InitRenderData(vsFile, psFile);
+		}
+
+		if (mesh.m_pDiffuseTexture)
+		{
+			const std::wstring& diffTexName = mesh.m_pDiffuseTexture->GetName();
+			m_pDiffuseTexture = g_pITextureManager->CreateTexture2D(diffTexName);
+
+			SamplerDesc samplerDesc = {};
+			samplerDesc.filterMode = SAMPLER_FILTER::LINEAR;
+			samplerDesc.addressMode = SAMPLER_ADDRESS::WRAP;
+			m_pDiffuseTextureSampler = g_pISamplerStateManager->CreateSamplerState(samplerDesc);
+		}
+
+		if (mesh.m_pNormalTexture)
+		{
+			const std::wstring& normTexName = mesh.m_pNormalTexture->GetName();
+			m_pNormalTexture = g_pITextureManager->CreateTexture2D(normTexName);
+
+			SamplerDesc samplerDesc = {};
+			samplerDesc.filterMode = SAMPLER_FILTER::LINEAR;
+			samplerDesc.addressMode = SAMPLER_ADDRESS::WRAP;
+			m_pNormalTextureSampler = g_pISamplerStateManager->CreateSamplerState(samplerDesc);
+		}
+	}
+
 
 	void StaticMesh::UpdateAABB(const Matrix4x4& absTransMatrix)
 	{

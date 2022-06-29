@@ -99,6 +99,9 @@
     <ClCompile Include="..\..\Private\GlobalValue.cpp">
       <Filter>Private</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Private\Sky.cpp">
+      <Filter>Primitive\Private</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Math\Public\Matrix.h">
@@ -172,6 +175,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Public\Bounding.h">
       <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Public\Sky.h">
+      <Filter>Primitive\Public</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -72,8 +72,6 @@ namespace RenderDog
 		
 		void						RegisterToScene(IScene* pScene);
 
-		void						ReleaseRenderData();
-
 		void						SetPosGesture(const Vector3& pos, const Vector3& euler, const Vector3& scale);
 
 		const AABB&					GetAABB() const { return m_AABB; }
@@ -87,6 +85,8 @@ namespace RenderDog
 		void						CalculateBoundings();
 		//Use to update aabb and bounding sphere when set pos and gesture
 		void						UpdateBoundings();
+
+		void						ReleaseRenderData();
 
 	private:
 		std::vector<StaticMesh>		m_Meshes;

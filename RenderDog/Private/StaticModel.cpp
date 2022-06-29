@@ -79,6 +79,8 @@ namespace RenderDog
 
 	StaticModel::~StaticModel()
 	{
+		ReleaseRenderData();
+
 		m_Meshes.clear();
 	}
 

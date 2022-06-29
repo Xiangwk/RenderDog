@@ -934,8 +934,8 @@
                             "created": 1641193284785,
                             "text": "Primitive",
                             "layout_right_offset": {
-                                "x": 567,
-                                "y": 731
+                                "x": 560,
+                                "y": 735
                             }
                         },
                         "children": [
@@ -959,9 +959,11 @@
                                             "created": 1643383668737,
                                             "text": "StaticMesh",
                                             "layout_right_offset": {
-                                                "x": 461,
-                                                "y": 120
-                                            }
+                                                "x": 416,
+                                                "y": 65
+                                            },
+                                            "priority": 2,
+                                            "note": "最好也加一个管理器，在StaticModel中最好不要放StaticMesh的数组，而是使用StaticMesh指针的数组，避免大量数据的拷贝；"
                                         },
                                         "children": []
                                     }

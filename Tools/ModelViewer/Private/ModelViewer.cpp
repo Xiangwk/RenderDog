@@ -147,16 +147,12 @@ void ModelViewer::Release()
 
 	if (m_pFloor)
 	{
-		m_pFloor->ReleaseRenderData();
-
 		delete m_pFloor;
 		m_pFloor = nullptr;
 	}
 
 	if (m_pModel)
 	{
-		m_pModel->ReleaseRenderData();
-
 		delete m_pModel;
 		m_pModel = nullptr;
 	}

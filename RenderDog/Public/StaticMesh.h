@@ -21,12 +21,12 @@ namespace RenderDog
 
 	struct StaticMeshRenderData
 	{
-		IVertexBuffer*		pVB;
-		IIndexBuffer*		pIB;
-		IConstantBuffer*	pCB;
+		IVertexBuffer* pVB;
+		IIndexBuffer* pIB;
+		IConstantBuffer* pCB;
 
-		IShader*			pVS;
-		IShader*			pPS;
+		IShader* pVS;
+		IShader* pPS;
 
 		StaticMeshRenderData() :
 			pVB(nullptr),
@@ -47,6 +47,9 @@ namespace RenderDog
 		SimpleMesh();
 		~SimpleMesh();
 
+		SimpleMesh(const SimpleMesh& mesh);
+		SimpleMesh& operator=(const SimpleMesh& mesh);
+
 		virtual void					Render(IPrimitiveRenderer* pPrimitiveRenderer) override;
 
 		virtual PRIMITIVE_TYPE			GetPriType() const override { return PRIMITIVE_TYPE::SIMPLE_PRI; }
@@ -58,6 +61,9 @@ namespace RenderDog
 		void							ReleaseRenderData();
 
 		void							SetPosGesture(const Vector3& pos, const Vector3& euler, const Vector3& scale);
+
+	private:
+		void							CloneRenderData(const SimpleMesh& mesh);
 
 	private:
 		std::string						m_Name;
@@ -80,6 +86,9 @@ namespace RenderDog
 		StaticMesh();
 		~StaticMesh();
 
+		StaticMesh(const StaticMesh& mesh);
+		StaticMesh& operator=(const StaticMesh& mesh);
+
 		StaticMesh(const std::vector<StandardVertex>& vertices, const std::vector<uint32_t>& indices, const std::string& name);
 
 		virtual void					Render(IPrimitiveRenderer* pPrimitiveRenderer) override;
@@ -98,8 +107,9 @@ namespace RenderDog
 
 		void							CalculateTangents();
 		void							CalculateAABB();
-		
+
 	private:
+		void							CloneRenderData(const StaticMesh& mesh);
 		// Use to update aabb when setPosGesture;
 		void							UpdateAABB(const Matrix4x4& absTransMatrix);
 
