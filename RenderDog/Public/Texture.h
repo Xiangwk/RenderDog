@@ -75,6 +75,7 @@ namespace RenderDog
 		virtual ~ITextureManager() = default;
 
 		virtual	ITexture2D*			CreateTexture2D(const std::wstring& filePath) = 0;
+
 		virtual ITexture2D*			GetTexture2D(const TextureDesc& desc) = 0;
 	};
 

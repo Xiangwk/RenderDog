@@ -8,6 +8,7 @@
 #include "D3D11Renderer.h"
 #include "Primitive.h"
 #include "Light.h"
+#include "Sky.h"
 #include "Scene.h"
 #include "SceneView.h"
 #include "D3D11InputLayout.h"
@@ -109,6 +110,70 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
 	}
 #pragma endregion LineMeshRenderer
+
+#pragma region SkyMeshRenderer
+	class D3D11SkyRenderer : public D3D11MeshRenderer
+	{
+	public:
+		D3D11SkyRenderer();
+		D3D11SkyRenderer(IConstantBuffer* pGlobalCB);
+		virtual ~D3D11SkyRenderer();
+
+		virtual void					Render(const PrimitiveRenderParam& renderParam) override;
+	};
+
+	D3D11SkyRenderer::D3D11SkyRenderer()
+	{}
+
+	D3D11SkyRenderer::~D3D11SkyRenderer()
+	{}
+
+	D3D11SkyRenderer::D3D11SkyRenderer(IConstantBuffer* pGlobalCB) :
+		D3D11MeshRenderer(pGlobalCB)
+	{}
+
+	void D3D11SkyRenderer::Render(const PrimitiveRenderParam& renderParam)
+	{
+		if (!g_pD3D11ImmediateContext)
+		{
+			return;
+		}
+
+		if (!renderParam.pVB || !renderParam.pIB)
+		{
+			return;
+		}
+
+		g_pD3D11ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		ID3D11Buffer* pVB = (ID3D11Buffer*)(renderParam.pVB->GetResource());
+		ID3D11Buffer* pIB = (ID3D11Buffer*)(renderParam.pIB->GetResource());
+
+		uint32_t indexNum = renderParam.pIB->GetIndexNum();
+
+		uint32_t stride = renderParam.pVB->GetStride();
+		uint32_t offset = renderParam.pVB->GetOffset();
+		g_pD3D11ImmediateContext->IASetVertexBuffers(0, 1, &pVB, &stride, &offset);
+		g_pD3D11ImmediateContext->IASetIndexBuffer(pIB, DXGI_FORMAT_R32_UINT, 0);
+
+		renderParam.pVS->SetToContext();
+
+		ID3D11Buffer* pGlobalCB = (ID3D11Buffer*)(m_pGlobalCB->GetResource());
+		g_pD3D11ImmediateContext->VSSetConstantBuffers(0, 1, &pGlobalCB);
+
+		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetResource());
+		g_pD3D11ImmediateContext->VSSetConstantBuffers(1, 1, &pPerObjCB);
+
+		renderParam.pPS->SetToContext();
+
+		ID3D11ShaderResourceView* pDiffSRV = (ID3D11ShaderResourceView*)(renderParam.pDiffuseTexture->GetShaderResourceView());
+		g_pD3D11ImmediateContext->PSSetShaderResources(0, 1, &pDiffSRV);
+		renderParam.pDiffuseTextureSampler->SetToPixelShader(0);
+
+		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
+	}
+
+#pragma endregion SkyMeshRenderer
 
 #pragma region MeshLightingRenderer
 	struct MeshLightingGlobalData
@@ -310,6 +375,7 @@ namespace RenderDog
 		{
 			Matrix4x4	viewMatrix;
 			Matrix4x4	projMatrix;
+			Vector4		mainCameraWorldPos;
 		};
 
 		struct DirectionalLightData
@@ -354,6 +420,8 @@ namespace RenderDog
 		void						AddPrisAndLightsToSceneView(IScene* pScene);
 		void						RenderPrimitives();
 
+		void						RenderSky(IScene* pScene);
+
 	private:
 		IDXGISwapChain*				m_pSwapChain;
 
@@ -379,6 +447,9 @@ namespace RenderDog
 
 		IShader*					m_pShadowDepthVS;
 		IShader*					m_pShadowDepthPS;
+
+		ID3D11RasterizerState*		m_pSkyRasterizerState;
+		ID3D11DepthStencilState*	m_pSkyDepthStencilState;
 	};
 
 	D3D11Renderer	g_D3D11Renderer;
@@ -403,7 +474,9 @@ namespace RenderDog
 		m_pShadowDepthTexture(nullptr),
 		m_pShadowDepthTextureSampler(nullptr),
 		m_pShadowDepthVS(nullptr),
-		m_pShadowDepthPS(nullptr)
+		m_pShadowDepthPS(nullptr),
+		m_pSkyRasterizerState(nullptr),
+		m_pSkyDepthStencilState(nullptr)
 	{}
 
 	D3D11Renderer::~D3D11Renderer()
@@ -509,6 +582,36 @@ namespace RenderDog
 		ShaderCompileDesc psDesc("Shaders/ShadowDepthPixelShader.hlsl", nullptr, "Main", "ps_5_0", 0);
 		m_pShadowDepthPS = g_pIShaderManager->GetPixelShader(psDesc);
 
+		D3D11_RASTERIZER_DESC skyRasterDesc = 
+		{
+			D3D11_FILL_SOLID,//D3D11_FILL_MODE FillMode;
+			D3D11_CULL_NONE,//D3D11_CULL_MODE CullMode;
+			false,//BOOL FrontCounterClockwise;
+			0,//INT DepthBias;
+			0.0,//FLOAT DepthBiasClamp;
+			0.0,//FLOAT SlopeScaledDepthBias;
+			true,//BOOL DepthClipEnable;
+			false,//BOOL ScissorEnable;
+			true,//BOOL MultisampleEnable;
+			false//BOOL AntialiasedLineEnable;   
+		};
+		if (FAILED(g_pD3D11Device->CreateRasterizerState(&skyRasterDesc, &m_pSkyRasterizerState)))
+		{
+			MessageBox(nullptr, "Direct3D Create Sky Rasterizer State failed.", 0, 0);
+			return false;
+		}
+
+		D3D11_DEPTH_STENCIL_DESC skyDepthDesc = {};
+		skyDepthDesc.DepthEnable = true;
+		skyDepthDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+		skyDepthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+		skyDepthDesc.StencilEnable = false;
+		if (FAILED(g_pD3D11Device->CreateDepthStencilState(&skyDepthDesc, &m_pSkyDepthStencilState)))
+		{
+			MessageBox(nullptr, "Direct3D Create Sky DepthStencil State failed.", 0, 0);
+			return false;
+		}
+
 		return true;
 	}
 
@@ -556,16 +659,31 @@ namespace RenderDog
 		if (m_pRenderTargetView)
 		{
 			m_pRenderTargetView->Release();
+			m_pRenderTargetView = nullptr;
 		}
 
 		if (m_pDepthStencilView)
 		{
 			m_pDepthStencilView->Release();
+			m_pDepthStencilView = nullptr;
 		}
 
 		if (m_pDepthStencilTexture)
 		{
 			m_pDepthStencilTexture->Release();
+			m_pDepthStencilTexture = nullptr;
+		}
+
+		if (m_pSkyRasterizerState)
+		{
+			m_pSkyRasterizerState->Release();
+			m_pSkyRasterizerState = nullptr;
+		}
+
+		if (m_pSkyDepthStencilState)
+		{
+			m_pSkyDepthStencilState->Release();
+			m_pSkyDepthStencilState = nullptr;
 		}
 
 		if (m_pSwapChain)
@@ -603,6 +721,7 @@ namespace RenderDog
 
 		globalCBData.viewMatrix = pCamera->GetViewMatrix();
 		globalCBData.projMatrix = pCamera->GetPerspProjectionMatrix();
+		globalCBData.mainCameraWorldPos = Vector4(pCamera->GetPosition(), 1.0f);
 
 		m_pGlobalConstantBuffer->Update(&globalCBData, sizeof(globalCBData));
 
@@ -652,6 +771,8 @@ namespace RenderDog
 		ClearBackRenderTarget(clearColor);
 
 		RenderPrimitives();
+
+		RenderSky(pScene);
 
 		m_pSwapChain->Present(0, 0);
 	}
@@ -908,6 +1029,25 @@ namespace RenderDog
 			IPrimitive* pPri = m_pSceneView->GetOpaquePri(i);
 			pPri->Render(&meshRender);
 		}
+	}
+
+	void D3D11Renderer::RenderSky(IScene* pScene)
+	{
+		g_pD3D11ImmediateContext->RSSetState(m_pSkyRasterizerState);
+		g_pD3D11ImmediateContext->OMSetDepthStencilState(m_pSkyDepthStencilState, 0);
+
+		SkyBox* pSkyBox = pScene->GetSkyBox();
+
+		IPrimitive* pPri = pSkyBox->GetPrimitive();
+
+		D3D11SkyRenderer skyRender(m_pGlobalConstantBuffer);
+		if (pPri)
+		{
+			pPri->Render(&skyRender);
+		}
+
+		g_pD3D11ImmediateContext->RSSetState(nullptr);
+		g_pD3D11ImmediateContext->OMSetDepthStencilState(nullptr, 0);
 	}
 #pragma endregion PipelineRenderer
 

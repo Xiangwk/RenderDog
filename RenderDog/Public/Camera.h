@@ -56,30 +56,31 @@ namespace RenderDog
 
 		FPSCamera(const CameraDesc& cameraDesc);
 
-		Matrix4x4		GetViewMatrix() const;
-		Matrix4x4		GetPerspProjectionMatrix() const;
+		const Vector3&		GetPosition() const { return m_Postion; }
+		Matrix4x4			GetViewMatrix() const;
+		Matrix4x4			GetPerspProjectionMatrix() const;
 
-		void			Move(MOVE_MODE moveMode);
-		void			Rotate(float deltaYaw, float deltaPitch);
+		void				Move(MOVE_MODE moveMode);
+		void				Rotate(float deltaYaw, float deltaPitch);
 
-		void			OnWindowResize(uint32_t width, uint32_t height);
+		void				OnWindowResize(uint32_t width, uint32_t height);
 
 	private:
-		Vector3			m_Postion;
-		Vector3			m_Direction;
+		Vector3				m_Postion;
+		Vector3				m_Direction;
 
-		Vector3			m_Right;
-		Vector3			m_Up;
+		Vector3				m_Right;
+		Vector3				m_Up;
 
-		float			m_Yaw;		//偏航角（弧度表示）
-		float			m_Pitch;	//俯仰角（弧度表示）
+		float				m_Yaw;		//偏航角（弧度表示）
+		float				m_Pitch;	//俯仰角（弧度表示）
 
-		float			m_Fov;		//角度
-		float			m_Aspect;	//宽高比
-		float			m_Near;
-		float			m_Far;
+		float				m_Fov;		//角度
+		float				m_Aspect;	//宽高比
+		float				m_Near;
+		float				m_Far;
 
-		float			m_moveSpeed;
-		float			m_rotSpeed;
+		float				m_moveSpeed;
+		float				m_rotSpeed;
 	};
 }

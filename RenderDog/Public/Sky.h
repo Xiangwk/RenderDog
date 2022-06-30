@@ -6,13 +6,13 @@
 
 #pragma once
 
-#include "StaticModel.h"
-
 #include <string>
 
 namespace RenderDog
 {
 	class IScene;
+	class IPrimitive;
+	class StaticMesh;
 
 	class SkyBox
 	{
@@ -25,8 +25,10 @@ namespace RenderDog
 
 		void			RegisterToScene(IScene* pScene);
 
+		IPrimitive*		GetPrimitive() { return (IPrimitive*)m_pSkyMesh; }
+
 	private:
-		StaticModel*	m_pSkyModel;
+		StaticMesh*		m_pSkyMesh;
 	};
 
 }// namespace RenderDog

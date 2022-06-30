@@ -210,6 +210,14 @@ xcopy ..\..\Shaders\*.* ..\..\..\..\EngineSDK\Renderer\Shaders\ /i /s /y</Comman
       <FileType>Document</FileType>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Shaders\SkyPixelShader.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\Shaders\SkyVertexShader.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

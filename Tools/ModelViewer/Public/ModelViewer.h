@@ -11,6 +11,7 @@
 #include "Camera.h"
 #include "Light.h"
 #include "StaticModel.h"
+#include "Sky.h"
 #include "GameTimer.h"
 
 struct ModelViewerInitDesc
@@ -47,6 +48,7 @@ private:
 	RenderDog::SimpleModel*		m_pGridLine;
 	RenderDog::StaticModel*		m_pFloor;
 	RenderDog::StaticModel*		m_pModel;
+	RenderDog::SkyBox*			m_pSkyBox;
 
 	RenderDog::FPSCamera*		m_pFPSCamera;
 

@@ -61,5 +61,11 @@
     <None Include="..\..\Shaders\ShadowTestCommon.hlsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\..\Shaders\SkyPixelShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\Shaders\SkyVertexShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

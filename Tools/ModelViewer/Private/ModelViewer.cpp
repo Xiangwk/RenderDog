@@ -23,6 +23,7 @@ ModelViewer::ModelViewer() :
 	m_pGridLine(nullptr),
 	m_pFloor(nullptr),
 	m_pModel(nullptr),
+	m_pSkyBox(nullptr),
 	m_pFPSCamera(nullptr),
 	m_pMainLight(nullptr),
 	m_pGameTimer(nullptr),
@@ -99,6 +100,9 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 	m_pModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(90.0f, 0.0f, 0.0f), RenderDog::Vector3(0.1f));
 	m_pModel->RegisterToScene(m_pScene);
 
+	m_pSkyBox = new RenderDog::SkyBox(L"EngineAsset/Textures/Snowcube1024.dds");
+	m_pSkyBox->RegisterToScene(m_pScene);
+
 	/*m_pModel->LoadFromFile("Models/nanosuit/nanosuit.obj", "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl");
 	if(!m_pModel->LoadTextureFromFile(L"EngineAsset/Textures/White_diff.dds", L"EngineAsset/Textures/Brick_norm.tga"))
 	{
@@ -155,6 +159,12 @@ void ModelViewer::Release()
 	{
 		delete m_pModel;
 		m_pModel = nullptr;
+	}
+
+	if (m_pSkyBox)
+	{
+		delete m_pSkyBox;
+		m_pSkyBox = nullptr;
 	}
 
 	if (m_pMainLight)

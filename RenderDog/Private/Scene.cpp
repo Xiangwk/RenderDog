@@ -9,6 +9,7 @@
 #include "Primitive.h"
 #include "Light.h"
 #include "Camera.h"
+#include "Sky.h"
 #include "Bounding.h"
 
 #include <vector>
@@ -36,6 +37,9 @@ namespace RenderDog
 		virtual ILight*					GetLight(uint32_t index) override { return m_Lights[index]; }
 		virtual uint32_t				GetLightsNum() const override { return (uint32_t)m_Lights.size(); }
 
+		virtual void					RegisterSkyBox(SkyBox* pSkyBox) override { m_pSkyBox = pSkyBox; }
+		virtual SkyBox*					GetSkyBox() { return m_pSkyBox; }
+
 		virtual const BoundingSphere&	GetBoundingSphere() const override { return m_BoundingSphere; }
 		virtual BoundingSphere&			GetBoundingSphere() override { return m_BoundingSphere; }
 
@@ -43,6 +47,8 @@ namespace RenderDog
 		std::string						m_Name;
 		std::vector<IPrimitive*>		m_Primitives;
 		std::vector<ILight*>			m_Lights;
+
+		SkyBox*							m_pSkyBox;
 
 		BoundingSphere					m_BoundingSphere;
 	};

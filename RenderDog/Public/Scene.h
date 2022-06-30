@@ -13,6 +13,7 @@ namespace RenderDog
 	class	FPSCamera;
 	class	IPrimitive;
 	class	ILight;
+	class	SkyBox;
 	struct	BoundingSphere;
 
 	struct SceneInitDesc
@@ -35,6 +36,9 @@ namespace RenderDog
 		virtual	void					RegisterLight(ILight* pLight) = 0;
 		virtual ILight*					GetLight(uint32_t index) = 0;
 		virtual uint32_t				GetLightsNum() const = 0;
+
+		virtual void					RegisterSkyBox(SkyBox* pSkyBox) = 0;
+		virtual SkyBox*					GetSkyBox() = 0;
 
 		virtual const BoundingSphere&	GetBoundingSphere() const = 0;
 		virtual BoundingSphere&			GetBoundingSphere() = 0;

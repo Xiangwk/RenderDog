@@ -206,7 +206,9 @@ namespace RenderDog
 			return false;
 		}
 
-		hr = DirectX::CreateShaderResourceView(g_pD3D11Device, Image.GetImages(), MetaData.mipLevels, MetaData, &m_pSRV);
+		bool isCubeTexture = MetaData.IsCubemap();
+
+		hr = DirectX::CreateShaderResourceView(g_pD3D11Device, Image.GetImages(), MetaData.arraySize * MetaData.mipLevels, MetaData, &m_pSRV);
 		if (hr != S_OK)
 		{
 			return false;
