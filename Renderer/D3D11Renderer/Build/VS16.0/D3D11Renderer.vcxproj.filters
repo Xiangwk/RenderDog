@@ -67,5 +67,8 @@
     <None Include="..\..\Shaders\SkyVertexShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\..\Shaders\Common.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
