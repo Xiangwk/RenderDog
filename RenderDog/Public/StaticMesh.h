@@ -108,6 +108,9 @@ namespace RenderDog
 		void							CalculateTangents();
 		void							CalculateAABB();
 
+		ITexture2D*						GetDiffuseTexture() { return m_pDiffuseTexture; }
+		ISamplerState*					GetDiffuseSampler() { return m_pDiffuseTextureSampler; }
+
 	private:
 		void							CloneRenderData(const StaticMesh& mesh);
 		// Use to update aabb when setPosGesture;

@@ -7,7 +7,6 @@
 #include "Sky.h"
 #include "Scene.h"
 #include "GeometryGenerator.h"
-#include "StaticMesh.h"
 
 namespace RenderDog
 {

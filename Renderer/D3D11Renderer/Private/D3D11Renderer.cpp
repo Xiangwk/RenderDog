@@ -184,6 +184,8 @@ namespace RenderDog
 		IConstantBuffer*			pShadowTestCB;
 		ITexture2D*					pShadowDepthTexture;
 		ISamplerState*				pShadowDepthTextureSampler;
+		ITexture2D*					pEnvReflectionTexture;
+		ISamplerState*				pEnvReflectionTextureSampler;
 
 		MeshLightingGlobalData() :
 			pGlobalCB(nullptr),
@@ -191,7 +193,9 @@ namespace RenderDog
 			pShadowDepthCB(nullptr),
 			pShadowTestCB(nullptr),
 			pShadowDepthTexture(nullptr),
-			pShadowDepthTextureSampler(nullptr)
+			pShadowDepthTextureSampler(nullptr),
+			pEnvReflectionTexture(nullptr),
+			pEnvReflectionTextureSampler(nullptr)
 		{}
 	};
 
@@ -210,6 +214,8 @@ namespace RenderDog
 		IConstantBuffer*				m_pShadowTestCB;
 		ITexture2D*						m_pShadowDepthTexture;
 		ISamplerState*					m_pShadowDepthTextureSampler;
+		ITexture2D*						m_pEnvReflectionTexture;
+		ISamplerState*					m_pEnvReflectionTextureSampler;
 	};
 
 	D3D11MeshLightingRenderer::D3D11MeshLightingRenderer() :
@@ -218,7 +224,9 @@ namespace RenderDog
 		m_pShadowDepthCB(nullptr),
 		m_pShadowTestCB(nullptr),
 		m_pShadowDepthTexture(nullptr),
-		m_pShadowDepthTextureSampler(nullptr)
+		m_pShadowDepthTextureSampler(nullptr),
+		m_pEnvReflectionTexture(nullptr),
+		m_pEnvReflectionTextureSampler(nullptr)
 	{}
 
 	D3D11MeshLightingRenderer::D3D11MeshLightingRenderer(const MeshLightingGlobalData& globalData):
@@ -227,7 +235,9 @@ namespace RenderDog
 		m_pShadowDepthCB(globalData.pShadowDepthCB),
 		m_pShadowTestCB(globalData.pShadowTestCB),
 		m_pShadowDepthTexture(globalData.pShadowDepthTexture),
-		m_pShadowDepthTextureSampler(globalData.pShadowDepthTextureSampler)
+		m_pShadowDepthTextureSampler(globalData.pShadowDepthTextureSampler),
+		m_pEnvReflectionTexture(globalData.pEnvReflectionTexture),
+		m_pEnvReflectionTextureSampler(globalData.pEnvReflectionTextureSampler)
 	{}
 
 	D3D11MeshLightingRenderer::~D3D11MeshLightingRenderer()
@@ -276,17 +286,21 @@ namespace RenderDog
 		ID3D11Buffer* pShadowTestCB = (ID3D11Buffer*)(m_pShadowTestCB->GetResource());
 		g_pD3D11ImmediateContext->PSSetConstantBuffers(1, 1, &pShadowTestCB);
 
+		ID3D11ShaderResourceView* pEnvReflectionSRV = (ID3D11ShaderResourceView*)(m_pEnvReflectionTexture->GetShaderResourceView());
+		g_pD3D11ImmediateContext->PSSetShaderResources(0, 1, &pEnvReflectionSRV);
+		m_pEnvReflectionTextureSampler->SetToPixelShader(0);
+
 		ID3D11ShaderResourceView* pDiffSRV = (ID3D11ShaderResourceView*)(renderParam.pDiffuseTexture->GetShaderResourceView());
-		g_pD3D11ImmediateContext->PSSetShaderResources(0, 1, &pDiffSRV);
-		renderParam.pDiffuseTextureSampler->SetToPixelShader(0);
+		g_pD3D11ImmediateContext->PSSetShaderResources(1, 1, &pDiffSRV);
+		renderParam.pDiffuseTextureSampler->SetToPixelShader(1);
 
 		ID3D11ShaderResourceView* pNormSRV = (ID3D11ShaderResourceView*)(renderParam.pNormalTexture->GetShaderResourceView());
-		g_pD3D11ImmediateContext->PSSetShaderResources(1, 1, &pNormSRV);
-		renderParam.pNormalTextureSampler->SetToPixelShader(1);
+		g_pD3D11ImmediateContext->PSSetShaderResources(2, 1, &pNormSRV);
+		renderParam.pNormalTextureSampler->SetToPixelShader(2);
 
 		ID3D11ShaderResourceView* pShadowDepthSRV = (ID3D11ShaderResourceView*)m_pShadowDepthTexture->GetShaderResourceView();
-		g_pD3D11ImmediateContext->PSSetShaderResources(2, 1, &pShadowDepthSRV);
-		m_pShadowDepthTextureSampler->SetToPixelShader(2);
+		g_pD3D11ImmediateContext->PSSetShaderResources(3, 1, &pShadowDepthSRV);
+		m_pShadowDepthTextureSampler->SetToPixelShader(3);
 
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
 
@@ -418,7 +432,7 @@ namespace RenderDog
 
 		void						ClearBackRenderTarget(float* clearColor);
 		void						AddPrisAndLightsToSceneView(IScene* pScene);
-		void						RenderPrimitives();
+		void						RenderPrimitives(IScene* pScene);
 
 		void						RenderSky(IScene* pScene);
 
@@ -770,10 +784,10 @@ namespace RenderDog
 		float clearColor[4] = { 0.85f, 0.92f, 0.99f, 1.0f };
 		ClearBackRenderTarget(clearColor);
 
-		RenderPrimitives();
+		RenderPrimitives(pScene);
 
 		RenderSky(pScene);
-
+		
 		m_pSwapChain->Present(0, 0);
 	}
 	
@@ -1001,7 +1015,7 @@ namespace RenderDog
 		}
 	}
 
-	void D3D11Renderer::RenderPrimitives()
+	void D3D11Renderer::RenderPrimitives(IScene* pScene)
 	{
 		g_pD3D11ImmediateContext->RSSetViewports(1, &m_ScreenViewport);
 
@@ -1014,6 +1028,10 @@ namespace RenderDog
 			pPri->Render(&lineRender);
 		}
 
+		SkyBox* pSkyBox = pScene->GetSkyBox();
+		ITexture2D* pEnvReflectionTexture = pSkyBox->GetCubeTexture();
+		ISamplerState* pEnvReflectionTextureSampler = pSkyBox->GetCubeTextureSampler();
+
 		MeshLightingGlobalData meshLightingData;
 		meshLightingData.pGlobalCB = m_pGlobalConstantBuffer;
 		meshLightingData.pLightingCB = m_pLightingConstantBuffer;
@@ -1021,6 +1039,8 @@ namespace RenderDog
 		meshLightingData.pShadowTestCB = m_pShadowTestConstantBuffer;
 		meshLightingData.pShadowDepthTexture = m_pShadowDepthTexture;
 		meshLightingData.pShadowDepthTextureSampler = m_pShadowDepthTextureSampler;
+		meshLightingData.pEnvReflectionTexture = pEnvReflectionTexture;
+		meshLightingData.pEnvReflectionTextureSampler = pEnvReflectionTextureSampler;
 		D3D11MeshLightingRenderer meshRender(meshLightingData);
 
 		uint32_t opaquePriNum = m_pSceneView->GetOpaquePrisNum();

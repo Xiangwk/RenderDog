@@ -24,12 +24,14 @@ struct VSInput
 struct VSOutput
 {
 	float4 Pos			: SV_POSITION;
+	float4 PosW			: POSITION;
 	float4 Color		: COLOR;
 	float3 Normal		: NORMAL;
 	float3 Tangent		: TANGENT;
 	float3 BiTangent	: BITANGENT;
 	float2 Texcoord		: TEXCOORD0;
 	float4 ShadowPos	: TEXCOORD1;
+	float4 EyePosW		: TEXCOORD2;
 };
 
 VSOutput Main(VSInput vsInput)
@@ -37,6 +39,8 @@ VSOutput Main(VSInput vsInput)
 	VSOutput vsOutput = (VSOutput)0;
 	float4 PosL = float4(vsInput.Pos, 1.0f);
 	vsOutput.Pos = mul(PosL, WorldMat);
+	vsOutput.PosW = vsOutput.Pos;
+
 	vsOutput.Pos = mul(vsOutput.Pos, ViewMat);
 	vsOutput.Pos = mul(vsOutput.Pos, ProjMat);
 
@@ -58,6 +62,8 @@ VSOutput Main(VSInput vsInput)
 	vsOutput.ShadowPos = mul(PosL, WorldMat);
 	vsOutput.ShadowPos = mul(vsOutput.ShadowPos, ShadowViewMat);
 	vsOutput.ShadowPos = mul(vsOutput.ShadowPos, ShadowProjMat);
+
+	vsOutput.EyePosW = EyePosW;
 
 	return vsOutput;
 }
