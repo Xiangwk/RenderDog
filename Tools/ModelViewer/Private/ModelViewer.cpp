@@ -47,8 +47,8 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 	camDesc.fov = 45.0f;
 	camDesc.aspectRitio = (float)desc.wndDesc.width / (float)desc.wndDesc.height;
 	camDesc.nearPlane = 0.1f;
-	camDesc.farPlane = 1000.0f;
-	camDesc.moveSpeed = 0.002f;
+	camDesc.farPlane = 100000.0f;
+	camDesc.moveSpeed = 0.01f;
 	camDesc.rotSpeed = 0.05f;
 	m_pFPSCamera = new RenderDog::FPSCamera(camDesc);
 
@@ -87,7 +87,7 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 		return false;
 	}
 
-	if (!LoadModel("Models/Generator/Generator_small.obj", LOAD_MODEL_TYPE::CUSTOM))
+	if (!LoadModel("Models/nanosuit/nanosuit.obj", LOAD_MODEL_TYPE::CUSTOM))
 	{
 		MessageBox(nullptr, "Load Model Failed!", "ERROR", MB_OK);
 		return false;
@@ -326,7 +326,7 @@ bool ModelViewer::LoadModel(const std::string& fileName, LOAD_MODEL_TYPE modelTy
 	else if (modelType == LOAD_MODEL_TYPE::CUSTOM)
 	{
 		m_pModel->LoadFromFile(fileName, "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl");
-		if (!m_pModel->LoadTextureFromFile(L"EngineAsset/Textures/White_diff.dds", L"Models/Generator/Textures/PolybumpTangent_norm.tga"))
+		if (!m_pModel->LoadTextureFromFile(L"EngineAsset/Textures/White_diff.dds", L"EngineAsset/Textures/FlatNormal_norm.dds"))
 		{
 			MessageBox(nullptr, "Load Texture Failed!", "ERROR", MB_OK);
 			return false;
