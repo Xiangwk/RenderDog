@@ -41,14 +41,14 @@ ModelViewer::~ModelViewer()
 bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 {
 	RenderDog::CameraDesc camDesc;
-	camDesc.position = RenderDog::Vector3(0.0f, 20.0f, -200.0f);
+	camDesc.position = RenderDog::Vector3(0.0f, 50.0f, -300.0f);
 	camDesc.yaw = 0.0f;
 	camDesc.pitch = 0.0f;
 	camDesc.fov = 45.0f;
 	camDesc.aspectRitio = (float)desc.wndDesc.width / (float)desc.wndDesc.height;
 	camDesc.nearPlane = 0.1f;
 	camDesc.farPlane = 100000.0f;
-	camDesc.moveSpeed = 0.01f;
+	camDesc.moveSpeed = 0.05f;
 	camDesc.rotSpeed = 0.05f;
 	m_pFPSCamera = new RenderDog::FPSCamera(camDesc);
 
@@ -87,7 +87,7 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 		return false;
 	}
 
-	if (!LoadModel("Models/nanosuit/nanosuit.obj", LOAD_MODEL_TYPE::CUSTOM))
+	if (!LoadModel("Models/Crunch/Crunch_Crash_Site.FBX", LOAD_MODEL_TYPE::CUSTOM))
 	{
 		MessageBox(nullptr, "Load Model Failed!", "ERROR", MB_OK);
 		return false;
@@ -338,7 +338,7 @@ bool ModelViewer::LoadModel(const std::string& fileName, LOAD_MODEL_TYPE modelTy
 		return false;
 	}
 
-	m_pModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
+	m_pModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(90.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
 
 	return true;
 }
