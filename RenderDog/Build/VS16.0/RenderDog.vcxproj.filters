@@ -46,6 +46,15 @@
     <Filter Include="Resource">
       <UniqueIdentifier>{aeb0266d-131e-49c4-8b5d-5ef155f56d86}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{17b5a205-0731-43af-b9aa-48cbdd2b008d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility\Public">
+      <UniqueIdentifier>{56865c25-85b8-4b95-86e5-9221b666ce82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility\Private">
+      <UniqueIdentifier>{20ab27ab-07d7-413f-adac-8c409197e2b1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Math\Private\Matrix.cpp">
@@ -101,6 +110,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Private\Sky.cpp">
       <Filter>Primitive\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Private\FbxImporter.cpp">
+      <Filter>Utility\Private</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -178,6 +190,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Public\Sky.h">
       <Filter>Primitive\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Public\FbxImporter.h">
+      <Filter>Utility\Public</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

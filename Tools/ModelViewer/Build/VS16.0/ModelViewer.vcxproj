@@ -60,7 +60,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\Public;..\..\..\..\EngineSDK\RenderDog\Public\RenderDog;..\..\..\..\EngineSDK\RenderDog\Public\Math;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Public;..\..\..\..\EngineSDK\RenderDog\Public\RenderDog;..\..\..\..\EngineSDK\RenderDog\Public\Math;..\..\..\..\EngineSDK\3rdSDK\Public\FbxSDK;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -85,7 +85,7 @@ xcopy ..\..\..\..\EngineSDK\RenderDog\EngineAsset\*.* ..\..\..\..\Bin\Tools\$(Pr
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\Public;..\..\..\..\EngineSDK\RenderDog\Public\RenderDog;..\..\..\..\EngineSDK\RenderDog\Public\Math;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Public;..\..\..\..\EngineSDK\RenderDog\Public\RenderDog;..\..\..\..\EngineSDK\RenderDog\Public\Math;..\..\..\..\EngineSDK\3rdSDK\Public\FbxSDK;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

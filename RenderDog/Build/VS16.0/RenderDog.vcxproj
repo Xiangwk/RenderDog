@@ -16,6 +16,7 @@
     <ClCompile Include="..\..\Math\Private\Utility.cpp" />
     <ClCompile Include="..\..\Math\Private\Vector.cpp" />
     <ClCompile Include="..\..\Private\Camera.cpp" />
+    <ClCompile Include="..\..\Private\FbxImporter.cpp" />
     <ClCompile Include="..\..\Private\Framework.cpp" />
     <ClCompile Include="..\..\Private\GameTimer.cpp" />
     <ClCompile Include="..\..\Private\GeometryGenerator.cpp" />
@@ -38,6 +39,7 @@
     <ClInclude Include="..\..\Public\Bounding.h" />
     <ClInclude Include="..\..\Public\Buffer.h" />
     <ClInclude Include="..\..\Public\Camera.h" />
+    <ClInclude Include="..\..\Public\FbxImporter.h" />
     <ClInclude Include="..\..\Public\Framework.h" />
     <ClInclude Include="..\..\Public\GameTimer.h" />
     <ClInclude Include="..\..\Public\GeometryGenerator.h" />
@@ -103,7 +105,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\Public;..\..\Math\Public;..\..\..\Renderer\Public;..\..\..\EngineSDK\3rdSDK\Public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Public;..\..\Math\Public;..\..\..\Renderer\Public;..\..\..\EngineSDK\3rdSDK\Public;..\..\..\EngineSDK\3rdSDK\Public\FbxSDK;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -118,7 +120,7 @@ del ..\..\..\EngineSDK\RenderDog\EngineAsset\Textures\*.* /f /s /q
 xcopy ..\..\EngineAsset\*.* ..\..\..\EngineSDK\RenderDog\EngineAsset\ /i /s /y</Command>
     </PostBuildEvent>
     <Lib>
-      <AdditionalDependencies>assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc142-mtd.lib;libfbxsdk_d-md.lib;libxml2_d-md.lib;zlib_d-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\EngineSDK\3rdSDK\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -130,7 +132,7 @@ xcopy ..\..\EngineAsset\*.* ..\..\..\EngineSDK\RenderDog\EngineAsset\ /i /s /y</
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\Public;..\..\Math\Public;..\..\..\Renderer\Public;..\..\..\EngineSDK\3rdSDK\Public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Public;..\..\Math\Public;..\..\..\Renderer\Public;..\..\..\EngineSDK\3rdSDK\Public;..\..\..\EngineSDK\3rdSDK\Public\FbxSDK;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -147,7 +149,7 @@ del ..\..\..\EngineSDK\RenderDog\EngineAsset\Textures\*.* /f /s /q
 xcopy ..\..\EngineAsset\*.* ..\..\..\EngineSDK\RenderDog\EngineAsset\ /i /s /y</Command>
     </PostBuildEvent>
     <Lib>
-      <AdditionalDependencies>assimp-vc142-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc142-mt.lib;libfbxsdk-md.lib;libxml2-md.lib;zlib-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\EngineSDK\3rdSDK\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>

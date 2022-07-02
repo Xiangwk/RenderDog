@@ -8,6 +8,7 @@
 #include "Vector.h"
 #include "GeometryGenerator.h"
 #include "Utility.h"
+#include "FbxImporter.h"
 
 #include <windowsx.h>
 #include <sstream>
@@ -41,7 +42,7 @@ ModelViewer::~ModelViewer()
 bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 {
 	RenderDog::CameraDesc camDesc;
-	camDesc.position = RenderDog::Vector3(0.0f, 50.0f, -300.0f);
+	camDesc.position = RenderDog::Vector3(0.0f, 100.0f, -600.0f);
 	camDesc.yaw = 0.0f;
 	camDesc.pitch = 0.0f;
 	camDesc.fov = 45.0f;
@@ -63,6 +64,12 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 	if (!m_pRenderDog->Init(renderDogDesc))
 	{
 		MessageBox(nullptr, "RenderDog Init Failed!", "ERROR", MB_OK);
+		return false;
+	}
+
+	if (!RenderDog::g_pRDFbxImporter->Init())
+	{
+		MessageBox(nullptr, "RenderDog::FBXImporter Init Failed!", "ERROR", MB_OK);
 		return false;
 	}
 
@@ -112,6 +119,8 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 
 void ModelViewer::Release()
 {
+	RenderDog::g_pRDFbxImporter->Release();
+
 	if (m_pGridLine)
 	{
 		m_pGridLine->ReleaseRenderData();
