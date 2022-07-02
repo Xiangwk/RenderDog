@@ -28,7 +28,9 @@ ModelViewer::ModelViewer() :
 	m_pMainLight(nullptr),
 	m_pGameTimer(nullptr),
 	m_LastMousePosX(0),
-	m_LastMousePosY(0)
+	m_LastMousePosY(0),
+	m_bShowUnitGrid(true),
+	m_bModelMoved(false)
 {
 	memset(m_Keys, 0, sizeof(int) * 512);
 }
@@ -39,7 +41,7 @@ ModelViewer::~ModelViewer()
 bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 {
 	RenderDog::CameraDesc camDesc;
-	camDesc.position = RenderDog::Vector3(0.0f, 2.0f, -20.0f);
+	camDesc.position = RenderDog::Vector3(0.0f, 20.0f, -200.0f);
 	camDesc.yaw = 0.0f;
 	camDesc.pitch = 0.0f;
 	camDesc.fov = 45.0f;
@@ -73,54 +75,23 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 		return false;
 	}
 
-	RenderDog::GeometryGenerator::SimpleMeshData GridLineMeshData;
-	RenderDog::g_pGeometryGenerator->GenerateGridLine(100, 100, 1, RenderDog::Vector4(0.8f, 0.8f, 0.8f, 1.0f), GridLineMeshData);
-	m_pGridLine = new RenderDog::SimpleModel();
-	m_pGridLine->LoadFromSimpleData(GridLineMeshData.vertices, GridLineMeshData.indices, "Shaders/SimpleModelVertexShader.hlsl", "Shaders/SingleColorPixelShader.hlsl", "MainSceneGridLine");
-	m_pGridLine->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
-	m_pGridLine->RegisterToScene(m_pScene);
-
-	RenderDog::GeometryGenerator::StandardMeshData GridMeshData;
-	RenderDog::g_pGeometryGenerator->GenerateGrid(100, 100, 1, GridMeshData);
-	m_pFloor = new RenderDog::StaticModel();
-	m_pFloor->LoadFromStandardData(GridMeshData.vertices, GridMeshData.indices, "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl", "MainSceneFloor");
-	if (!m_pFloor->LoadTextureFromFile(L"EngineAsset/Textures/White_diff.dds", L"EngineAsset/Textures/FlatNormal_norm.dds"))
+	if (!LoadFloor(10, 10, 100.0f))
 	{
-		MessageBox(nullptr, "Load Texture Failed!", "ERROR", MB_OK);
+		MessageBox(nullptr, "Load Floor Failed!", "ERROR", MB_OK);
+		return false;
 	}
-	m_pFloor->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
-	m_pFloor->RegisterToScene(m_pScene);
 
-	m_pModel = new RenderDog::StaticModel();
-	m_pModel->LoadFromFile("Models/Generator/Generator_small.obj", "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl");
-	if (!m_pModel->LoadTextureFromFile(L"EngineAsset/Textures/White_diff.dds", L"Models/Generator/Textures/PolybumpTangent_norm.tga"))
+	if (!LoadSkyBox(L"EngineAsset/Textures/Snowcube1024.dds"))
 	{
-		MessageBox(nullptr, "Load Texture Failed!", "ERROR", MB_OK);
+		MessageBox(nullptr, "Load Sky Failed!", "ERROR", MB_OK);
+		return false;
 	}
-	m_pModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(90.0f, 0.0f, 0.0f), RenderDog::Vector3(0.1f));
-	m_pModel->RegisterToScene(m_pScene);
 
-	m_pSkyBox = new RenderDog::SkyBox(L"EngineAsset/Textures/Snowcube1024.dds");
-	m_pSkyBox->RegisterToScene(m_pScene);
-
-	/*m_pModel->LoadFromFile("Models/nanosuit/nanosuit.obj", "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl");
-	if(!m_pModel->LoadTextureFromFile(L"EngineAsset/Textures/White_diff.dds", L"EngineAsset/Textures/Brick_norm.tga"))
+	if (!LoadModel("Models/Generator/Generator_small.obj", LOAD_MODEL_TYPE::CUSTOM))
 	{
-		MessageBox(nullptr, "Load Texture Failed!", "ERROR", MB_OK);
+		MessageBox(nullptr, "Load Model Failed!", "ERROR", MB_OK);
+		return false;
 	}
-	m_pModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
-	m_pModel->RegisterToScene(m_pScene);*/
-
-	/*RenderDog::GeometryGenerator::StandardMeshData SphereMeshData;
-	RenderDog::g_pGeometryGenerator->GenerateSphere(40, 40, 5, SphereMeshData);
-	m_pModel = new RenderDog::StaticModel();
-	m_pModel->LoadFromStandardData(SphereMeshData.vertices, SphereMeshData.indices, "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl", "Sphere");
-	if (!m_pModel->LoadTextureFromFile(L"EngineAsset/Textures/ErrorTexture_diff.dds", L"EngineAsset/Textures/FlatNormal_norm.dds"))
-	{
-		MessageBox(nullptr, "Load Texture Failed!", "ERROR", MB_OK);
-	}
-	m_pModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
-	m_pModel->RegisterToScene(m_pScene);*/
 
 	RenderDog::LightDesc lightDesc = {};
 	lightDesc.type = RenderDog::LIGHT_TYPE::DIRECTIONAL;
@@ -305,6 +276,74 @@ LRESULT ModelViewer::MessageProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
 	return 0;
 }
 
+bool ModelViewer::LoadFloor(uint32_t width, uint32_t depth, float unit)
+{
+	RenderDog::GeometryGenerator::SimpleMeshData GridLineMeshData;
+	RenderDog::g_pGeometryGenerator->GenerateGridLine(width, depth, unit, RenderDog::Vector4(0.8f, 0.8f, 0.8f, 1.0f), GridLineMeshData);
+	m_pGridLine = new RenderDog::SimpleModel();
+	m_pGridLine->LoadFromSimpleData(GridLineMeshData.vertices, GridLineMeshData.indices, "Shaders/SimpleModelVertexShader.hlsl", "Shaders/SingleColorPixelShader.hlsl", "MainSceneGridLine");
+	m_pGridLine->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
+	
+
+	RenderDog::GeometryGenerator::StandardMeshData GridMeshData;
+	RenderDog::g_pGeometryGenerator->GenerateGrid(width, depth, unit, GridMeshData);
+	m_pFloor = new RenderDog::StaticModel();
+	m_pFloor->LoadFromStandardData(GridMeshData.vertices, GridMeshData.indices, "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl", "MainSceneFloor");
+	if (!m_pFloor->LoadTextureFromFile(L"EngineAsset/Textures/White_diff.dds", L"EngineAsset/Textures/FlatNormal_norm.dds"))
+	{
+		MessageBox(nullptr, "Load Texture Failed!", "ERROR", MB_OK);
+		return false;
+	}
+	m_pFloor->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
+	
+
+	return true;
+}
+
+bool ModelViewer::LoadSkyBox(const std::wstring& texFileName)
+{
+	m_pSkyBox = new RenderDog::SkyBox(texFileName);
+	
+
+	return true;
+}
+
+bool ModelViewer::LoadModel(const std::string& fileName, LOAD_MODEL_TYPE modelType)
+{
+	m_pModel = new RenderDog::StaticModel();
+
+	if (modelType == LOAD_MODEL_TYPE::STANDARD)
+	{
+		RenderDog::GeometryGenerator::StandardMeshData SphereMeshData;
+		RenderDog::g_pGeometryGenerator->GenerateSphere(50, 50, 50, SphereMeshData);
+		m_pModel->LoadFromStandardData(SphereMeshData.vertices, SphereMeshData.indices, "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl", "Sphere");
+		if (!m_pModel->LoadTextureFromFile(L"EngineAsset/Textures/ErrorTexture_diff.dds", L"EngineAsset/Textures/FlatNormal_norm.dds"))
+		{
+			MessageBox(nullptr, "Load Texture Failed!", "ERROR", MB_OK);
+			return false;
+		}
+	}
+	else if (modelType == LOAD_MODEL_TYPE::CUSTOM)
+	{
+		m_pModel->LoadFromFile(fileName, "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl");
+		if (!m_pModel->LoadTextureFromFile(L"EngineAsset/Textures/White_diff.dds", L"Models/Generator/Textures/PolybumpTangent_norm.tga"))
+		{
+			MessageBox(nullptr, "Load Texture Failed!", "ERROR", MB_OK);
+			return false;
+		}
+	}
+	else
+	{
+		MessageBox(nullptr, "Load Unknown Type Model!", "ERROR", MB_OK);
+		return false;
+	}
+
+	m_pModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
+
+	return true;
+}
+
+
 void ModelViewer::Update()
 {
 	//W
@@ -337,6 +376,29 @@ void ModelViewer::Update()
 	{
 		m_pFPSCamera->Move(RenderDog::FPSCamera::MOVE_MODE::DOWN);
 	}
+
+	if (m_bModelMoved)
+	{
+		m_pModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
+	}
+
+	RegisterObjectToScene();
+}
+
+void ModelViewer::RegisterObjectToScene()
+{
+	m_pScene->Clear();
+
+	if (m_bShowUnitGrid)
+	{
+		m_pGridLine->RegisterToScene(m_pScene);
+	}
+
+	m_pFloor->RegisterToScene(m_pScene);
+
+	m_pSkyBox->RegisterToScene(m_pScene);
+
+	m_pModel->RegisterToScene(m_pScene);
 }
 
 void ModelViewer::CalculateFrameStats()

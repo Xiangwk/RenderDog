@@ -21,6 +21,13 @@ struct ModelViewerInitDesc
 
 class ModelViewer
 {
+private:
+	enum class LOAD_MODEL_TYPE
+	{
+		STANDARD = 0,
+		CUSTOM
+	};
+
 public:
 	ModelViewer();
 	~ModelViewer();
@@ -33,7 +40,12 @@ public:
 	LRESULT						MessageProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 private:
+	bool						LoadFloor(uint32_t width, uint32_t depth, float unit);
+	bool						LoadSkyBox(const std::wstring& texFileName);
+	bool						LoadModel(const std::string& fileName, LOAD_MODEL_TYPE modelType);
+
 	void						Update();
+	void						RegisterObjectToScene();
 
 	void						CalculateFrameStats();
 
@@ -60,6 +72,9 @@ private:
 
 	int							m_LastMousePosX;
 	int							m_LastMousePosY;
+
+	bool						m_bShowUnitGrid;
+	bool						m_bModelMoved;
 };
 
 extern ModelViewer* g_pModelViewer;

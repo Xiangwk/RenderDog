@@ -214,7 +214,7 @@ namespace RenderDog
 			}
 		}
 
-		return StaticMesh(tempVertices, tempIndices, modelName + meshName);
+		return StaticMesh(tempVertices, tempIndices, modelName + "_" + meshName);
 	}
 
 	void StaticModel::CalculateMeshTangents()

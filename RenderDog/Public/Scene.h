@@ -42,6 +42,8 @@ namespace RenderDog
 
 		virtual const BoundingSphere&	GetBoundingSphere() const = 0;
 		virtual BoundingSphere&			GetBoundingSphere() = 0;
+
+		virtual void					Clear() = 0;
 	};
 
 	class ISceneManager

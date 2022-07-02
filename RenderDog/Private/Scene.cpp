@@ -43,6 +43,8 @@ namespace RenderDog
 		virtual const BoundingSphere&	GetBoundingSphere() const override { return m_BoundingSphere; }
 		virtual BoundingSphere&			GetBoundingSphere() override { return m_BoundingSphere; }
 
+		virtual void					Clear() override;
+
 	private:
 		std::string						m_Name;
 		std::vector<IPrimitive*>		m_Primitives;
@@ -105,6 +107,11 @@ namespace RenderDog
 	void Scene::RegisterLight(ILight* pLight)
 	{
 		m_Lights.push_back(pLight);
+	}
+
+	void Scene::Clear()
+	{
+		m_Primitives.clear();
 	}
 
 	IScene* SceneManager::CreateScene(const SceneInitDesc& sceneDesc)

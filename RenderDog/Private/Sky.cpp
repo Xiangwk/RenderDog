@@ -23,7 +23,7 @@ namespace RenderDog
 			MessageBox(nullptr, "SkyBox Load Texture Failed!", "ERROR", MB_OK);
 		}
 
-		m_pSkyMesh->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1000.0f));
+		m_pSkyMesh->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(100000.0f));
 	}
 
 	SkyBox::~SkyBox()
