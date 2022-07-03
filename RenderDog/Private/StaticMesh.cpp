@@ -221,6 +221,20 @@ namespace RenderDog
 		return *this;
 	}
 
+	StaticMesh::StaticMesh(const std::string& name):
+		m_Name(name),
+		m_Vertices(0),
+		m_Indices(0),
+		m_RawVertices(0),
+		m_RawIndices(0),
+		m_pRenderData(nullptr),
+		m_pDiffuseTexture(nullptr),
+		m_pDiffuseTextureSampler(nullptr),
+		m_pNormalTexture(nullptr),
+		m_pNormalTextureSampler(nullptr),
+		m_AABB()
+	{}
+
 	StaticMesh::StaticMesh(const std::vector<StandardVertex>& vertices, const std::vector<uint32_t>& indices, const std::string& name) :
 		m_Name(name),
 		m_Vertices(0),
@@ -397,23 +411,14 @@ namespace RenderDog
 		m_pRenderData->pCB->Update(&worldMat, sizeof(Matrix4x4));
 	}
 
-	void StaticMesh::CalculateTangents()
+	void StaticMesh::CalcTangentsAndGenIndices(std::vector<StandardVertex>& rawVertices, const std::vector<uint32_t>& smoothGroup)
 	{
-		//1. 按索引拆分顶点
-		std::vector<StandardVertex> tempVertices;
-		tempVertices.reserve(m_RawIndices.size());
-
-		for (uint32_t i = 0; i < m_RawIndices.size(); ++i)
+		//1. 按三角形计算TBN
+		for (uint32_t i = 0; i < rawVertices.size(); i += 3)
 		{
-			tempVertices.push_back(m_RawVertices[m_RawIndices[i]]);
-		}
-
-		//2. 按三角形计算TBN
-		for (uint32_t i = 0; i < tempVertices.size(); i += 3)
-		{
-			StandardVertex& v0 = tempVertices[i];
-			StandardVertex& v1 = tempVertices[i + 1];
-			StandardVertex& v2 = tempVertices[i + 2];
+			StandardVertex& v0 = rawVertices[i];
+			StandardVertex& v1 = rawVertices[i + 1];
+			StandardVertex& v2 = rawVertices[i + 2];
 
 			const Vector3& pos0 = v0.position;
 			const Vector3& pos1 = v1.position;
@@ -474,11 +479,15 @@ namespace RenderDog
 			v2.normal = faceNormal2;
 		}
 
-		//3. 合并相同的顶点
-		m_Vertices.reserve(m_RawVertices.size());
-		m_Indices.reserve(tempVertices.size());
+		//2. 合并相同的顶点
+		m_Vertices.reserve(rawVertices.size());
+		m_Indices.reserve(rawVertices.size());
 
-		if (tempVertices.size() < 3)
+		//NOTE!!! newSmoothIndices的数量与顶点数相同对应
+		std::vector<uint32_t> newSmoothGroup;
+		newSmoothGroup.reserve(rawVertices.size());  
+
+		if (rawVertices.size() < 3)
 		{
 			return;
 		}
@@ -486,13 +495,16 @@ namespace RenderDog
 		//加入第一个三角形
 		for (uint32_t i = 0; i < 3; ++i)
 		{
-			m_Vertices.push_back(tempVertices[i]);
+			m_Vertices.push_back(rawVertices[i]);
 			m_Indices.push_back(i);
+			newSmoothGroup.push_back(smoothGroup[i]);
 		}
 
-		for (uint32_t i = 3; i < tempVertices.size(); ++i)
+		for (uint32_t i = 3; i < rawVertices.size(); ++i)
 		{
-			StandardVertex& rawVert = tempVertices[i];
+			uint32_t rawSmooth = smoothGroup[i];
+
+			StandardVertex& rawVert = rawVertices[i];
 			Vector3 weightedAverNormal = rawVert.normal;
 
 			bool bHasSameVertex = false;
@@ -500,9 +512,8 @@ namespace RenderDog
 			for (uint32_t j = 0; j < (uint32_t)m_Vertices.size(); ++j)
 			{
 				StandardVertex& vert = m_Vertices[j];
-				//TEMP!!! 暂时没有光滑组信息，临时增加一个夹角大于45度则不做法线的加权平均的条件
-				if (rawVert.position == vert.position
-					&& abs(DotProduct(Normalize(rawVert.normal), Normalize(vert.normal))) > 0.7f)
+				uint32_t newSmooth = newSmoothGroup[j];
+				if (rawVert.position == vert.position && rawSmooth == newSmooth)
 				{
 					weightedAverNormal = rawVert.normal + vert.normal;
 					vert.normal = weightedAverNormal;
@@ -527,6 +538,7 @@ namespace RenderDog
 
 				rawVert.normal = weightedAverNormal;
 				m_Vertices.push_back(rawVert);
+				newSmoothGroup.push_back(rawSmooth);
 			}
 			else
 			{
@@ -534,7 +546,7 @@ namespace RenderDog
 			}
 		}
 
-		//4. 将所有顶点的T和N规范正交化
+		//3. 将所有顶点的T和N规范正交化
 		for (uint32_t i = 0; i < m_Vertices.size(); ++i)
 		{
 			StandardVertex& vert = m_Vertices[i];

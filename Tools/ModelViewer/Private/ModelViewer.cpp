@@ -123,8 +123,6 @@ void ModelViewer::Release()
 
 	if (m_pGridLine)
 	{
-		m_pGridLine->ReleaseRenderData();
-
 		delete m_pGridLine;
 		m_pGridLine = nullptr;
 	}
@@ -334,7 +332,18 @@ bool ModelViewer::LoadModel(const std::string& fileName, LOAD_MODEL_TYPE modelTy
 	}
 	else if (modelType == LOAD_MODEL_TYPE::CUSTOM)
 	{
-		m_pModel->LoadFromFile(fileName, "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl");
+		if (!RenderDog::g_pRDFbxImporter->LoadFbxFile(fileName))
+		{
+			MessageBox(nullptr, "Import FBX File Failed!", "ERROR", MB_OK);
+			return false;
+		}
+
+		if (!m_pModel->LoadFromRawMeshData(RenderDog::g_pRDFbxImporter->GetRawMeshData(), "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl", fileName))
+		{
+			MessageBox(nullptr, "Load Model Failed!", "ERROR", MB_OK);
+			return false;
+		}
+
 		if (!m_pModel->LoadTextureFromFile(L"EngineAsset/Textures/White_diff.dds", L"EngineAsset/Textures/FlatNormal_norm.dds"))
 		{
 			MessageBox(nullptr, "Load Texture Failed!", "ERROR", MB_OK);
@@ -347,7 +356,7 @@ bool ModelViewer::LoadModel(const std::string& fileName, LOAD_MODEL_TYPE modelTy
 		return false;
 	}
 
-	m_pModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(90.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
+	m_pModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
 
 	return true;
 }

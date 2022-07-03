@@ -60,7 +60,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\Include;..\..\..\..\EngineSDK\Renderer\Public\SoftwareRenderer;..\..\..\..\EngineSDK\RenderDog\Public\Math;..\..\..\..\EngineSDK\RenderDog\Public\RenderDog;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Include;..\..\..\..\EngineSDK\Renderer\Public\SoftwareRenderer;..\..\..\..\EngineSDK\RenderDog\Public\Math;..\..\..\..\EngineSDK\RenderDog\Public\RenderDog;..\..\..\..\EngineSDK\3rdSDK\Public\FbxSDK;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -83,7 +83,7 @@ xcopy ..\..\..\..\EngineSDK\RenderDog\EngineAsset\*.* ..\..\..\..\Bin\Demos\$(Pr
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\Include;..\..\..\..\EngineSDK\Renderer\Public\SoftwareRenderer;..\..\..\..\EngineSDK\RenderDog\Public\Math;..\..\..\..\EngineSDK\RenderDog\Public\RenderDog;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Include;..\..\..\..\EngineSDK\Renderer\Public\SoftwareRenderer;..\..\..\..\EngineSDK\RenderDog\Public\Math;..\..\..\..\EngineSDK\RenderDog\Public\RenderDog;..\..\..\..\EngineSDK\3rdSDK\Public\FbxSDK;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>

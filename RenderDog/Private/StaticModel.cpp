@@ -7,10 +7,6 @@
 #include "StaticModel.h"
 #include "Scene.h"
 
-#include "assimp/Importer.hpp"
-#include "assimp/Scene.h"
-#include "assimp/postprocess.h"
-
 
 namespace RenderDog
 {
@@ -24,6 +20,8 @@ namespace RenderDog
 
 	SimpleModel::~SimpleModel()
 	{
+		ReleaseRenderData();
+
 		m_Meshes.clear();
 	}
 
@@ -113,18 +111,32 @@ namespace RenderDog
 		return true;
 	}
 
-	bool StaticModel::LoadFromFile(const std::string& fileName, const std::string& vsFile, const std::string& psFile)
+	bool StaticModel::LoadFromRawMeshData(const std::vector<RDFbxImporter::RawMeshData>& rawMeshDatas, const std::string& vsFile, const std::string& psFile, const std::string& fileName)
 	{
-		Assimp::Importer modelImporter;
-		const aiScene* assimpModelScene = modelImporter.ReadFile(fileName, aiProcess_ConvertToLeftHanded);
-		if (!assimpModelScene || assimpModelScene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !assimpModelScene->mRootNode)
+		for (uint32_t i = 0; i < rawMeshDatas.size(); ++i)
 		{
-			return false;
+			const RDFbxImporter::RawMeshData& meshData = rawMeshDatas[i];
+
+			std::vector<StandardVertex> vertices;
+			vertices.reserve(meshData.postions.size());
+
+			for (uint32_t index = 0; index < meshData.postions.size(); ++index)
+			{
+				StandardVertex vert;
+				vert.position = meshData.postions[index];
+				vert.color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+				vert.normal = Vector3(0.0f, 0.0f, 0.0f);
+				vert.tangent = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+				vert.texcoord = meshData.texcoords[index];
+
+				vertices.push_back(vert);
+			}
+
+			StaticMesh mesh(fileName);
+			mesh.CalcTangentsAndGenIndices(vertices, meshData.smoothGroup);
+
+			m_Meshes.push_back(mesh);
 		}
-
-		ProcessNode(assimpModelScene->mRootNode, assimpModelScene, fileName);
-
-		CalculateMeshTangents();
 
 		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
 		{
@@ -167,61 +179,6 @@ namespace RenderDog
 		{
 			StaticMesh* pMesh = &(m_Meshes[i]);
 			pMesh->ReleaseRenderData();
-		}
-	}
-
-
-	void StaticModel::ProcessNode(const aiNode* pAssimpNode, const aiScene* pAssimpScene, const std::string& modelName)
-	{
-		for (uint32_t i = 0; i < pAssimpNode->mNumMeshes; ++i)
-		{
-			aiMesh* pMesh = pAssimpScene->mMeshes[pAssimpNode->mMeshes[i]];
-
-			StaticMesh mesh = ProcessMesh(pMesh, pAssimpScene, modelName);
-			m_Meshes.push_back(mesh);
-		}
-
-		for (uint32_t i = 0; i < pAssimpNode->mNumChildren; ++i)
-		{
-			ProcessNode(pAssimpNode->mChildren[i], pAssimpScene, modelName);
-		}
-	}
-
-	StaticMesh StaticModel::ProcessMesh(const aiMesh* pAssimpMesh, const aiScene* pAssimpScene, const std::string& modelName)
-	{
-		std::vector<StandardVertex> tempVertices;
-		std::vector<uint32_t> tempIndices;
-		std::string meshName;
-
-		for (unsigned int i = 0; i < pAssimpMesh->mNumVertices; ++i)
-		{
-			Vector3 position = Vector3(pAssimpMesh->mVertices[i].x, pAssimpMesh->mVertices[i].y, pAssimpMesh->mVertices[i].z);
-			Vector2 texCoord = Vector2(pAssimpMesh->mTextureCoords[0][i].x, pAssimpMesh->mTextureCoords[0][i].y);
-			//Vector3 normal = Vector3(pAssimpMesh->mNormals[i].x, pAssimpMesh->mNormals[i].y, pAssimpMesh->mNormals[i].z);
-			meshName = std::string(pAssimpMesh->mName.C_Str());
-
-			StandardVertex vert(position.x, position.y, position.z, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, texCoord.x, texCoord.y);
-
-			tempVertices.push_back(vert);
-		}
-
-		for (unsigned int i = 0; i < pAssimpMesh->mNumFaces; ++i)
-		{
-			aiFace face = pAssimpMesh->mFaces[i];
-			for (unsigned int j = 0; j < face.mNumIndices; ++j)
-			{
-				tempIndices.push_back(face.mIndices[j]);
-			}
-		}
-
-		return StaticMesh(tempVertices, tempIndices, modelName + "_" + meshName);
-	}
-
-	void StaticModel::CalculateMeshTangents()
-	{
-		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
-		{
-			m_Meshes[i].CalculateTangents();
 		}
 	}
 

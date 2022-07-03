@@ -9,6 +9,7 @@
 #include "Window.h"
 #include "Utility.h"
 #include "GeometryGenerator.h"
+#include "FbxImporter.h"
 
 #include <windowsx.h>
 #include <sstream>
@@ -38,14 +39,14 @@ DemoApp::~DemoApp()
 bool DemoApp::Init(const DemoInitDesc& desc)
 {
 	RenderDog::CameraDesc camDesc;
-	camDesc.position = RenderDog::Vector3(0.0f, 2.0f, -20.0f);
+	camDesc.position = RenderDog::Vector3(0.0f, 50.0f, -500.0f);
 	camDesc.yaw = 0.0f;
 	camDesc.pitch = 0.0f;
 	camDesc.fov = 45.0f;
 	camDesc.aspectRitio = (float)desc.wndDesc.width / (float)desc.wndDesc.height;
 	camDesc.nearPlane = 0.1f;
-	camDesc.farPlane = 1000.0f;
-	camDesc.moveSpeed = 0.1f;
+	camDesc.farPlane = 10000.0f;
+	camDesc.moveSpeed = 0.5f;
 	camDesc.rotSpeed = 0.1f;
 	m_pFPSCamera = new RenderDog::FPSCamera(camDesc);
 
@@ -63,6 +64,12 @@ bool DemoApp::Init(const DemoInitDesc& desc)
 		return false;
 	}
 
+	if (!RenderDog::g_pRDFbxImporter->Init())
+	{
+		MessageBox(nullptr, "RenderDog::FBXImporter Init Failed!", "ERROR", MB_OK);
+		return false;
+	}
+
 	RenderDog::SceneInitDesc sceneDesc;
 	sceneDesc.name = "MainScene";
 	m_pScene = RenderDog::g_pISceneManager->CreateScene(sceneDesc);
@@ -72,18 +79,11 @@ bool DemoApp::Init(const DemoInitDesc& desc)
 		return false;
 	}
 
-	/*RenderDog::GeometryGenerator::SimpleMeshData GridLineMeshData;
-	RenderDog::g_pGeometryGenerator->GenerateGridLine(100, 100, 1, RenderDog::Vector4(0.8f, 0.8f, 0.8f, 1.0f), GridLineMeshData);
-	m_pGridLine = new RenderDog::SimpleModel();
-	m_pGridLine->LoadFromSimpleData(GridLineMeshData.vertices, GridLineMeshData.indices, "Shaders/SimpleModelVertexShader.hlsl", "Shaders/SingleColorPixelShader.hlsl");
-	m_pGridLine->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
-	m_pGridLine->RegisterToScene(m_pScene);*/
-
-	m_pModel = new RenderDog::StaticModel();
-	m_pModel->LoadFromFile("Models/Generator/Generator_small.obj", "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl");
-	m_pModel->LoadTextureFromFile(L"", L"Textures/PolybumpTangent_DDN.tga");
-	m_pModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(90.0f, 0.0f, 0.0f), RenderDog::Vector3(0.1f));
-
+	if (!LoadModel("Models/generator/Generator.FBX", LOAD_MODEL_TYPE::CUSTOM))
+	{
+		MessageBox(nullptr, "Load Model Failed!", "ERROR", MB_OK);
+		return false;
+	}
 	m_pModel->RegisterToScene(m_pScene);
 
 	RenderDog::LightDesc lightDesc = {};
@@ -105,18 +105,16 @@ bool DemoApp::Init(const DemoInitDesc& desc)
 
 void DemoApp::Release()
 {
+	RenderDog::g_pRDFbxImporter->Release();
+
 	if (m_pGridLine)
 	{
-		m_pGridLine->ReleaseRenderData();
-
 		delete m_pGridLine;
 		m_pGridLine = nullptr;
 	}
 
 	if (m_pModel)
 	{
-		m_pModel->ReleaseRenderData();
-
 		delete m_pModel;
 		m_pModel = nullptr;
 	}
@@ -253,6 +251,52 @@ LRESULT DemoApp::MessageProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	}
 	}
 	return 0;
+}
+
+bool DemoApp::LoadModel(const std::string& fileName, LOAD_MODEL_TYPE modelType)
+{
+	m_pModel = new RenderDog::StaticModel();
+
+	if (modelType == LOAD_MODEL_TYPE::STANDARD)
+	{
+		RenderDog::GeometryGenerator::StandardMeshData SphereMeshData;
+		RenderDog::g_pGeometryGenerator->GenerateSphere(50, 50, 50, SphereMeshData);
+		m_pModel->LoadFromStandardData(SphereMeshData.vertices, SphereMeshData.indices, "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl", "Sphere");
+		if (!m_pModel->LoadTextureFromFile(L"EngineAsset/Textures/ErrorTexture_diff.dds", L"EngineAsset/Textures/FlatNormal_norm.dds"))
+		{
+			MessageBox(nullptr, "Load Texture Failed!", "ERROR", MB_OK);
+			return false;
+		}
+	}
+	else if (modelType == LOAD_MODEL_TYPE::CUSTOM)
+	{
+		if (!RenderDog::g_pRDFbxImporter->LoadFbxFile(fileName))
+		{
+			MessageBox(nullptr, "Import FBX File Failed!", "ERROR", MB_OK);
+			return false;
+		}
+
+		if (!m_pModel->LoadFromRawMeshData(RenderDog::g_pRDFbxImporter->GetRawMeshData(), "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl", fileName))
+		{
+			MessageBox(nullptr, "Load Model Failed!", "ERROR", MB_OK);
+			return false;
+		}
+
+		if (!m_pModel->LoadTextureFromFile(L"EngineAsset/Textures/White_diff.dds", L"Models/generator/Textures/PolybumpTangent_DDN.tga"))
+		{
+			MessageBox(nullptr, "Load Texture Failed!", "ERROR", MB_OK);
+			return false;
+		}
+	}
+	else
+	{
+		MessageBox(nullptr, "Load Unknown Type Model!", "ERROR", MB_OK);
+		return false;
+	}
+
+	m_pModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
+
+	return true;
 }
 
 void DemoApp::Update()

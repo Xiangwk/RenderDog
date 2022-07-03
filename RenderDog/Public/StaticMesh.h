@@ -89,6 +89,8 @@ namespace RenderDog
 		StaticMesh(const StaticMesh& mesh);
 		StaticMesh& operator=(const StaticMesh& mesh);
 
+		StaticMesh(const std::string& name);
+
 		StaticMesh(const std::vector<StandardVertex>& vertices, const std::vector<uint32_t>& indices, const std::string& name);
 
 		virtual void					Render(IPrimitiveRenderer* pPrimitiveRenderer) override;
@@ -105,7 +107,8 @@ namespace RenderDog
 
 		void							SetPosGesture(const Vector3& pos, const Vector3& euler, const Vector3& scale);
 
-		void							CalculateTangents();
+		//该函数必须保证顶点数组中为拆散的顶点，即顶点数为三角形数乘以3
+		void							CalcTangentsAndGenIndices(std::vector<StandardVertex>& rawVertices, const std::vector<uint32_t>& smoothGroup);
 		void							CalculateAABB();
 
 		ITexture2D*						GetDiffuseTexture() { return m_pDiffuseTexture; }

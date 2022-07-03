@@ -21,6 +21,13 @@ struct DemoInitDesc
 
 class DemoApp
 {
+private:
+	enum class LOAD_MODEL_TYPE
+	{
+		STANDARD = 0,
+		CUSTOM
+	};
+
 public:
 	DemoApp();
 	~DemoApp();
@@ -33,6 +40,8 @@ public:
 	LRESULT						MessageProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 private:
+	bool						LoadModel(const std::string& fileName, LOAD_MODEL_TYPE modelType);
+
 	void						Update();
 
 	void						CalculateFrameStats();

@@ -7,6 +7,7 @@
 #pragma once
 
 #include "StaticMesh.h"
+#include "FbxImporter.h"
 
 #include <string>
 
@@ -38,9 +39,10 @@ namespace RenderDog
 
 		void						RegisterToScene(IScene* pScene);
 
-		void						ReleaseRenderData();
-
 		void						SetPosGesture(const Vector3& pos, const Vector3& euler, const Vector3& scale);
+
+	private:
+		void						ReleaseRenderData();
 
 	private:
 		std::vector<SimpleMesh>		m_Meshes;
@@ -64,9 +66,9 @@ namespace RenderDog
 														 const std::string& vsFile, const std::string& psFile,
 														 const std::string& name);
 
-		bool						LoadFromFile(const std::string& fileName,
-												 const std::string& vsFile, 
-												 const std::string& psFile);
+		bool						LoadFromRawMeshData(const std::vector<RDFbxImporter::RawMeshData>& rawMeshDatas, 
+														const std::string& vsFile, const std::string& psFile, 
+														const std::string& fileName);
 
 		bool						LoadTextureFromFile(const std::wstring& diffuseTexturePath, const std::wstring& normalTexturePath);
 		
@@ -78,10 +80,6 @@ namespace RenderDog
 		const BoundingSphere&		GetBoundingSphere() const { return m_BoundingSphere; }
 
 	private:
-		void						ProcessNode(const aiNode* pAssimpNode, const aiScene* pAssimpScene, const std::string& modelName);
-		StaticMesh					ProcessMesh(const aiMesh* pAssimpMesh, const aiScene* pAssimpScene, const std::string& modelName);
-
-		void						CalculateMeshTangents();
 		void						CalculateBoundings();
 		//Use to update aabb and bounding sphere when set pos and gesture
 		void						UpdateBoundings();
