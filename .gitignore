@@ -39,3 +39,5 @@
 /Bin/Tools/ModelViewer/Models/Crunch
 /3rdSDK/FbxSDK/Build/VS16.0/x64/x64/Debug/FbxSDK.tlog
 /3rdSDK/FbxSDK/Build/VS16.0/x64/x64/Debug
+/Bin/Demos/HelloWorld/Models/generator/Generator.FBX
+/Bin/Tools/ModelViewer/Models/Generator/Generator.FBX
