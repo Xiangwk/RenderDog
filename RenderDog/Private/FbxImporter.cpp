@@ -71,7 +71,7 @@ namespace RenderDog
 		}
 	}
 
-	bool RDFbxImporter::LoadFbxFile(const std::string& filePath)
+	bool RDFbxImporter::LoadFbxFile(const std::string& filePath, bool bFlipUV)
 	{
 		if (!m_pImporter->Initialize(filePath.c_str(), -1, m_pManager->GetIOSettings()))
 		{
@@ -100,7 +100,7 @@ namespace RenderDog
 
 		m_RawData.clear();
 
-		if (!ProcessNode(m_pScene->GetRootNode()))
+		if (!ProcessNode(m_pScene->GetRootNode(), bFlipUV))
 		{
 			return false;
 		}
@@ -108,9 +108,9 @@ namespace RenderDog
 		return true;
 	}
 
-	bool RDFbxImporter::ProcessNode(FbxNode* pNode)
+	bool RDFbxImporter::ProcessNode(FbxNode* pNode, bool bFlipUV)
 	{
-		if (!ProcessMesh(pNode))
+		if (!ProcessMesh(pNode, bFlipUV))
 		{
 			return false;
 		}
@@ -123,7 +123,7 @@ namespace RenderDog
 				return false;
 			}
 			
-			if (!ProcessNode(pChildNode))
+			if (!ProcessNode(pChildNode, bFlipUV))
 			{
 				return false;
 			}
@@ -132,7 +132,7 @@ namespace RenderDog
 		return true;
 	}
 
-	bool RDFbxImporter::ProcessMesh(FbxNode* pNode)
+	bool RDFbxImporter::ProcessMesh(FbxNode* pNode, bool bFlipUV)
 	{
 		RawMeshData meshData;
 
@@ -194,6 +194,10 @@ namespace RenderDog
 						int uvIndex = pMesh->GetTextureUVIndex(i, j);
 						int uvLayer = 0;
 						ReadTexcoord(pMesh, ctrlPointIndex, uvIndex, uvLayer, tex[j]);
+						if (bFlipUV)
+						{
+							tex[j].y = 1.0f - tex[j].y;
+						}
 						meshData.texcoords.push_back(tex[j]);
 
 						meshData.smoothGroup.push_back(smoothGroup[i]);

@@ -36,13 +36,14 @@ namespace RenderDog
 		bool								Init();
 		void								Release();
 
-		bool								LoadFbxFile(const std::string& filePath);
+											//FlipUV为true时，v坐标要做反转（v = 1.0f - v）
+		bool								LoadFbxFile(const std::string& filePath, bool bFlipUV = false);	
 
 		std::vector<RawMeshData>&			GetRawMeshData() { return m_RawData; }
 
 	private:
-		bool								ProcessNode(FbxNode* pNode);
-		bool								ProcessMesh(FbxNode* pNode);
+		bool								ProcessNode(FbxNode* pNode, bool bFlipUV = false);
+		bool								ProcessMesh(FbxNode* pNode, bool bFlipUV = false);
 
 		void								GetTriangleMaterialIndices(FbxMesh* pMesh, int triNum, std::vector<uint32_t>& outputIndices);
 		void								GetTriangleSmoothIndices(FbxMesh* pMesh, int triNum, std::vector<uint32_t>& outputIndices);

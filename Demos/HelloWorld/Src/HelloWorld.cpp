@@ -270,7 +270,8 @@ bool DemoApp::LoadModel(const std::string& fileName, LOAD_MODEL_TYPE modelType)
 	}
 	else if (modelType == LOAD_MODEL_TYPE::CUSTOM)
 	{
-		if (!RenderDog::g_pRDFbxImporter->LoadFbxFile(fileName))
+		bool bFlipUV = true;
+		if (!RenderDog::g_pRDFbxImporter->LoadFbxFile(fileName, bFlipUV))
 		{
 			MessageBox(nullptr, "Import FBX File Failed!", "ERROR", MB_OK);
 			return false;
