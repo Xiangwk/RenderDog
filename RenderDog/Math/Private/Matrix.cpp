@@ -8,6 +8,20 @@
 
 namespace RenderDog
 {
+	Matrix4x4::Matrix4x4()
+	{
+		for (int i = 0; i < 4; ++i)
+		{
+			for (int j = 0; j < 4; ++j)
+			{
+				m_fData[i][j] = 0.0f;
+			}
+		}
+	}
+
+	Matrix4x4::~Matrix4x4()
+	{}
+
 	Matrix4x4::Matrix4x4(float f00, float f01, float f02, float f03,
 		float f10, float f11, float f12, float f13,
 		float f20, float f21, float f22, float f23,

@@ -1,0 +1,11 @@
+////////////////////////////////////////
+//RenderDog <¡¤,¡¤>
+//FileName: SkinModel.cpp
+//Written by Xiang Weikang
+////////////////////////////////////////
+
+namespace RenderDog
+{
+
+
+}// namespace RenderDog

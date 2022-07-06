@@ -1,0 +1,11 @@
+////////////////////////////////////////
+//RenderDog <¡¤,¡¤>
+//FileName: SkinMesh.cpp
+//Written by Xiang Weikang
+////////////////////////////////////////
+
+namespace RenderDog
+{
+
+
+}// namespace RenderDog

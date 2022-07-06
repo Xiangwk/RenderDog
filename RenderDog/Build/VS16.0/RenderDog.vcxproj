@@ -15,6 +15,7 @@
     <ClCompile Include="..\..\Math\Private\Transform.cpp" />
     <ClCompile Include="..\..\Math\Private\Utility.cpp" />
     <ClCompile Include="..\..\Math\Private\Vector.cpp" />
+    <ClCompile Include="..\..\Private\Bone.cpp" />
     <ClCompile Include="..\..\Private\Camera.cpp" />
     <ClCompile Include="..\..\Private\FbxImporter.cpp" />
     <ClCompile Include="..\..\Private\Framework.cpp" />
@@ -26,6 +27,9 @@
     <ClCompile Include="..\..\Private\RenderDog.cpp" />
     <ClCompile Include="..\..\Private\Scene.cpp" />
     <ClCompile Include="..\..\Private\SceneView.cpp" />
+    <ClCompile Include="..\..\Private\Skeleton.cpp" />
+    <ClCompile Include="..\..\Private\SkinMesh.cpp" />
+    <ClCompile Include="..\..\Private\SkinModel.cpp" />
     <ClCompile Include="..\..\Private\Sky.cpp" />
     <ClCompile Include="..\..\Private\StaticMesh.cpp" />
     <ClCompile Include="..\..\Private\StaticModel.cpp" />
@@ -36,6 +40,7 @@
     <ClInclude Include="..\..\Math\Public\Transform.h" />
     <ClInclude Include="..\..\Math\Public\Utility.h" />
     <ClInclude Include="..\..\Math\Public\Vector.h" />
+    <ClInclude Include="..\..\Public\Bone.h" />
     <ClInclude Include="..\..\Public\Bounding.h" />
     <ClInclude Include="..\..\Public\Buffer.h" />
     <ClInclude Include="..\..\Public\Camera.h" />
@@ -52,6 +57,9 @@
     <ClInclude Include="..\..\Public\Scene.h" />
     <ClInclude Include="..\..\Public\SceneView.h" />
     <ClInclude Include="..\..\Public\Shader.h" />
+    <ClInclude Include="..\..\Public\Skeleton.h" />
+    <ClInclude Include="..\..\Public\SkinMesh.h" />
+    <ClInclude Include="..\..\Public\SkinModel.h" />
     <ClInclude Include="..\..\Public\Sky.h" />
     <ClInclude Include="..\..\Public\StaticMesh.h" />
     <ClInclude Include="..\..\Public\StaticModel.h" />

@@ -91,8 +91,6 @@ namespace RenderDog
 
 		StaticMesh(const std::string& name);
 
-		StaticMesh(const std::vector<StandardVertex>& vertices, const std::vector<uint32_t>& indices, const std::string& name);
-
 		virtual void					Render(IPrimitiveRenderer* pPrimitiveRenderer) override;
 
 		virtual PRIMITIVE_TYPE			GetPriType() const override { return PRIMITIVE_TYPE::OPAQUE_PRI; }
@@ -121,9 +119,6 @@ namespace RenderDog
 
 	private:
 		std::string						m_Name;
-
-		std::vector<StandardVertex>		m_RawVertices;
-		std::vector<uint32_t>			m_RawIndices;
 
 		std::vector<StandardVertex>		m_Vertices;
 		std::vector<uint32_t>			m_Indices;

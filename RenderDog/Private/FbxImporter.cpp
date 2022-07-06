@@ -90,7 +90,7 @@ namespace RenderDog
 			return false;
 		}
 
-		//NOTE!!! Why not work??? Temp use a Matrix to transform vertices to Y up Left handed Axis;
+		//NOTE!!! Why not work??? Have to use a Matrix to transform vertices to Y up Left handed Axis;
 		/*FbxAxisSystem SceneAxisSystem = m_pScene->GetGlobalSettings().GetAxisSystem();
 		FbxAxisSystem RenderDogAxisSystem(FbxAxisSystem::eYAxis, FbxAxisSystem::eParityOdd, FbxAxisSystem::eLeftHanded);
 		if (SceneAxisSystem != RenderDogAxisSystem)

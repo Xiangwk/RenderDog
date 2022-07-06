@@ -163,8 +163,6 @@ namespace RenderDog
 		m_Name(""),
 		m_Vertices(0),
 		m_Indices(0),
-		m_RawVertices(0),
-		m_RawIndices(0),
 		m_pRenderData(nullptr),
 		m_pDiffuseTexture(nullptr),
 		m_pDiffuseTextureSampler(nullptr),
@@ -177,9 +175,6 @@ namespace RenderDog
 	{
 		ReleaseRenderData();
 
-		m_RawVertices.clear();
-		m_RawIndices.clear();
-
 		m_Vertices.clear();
 		m_Indices.clear();
 	}
@@ -188,8 +183,6 @@ namespace RenderDog
 		m_Name(mesh.m_Name),
 		m_Vertices(mesh.m_Vertices),
 		m_Indices(mesh.m_Indices),
-		m_RawVertices(mesh.m_RawVertices),
-		m_RawIndices(mesh.m_RawIndices),
 		m_pRenderData(nullptr),
 		m_pDiffuseTexture(nullptr),
 		m_pDiffuseTextureSampler(nullptr),
@@ -207,12 +200,10 @@ namespace RenderDog
 			return *this;
 		}
 
-		m_Name = mesh.m_Name;
-		m_Vertices = mesh.m_Vertices;
-		m_Indices = mesh.m_Indices;
-		m_RawVertices = mesh.m_RawVertices;
-		m_RawIndices = mesh.m_RawIndices;
-		m_AABB = mesh.m_AABB;
+		m_Name		= mesh.m_Name;
+		m_Vertices	= mesh.m_Vertices;
+		m_Indices	= mesh.m_Indices;
+		m_AABB		= mesh.m_AABB;
 
 		ReleaseRenderData();
 
@@ -225,8 +216,6 @@ namespace RenderDog
 		m_Name(name),
 		m_Vertices(0),
 		m_Indices(0),
-		m_RawVertices(0),
-		m_RawIndices(0),
 		m_pRenderData(nullptr),
 		m_pDiffuseTexture(nullptr),
 		m_pDiffuseTextureSampler(nullptr),
@@ -234,33 +223,6 @@ namespace RenderDog
 		m_pNormalTextureSampler(nullptr),
 		m_AABB()
 	{}
-
-	StaticMesh::StaticMesh(const std::vector<StandardVertex>& vertices, const std::vector<uint32_t>& indices, const std::string& name) :
-		m_Name(name),
-		m_Vertices(0),
-		m_Indices(0),
-		m_RawVertices(0),
-		m_RawIndices(0),
-		m_pRenderData(nullptr),
-		m_pDiffuseTexture(nullptr),
-		m_pDiffuseTextureSampler(nullptr),
-		m_pNormalTexture(nullptr),
-		m_pNormalTextureSampler(nullptr),
-		m_AABB()
-	{
-		m_RawVertices.reserve(vertices.size());
-		m_RawIndices.reserve(indices.size());
-
-		for (uint32_t i = 0; i < vertices.size(); ++i)
-		{
-			m_RawVertices.push_back(vertices[i]);
-		}
-
-		for (uint32_t i = 0; i < indices.size(); ++i)
-		{
-			m_RawIndices.push_back(indices[i]);
-		}
-	}
 
 	void StaticMesh::Render(IPrimitiveRenderer* pPrimitiveRenderer)
 	{

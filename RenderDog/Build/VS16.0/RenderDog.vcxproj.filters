@@ -114,6 +114,18 @@
     <ClCompile Include="..\..\Private\FbxImporter.cpp">
       <Filter>Utility\Private</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Private\SkinModel.cpp">
+      <Filter>Primitive\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Private\SkinMesh.cpp">
+      <Filter>Primitive\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Private\Bone.cpp">
+      <Filter>Primitive\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Private\Skeleton.cpp">
+      <Filter>Primitive\Private</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Math\Public\Matrix.h">
@@ -193,6 +205,18 @@
     </ClInclude>
     <ClInclude Include="..\..\Public\FbxImporter.h">
       <Filter>Utility\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Public\SkinModel.h">
+      <Filter>Primitive\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Public\SkinMesh.h">
+      <Filter>Primitive\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Public\Bone.h">
+      <Filter>Primitive\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Public\Skeleton.h">
+      <Filter>Primitive\Public</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
