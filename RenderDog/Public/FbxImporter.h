@@ -10,6 +10,7 @@
 #include "Vector.h"
 
 #include <vector>
+#include <string>
 
 namespace RenderDog
 {
@@ -18,11 +19,13 @@ namespace RenderDog
 	public:
 		struct RawMeshData 
 		{
+			std::string					name;
 			std::vector<Vector3>		postions;
 			std::vector<Vector2>		texcoords;
 			std::vector<uint32_t>		smoothGroup;		//每个三角形所在的光滑组索引
 
 			RawMeshData() :
+				name(),
 				postions(0),
 				texcoords(0),
 				smoothGroup(0)

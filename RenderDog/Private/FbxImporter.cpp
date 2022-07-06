@@ -205,6 +205,8 @@ namespace RenderDog
 				}
 			}
 
+			std::string meshName = pMesh->GetName();
+			meshData.name = meshName + "_" + std::to_string(matIndex);
 			m_RawData.push_back(meshData);
 		}
 

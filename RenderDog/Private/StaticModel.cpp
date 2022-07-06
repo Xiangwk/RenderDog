@@ -132,7 +132,8 @@ namespace RenderDog
 				vertices.push_back(vert);
 			}
 
-			StaticMesh mesh(fileName);
+			std::string meshName = fileName + "_" + meshData.name;
+			StaticMesh mesh(meshName);
 			mesh.CalcTangentsAndGenIndices(vertices, meshData.smoothGroup);
 
 			m_Meshes.push_back(mesh);
