@@ -332,7 +332,7 @@ bool ModelViewer::LoadModel(const std::string& fileName, LOAD_MODEL_TYPE modelTy
 	}
 	else if (modelType == LOAD_MODEL_TYPE::CUSTOM)
 	{
-		if (!RenderDog::g_pRDFbxImporter->LoadFbxFile(fileName))
+		if (!RenderDog::g_pRDFbxImporter->LoadFbxFile(fileName, true))
 		{
 			MessageBox(nullptr, "Import FBX File Failed!", "ERROR", MB_OK);
 			return false;
