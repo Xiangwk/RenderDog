@@ -1051,11 +1051,63 @@
                                     "created": 1657120210840,
                                     "text": "SkinModel",
                                     "layout_right_offset": {
-                                        "x": 372,
-                                        "y": 58
-                                    }
+                                        "x": 375,
+                                        "y": 119
+                                    },
+                                    "priority": 1
                                 },
-                                "children": []
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "clb0dit0pts0",
+                                            "created": 1657357992542,
+                                            "text": "SkinMesh",
+                                            "layout_right_offset": {
+                                                "x": 327,
+                                                "y": -41
+                                            }
+                                        },
+                                        "children": [
+                                            {
+                                                "data": {
+                                                    "id": "clb0dtzg0v40",
+                                                    "created": 1657358016875,
+                                                    "text": "SkinVertex",
+                                                    "layout_right_offset": {
+                                                        "x": 306,
+                                                        "y": -19
+                                                    },
+                                                    "note": "添加Weights和boneIndices\nweights支持的数量和index的类型后续需要斟酌优化；"
+                                                },
+                                                "children": []
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "data": {
+                                            "id": "clb0dmxnuz40",
+                                            "created": 1657358001530,
+                                            "text": "Skeleton",
+                                            "layout_right_offset": {
+                                                "x": 318,
+                                                "y": -36
+                                            }
+                                        },
+                                        "children": []
+                                    },
+                                    {
+                                        "data": {
+                                            "id": "clb0dqrvrhk0",
+                                            "created": 1657358009888,
+                                            "text": "Bone",
+                                            "layout_right_offset": {
+                                                "x": 308,
+                                                "y": -4
+                                            }
+                                        },
+                                        "children": []
+                                    }
+                                ]
                             }
                         ]
                     },

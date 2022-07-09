@@ -13,6 +13,24 @@
 
 namespace RenderDog
 {
+	struct StaticMeshRenderData
+	{
+		IVertexBuffer* pVB;
+		IIndexBuffer* pIB;
+		IConstantBuffer* pCB;
+
+		IShader* pVS;
+		IShader* pPS;
+
+		StaticMeshRenderData() :
+			pVB(nullptr),
+			pIB(nullptr),
+			pCB(nullptr),
+			pVS(nullptr),
+			pPS(nullptr)
+		{}
+	};
+
 	struct VertexKey
 	{
 		Vector3		pos;

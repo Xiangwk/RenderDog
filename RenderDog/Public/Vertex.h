@@ -13,7 +13,8 @@ namespace RenderDog
 	enum class VERTEX_TYPE
 	{
 		SIMPLE,
-		STANDARD
+		STANDARD,
+		SKIN
 	};
 
 	struct SimpleVertex
@@ -54,12 +55,31 @@ namespace RenderDog
 			texcoord(tcx, tcy)
 		{}
 
-		StandardVertex(const Vector3& pos, const Vector4& color, const Vector3& norm, const Vector4& tan, const Vector2& tex) :
+		StandardVertex(const Vector3& pos, const Vector4& color, 
+					   const Vector3& norm, const Vector4& tan, const Vector2& tex) :
 			SimpleVertex(pos, color),
 			normal(norm),
 			tangent(tan),
 			texcoord(tex)
 		{}
+	};
+
+	struct SkinVertex : public StandardVertex
+	{
+		Vector3	weights;
+		char	boneIndices[4];
+
+		SkinVertex(const Vector3& pos, const Vector4& color, 
+				   const Vector3& norm, const Vector4& tan, const Vector2& tex,
+				   const Vector3& wts, char* indices) :
+			StandardVertex(pos, color, norm, tan, tex),
+			weights(wts)
+		{
+			for (int i = 0; i < 4; ++i)
+			{
+				boneIndices[i] = indices[i];
+			}
+		}
 	};
 
 }// namespace RenderDog

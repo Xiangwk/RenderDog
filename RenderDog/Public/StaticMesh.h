@@ -17,25 +17,8 @@
 
 namespace RenderDog
 {
-	class Matrix4x4;
-
-	struct StaticMeshRenderData
-	{
-		IVertexBuffer* pVB;
-		IIndexBuffer* pIB;
-		IConstantBuffer* pCB;
-
-		IShader* pVS;
-		IShader* pPS;
-
-		StaticMeshRenderData() :
-			pVB(nullptr),
-			pIB(nullptr),
-			pCB(nullptr),
-			pVS(nullptr),
-			pPS(nullptr)
-		{}
-	};
+	class	Matrix4x4;
+	struct	StaticMeshRenderData;
 
 	//------------------------------------------------------------------------
 	//   SimpleMesh
