@@ -42,9 +42,6 @@ namespace RenderDog
 		void						SetPosGesture(const Vector3& pos, const Vector3& euler, const Vector3& scale);
 
 	private:
-		void						ReleaseRenderData();
-
-	private:
 		std::vector<SimpleMesh>		m_Meshes;
 	};
 
@@ -83,8 +80,6 @@ namespace RenderDog
 		void						CalculateBoundings();
 		//Use to update aabb and bounding sphere when set pos and gesture
 		void						UpdateBoundings();
-
-		void						ReleaseRenderData();
 
 	private:
 		std::vector<StaticMesh>		m_Meshes;

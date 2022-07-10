@@ -14,4 +14,5 @@ cbuffer GlobleCB : register(b0)
 cbuffer PerObjCB : register(b1)
 {
 	row_major matrix WorldMat;
+	row_major matrix BoneTransforms[256];
 };

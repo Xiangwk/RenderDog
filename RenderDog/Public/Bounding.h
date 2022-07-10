@@ -21,6 +21,9 @@ namespace RenderDog
 			maxPoint(FLT_MIN)
 		{}
 
+		AABB(const AABB& aabb) = default;
+		AABB& operator=(const AABB& aabb) = default;
+
 		void Reset() { minPoint = Vector3(FLT_MAX); maxPoint = Vector3(FLT_MIN); }
 	};
 

@@ -20,8 +20,6 @@ namespace RenderDog
 
 	SimpleModel::~SimpleModel()
 	{
-		ReleaseRenderData();
-
 		m_Meshes.clear();
 	}
 
@@ -47,15 +45,6 @@ namespace RenderDog
 		}
 	}
 
-	void SimpleModel::ReleaseRenderData()
-	{
-		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
-		{
-			SimpleMesh* pMesh = &(m_Meshes[i]);
-			pMesh->ReleaseRenderData();
-		}
-	}
-
 	void SimpleModel::SetPosGesture(const Vector3& pos, const Vector3& euler, const Vector3& scale)
 	{
 		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
@@ -77,8 +66,6 @@ namespace RenderDog
 
 	StaticModel::~StaticModel()
 	{
-		ReleaseRenderData();
-
 		m_Meshes.clear();
 	}
 
@@ -172,15 +159,6 @@ namespace RenderDog
 		BoundingSphere& sceneBoundingSphere = pScene->GetBoundingSphere();
 		float modelMaxDisToSceneCenter = m_BoundingSphere.center.Length() + m_BoundingSphere.radius;
 		sceneBoundingSphere.radius = sceneBoundingSphere.radius > modelMaxDisToSceneCenter ? sceneBoundingSphere.radius : modelMaxDisToSceneCenter;
-	}
-
-	void StaticModel::ReleaseRenderData()
-	{
-		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
-		{
-			StaticMesh* pMesh = &(m_Meshes[i]);
-			pMesh->ReleaseRenderData();
-		}
 	}
 
 	void StaticModel::CalculateBoundings()

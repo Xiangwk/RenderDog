@@ -989,8 +989,8 @@
                                     "created": 1656343338598,
                                     "text": "StandardGeometry",
                                     "layout_right_offset": {
-                                        "x": 425,
-                                        "y": -40
+                                        "x": 446,
+                                        "y": -26
                                     },
                                     "progress": 9
                                 },
@@ -1037,8 +1037,8 @@
                                             "created": 1656343385949,
                                             "text": "Sphere",
                                             "layout_right_offset": {
-                                                "x": 447,
-                                                "y": -8
+                                                "x": 453,
+                                                "y": -15
                                             }
                                         },
                                         "children": []
@@ -1093,7 +1093,21 @@
                                                 "y": -36
                                             }
                                         },
-                                        "children": []
+                                        "children": [
+                                            {
+                                                "data": {
+                                                    "id": "clbw6dpw9ag0",
+                                                    "created": 1657447708437,
+                                                    "text": "Shader中BoneMatrix的数量",
+                                                    "layout_right_offset": {
+                                                        "x": 367,
+                                                        "y": 16
+                                                    },
+                                                    "note": "如果用ConstantBuffer的话，数量只能是一个固定大小了，能否使用RWBuffer？"
+                                                },
+                                                "children": []
+                                            }
+                                        ]
                                     },
                                     {
                                         "data": {
@@ -1101,8 +1115,8 @@
                                             "created": 1657358009888,
                                             "text": "Bone",
                                             "layout_right_offset": {
-                                                "x": 308,
-                                                "y": -4
+                                                "x": 312,
+                                                "y": -24
                                             }
                                         },
                                         "children": []
@@ -1244,8 +1258,8 @@
                                     "created": 1643386013975,
                                     "text": "Texture",
                                     "layout_right_offset": {
-                                        "x": 399,
-                                        "y": 36
+                                        "x": 404.8333331015374,
+                                        "y": 12.66666759384998
                                     }
                                 },
                                 "children": []
@@ -1256,8 +1270,8 @@
                                     "created": 1643386019598,
                                     "text": "Buffer",
                                     "layout_right_offset": {
-                                        "x": 394,
-                                        "y": 28
+                                        "x": 398.9999998013179,
+                                        "y": 7.166667494508829
                                     }
                                 },
                                 "children": []
@@ -1268,11 +1282,11 @@
                                     "created": 1652877758030,
                                     "text": "ResourceManager",
                                     "layout_right_offset": {
-                                        "x": 463,
-                                        "y": -120
+                                        "x": 479.66666600439294,
+                                        "y": -146.6666656070288
                                     },
-                                    "note": "负责管理引擎需要使用到的资源，如Buffer，Texture等；",
-                                    "priority": 3
+                                    "priority": 3,
+                                    "note": "负责管理引擎需要使用到的资源，如Buffer，Texture等；"
                                 },
                                 "children": []
                             },
@@ -1282,8 +1296,8 @@
                                     "created": 1656342093588,
                                     "text": "Sampler",
                                     "layout_right_offset": {
-                                        "x": 398,
-                                        "y": -28
+                                        "x": 417.9999992052715,
+                                        "y": -62.99999860922503
                                     },
                                     "priority": 2
                                 },

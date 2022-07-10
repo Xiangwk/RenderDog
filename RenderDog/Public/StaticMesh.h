@@ -41,12 +41,13 @@ namespace RenderDog
 
 		void							LoadFromSimpleData(const std::vector<SimpleVertex>& vertices, const std::vector<uint32_t>& indices, const std::string& name);
 		void							InitRenderData(const std::string& vsFile, const std::string& psFile);
-		void							ReleaseRenderData();
+		
 
 		void							SetPosGesture(const Vector3& pos, const Vector3& euler, const Vector3& scale);
 
 	private:
 		void							CloneRenderData(const SimpleMesh& mesh);
+		void							ReleaseRenderData();
 
 	private:
 		std::string						m_Name;
@@ -84,11 +85,10 @@ namespace RenderDog
 		bool							LoadTextureFromFile(const std::wstring& diffuseTexturePath, const std::wstring& normalTexturePath);
 
 		void							InitRenderData(const std::string& vsFile, const std::string& psFile);
-		void							ReleaseRenderData();
 
 		void							SetPosGesture(const Vector3& pos, const Vector3& euler, const Vector3& scale);
 
-		//该函数必须保证顶点数组中为拆散的顶点，即顶点数为三角形数乘以3
+										//该函数必须保证顶点数组中为拆散的顶点，即顶点数为三角形数乘以3
 		void							CalcTangentsAndGenIndices(std::vector<StandardVertex>& rawVertices, const std::vector<uint32_t>& smoothGroup);
 		void							CalculateAABB();
 
@@ -97,7 +97,8 @@ namespace RenderDog
 
 	private:
 		void							CloneRenderData(const StaticMesh& mesh);
-		// Use to update aabb when setPosGesture;
+		void							ReleaseRenderData();
+										// Use to update aabb when setPosGesture;
 		void							UpdateAABB(const Matrix4x4& absTransMatrix);
 
 	private:
