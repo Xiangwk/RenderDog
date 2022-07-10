@@ -1,7 +1,7 @@
 ////////////////////////////////////////
-//RenderDog <，,，>
-//FileName: StaticModel.cpp
-//Written by Xiang Weikang
+// RenderDog <，,，>
+// FileName: StaticModel.cpp
+// Written by Xiang Weikang
 ////////////////////////////////////////
 
 #include "StaticModel.h"

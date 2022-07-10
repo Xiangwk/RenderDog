@@ -1,7 +1,7 @@
 ////////////////////////////////////////
-//RenderDog <，,，>
-//FileName: StaticModel.h
-//Written by Xiang Weikang
+// RenderDog <，,，>
+// FileName: StaticModel.h
+// Written by Xiang Weikang
 ////////////////////////////////////////
 
 #pragma once

@@ -1,7 +1,7 @@
 ////////////////////////////////////////
-//RenderDog <，,，>
-//FileName: D3D11InputLayout.h
-//Written by Xiang Weikang
+// RenderDog <，,，>
+// FileName: D3D11InputLayout.h
+// Written by Xiang Weikang
 ////////////////////////////////////////
 
 #pragma once

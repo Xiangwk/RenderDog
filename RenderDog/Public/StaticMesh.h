@@ -1,7 +1,7 @@
 ////////////////////////////////////////
-//RenderDog <，,，>
-//FileName: StaticMesh.h
-//Written by Xiang Weikang
+// RenderDog <，,，>
+// FileName: StaticMesh.h
+// Written by Xiang Weikang
 ////////////////////////////////////////
 
 #include "Vertex.h"

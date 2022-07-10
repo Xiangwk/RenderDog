@@ -12,8 +12,13 @@ namespace RenderDog
 		m_Meshes(0),
 		m_AABB(),
 		m_BoundingSphere()
-	{
+	{}
 
+	SkinModel::~SkinModel()
+	{
+		m_Meshes.clear();
 	}
+
+
 
 }// namespace RenderDog

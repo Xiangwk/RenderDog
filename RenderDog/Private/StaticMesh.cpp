@@ -1,7 +1,7 @@
 ////////////////////////////////////////
-//RenderDog <，,，>
-//FileName: StaticMesh.cpp
-//Written by Xiang Weikang
+// RenderDog <，,，>
+// FileName: StaticMesh.cpp
+// Written by Xiang Weikang
 ////////////////////////////////////////
 
 #include "StaticMesh.h"
