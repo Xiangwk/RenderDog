@@ -11,6 +11,7 @@
 #include "Scene.h"
 #include "Camera.h"
 #include "Light.h"
+#include "SimpleModel.h"
 #include "StaticModel.h"
 #include "GameTimer.h"
 
