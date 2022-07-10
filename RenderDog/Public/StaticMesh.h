@@ -29,7 +29,7 @@ namespace RenderDog
 		StaticMesh(const StaticMesh& mesh);
 		StaticMesh& operator=(const StaticMesh& mesh);
 
-		StaticMesh(const std::string& name);
+		explicit StaticMesh(const std::string& name);
 
 		virtual void					Render(IPrimitiveRenderer* pPrimitiveRenderer) override;
 

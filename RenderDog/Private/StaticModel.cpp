@@ -108,6 +108,7 @@ namespace RenderDog
 			pScene->RegisterPrimitive(pMesh);
 		}
 
+		//注册模型时要更新场景的包围球，默认场景的中心点在世界空间的原点
 		BoundingSphere& sceneBoundingSphere = pScene->GetBoundingSphere();
 		float modelMaxDisToSceneCenter = m_BoundingSphere.center.Length() + m_BoundingSphere.radius;
 		sceneBoundingSphere.radius = sceneBoundingSphere.radius > modelMaxDisToSceneCenter ? sceneBoundingSphere.radius : modelMaxDisToSceneCenter;

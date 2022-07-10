@@ -144,6 +144,18 @@ namespace RenderDog
 		return *this;
 	}
 
+	SkinMesh::SkinMesh(const std::string& name) :
+		m_Name(name),
+		m_Vertices(0),
+		m_Indices(0),
+		m_pRenderData(nullptr),
+		m_pDiffuseTexture(nullptr),
+		m_pDiffuseTextureSampler(nullptr),
+		m_pNormalTexture(nullptr),
+		m_pNormalTextureSampler(nullptr),
+		m_AABB()
+	{}
+
 	void SkinMesh::Render(IPrimitiveRenderer* pPrimitiveRenderer)
 	{
 		PrimitiveRenderParam renderParam = {};

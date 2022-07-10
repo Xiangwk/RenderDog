@@ -43,7 +43,7 @@ namespace RenderDog
 
 	private:
 		void						CalculateBoundings();
-		//Use to update aabb and bounding sphere when set pos and gesture
+									//设置位姿的时候更新包围球
 		void						UpdateBoundings();
 
 	private:

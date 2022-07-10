@@ -19,8 +19,8 @@ namespace RenderDog
 		SkinModel();
 		~SkinModel();
 
-		SkinModel(const SkinModel& model);
-		SkinModel& operator=(const SkinModel& model);
+		SkinModel(const SkinModel& model) = default;
+		SkinModel& operator=(const SkinModel& model) = default;
 
 		bool						LoadFromRawMeshData(const std::vector<RDFbxImporter::RawMeshData>& rawMeshDatas,
 														const std::string& vsFile, const std::string& psFile,
@@ -34,6 +34,11 @@ namespace RenderDog
 
 		const AABB&					GetAABB() const { return m_AABB; }
 		const BoundingSphere&		GetBoundingSphere() const { return m_BoundingSphere; }
+
+	private:
+		void						CalculateBoundings();
+		//设置位姿的时候更新包围球
+		void						UpdateBoundings();
 
 	private:
 		std::vector<SkinMesh>		m_Meshes;
