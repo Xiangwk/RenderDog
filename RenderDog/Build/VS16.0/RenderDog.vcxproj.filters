@@ -126,6 +126,12 @@
     <ClCompile Include="..\..\Private\Skeleton.cpp">
       <Filter>Primitive\Private</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Private\SimpleMesh.cpp">
+      <Filter>Primitive\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Private\SimpleModel.cpp">
+      <Filter>Primitive\Private</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Math\Public\Matrix.h">
@@ -216,6 +222,12 @@
       <Filter>Primitive\Public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Public\Skeleton.h">
+      <Filter>Primitive\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Public\SimpleModel.h">
+      <Filter>Primitive\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Public\SimpleMesh.h">
       <Filter>Primitive\Public</Filter>
     </ClInclude>
   </ItemGroup>

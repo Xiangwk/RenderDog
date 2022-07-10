@@ -10,54 +10,6 @@
 
 namespace RenderDog
 {
-	//------------------------------------------------------------------------
-	//   SimpleModel
-	//------------------------------------------------------------------------
-
-	SimpleModel::SimpleModel() :
-		m_Meshes(0)
-	{}
-
-	SimpleModel::~SimpleModel()
-	{
-		m_Meshes.clear();
-	}
-
-	void SimpleModel::LoadFromSimpleData(const std::vector<SimpleVertex>& vertices,
-		const std::vector<uint32_t>& indices,
-		const std::string& vsFile,
-		const std::string& psFile,
-		const std::string& name)
-	{
-		SimpleMesh mesh;
-		mesh.LoadFromSimpleData(vertices, indices, name);
-		mesh.InitRenderData(vsFile, psFile);
-
-		m_Meshes.push_back(mesh);
-	}
-
-	void SimpleModel::RegisterToScene(IScene* pScene)
-	{
-		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
-		{
-			IPrimitive* pMesh = &(m_Meshes[i]);
-			pScene->RegisterPrimitive(pMesh);
-		}
-	}
-
-	void SimpleModel::SetPosGesture(const Vector3& pos, const Vector3& euler, const Vector3& scale)
-	{
-		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
-		{
-			SimpleMesh* pMesh = &(m_Meshes[i]);
-			pMesh->SetPosGesture(pos, euler, scale);
-		}
-	}
-
-	//------------------------------------------------------------------------
-	//   StaticModel
-	//------------------------------------------------------------------------
-
 	StaticModel::StaticModel() :
 		m_Meshes(0),
 		m_AABB(),
@@ -70,10 +22,10 @@ namespace RenderDog
 	}
 
 	void StaticModel::LoadFromStandardData(const std::vector<StandardVertex>& vertices, 
-								   const std::vector<uint32_t>& indices,
-								   const std::string& vsFile, 
-								   const std::string& psFile,
-								   const std::string& name)
+										   const std::vector<uint32_t>& indices,
+										   const std::string& vsFile, 
+										   const std::string& psFile,
+										   const std::string& name)
 	{
 		StaticMesh mesh;
 		mesh.LoadFromStandardData(vertices, indices, name);
