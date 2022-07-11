@@ -12,6 +12,7 @@
 #include "Light.h"
 #include "SimpleModel.h"
 #include "StaticModel.h"
+#include "SkinModel.h"
 #include "Sky.h"
 #include "GameTimer.h"
 
@@ -43,7 +44,8 @@ public:
 private:
 	bool						LoadFloor(uint32_t width, uint32_t depth, float unit);
 	bool						LoadSkyBox(const std::wstring& texFileName);
-	bool						LoadModel(const std::string& fileName, LOAD_MODEL_TYPE modelType);
+	bool						LoadStaticModel(const std::string& fileName, LOAD_MODEL_TYPE modelType);
+	bool						LoadSkinModel(const std::string& fileName);
 
 	void						Update();
 	void						RegisterObjectToScene();
@@ -60,7 +62,8 @@ private:
 
 	RenderDog::SimpleModel*		m_pGridLine;
 	RenderDog::StaticModel*		m_pFloor;
-	RenderDog::StaticModel*		m_pModel;
+	RenderDog::StaticModel*		m_pStaticModel;
+	RenderDog::SkinModel*		m_pSkinModel;
 	RenderDog::SkyBox*			m_pSkyBox;
 
 	RenderDog::FPSCamera*		m_pFPSCamera;

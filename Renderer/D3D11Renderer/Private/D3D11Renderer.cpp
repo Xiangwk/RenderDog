@@ -785,7 +785,7 @@ namespace RenderDog
 		ClearBackRenderTarget(clearColor);
 
 		RenderPrimitives(pScene);
-
+		
 		RenderSky(pScene);
 		
 		m_pSwapChain->Present(0, 0);

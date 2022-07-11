@@ -13,6 +13,8 @@
 
 namespace RenderDog
 {
+	class Skeleton;
+
 	class SkinModel
 	{
 	public:
@@ -35,6 +37,8 @@ namespace RenderDog
 		const AABB&					GetAABB() const { return m_AABB; }
 		const BoundingSphere&		GetBoundingSphere() const { return m_BoundingSphere; }
 
+		void						Tick(float time);
+
 	private:
 		void						CalculateBoundings();
 		//设置位姿的时候更新包围球
@@ -42,9 +46,14 @@ namespace RenderDog
 
 	private:
 		std::vector<SkinMesh>		m_Meshes;
+		Skeleton*					m_pSkeleton;
 
 		AABB						m_AABB;
 		BoundingSphere				m_BoundingSphere;
+
+		Vector3						m_WorldPosition;
+		Vector3						m_EulerAngle;
+		Vector3						m_Scale;
 	};
 
 }// namespace RenderDog

@@ -6,11 +6,16 @@
 
 #include "SkinModel.h"
 #include "Scene.h"
+#include "Matrix.h"
+#include "Transform.h"
+#include "Skeleton.h"
+#include "Bone.h"
 
 namespace RenderDog
 {
 	SkinModel::SkinModel():
 		m_Meshes(0),
+		m_pSkeleton(nullptr),
 		m_AABB(),
 		m_BoundingSphere()
 	{}
@@ -18,6 +23,12 @@ namespace RenderDog
 	SkinModel::~SkinModel()
 	{
 		m_Meshes.clear();
+
+		if (m_pSkeleton)
+		{
+			delete m_pSkeleton;
+			m_pSkeleton = nullptr;
+		}
 	}
 
 	bool SkinModel::LoadFromRawMeshData(const std::vector<RDFbxImporter::RawMeshData>& rawMeshDatas, const std::string& vsFile, const std::string& psFile, const std::string& fileName)
@@ -56,6 +67,10 @@ namespace RenderDog
 
 		CalculateBoundings();
 
+		m_pSkeleton = new Skeleton;
+		//LoadSkeleton
+		//TODO
+
 		return true;
 	}
 
@@ -89,6 +104,10 @@ namespace RenderDog
 
 	void SkinModel::SetPosGesture(const Vector3& pos, const Vector3& euler, const Vector3& scale)
 	{
+		m_WorldPosition = pos;
+		m_EulerAngle = euler;
+		m_Scale = scale;
+
 		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
 		{
 			SkinMesh* pMesh = &(m_Meshes[i]);
@@ -96,6 +115,28 @@ namespace RenderDog
 		}
 
 		UpdateBoundings();
+	}
+
+	void SkinModel::Tick(float time)
+	{
+		SkinMesh::SkinModelPerObjectTransform perModelTransform;
+
+		perModelTransform.LocalToWorldMatrix = GetTranslationMatrix(m_WorldPosition.x, m_WorldPosition.y, m_WorldPosition.z);
+		
+		if (m_pSkeleton->GetBoneNum() > 256)
+		{
+			return;
+		}
+
+		for (uint32_t i = 0; i < m_pSkeleton->GetBoneNum(); ++i)
+		{
+			perModelTransform.BoneUpToRootMatrix[i] = m_pSkeleton->GetBone(i)->GetUpToRootMatrix();
+		}
+
+		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
+		{
+			m_Meshes[i].Update(perModelTransform);
+		}
 	}
 
 	void SkinModel::CalculateBoundings()

@@ -23,7 +23,8 @@ ModelViewer::ModelViewer() :
 	m_pScene(nullptr),
 	m_pGridLine(nullptr),
 	m_pFloor(nullptr),
-	m_pModel(nullptr),
+	m_pStaticModel(nullptr),
+	m_pSkinModel(nullptr),
 	m_pSkyBox(nullptr),
 	m_pFPSCamera(nullptr),
 	m_pMainLight(nullptr),
@@ -94,11 +95,19 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 		return false;
 	}
 
-	if (!LoadModel("Models/Crunch/Crunch_Crash_Site.FBX", LOAD_MODEL_TYPE::CUSTOM))
+	if (!LoadStaticModel("Models/Crunch/Crunch_Crash_Site.FBX", LOAD_MODEL_TYPE::CUSTOM))
 	{
-		MessageBox(nullptr, "Load Model Failed!", "ERROR", MB_OK);
+		MessageBox(nullptr, "Load Static Model Failed!", "ERROR", MB_OK);
 		return false;
 	}
+	m_pStaticModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 200.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
+
+	if (!LoadSkinModel("Models/Crunch/Crunch_Crash_Site.FBX"))
+	{
+		MessageBox(nullptr, "Load Skin Model Failed!", "ERROR", MB_OK);
+		return false;
+	}
+	m_pSkinModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, -200.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
 
 	RenderDog::LightDesc lightDesc = {};
 	lightDesc.type = RenderDog::LIGHT_TYPE::DIRECTIONAL;
@@ -133,10 +142,16 @@ void ModelViewer::Release()
 		m_pFloor = nullptr;
 	}
 
-	if (m_pModel)
+	if (m_pStaticModel)
 	{
-		delete m_pModel;
-		m_pModel = nullptr;
+		delete m_pStaticModel;
+		m_pStaticModel = nullptr;
+	}
+
+	if (m_pSkinModel)
+	{
+		delete m_pSkinModel;
+		m_pSkinModel = nullptr;
 	}
 
 	if (m_pSkyBox)
@@ -315,16 +330,16 @@ bool ModelViewer::LoadSkyBox(const std::wstring& texFileName)
 	return true;
 }
 
-bool ModelViewer::LoadModel(const std::string& fileName, LOAD_MODEL_TYPE modelType)
+bool ModelViewer::LoadStaticModel(const std::string& fileName, LOAD_MODEL_TYPE modelType)
 {
-	m_pModel = new RenderDog::StaticModel();
+	m_pStaticModel = new RenderDog::StaticModel();
 
 	if (modelType == LOAD_MODEL_TYPE::STANDARD)
 	{
 		RenderDog::GeometryGenerator::StandardMeshData SphereMeshData;
 		RenderDog::g_pGeometryGenerator->GenerateSphere(50, 50, 50, SphereMeshData);
-		m_pModel->LoadFromStandardData(SphereMeshData.vertices, SphereMeshData.indices, "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl", "Sphere");
-		if (!m_pModel->LoadTextureFromFile(L"EngineAsset/Textures/ErrorTexture_diff.dds", L"EngineAsset/Textures/FlatNormal_norm.dds"))
+		m_pStaticModel->LoadFromStandardData(SphereMeshData.vertices, SphereMeshData.indices, "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl", "Sphere");
+		if (!m_pStaticModel->LoadTextureFromFile(L"EngineAsset/Textures/ErrorTexture_diff.dds", L"EngineAsset/Textures/FlatNormal_norm.dds"))
 		{
 			MessageBox(nullptr, "Load Texture Failed!", "ERROR", MB_OK);
 			return false;
@@ -338,13 +353,13 @@ bool ModelViewer::LoadModel(const std::string& fileName, LOAD_MODEL_TYPE modelTy
 			return false;
 		}
 
-		if (!m_pModel->LoadFromRawMeshData(RenderDog::g_pRDFbxImporter->GetRawMeshData(), "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl", fileName))
+		if (!m_pStaticModel->LoadFromRawMeshData(RenderDog::g_pRDFbxImporter->GetRawMeshData(), "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl", fileName))
 		{
 			MessageBox(nullptr, "Load Model Failed!", "ERROR", MB_OK);
 			return false;
 		}
 
-		if (!m_pModel->LoadTextureFromFile(L"EngineAsset/Textures/White_diff.dds", L"EngineAsset/Textures/FlatNormal_norm.dds"))
+		if (!m_pStaticModel->LoadTextureFromFile(L"EngineAsset/Textures/White_diff.dds", L"EngineAsset/Textures/FlatNormal_norm.dds"))
 		{
 			MessageBox(nullptr, "Load Texture Failed!", "ERROR", MB_OK);
 			return false;
@@ -356,11 +371,37 @@ bool ModelViewer::LoadModel(const std::string& fileName, LOAD_MODEL_TYPE modelTy
 		return false;
 	}
 
-	m_pModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
+	m_pStaticModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
 
 	return true;
 }
 
+bool ModelViewer::LoadSkinModel(const std::string& fileName)
+{
+	m_pSkinModel = new RenderDog::SkinModel();
+
+	if (!RenderDog::g_pRDFbxImporter->LoadFbxFile(fileName, true))
+	{
+		MessageBox(nullptr, "Import FBX File Failed!", "ERROR", MB_OK);
+		return false;
+	}
+
+	if (!m_pSkinModel->LoadFromRawMeshData(RenderDog::g_pRDFbxImporter->GetRawMeshData(), "Shaders/SkinModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl", fileName))
+	{
+		MessageBox(nullptr, "Load Model Failed!", "ERROR", MB_OK);
+		return false;
+	}
+
+	if (!m_pSkinModel->LoadTextureFromFile(L"EngineAsset/Textures/White_diff.dds", L"EngineAsset/Textures/FlatNormal_norm.dds"))
+	{
+		MessageBox(nullptr, "Load Texture Failed!", "ERROR", MB_OK);
+		return false;
+	}
+
+	m_pSkinModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
+
+	return true;
+}
 
 void ModelViewer::Update()
 {
@@ -397,8 +438,10 @@ void ModelViewer::Update()
 
 	if (m_bModelMoved)
 	{
-		m_pModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
+		m_pStaticModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
 	}
+
+	m_pSkinModel->Tick(0);
 
 	RegisterObjectToScene();
 }
@@ -416,7 +459,9 @@ void ModelViewer::RegisterObjectToScene()
 
 	m_pSkyBox->RegisterToScene(m_pScene);
 
-	m_pModel->RegisterToScene(m_pScene);
+	m_pStaticModel->RegisterToScene(m_pScene);
+
+	//m_pSkinModel->RegisterToScene(m_pScene);
 }
 
 void ModelViewer::CalculateFrameStats()

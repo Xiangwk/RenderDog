@@ -16,14 +16,14 @@ namespace RenderDog
 		Bone();
 		~Bone();
 
-		
+		const Matrix4x4&	GetUpToRootMatrix() const { return m_UpToRootMatrix; }
 
 	private:
-		int			m_ParentIndex;			//父节点索引为-1则表示当前骨骼为根骨骼
+		int					m_ParentIndex;			//父节点索引为-1则表示当前骨骼为根骨骼
 
-		Matrix4x4	m_OffsetMatrix;
-		Matrix4x4	m_UpToParentMatrix;
-		Matrix4x4	m_UpToRootMatrix;
+		Matrix4x4			m_OffsetMatrix;
+		Matrix4x4			m_UpToParentMatrix;
+		Matrix4x4			m_UpToRootMatrix;
 	};
 
 }// namespace RenderDog

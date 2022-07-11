@@ -83,14 +83,6 @@ namespace RenderDog
 		{}
 	};
 
-	struct SkinModelPerObjectTransform
-	{
-		Matrix4x4			LocalToWorldMatrix;
-		Matrix4x4			BoneUpToRootMatrix[256];
-
-		SkinModelPerObjectTransform() = default;
-	};
-
 	SkinMesh::SkinMesh():
 		m_Name(""),
 		m_Vertices(0),
@@ -243,7 +235,7 @@ namespace RenderDog
 		BufferDesc cbDesc = {};
 		cbDesc.byteWidth = sizeof(SkinModelPerObjectTransform);
 		cbDesc.pInitData = nullptr;
-		cbDesc.isDynamic = false;
+		cbDesc.isDynamic = true;
 		m_pRenderData->pCB = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
 
 		ShaderCompileDesc vsDesc(vsFile, nullptr, "Main", "vs_5_0", 0);
@@ -262,8 +254,6 @@ namespace RenderDog
 		Matrix4x4 worldMat = scaleMat * rotMat * transMat;
 
 		UpdateAABB(worldMat);
-
-		m_pRenderData->pCB->Update(&worldMat, sizeof(Matrix4x4));
 	}
 
 	void SkinMesh::CalcTangentsAndGenIndices(std::vector<SkinVertex>& rawVertices, const std::vector<uint32_t>& smoothGroup)
@@ -459,6 +449,12 @@ namespace RenderDog
 			m_AABB.maxPoint.z = m_AABB.maxPoint.z > pos.z ? m_AABB.maxPoint.z : pos.z;
 		}
 	}
+
+	void SkinMesh::Update(SkinModelPerObjectTransform& perModelTransform)
+	{
+		m_pRenderData->pCB->Update(&perModelTransform, sizeof(SkinModelPerObjectTransform));
+	}
+	
 
 	void SkinMesh::CloneRenderData(const SkinMesh& mesh)
 	{

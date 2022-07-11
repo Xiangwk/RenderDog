@@ -41,10 +41,10 @@ VSOutput Main(VSInput vsInput)
 	VSOutput vsOutput = (VSOutput)0;
 
 	float Weights[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	Weight[0] = vsInput.BoneWeights.x;
-	Weight[1] = vsInput.BoneWeights.y;
-	Weight[2] = vsInput.BoneWeights.z;
-	Weight[3] = 1.0f - vsInput.BoneWeights.x - vsInput.BoneWeights.y - vsInput.BoneWeights.z;
+	Weights[0] = vsInput.BoneWeights.x;
+	Weights[1] = vsInput.BoneWeights.y;
+	Weights[2] = vsInput.BoneWeights.z;
+	Weights[3] = 1.0f - vsInput.BoneWeights.x - vsInput.BoneWeights.y - vsInput.BoneWeights.z;
 
 	float4 PosL = float4(vsInput.Pos, 1.0f);
 	float4 normal = float4(vsInput.Normal, 0.0f);
@@ -53,8 +53,8 @@ VSOutput Main(VSInput vsInput)
 	for (int i = 0; i < 4; ++i)
 	{
 		PosL += Weights[i] * mul(PosL, BoneTransforms[vsInput.BoneIndices[i]]);
-		normal += Weights[i] * mul(normal, BoneTransforms[vsInput.BoneIndices[i]);
-		tangent += Weights[i] * mul(tangent, BoneTransforms[vsInput.BoneIndices[i]);
+		normal += Weights[i] * mul(normal, BoneTransforms[vsInput.BoneIndices[i]]);
+		tangent += Weights[i] * mul(tangent, BoneTransforms[vsInput.BoneIndices[i]]);
 	}
 
 	vsOutput.Pos = mul(PosL, WorldMat);

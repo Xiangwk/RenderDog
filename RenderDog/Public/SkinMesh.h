@@ -10,17 +10,35 @@
 #include "Vertex.h"
 #include "Texture.h"
 #include "Bounding.h"
+#include "Matrix.h"
 
 #include <vector>
 #include <string>
 
 namespace RenderDog
 {
-	class	Matrix4x4;
 	struct	SkinMeshRenderData;
 
 	class SkinMesh : public IPrimitive
 	{
+	public:
+		struct SkinModelPerObjectTransform
+		{
+			Matrix4x4			LocalToWorldMatrix;
+			Matrix4x4			BoneUpToRootMatrix[256];
+
+			SkinModelPerObjectTransform() :
+				LocalToWorldMatrix()
+			{
+				LocalToWorldMatrix.Identity();
+
+				for (int i = 0; i < 256; ++i)
+				{
+					BoneUpToRootMatrix[i].Identity();
+				}
+			}
+		};
+
 	public:
 		SkinMesh();
 		~SkinMesh();
@@ -47,6 +65,8 @@ namespace RenderDog
 
 		ITexture2D*						GetDiffuseTexture() { return m_pDiffuseTexture; }
 		ISamplerState*					GetDiffuseSampler() { return m_pDiffuseTextureSampler; }
+
+		void							Update(SkinModelPerObjectTransform& perModelTransform);
 
 	private:
 		void							CloneRenderData(const SkinMesh& mesh);
