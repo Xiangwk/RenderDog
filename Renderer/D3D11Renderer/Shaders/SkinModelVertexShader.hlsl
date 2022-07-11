@@ -19,6 +19,8 @@ struct VSInput
 	float3 Normal		: NORMAL;
 	float4 Tangent		: TANGENT;
 	float2 Texcoord		: TEXCOORD;
+	float3 BoneWeights	: WEIGHTS;
+	uint4  BoneIndices	: BONEINDICES;
 };
 
 struct VSOutput
@@ -37,18 +39,33 @@ struct VSOutput
 VSOutput Main(VSInput vsInput)
 {
 	VSOutput vsOutput = (VSOutput)0;
+
+	float Weights[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	Weight[0] = vsInput.BoneWeights.x;
+	Weight[1] = vsInput.BoneWeights.y;
+	Weight[2] = vsInput.BoneWeights.z;
+	Weight[3] = 1.0f - vsInput.BoneWeights.x - vsInput.BoneWeights.y - vsInput.BoneWeights.z;
+
 	float4 PosL = float4(vsInput.Pos, 1.0f);
+	float4 normal = float4(vsInput.Normal, 0.0f);
+	float4 tangent = float4(vsInput.Tangent.xyz, 0.0f);
+	//Skinned
+	for (int i = 0; i < 4; ++i)
+	{
+		PosL += Weights[i] * mul(PosL, BoneTransforms[vsInput.BoneIndices[i]]);
+		normal += Weights[i] * mul(normal, BoneTransforms[vsInput.BoneIndices[i]);
+		tangent += Weights[i] * mul(tangent, BoneTransforms[vsInput.BoneIndices[i]);
+	}
+
 	vsOutput.Pos = mul(PosL, WorldMat);
 	vsOutput.PosW = vsOutput.Pos;
 
 	vsOutput.Pos = mul(vsOutput.Pos, ViewMat);
 	vsOutput.Pos = mul(vsOutput.Pos, ProjMat);
 
-	float4 normal = float4(vsInput.Normal, 0.0f);
 	normal = mul(normal, WorldMat);
 	vsOutput.Normal = normalize(normal.xyz);
 
-	float4 tangent = float4(vsInput.Tangent.xyz, 0.0f);
 	tangent = mul(tangent, WorldMat);
 	vsOutput.Tangent = normalize(tangent.xyz);
 
