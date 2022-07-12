@@ -8,6 +8,7 @@
 
 #include "fbxsdk.h"
 #include "Vector.h"
+#include "Matrix.h"
 
 #include <vector>
 #include <string>
@@ -32,6 +33,34 @@ namespace RenderDog
 			{}
 		};
 
+		struct RawBoneData
+		{
+			std::string					name;
+			int							index;
+			int							parentIndex;
+			Matrix4x4					upToParentMatrix;
+			Matrix4x4					offsetMatrix;
+
+			RawBoneData() :
+				name(""),
+				index(0),
+				parentIndex(-1),
+				upToParentMatrix(),
+				offsetMatrix()
+			{}
+		};
+
+		struct RawSkeletonData
+		{
+			std::vector<RawBoneData*>	bones;
+
+			RawSkeletonData() :
+				bones(0)
+			{}
+
+			RawBoneData* GetBone(const std::string& name);
+		};
+
 	public:
 		RDFbxImporter();
 		~RDFbxImporter();
@@ -43,10 +72,14 @@ namespace RenderDog
 		bool								LoadFbxFile(const std::string& filePath, bool bIsSkinModel, bool bFlipUV = false);	
 
 		std::vector<RawMeshData>&			GetRawMeshData() { return m_RawData; }
+		const RawSkeletonData*				GetRawSkeletonData() const { return m_pSkeleton; }
 
 	private:
 		bool								ProcessMeshNode(FbxNode* pNode, bool bFlipUV = false);
 		bool								GetMeshData(FbxNode* pNode, bool bFlipUV = false);
+
+		bool								ProcessSkeletonNode(FbxNode* pNode, RawBoneData* pParentBone);
+		void								GetOffsetMatrix(FbxSkin* pSkin);
 
 		void								GetTriangleMaterialIndices(FbxMesh* pMesh, int triNum, std::vector<uint32_t>& outputIndices);
 		void								GetTriangleSmoothIndices(FbxMesh* pMesh, int triNum, std::vector<uint32_t>& outputIndices);
@@ -59,6 +92,8 @@ namespace RenderDog
 		FbxImporter*						m_pImporter;
 
 		std::vector<RawMeshData>			m_RawData;
+		RawSkeletonData*					m_pSkeleton;
+		bool								m_bNeedGetBoneMatrix;
 	};
 
 	extern RDFbxImporter* g_pRDFbxImporter;

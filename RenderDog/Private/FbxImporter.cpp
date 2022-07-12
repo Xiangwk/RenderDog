@@ -12,16 +12,46 @@ namespace RenderDog
 	RDFbxImporter	g_RDFbxImporter;
 	RDFbxImporter*	g_pRDFbxImporter = &g_RDFbxImporter;
 
+	RDFbxImporter::RawBoneData* RDFbxImporter::RawSkeletonData::GetBone(const std::string& name)
+	{
+		for (int i = 0; i < bones.size(); ++i)
+		{
+			if (bones[i]->name == name)
+			{
+				return bones[i];
+			}
+		}
+
+		return nullptr;
+	}
+
 	RDFbxImporter::RDFbxImporter() :
 		m_pManager(nullptr),
 		m_pScene(nullptr),
 		m_pImporter(nullptr),
-		m_RawData(0)
+		m_RawData(0),
+		m_bNeedGetBoneMatrix(false)
 	{}
 
 	RDFbxImporter::~RDFbxImporter()
 	{
+		m_RawData.clear();
 
+		if (m_pSkeleton)
+		{
+			for (int i = 0; i < m_pSkeleton->bones.size(); ++i)
+			{
+				RawBoneData* pBone = m_pSkeleton->bones[i];
+				if (pBone)
+				{
+					delete pBone;
+					pBone = nullptr;
+				}
+			}
+
+			delete m_pSkeleton;
+			m_pSkeleton = nullptr;
+		}
 	}
 
 	bool RDFbxImporter::Init()
@@ -73,6 +103,8 @@ namespace RenderDog
 
 	bool RDFbxImporter::LoadFbxFile(const std::string& filePath, bool bIsSkinModel, bool bFlipUV)
 	{
+		m_bNeedGetBoneMatrix = bIsSkinModel;
+
 		if (!m_pImporter->Initialize(filePath.c_str(), -1, m_pManager->GetIOSettings()))
 		{
 			return false;
@@ -97,6 +129,31 @@ namespace RenderDog
 		{
 			RenderDogAxisSystem.ConvertScene(m_pScene);
 		}*/
+
+		if (bIsSkinModel)
+		{
+			if (m_pSkeleton)
+			{
+				for (int i = 0; i < m_pSkeleton->bones.size(); ++i)
+				{
+					RawBoneData* pBone = m_pSkeleton->bones[i];
+					if (pBone)
+					{
+						delete pBone;
+						pBone = nullptr;
+					}
+				}
+			}
+			else
+			{
+				m_pSkeleton = new RawSkeletonData;
+			}
+
+			if (!ProcessSkeletonNode(m_pScene->GetRootNode(), nullptr))
+			{
+				return false;
+			}
+		}
 
 		m_RawData.clear();
 
@@ -141,6 +198,29 @@ namespace RenderDog
 		{
 			//TODO!!! Log some imformation
 			return true;
+		}
+
+		if (m_bNeedGetBoneMatrix)
+		{
+			FbxSkin* pFbxSkin = nullptr;
+
+			for (int i = 0; i < pMesh->GetDeformerCount(); ++i)
+			{
+				FbxDeformer* pFbxDeformer = pMesh->GetDeformer(i);
+
+				if (!pFbxDeformer)
+				{
+					continue;
+				}
+
+				if (pFbxDeformer->GetDeformerType() == FbxDeformer::eSkin)
+				{
+					pFbxSkin = (FbxSkin*)(pFbxDeformer);
+					break;
+				}
+			}
+			
+			GetOffsetMatrix(pFbxSkin);
 		}
 
 		//Triangulate
@@ -211,6 +291,63 @@ namespace RenderDog
 		}
 
 		return true;
+	}
+
+	bool RDFbxImporter::ProcessSkeletonNode(FbxNode* pNode, RawBoneData* pParentBone)
+	{
+		RawBoneData* pBone = new RawBoneData;
+
+		FbxTimeSpan timeSpan;
+		m_pScene->GetGlobalSettings().GetTimelineDefaultTimeSpan(timeSpan);
+		FbxTime start = timeSpan.GetStart();
+		FbxTime end = timeSpan.GetStop();
+		pBone->name = pNode->GetName();
+
+		FbxAMatrix fbxLocalMatrix = pNode->EvaluateLocalTransform(start);
+		for (int i = 0; i < 4; ++i)
+		{
+			for (int j = 0; j < 4; ++j)
+			{
+				pBone->upToParentMatrix(i, j) = static_cast<float>(fbxLocalMatrix.Get(i, j));
+			}
+		}
+		
+		pBone->index = static_cast<int>(m_pSkeleton->bones.size());
+		pBone->parentIndex = pParentBone ? pParentBone->index : -1;
+		m_pSkeleton->bones.push_back(pBone);
+
+		for (int i = 0; i < pNode->GetChildCount(); ++i)
+		{
+			ProcessSkeletonNode(pNode->GetChild(i), pBone);
+		}
+
+		return true;
+	}
+
+	void RDFbxImporter::GetOffsetMatrix(FbxSkin* pSkin)
+	{
+		for (int i = 0; i < pSkin->GetClusterCount(); i++)
+		{
+			FbxCluster* pCluster = pSkin->GetCluster(i);
+			FbxNode* pFbxBone = pCluster->GetLink();
+			RawBoneData* pBone = m_pSkeleton->GetBone(pFbxBone->GetName());
+			
+			FbxAMatrix fbxLocalToWorldMatrix;
+			FbxAMatrix fbxBoneToWorldMatrix;
+			pCluster->GetTransformLinkMatrix(fbxBoneToWorldMatrix);
+			pCluster->GetTransformMatrix(fbxLocalToWorldMatrix);
+			FbxAMatrix fbxOffsetMatrix = fbxLocalToWorldMatrix * fbxBoneToWorldMatrix.Inverse();
+
+			Matrix4x4 boneOffsetMatrix;
+			for (int i = 0; i < 4; ++i)
+			{
+				for (int j = 0; j < 4; ++j)
+				{
+					boneOffsetMatrix(i, j) = static_cast<float>(fbxOffsetMatrix.Get(i, j));
+				}
+			}
+			pBone->offsetMatrix = boneOffsetMatrix;
+		}
 	}
 
 	void RDFbxImporter::GetTriangleMaterialIndices(FbxMesh* pMesh, int triNum, std::vector<uint32_t>& outputIndices)
