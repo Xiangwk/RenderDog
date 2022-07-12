@@ -71,7 +71,7 @@ namespace RenderDog
 		}
 	}
 
-	bool RDFbxImporter::LoadFbxFile(const std::string& filePath, bool bFlipUV)
+	bool RDFbxImporter::LoadFbxFile(const std::string& filePath, bool bIsSkinModel, bool bFlipUV)
 	{
 		if (!m_pImporter->Initialize(filePath.c_str(), -1, m_pManager->GetIOSettings()))
 		{
@@ -100,7 +100,7 @@ namespace RenderDog
 
 		m_RawData.clear();
 
-		if (!ProcessNode(m_pScene->GetRootNode(), bFlipUV))
+		if (!ProcessMeshNode(m_pScene->GetRootNode(), bFlipUV))
 		{
 			return false;
 		}
@@ -108,9 +108,9 @@ namespace RenderDog
 		return true;
 	}
 
-	bool RDFbxImporter::ProcessNode(FbxNode* pNode, bool bFlipUV)
+	bool RDFbxImporter::ProcessMeshNode(FbxNode* pNode, bool bFlipUV)
 	{
-		if (!ProcessMesh(pNode, bFlipUV))
+		if (!GetMeshData(pNode, bFlipUV))
 		{
 			return false;
 		}
@@ -123,7 +123,7 @@ namespace RenderDog
 				return false;
 			}
 			
-			if (!ProcessNode(pChildNode, bFlipUV))
+			if (!ProcessMeshNode(pChildNode, bFlipUV))
 			{
 				return false;
 			}
@@ -132,7 +132,7 @@ namespace RenderDog
 		return true;
 	}
 
-	bool RDFbxImporter::ProcessMesh(FbxNode* pNode, bool bFlipUV)
+	bool RDFbxImporter::GetMeshData(FbxNode* pNode, bool bFlipUV)
 	{
 		RawMeshData meshData;
 

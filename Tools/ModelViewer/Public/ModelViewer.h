@@ -27,7 +27,8 @@ private:
 	enum class LOAD_MODEL_TYPE
 	{
 		STANDARD = 0,
-		CUSTOM
+		CUSTOM_STATIC,
+		CUSTOM_SKIN
 	};
 
 public:
@@ -44,8 +45,7 @@ public:
 private:
 	bool						LoadFloor(uint32_t width, uint32_t depth, float unit);
 	bool						LoadSkyBox(const std::wstring& texFileName);
-	bool						LoadStaticModel(const std::string& fileName, LOAD_MODEL_TYPE modelType);
-	bool						LoadSkinModel(const std::string& fileName);
+	bool						LoadFbxModel(const std::string& fileName, LOAD_MODEL_TYPE modelType);
 
 	void						Update();
 	void						RegisterObjectToScene();

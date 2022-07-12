@@ -26,7 +26,8 @@ private:
 	enum class LOAD_MODEL_TYPE
 	{
 		STANDARD = 0,
-		CUSTOM
+		CUSTOM_STATIC,
+		CUSTOM_SKIN
 	};
 
 public:

@@ -79,7 +79,7 @@ bool DemoApp::Init(const DemoInitDesc& desc)
 		return false;
 	}
 
-	if (!LoadModel("Models/generator/Generator.FBX", LOAD_MODEL_TYPE::CUSTOM))
+	if (!LoadModel("Models/generator/Generator.FBX", LOAD_MODEL_TYPE::CUSTOM_STATIC))
 	{
 		MessageBox(nullptr, "Load Model Failed!", "ERROR", MB_OK);
 		return false;
@@ -268,10 +268,11 @@ bool DemoApp::LoadModel(const std::string& fileName, LOAD_MODEL_TYPE modelType)
 			return false;
 		}
 	}
-	else if (modelType == LOAD_MODEL_TYPE::CUSTOM)
+	else if (modelType == LOAD_MODEL_TYPE::CUSTOM_STATIC)
 	{
 		bool bFlipUV = true;
-		if (!RenderDog::g_pRDFbxImporter->LoadFbxFile(fileName, bFlipUV))
+		bool bIsSkinModel = false;
+		if (!RenderDog::g_pRDFbxImporter->LoadFbxFile(fileName, bIsSkinModel, bFlipUV))
 		{
 			MessageBox(nullptr, "Import FBX File Failed!", "ERROR", MB_OK);
 			return false;

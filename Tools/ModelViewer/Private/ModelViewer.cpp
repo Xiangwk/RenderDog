@@ -95,14 +95,14 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 		return false;
 	}
 
-	if (!LoadStaticModel("Models/Crunch/Crunch_Crash_Site.FBX", LOAD_MODEL_TYPE::CUSTOM))
+	if (!LoadFbxModel("Models/Crunch/Crunch_Crash_Site.FBX", LOAD_MODEL_TYPE::CUSTOM_STATIC))
 	{
 		MessageBox(nullptr, "Load Static Model Failed!", "ERROR", MB_OK);
 		return false;
 	}
 	m_pStaticModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 200.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
 
-	if (!LoadSkinModel("Models/Crunch/Crunch_Crash_Site.FBX"))
+	if (!LoadFbxModel("Models/Crunch/Crunch_Crash_Site.FBX", LOAD_MODEL_TYPE::CUSTOM_SKIN))
 	{
 		MessageBox(nullptr, "Load Skin Model Failed!", "ERROR", MB_OK);
 		return false;
@@ -330,12 +330,12 @@ bool ModelViewer::LoadSkyBox(const std::wstring& texFileName)
 	return true;
 }
 
-bool ModelViewer::LoadStaticModel(const std::string& fileName, LOAD_MODEL_TYPE modelType)
+bool ModelViewer::LoadFbxModel(const std::string& fileName, LOAD_MODEL_TYPE modelType)
 {
-	m_pStaticModel = new RenderDog::StaticModel();
-
 	if (modelType == LOAD_MODEL_TYPE::STANDARD)
 	{
+		m_pStaticModel = new RenderDog::StaticModel();
+
 		RenderDog::GeometryGenerator::StandardMeshData SphereMeshData;
 		RenderDog::g_pGeometryGenerator->GenerateSphere(50, 50, 50, SphereMeshData);
 		m_pStaticModel->LoadFromStandardData(SphereMeshData.vertices, SphereMeshData.indices, "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl", "Sphere");
@@ -344,10 +344,14 @@ bool ModelViewer::LoadStaticModel(const std::string& fileName, LOAD_MODEL_TYPE m
 			MessageBox(nullptr, "Load Texture Failed!", "ERROR", MB_OK);
 			return false;
 		}
+
+		m_pStaticModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
 	}
-	else if (modelType == LOAD_MODEL_TYPE::CUSTOM)
+	else if (modelType == LOAD_MODEL_TYPE::CUSTOM_STATIC)
 	{
-		if (!RenderDog::g_pRDFbxImporter->LoadFbxFile(fileName, true))
+		m_pStaticModel = new RenderDog::StaticModel();
+
+		if (!RenderDog::g_pRDFbxImporter->LoadFbxFile(fileName, false, true))
 		{
 			MessageBox(nullptr, "Import FBX File Failed!", "ERROR", MB_OK);
 			return false;
@@ -364,41 +368,38 @@ bool ModelViewer::LoadStaticModel(const std::string& fileName, LOAD_MODEL_TYPE m
 			MessageBox(nullptr, "Load Texture Failed!", "ERROR", MB_OK);
 			return false;
 		}
+
+		m_pStaticModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
+	}
+	else if (modelType == LOAD_MODEL_TYPE::CUSTOM_SKIN)
+	{
+		m_pSkinModel = new RenderDog::SkinModel();
+
+		if (!RenderDog::g_pRDFbxImporter->LoadFbxFile(fileName, true, true))
+		{
+			MessageBox(nullptr, "Import FBX File Failed!", "ERROR", MB_OK);
+			return false;
+		}
+
+		if (!m_pSkinModel->LoadFromRawMeshData(RenderDog::g_pRDFbxImporter->GetRawMeshData(), "Shaders/SkinModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl", fileName))
+		{
+			MessageBox(nullptr, "Load Model Failed!", "ERROR", MB_OK);
+			return false;
+		}
+
+		if (!m_pSkinModel->LoadTextureFromFile(L"EngineAsset/Textures/White_diff.dds", L"EngineAsset/Textures/FlatNormal_norm.dds"))
+		{
+			MessageBox(nullptr, "Load Texture Failed!", "ERROR", MB_OK);
+			return false;
+		}
+
+		m_pSkinModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
 	}
 	else
 	{
 		MessageBox(nullptr, "Load Unknown Type Model!", "ERROR", MB_OK);
 		return false;
 	}
-
-	m_pStaticModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
-
-	return true;
-}
-
-bool ModelViewer::LoadSkinModel(const std::string& fileName)
-{
-	m_pSkinModel = new RenderDog::SkinModel();
-
-	if (!RenderDog::g_pRDFbxImporter->LoadFbxFile(fileName, true))
-	{
-		MessageBox(nullptr, "Import FBX File Failed!", "ERROR", MB_OK);
-		return false;
-	}
-
-	if (!m_pSkinModel->LoadFromRawMeshData(RenderDog::g_pRDFbxImporter->GetRawMeshData(), "Shaders/SkinModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl", fileName))
-	{
-		MessageBox(nullptr, "Load Model Failed!", "ERROR", MB_OK);
-		return false;
-	}
-
-	if (!m_pSkinModel->LoadTextureFromFile(L"EngineAsset/Textures/White_diff.dds", L"EngineAsset/Textures/FlatNormal_norm.dds"))
-	{
-		MessageBox(nullptr, "Load Texture Failed!", "ERROR", MB_OK);
-		return false;
-	}
-
-	m_pSkinModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
 
 	return true;
 }
