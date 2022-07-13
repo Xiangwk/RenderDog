@@ -31,7 +31,7 @@ namespace RenderDog
 		}
 	}
 
-	bool SkinModel::LoadFromRawMeshData(const std::vector<RDFbxImporter::RawMeshData>& rawMeshDatas, const std::string& vsFile, const std::string& psFile, const std::string& fileName)
+	bool SkinModel::LoadFromRawMeshData(const std::vector<RDFbxImporter::RawMeshData>& rawMeshDatas, const RDFbxImporter::RawSkeletonData* pSkeletonData, const std::string& vsFile, const std::string& psFile, const std::string& fileName)
 	{
 		for (uint32_t i = 0; i < rawMeshDatas.size(); ++i)
 		{
@@ -48,6 +48,15 @@ namespace RenderDog
 				vert.normal = Vector3(0.0f, 0.0f, 0.0f);
 				vert.tangent = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
 				vert.texcoord = meshData.texcoords[index];
+
+				vert.weights.x = meshData.boneWeighs[index].x;
+				vert.weights.y = meshData.boneWeighs[index].y;
+				vert.weights.z = meshData.boneWeighs[index].z;
+
+				vert.boneIndices[0] = (uint8_t)meshData.boneIndices[index].x;
+				vert.boneIndices[1] = (uint8_t)meshData.boneIndices[index].y;
+				vert.boneIndices[2] = (uint8_t)meshData.boneIndices[index].z;
+				vert.boneIndices[3] = (uint8_t)meshData.boneIndices[index].w;
 
 				vertices.push_back(vert);
 			}
@@ -69,7 +78,13 @@ namespace RenderDog
 
 		m_pSkeleton = new Skeleton;
 		//LoadSkeleton
-		//TODO
+		for (size_t i = 0; i < pSkeletonData->bones.size(); ++i)
+		{
+			RDFbxImporter::RawBoneData* pRawBone = pSkeletonData->bones[i];
+			Bone bone(pRawBone->parentIndex, pRawBone->offsetMatrix, pRawBone->upToParentMatrix);
+
+			m_pSkeleton->AddBone(bone);
+		}
 
 		return true;
 	}
@@ -128,9 +143,11 @@ namespace RenderDog
 			return;
 		}
 
+		m_pSkeleton->Update();
+
 		for (uint32_t i = 0; i < m_pSkeleton->GetBoneNum(); ++i)
 		{
-			perModelTransform.BoneUpToRootMatrix[i] = m_pSkeleton->GetBone(i)->GetUpToRootMatrix();
+			perModelTransform.BoneUpToRootMatrix[i] = m_pSkeleton->GetBone(i).GetUpToRootMatrix();
 		}
 
 		for (uint32_t i = 0; i < m_Meshes.size(); ++i)

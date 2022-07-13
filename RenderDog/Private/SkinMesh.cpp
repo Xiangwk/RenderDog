@@ -220,7 +220,7 @@ namespace RenderDog
 
 		BufferDesc vbDesc = {};
 		vbDesc.byteWidth = sizeof(SkinVertex) * (uint32_t)m_Vertices.size();
-		vbDesc.stride = sizeof(StandardVertex);
+		vbDesc.stride = sizeof(SkinVertex);
 		vbDesc.offset = 0;
 		vbDesc.pInitData = &(m_Vertices[0]);
 		vbDesc.isDynamic = false;

@@ -24,12 +24,16 @@ namespace RenderDog
 			std::vector<Vector3>		postions;
 			std::vector<Vector2>		texcoords;
 			std::vector<uint32_t>		smoothGroup;		//每个三角形所在的光滑组索引
-
+			std::vector<Vector4>		boneIndices;
+			std::vector<Vector4>		boneWeighs;
+			
 			RawMeshData() :
 				name(),
 				postions(0),
 				texcoords(0),
-				smoothGroup(0)
+				smoothGroup(0),
+				boneIndices(0),
+				boneWeighs(0)
 			{}
 		};
 
@@ -78,13 +82,14 @@ namespace RenderDog
 		bool								ProcessMeshNode(FbxNode* pNode, bool bFlipUV = false);
 		bool								GetMeshData(FbxNode* pNode, bool bFlipUV = false);
 
-		bool								ProcessSkeletonNode(FbxNode* pNode, RawBoneData* pParentBone);
+		void								ProcessSkeletonNode(FbxNode* pNode, RawBoneData* pParentBone);
 		void								GetOffsetMatrix(FbxSkin* pSkin);
 
 		void								GetTriangleMaterialIndices(FbxMesh* pMesh, int triNum, std::vector<uint32_t>& outputIndices);
 		void								GetTriangleSmoothIndices(FbxMesh* pMesh, int triNum, std::vector<uint32_t>& outputIndices);
-		void								ReadPositions(FbxMesh* pMesh, int ctrlPointIndex, Vector3& outputPos);
-		void								ReadTexcoord(FbxMesh* pMesh, int ctrlPointIndex, int textureUVIndex, int uvLayer, Vector2& OutputUV);
+		void								ReadPositions(FbxMesh* pMesh, int vertexIndex, Vector3& outputPos);
+		void								ReadTexcoord(FbxMesh* pMesh, int vertexIndex, int textureUVIndex, int uvLayer, Vector2& outputUV);
+		void								ReadBoneSkin(FbxSkin* pSkin, int vertexIndex, std::vector<std::string>& outputBone, std::vector<float>& outputWeights);
 
 	private:
 		FbxManager*							m_pManager;

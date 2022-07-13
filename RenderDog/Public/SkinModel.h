@@ -25,6 +25,7 @@ namespace RenderDog
 		SkinModel& operator=(const SkinModel& model) = default;
 
 		bool						LoadFromRawMeshData(const std::vector<RDFbxImporter::RawMeshData>& rawMeshDatas,
+														const RDFbxImporter::RawSkeletonData* pSkeletonData,
 														const std::string& vsFile, const std::string& psFile,
 														const std::string& fileName);
 

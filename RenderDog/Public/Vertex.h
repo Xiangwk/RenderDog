@@ -8,6 +8,8 @@
 
 #include "Vector.h"
 
+#include <cstdint>
+
 namespace RenderDog
 {
 	enum class VERTEX_TYPE
@@ -67,13 +69,13 @@ namespace RenderDog
 	struct SkinVertex : public StandardVertex
 	{
 		Vector3	weights;
-		char	boneIndices[4];
+		uint8_t	boneIndices[4];
 
 		SkinVertex() = default;
 
 		SkinVertex(const Vector3& pos, const Vector4& color, 
 				   const Vector3& norm, const Vector4& tan, const Vector2& tex,
-				   const Vector3& wts, char* indices) :
+				   const Vector3& wts, uint8_t* indices) :
 			StandardVertex(pos, color, norm, tan, tex),
 			weights(wts)
 		{

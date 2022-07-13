@@ -149,10 +149,7 @@ namespace RenderDog
 				m_pSkeleton = new RawSkeletonData;
 			}
 
-			if (!ProcessSkeletonNode(m_pScene->GetRootNode(), nullptr))
-			{
-				return false;
-			}
+			ProcessSkeletonNode(m_pScene->GetRootNode(), nullptr);
 		}
 
 		m_RawData.clear();
@@ -200,10 +197,9 @@ namespace RenderDog
 			return true;
 		}
 
+		FbxSkin* pFbxSkin = nullptr;
 		if (m_bNeedGetBoneMatrix)
 		{
-			FbxSkin* pFbxSkin = nullptr;
-
 			for (int i = 0; i < pMesh->GetDeformerCount(); ++i)
 			{
 				FbxDeformer* pFbxDeformer = pMesh->GetDeformer(i);
@@ -256,6 +252,8 @@ namespace RenderDog
 			meshData.postions.clear();
 			meshData.texcoords.clear();
 			meshData.smoothGroup.clear();
+			meshData.boneIndices.clear();
+			meshData.boneWeighs.clear();
 			//遍历所有三角形，找到MaterialIndex相同的三角形放入到一个Mesh中
 			for (int i = 0; i < triangleNum; ++i)
 			{
@@ -281,6 +279,99 @@ namespace RenderDog
 						meshData.texcoords.push_back(tex[j]);
 
 						meshData.smoothGroup.push_back(smoothGroup[i]);
+
+						if (pFbxSkin)
+						{
+							//找到影响当前顶点的所有骨骼及其权重
+							std::vector<std::string> tempBones;
+							std::vector<float> tempWeights;
+							ReadBoneSkin(pFbxSkin, ctrlPointIndex, tempBones, tempWeights);
+
+							if (tempBones.empty())
+							{
+								return false;
+							}
+
+							//如果影响当前顶点的骨骼数量超过4个，则按从小到大的顺序，一次剔除到仅剩4个
+							while (tempBones.size() > 4)
+							{
+								float minWeight = tempWeights[0];
+								size_t minWeightIndex = 0;
+								for (size_t boneIndex = 0; boneIndex < tempBones.size(); ++boneIndex)
+								{
+									if (tempWeights[boneIndex] < minWeight)
+									{
+										minWeight = tempWeights[boneIndex];
+										minWeightIndex = boneIndex;
+									}
+								}
+
+								tempBones.erase(tempBones.begin() + minWeightIndex);
+								tempWeights.erase(tempWeights.begin() + minWeightIndex);
+							}
+
+							//重新计算权重
+							float totalWeight = 0.0f;
+							for (size_t boneIndex = 0; boneIndex < tempBones.size(); ++boneIndex)
+							{
+								totalWeight += tempWeights[boneIndex];
+							}
+
+							Vector4 boneWeight(0.0f);
+							for (size_t boneIndex = 0; boneIndex < tempBones.size(); ++boneIndex)
+							{
+								tempWeights[boneIndex] = tempWeights[boneIndex] / totalWeight;
+								if (boneIndex == 0)
+								{
+									boneWeight.x = tempWeights[boneIndex];
+								}
+								else if (boneIndex == 1)
+								{
+									boneWeight.y = tempWeights[boneIndex];
+								}
+								else if (boneIndex == 2)
+								{
+									boneWeight.z = tempWeights[boneIndex];
+								}
+								else
+								{
+									boneWeight.w = tempWeights[boneIndex];
+								}
+							}
+							meshData.boneWeighs.push_back(boneWeight);
+
+							//查找骨骼索引
+							float boneIndices[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+							Vector4 vBoneIndice(0.0f);
+							for (size_t boneIndex = 0; boneIndex < tempBones.size(); ++boneIndex)
+							{
+								RawBoneData* pBoneData = m_pSkeleton->GetBone(tempBones[boneIndex]);
+								if (!pBoneData)
+								{
+									return false;
+								}
+
+								boneIndices[boneIndex] = (float)pBoneData->index;
+
+								if (boneIndex == 0)
+								{
+									vBoneIndice.x = boneIndices[boneIndex];
+								}
+								else if (boneIndex == 1)
+								{
+									vBoneIndice.y = boneIndices[boneIndex];
+								}
+								else if (boneIndex == 2)
+								{
+									vBoneIndice.z = boneIndices[boneIndex];
+								}
+								else if (boneIndex == 3)
+								{
+									vBoneIndice.w = boneIndices[boneIndex];
+								}
+							}
+							meshData.boneIndices.push_back(vBoneIndice);
+						}
 					}
 				}
 			}
@@ -293,35 +384,37 @@ namespace RenderDog
 		return true;
 	}
 
-	bool RDFbxImporter::ProcessSkeletonNode(FbxNode* pNode, RawBoneData* pParentBone)
+	void RDFbxImporter::ProcessSkeletonNode(FbxNode* pNode, RawBoneData* pParentBone)
 	{
-		RawBoneData* pBone = new RawBoneData;
-
-		FbxTimeSpan timeSpan;
-		m_pScene->GetGlobalSettings().GetTimelineDefaultTimeSpan(timeSpan);
-		FbxTime start = timeSpan.GetStart();
-		FbxTime end = timeSpan.GetStop();
-		pBone->name = pNode->GetName();
-
-		FbxAMatrix fbxLocalMatrix = pNode->EvaluateLocalTransform(start);
-		for (int i = 0; i < 4; ++i)
+		RawBoneData* pBone = nullptr;
+		if (pNode->GetNodeAttribute() && pNode->GetNodeAttribute()->GetAttributeType() == FbxNodeAttribute::eSkeleton)
 		{
-			for (int j = 0; j < 4; ++j)
+			pBone = new RawBoneData();
+
+			FbxTimeSpan timeSpan;
+			m_pScene->GetGlobalSettings().GetTimelineDefaultTimeSpan(timeSpan);
+			FbxTime start = timeSpan.GetStart();
+			FbxTime end = timeSpan.GetStop();
+			pBone->name = pNode->GetName();
+
+			FbxAMatrix fbxLocalMatrix = pNode->EvaluateLocalTransform(start);
+			for (int i = 0; i < 4; ++i)
 			{
-				pBone->upToParentMatrix(i, j) = static_cast<float>(fbxLocalMatrix.Get(i, j));
+				for (int j = 0; j < 4; ++j)
+				{
+					pBone->upToParentMatrix(i, j) = static_cast<float>(fbxLocalMatrix.Get(i, j));
+				}
 			}
+
+			pBone->index = static_cast<int>(m_pSkeleton->bones.size());
+			pBone->parentIndex = pParentBone ? pParentBone->index : -1;
+			m_pSkeleton->bones.push_back(pBone);
 		}
 		
-		pBone->index = static_cast<int>(m_pSkeleton->bones.size());
-		pBone->parentIndex = pParentBone ? pParentBone->index : -1;
-		m_pSkeleton->bones.push_back(pBone);
-
 		for (int i = 0; i < pNode->GetChildCount(); ++i)
 		{
 			ProcessSkeletonNode(pNode->GetChild(i), pBone);
 		}
-
-		return true;
 	}
 
 	void RDFbxImporter::GetOffsetMatrix(FbxSkin* pSkin)
@@ -380,13 +473,13 @@ namespace RenderDog
 		}
 	}
 
-	void RDFbxImporter::ReadPositions(FbxMesh* pMesh, int ctrlPointIndex, Vector3& outputPos)
+	void RDFbxImporter::ReadPositions(FbxMesh* pMesh, int vertexIndex, Vector3& outputPos)
 	{
 		FbxVector4* pCtrlPoint = pMesh->GetControlPoints();
 
-		outputPos.x = static_cast<float>(pCtrlPoint[ctrlPointIndex][0]);
-		outputPos.y = static_cast<float>(pCtrlPoint[ctrlPointIndex][1]);
-		outputPos.z = static_cast<float>(pCtrlPoint[ctrlPointIndex][2]);
+		outputPos.x = static_cast<float>(pCtrlPoint[vertexIndex][0]);
+		outputPos.y = static_cast<float>(pCtrlPoint[vertexIndex][1]);
+		outputPos.z = static_cast<float>(pCtrlPoint[vertexIndex][2]);
 
 		//NOTE!!! 调研清楚如何使用FbxSDK中的Axis变换之后，应该把这里去掉
 		Matrix4x4 transAxisMatrix(1.0f, 0.0f, 0.0f, 0.0f,
@@ -399,7 +492,7 @@ namespace RenderDog
 		outputPos = Vector3(newPos.x, newPos.y, newPos.z);
 	}
 
-	void RDFbxImporter::ReadTexcoord(FbxMesh* pMesh, int ctrlPointIndex, int textureUVIndex, int uvLayer, Vector2& OutputUV)
+	void RDFbxImporter::ReadTexcoord(FbxMesh* pMesh, int vertexIndex, int textureUVIndex, int uvLayer, Vector2& OutputUV)
 	{
 		FbxGeometryElementUV* pVertexUV = pMesh->GetElementUV(uvLayer);
 
@@ -407,12 +500,12 @@ namespace RenderDog
 		{
 			if (pVertexUV->GetReferenceMode() == FbxGeometryElement::eDirect)
 			{
-				OutputUV.x = static_cast<float>(pVertexUV->GetDirectArray().GetAt(ctrlPointIndex)[0]);
-				OutputUV.y = static_cast<float>(pVertexUV->GetDirectArray().GetAt(ctrlPointIndex)[1]);
+				OutputUV.x = static_cast<float>(pVertexUV->GetDirectArray().GetAt(vertexIndex)[0]);
+				OutputUV.y = static_cast<float>(pVertexUV->GetDirectArray().GetAt(vertexIndex)[1]);
 			}
 			else if (pVertexUV->GetReferenceMode() == FbxGeometryElement::eIndexToDirect)
 			{
-				int id = pVertexUV->GetIndexArray().GetAt(ctrlPointIndex);
+				int id = pVertexUV->GetIndexArray().GetAt(vertexIndex);
 				OutputUV.x = static_cast<float>(pVertexUV->GetDirectArray().GetAt(id)[0]);
 				OutputUV.y = static_cast<float>(pVertexUV->GetDirectArray().GetAt(id)[1]);
 			}
@@ -421,6 +514,39 @@ namespace RenderDog
 		{
 			OutputUV.x = static_cast<float>(pVertexUV->GetDirectArray().GetAt(textureUVIndex)[0]);
 			OutputUV.y = static_cast<float>(pVertexUV->GetDirectArray().GetAt(textureUVIndex)[1]);
+		}
+	}
+
+	void RDFbxImporter::ReadBoneSkin(FbxSkin* pSkin, int vertexIndex, std::vector<std::string>& outputBone, std::vector<float>& outputWeights)
+	{
+		for (int clusterIndex = 0; clusterIndex < pSkin->GetClusterCount(); clusterIndex++)
+		{
+			FbxCluster* pCluster = pSkin->GetCluster(clusterIndex);
+			FbxNode* pFbxBone = pCluster->GetLink();
+
+			int* pControlPointIndex = pCluster->GetControlPointIndices();
+			double* pWeights = pCluster->GetControlPointWeights();
+			for (int ctrlPointIndex = 0; ctrlPointIndex < pCluster->GetControlPointIndicesCount(); ctrlPointIndex++)
+			{
+				if (pControlPointIndex[ctrlPointIndex] == vertexIndex)
+				{
+					size_t j = 0;
+					for (j = 0; j < outputBone.size(); j++)
+					{
+						if (pFbxBone->GetName() == outputBone[j])
+						{
+							outputWeights[j] += (float)pWeights[ctrlPointIndex];
+							break;
+						}
+					}
+					if (j == outputBone.size())
+					{
+						std::string boneName = std::string(pFbxBone->GetName());
+						outputBone.push_back(boneName);
+						outputWeights.push_back((float)pWeights[ctrlPointIndex]);
+					}
+				}
+			}
 		}
 	}
 
