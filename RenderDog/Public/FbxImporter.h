@@ -12,6 +12,7 @@
 
 #include <vector>
 #include <string>
+#include <unordered_map>
 
 namespace RenderDog
 {
@@ -57,6 +58,7 @@ namespace RenderDog
 		struct RawSkeletonData
 		{
 			std::vector<RawBoneData*>	bones;
+			std::unordered_map<std::string, RawBoneData*> boneMap;
 
 			RawSkeletonData() :
 				bones(0)

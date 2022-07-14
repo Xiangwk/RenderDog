@@ -14,15 +14,15 @@ namespace RenderDog
 
 	RDFbxImporter::RawBoneData* RDFbxImporter::RawSkeletonData::GetBone(const std::string& name)
 	{
-		for (int i = 0; i < bones.size(); ++i)
+		auto bone = boneMap.find(name);
+		if (bone != boneMap.end())
 		{
-			if (bones[i]->name == name)
-			{
-				return bones[i];
-			}
+			return bone->second;
 		}
-
-		return nullptr;
+		else
+		{
+			return nullptr;
+		}
 	}
 
 	RDFbxImporter::RDFbxImporter() :
@@ -143,6 +143,8 @@ namespace RenderDog
 						pBone = nullptr;
 					}
 				}
+
+				m_pSkeleton->boneMap.clear();
 			}
 			else
 			{
@@ -409,6 +411,7 @@ namespace RenderDog
 			pBone->index = static_cast<int>(m_pSkeleton->bones.size());
 			pBone->parentIndex = pParentBone ? pParentBone->index : -1;
 			m_pSkeleton->bones.push_back(pBone);
+			m_pSkeleton->boneMap.insert({ pBone->name, pBone });
 		}
 		
 		for (int i = 0; i < pNode->GetChildCount(); ++i)
@@ -519,14 +522,17 @@ namespace RenderDog
 
 	void RDFbxImporter::ReadBoneSkin(FbxSkin* pSkin, int vertexIndex, std::vector<std::string>& outputBone, std::vector<float>& outputWeights)
 	{
-		for (int clusterIndex = 0; clusterIndex < pSkin->GetClusterCount(); clusterIndex++)
+		int clusterCnt = pSkin->GetClusterCount();
+		for (int clusterIndex = 0; clusterCnt; clusterIndex++)
 		{
 			FbxCluster* pCluster = pSkin->GetCluster(clusterIndex);
 			FbxNode* pFbxBone = pCluster->GetLink();
 
 			int* pControlPointIndex = pCluster->GetControlPointIndices();
 			double* pWeights = pCluster->GetControlPointWeights();
-			for (int ctrlPointIndex = 0; ctrlPointIndex < pCluster->GetControlPointIndicesCount(); ctrlPointIndex++)
+
+			int ctrlPointIndexCnt = pCluster->GetControlPointIndicesCount();
+			for (int ctrlPointIndex = 0; ctrlPointIndex < ctrlPointIndexCnt; ctrlPointIndex++)
 			{
 				if (pControlPointIndex[ctrlPointIndex] == vertexIndex)
 				{
