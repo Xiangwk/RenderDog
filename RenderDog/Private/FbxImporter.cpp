@@ -200,6 +200,7 @@ namespace RenderDog
 		}
 
 		FbxSkin* pFbxSkin = nullptr;
+		std::unordered_map<int, VertexBones> vertBonesMap;
 		if (m_bNeedGetBoneMatrix)
 		{
 			for (int i = 0; i < pMesh->GetDeformerCount(); ++i)
@@ -219,6 +220,8 @@ namespace RenderDog
 			}
 			
 			GetOffsetMatrix(pFbxSkin);
+
+			GetBoneSkins(pFbxSkin, vertBonesMap);
 		}
 
 		//Triangulate
@@ -287,7 +290,7 @@ namespace RenderDog
 							//找到影响当前顶点的所有骨骼及其权重
 							std::vector<std::string> tempBones;
 							std::vector<float> tempWeights;
-							ReadBoneSkin(pFbxSkin, ctrlPointIndex, tempBones, tempWeights);
+							ReadBoneSkin(ctrlPointIndex, vertBonesMap, tempBones, tempWeights);
 
 							if (tempBones.empty())
 							{
@@ -420,6 +423,51 @@ namespace RenderDog
 		}
 	}
 
+	void RDFbxImporter::GetBoneSkins(FbxSkin* pSkin, std::unordered_map<int, VertexBones>& vertBonesMap)
+	{
+		int clusterCnt = pSkin->GetClusterCount();
+		for (int clusterIndex = 0; clusterIndex < clusterCnt; clusterIndex++)
+		{
+			FbxCluster* pCluster = pSkin->GetCluster(clusterIndex);
+			FbxNode* pFbxBone = pCluster->GetLink();
+
+			int* pControlPointIndex = pCluster->GetControlPointIndices();
+			double* pWeights = pCluster->GetControlPointWeights();
+
+			int ctrlPointIndexCnt = pCluster->GetControlPointIndicesCount();
+			for (int ctrlPointIndex = 0; ctrlPointIndex < ctrlPointIndexCnt; ctrlPointIndex++)
+			{
+				int vertexIndex = pControlPointIndex[ctrlPointIndex];
+				auto vertBone = vertBonesMap.find(vertexIndex);
+				if (vertBone == vertBonesMap.end())
+				{
+					VertexBones vertBones;
+					vertBones.boneNames.push_back(pFbxBone->GetName());
+					vertBones.boneWeights.push_back((float)pWeights[ctrlPointIndex]);
+					vertBonesMap.insert({ vertexIndex, vertBones });
+				}
+				else
+				{
+					VertexBones& vertBones = vertBone->second;
+					size_t j = 0;
+					for (j = 0; j < vertBones.boneNames.size(); ++j)
+					{
+						if (pFbxBone->GetName() == vertBones.boneNames[j])
+						{
+							vertBones.boneWeights[j] += (float)pWeights[ctrlPointIndex];
+							break;
+						}
+					}
+					if (j == vertBones.boneNames.size())
+					{
+						vertBones.boneNames.push_back(pFbxBone->GetName());
+						vertBones.boneWeights.push_back((float)pWeights[ctrlPointIndex]);
+					}
+				}
+			}
+		}
+	}
+
 	void RDFbxImporter::GetOffsetMatrix(FbxSkin* pSkin)
 	{
 		for (int i = 0; i < pSkin->GetClusterCount(); i++)
@@ -520,40 +568,19 @@ namespace RenderDog
 		}
 	}
 
-	void RDFbxImporter::ReadBoneSkin(FbxSkin* pSkin, int vertexIndex, std::vector<std::string>& outputBone, std::vector<float>& outputWeights)
+	void RDFbxImporter::ReadBoneSkin(int vertexIndex, const std::unordered_map<int, VertexBones>& vertBonesMap, 
+									 std::vector<std::string>& outputBone, std::vector<float>& outputWeights)
 	{
-		int clusterCnt = pSkin->GetClusterCount();
-		for (int clusterIndex = 0; clusterCnt; clusterIndex++)
+		auto vertBoneIter = vertBonesMap.find(vertexIndex);
+		if (vertBoneIter == vertBonesMap.end())
 		{
-			FbxCluster* pCluster = pSkin->GetCluster(clusterIndex);
-			FbxNode* pFbxBone = pCluster->GetLink();
-
-			int* pControlPointIndex = pCluster->GetControlPointIndices();
-			double* pWeights = pCluster->GetControlPointWeights();
-
-			int ctrlPointIndexCnt = pCluster->GetControlPointIndicesCount();
-			for (int ctrlPointIndex = 0; ctrlPointIndex < ctrlPointIndexCnt; ctrlPointIndex++)
-			{
-				if (pControlPointIndex[ctrlPointIndex] == vertexIndex)
-				{
-					size_t j = 0;
-					for (j = 0; j < outputBone.size(); j++)
-					{
-						if (pFbxBone->GetName() == outputBone[j])
-						{
-							outputWeights[j] += (float)pWeights[ctrlPointIndex];
-							break;
-						}
-					}
-					if (j == outputBone.size())
-					{
-						std::string boneName = std::string(pFbxBone->GetName());
-						outputBone.push_back(boneName);
-						outputWeights.push_back((float)pWeights[ctrlPointIndex]);
-					}
-				}
-			}
+			return;
 		}
+
+		const VertexBones& vertBones = vertBoneIter->second;
+
+		outputBone = vertBones.boneNames;
+		outputWeights = vertBones.boneWeights;
 	}
 
 }// namespace RenderDog

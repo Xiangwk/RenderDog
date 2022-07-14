@@ -107,7 +107,7 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 		MessageBox(nullptr, "Load Skin Model Failed!", "ERROR", MB_OK);
 		return false;
 	}
-	m_pSkinModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, -200.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
+	m_pSkinModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
 
 	RenderDog::LightDesc lightDesc = {};
 	lightDesc.type = RenderDog::LIGHT_TYPE::DIRECTIONAL;

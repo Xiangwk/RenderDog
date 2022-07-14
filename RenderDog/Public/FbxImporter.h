@@ -67,6 +67,13 @@ namespace RenderDog
 			RawBoneData* GetBone(const std::string& name);
 		};
 
+		//影响该顶点的骨骼以及权重
+		struct VertexBones
+		{
+			std::vector<std::string>	boneNames;
+			std::vector<float>			boneWeights;
+		};
+
 	public:
 		RDFbxImporter();
 		~RDFbxImporter();
@@ -85,13 +92,14 @@ namespace RenderDog
 		bool								GetMeshData(FbxNode* pNode, bool bFlipUV = false);
 
 		void								ProcessSkeletonNode(FbxNode* pNode, RawBoneData* pParentBone);
+		void								GetBoneSkins(FbxSkin* pSkin, std::unordered_map<int, VertexBones>& vertBonesMap);
 		void								GetOffsetMatrix(FbxSkin* pSkin);
 
 		void								GetTriangleMaterialIndices(FbxMesh* pMesh, int triNum, std::vector<uint32_t>& outputIndices);
 		void								GetTriangleSmoothIndices(FbxMesh* pMesh, int triNum, std::vector<uint32_t>& outputIndices);
 		void								ReadPositions(FbxMesh* pMesh, int vertexIndex, Vector3& outputPos);
 		void								ReadTexcoord(FbxMesh* pMesh, int vertexIndex, int textureUVIndex, int uvLayer, Vector2& outputUV);
-		void								ReadBoneSkin(FbxSkin* pSkin, int vertexIndex, std::vector<std::string>& outputBone, std::vector<float>& outputWeights);
+		void								ReadBoneSkin(int vertexIndex, const std::unordered_map<int, VertexBones>& vertBonesMap, std::vector<std::string>& outputBone, std::vector<float>& outputWeights);
 
 	private:
 		FbxManager*							m_pManager;
