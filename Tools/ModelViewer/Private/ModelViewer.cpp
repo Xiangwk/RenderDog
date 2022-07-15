@@ -458,7 +458,7 @@ void ModelViewer::RegisterObjectToScene()
 		m_pGridLine->RegisterToScene(m_pScene);
 	}
 
-	m_pFloor->RegisterToScene(m_pScene);
+	//m_pFloor->RegisterToScene(m_pScene);
 
 	m_pSkyBox->RegisterToScene(m_pScene);
 

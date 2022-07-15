@@ -152,6 +152,13 @@ namespace RenderDog
 			}
 
 			ProcessSkeletonNode(m_pScene->GetRootNode(), nullptr);
+
+			Matrix4x4 transAxisMatrix(1.0f, 0.0f, 0.0f, 0.0f,
+									  0.0f, 0.0f, 1.0f, 0.0f,
+									  0.0f, 1.0f, 0.0f, 0.0f,
+									  0.0f, 0.0f, 0.0f, 1.0f);
+			//m_pSkeleton->LocalMatrix = transAxisMatrix;
+			m_pSkeleton->LocalMatrix.Identity();
 		}
 
 		m_RawData.clear();
@@ -166,19 +173,18 @@ namespace RenderDog
 
 	bool RDFbxImporter::ProcessMeshNode(FbxNode* pNode, bool bFlipUV)
 	{
-		if (!GetMeshData(pNode, bFlipUV))
+		if (pNode->GetNodeAttribute() && pNode->GetNodeAttribute()->GetAttributeType() == FbxNodeAttribute::eMesh)
 		{
-			return false;
-		}
-
-		for (int i = 0; i < pNode->GetChildCount(); ++i)
-		{
-			FbxNode* pChildNode = pNode->GetChild(i);
-			if (!pChildNode)
+			if (!GetMeshData(pNode, bFlipUV))
 			{
 				return false;
 			}
-			
+		}
+
+		int childCnt = pNode->GetChildCount();
+		for (int i = 0; i < childCnt; ++i)
+		{
+			FbxNode* pChildNode = pNode->GetChild(i);
 			if (!ProcessMeshNode(pChildNode, bFlipUV))
 			{
 				return false;
@@ -193,17 +199,13 @@ namespace RenderDog
 		RawMeshData meshData;
 
 		FbxMesh* pMesh = pNode->GetMesh();
-		if (!pMesh)
-		{
-			//TODO!!! Log some imformation
-			return true;
-		}
 
 		FbxSkin* pFbxSkin = nullptr;
 		std::unordered_map<int, VertexBones> vertBonesMap;
 		if (m_bNeedGetBoneMatrix)
 		{
-			for (int i = 0; i < pMesh->GetDeformerCount(); ++i)
+			int deformerCnt = pMesh->GetDeformerCount();
+			for (int i = 0; i < deformerCnt; ++i)
 			{
 				FbxDeformer* pFbxDeformer = pMesh->GetDeformer(i);
 
@@ -470,7 +472,8 @@ namespace RenderDog
 
 	void RDFbxImporter::GetOffsetMatrix(FbxSkin* pSkin)
 	{
-		for (int i = 0; i < pSkin->GetClusterCount(); i++)
+		int clusterCnt = pSkin->GetClusterCount();
+		for (int i = 0; i < clusterCnt; i++)
 		{
 			FbxCluster* pCluster = pSkin->GetCluster(i);
 			FbxNode* pFbxBone = pCluster->GetLink();

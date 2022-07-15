@@ -46,31 +46,31 @@ VSOutput Main(VSInput vsInput)
 	Weights[2] = vsInput.BoneWeights.z;
 	Weights[3] = 1.0f - vsInput.BoneWeights.x - vsInput.BoneWeights.y - vsInput.BoneWeights.z;
 
-	float4 PosL = float4(vsInput.Pos, 1.0f);
-	float4 normal = float4(vsInput.Normal, 0.0f);
-	float4 tangent = float4(vsInput.Tangent.xyz, 0.0f);
+	float3 PosL = float3(0.0f, 0.0f, 0.0f);
+	float3 normal = float3(0.0f, 0.0f, 0.0f);
+	float3 tangent = float3(0.0f, 0.0f, 0.0f);
 	//Skinned
 	for (int i = 0; i < 4; ++i)
 	{
-		PosL += Weights[i] * mul(PosL, BoneTransforms[vsInput.BoneIndices[i]]);
-		normal += Weights[i] * mul(normal, BoneTransforms[vsInput.BoneIndices[i]]);
-		tangent += Weights[i] * mul(tangent, BoneTransforms[vsInput.BoneIndices[i]]);
+		PosL += (Weights[i] * mul(float4(vsInput.Pos, 1.0f), BoneTransforms[vsInput.BoneIndices[i]])).xyz;
+		normal += (Weights[i] * mul(float4(vsInput.Normal, 0.0f), BoneTransforms[vsInput.BoneIndices[i]])).xyz;
+		tangent += (Weights[i] * mul(float4(vsInput.Tangent.xyz, 0.0f), BoneTransforms[vsInput.BoneIndices[i]])).xyz;
 	}
 
-	vsOutput.Pos = mul(PosL, WorldMat);
+	vsOutput.Pos = mul(float4(PosL, 1.0f), WorldMat);
 	vsOutput.PosW = vsOutput.Pos;
 
 	vsOutput.Pos = mul(vsOutput.Pos, ViewMat);
 	vsOutput.Pos = mul(vsOutput.Pos, ProjMat);
 
-	normal = mul(normal, WorldMat);
+	float4 WorldNormal = mul(float4(normal, 0.0f), WorldMat);
 	vsOutput.Normal = normalize(normal.xyz);
 
-	tangent = mul(tangent, WorldMat);
+	float4 WorldTangent = mul(float4(tangent, 1.0f), WorldMat);
 	vsOutput.Tangent = normalize(tangent.xyz);
 
-	float3 biTangent = normalize(cross(normal.xyz, tangent.xyz) * vsInput.Tangent.w);
-	vsOutput.BiTangent = biTangent;
+	float3 WorldBiTangent = cross(WorldNormal.xyz, WorldTangent.xyz) * vsInput.Tangent.w;
+	vsOutput.BiTangent = normalize(WorldBiTangent);
 
 	vsOutput.Color = vsInput.Color;
 

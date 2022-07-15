@@ -77,11 +77,12 @@ namespace RenderDog
 		CalculateBoundings();
 
 		m_pSkeleton = new Skeleton;
+		m_pSkeleton->SetLocalMatrix(pSkeletonData->LocalMatrix);
 		//LoadSkeleton
 		for (size_t i = 0; i < pSkeletonData->bones.size(); ++i)
 		{
 			RDFbxImporter::RawBoneData* pRawBone = pSkeletonData->bones[i];
-			Bone bone(pRawBone->parentIndex, pRawBone->offsetMatrix, pRawBone->upToParentMatrix);
+			Bone bone(pRawBone->name, pRawBone->parentIndex, pRawBone->offsetMatrix, pRawBone->upToParentMatrix);
 
 			m_pSkeleton->AddBone(bone);
 		}
@@ -147,7 +148,7 @@ namespace RenderDog
 
 		for (uint32_t i = 0; i < m_pSkeleton->GetBoneNum(); ++i)
 		{
-			perModelTransform.BoneUpToRootMatrix[i] = m_pSkeleton->GetBone(i).GetUpToRootMatrix();
+			perModelTransform.BoneFinalTransformMatrix[i] = m_pSkeleton->GetBone(i).GetFinalTransformMatrix();
 		}
 
 		for (uint32_t i = 0; i < m_Meshes.size(); ++i)

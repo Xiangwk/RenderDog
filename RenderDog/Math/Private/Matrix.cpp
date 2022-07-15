@@ -22,6 +22,35 @@ namespace RenderDog
 	Matrix4x4::~Matrix4x4()
 	{}
 
+	Matrix4x4::Matrix4x4(const Matrix4x4& mat)
+	{
+		for (int i = 0; i < 4; ++i)
+		{
+			for (int j = 0; j < 4; ++j)
+			{
+				m_fData[i][j] = mat(i, j);
+			}
+		}
+	}
+
+	Matrix4x4& Matrix4x4::operator=(const Matrix4x4& mat)
+	{
+		if (this == &mat)
+		{
+			return *this;
+		}
+
+		for (int i = 0; i < 4; ++i)
+		{
+			for (int j = 0; j < 4; ++j)
+			{
+				m_fData[i][j] = mat(i, j);
+			}
+		}
+
+		return *this;
+	}
+
 	Matrix4x4::Matrix4x4(float f00, float f01, float f02, float f03,
 		float f10, float f11, float f12, float f13,
 		float f20, float f21, float f22, float f23,

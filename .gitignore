@@ -44,3 +44,4 @@
 /Tools/ModelViewer/Build/VS16.0/ModelViewer.vcxproj.user
 /Renderer/SoftwareRenderer/Build/VS16.0/SoftwareRenderer.vcxproj.user
 /Renderer/D3D11Renderer/Build/VS16.0/D3D11Renderer.vcxproj.user
+/Bin/Tools/ModelViewer/Models/soldier.m3d

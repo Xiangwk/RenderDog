@@ -57,8 +57,10 @@ namespace RenderDog
 
 		struct RawSkeletonData
 		{
-			std::vector<RawBoneData*>	bones;
-			std::unordered_map<std::string, RawBoneData*> boneMap;
+			std::vector<RawBoneData*>						bones;
+			std::unordered_map<std::string, RawBoneData*>	boneMap;
+
+			Matrix4x4										LocalMatrix;
 
 			RawSkeletonData() :
 				bones(0)

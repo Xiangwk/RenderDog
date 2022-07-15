@@ -25,7 +25,7 @@ namespace RenderDog
 		struct SkinModelPerObjectTransform
 		{
 			Matrix4x4			LocalToWorldMatrix;
-			Matrix4x4			BoneUpToRootMatrix[256];
+			Matrix4x4			BoneFinalTransformMatrix[256];
 
 			SkinModelPerObjectTransform() :
 				LocalToWorldMatrix()
@@ -34,7 +34,7 @@ namespace RenderDog
 
 				for (int i = 0; i < 256; ++i)
 				{
-					BoneUpToRootMatrix[i].Identity();
+					BoneFinalTransformMatrix[i].Identity();
 				}
 			}
 		};

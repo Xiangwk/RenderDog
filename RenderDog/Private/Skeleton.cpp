@@ -27,15 +27,21 @@ namespace RenderDog
 			int parentIndex = bone.GetParentIndex();
 			if (parentIndex == -1)
 			{
-				bone.SetUpdateToRootMatrix(offsetMatrix * upToParentMatrix);
+				Matrix4x4 upToRootMatrix = upToParentMatrix * m_LocalMatrix;
+				bone.SetUpdateToRootMatrix(upToRootMatrix);
+
+				bone.SetFinalTransformMatrix(upToRootMatrix);
 			}
 			else
 			{
 				const Bone& parentBone = m_Bones[parentIndex];
-				const Matrix4x4& parentUpToRootMatrix = parentBone.GetUpToRootMatrix();
+				const Matrix4x4& parentToRootMatrix = parentBone.GetUpToRootMatrix();
 
-				Matrix4x4 upToRootMatrix = offsetMatrix * upToParentMatrix * parentUpToRootMatrix;
+				Matrix4x4 upToRootMatrix = upToParentMatrix * parentToRootMatrix;
 				bone.SetUpdateToRootMatrix(upToRootMatrix);
+
+				Matrix4x4 finalTranformMatrix = offsetMatrix * upToRootMatrix;
+				bone.SetFinalTransformMatrix(finalTranformMatrix);
 			}
 		}
 	}

@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "Matrix.h"
+
 #include <vector>
 
 namespace RenderDog
@@ -18,6 +20,8 @@ namespace RenderDog
 		Skeleton();
 		~Skeleton();
 
+		void				SetLocalMatrix(const Matrix4x4& matrix) { m_LocalMatrix = matrix; }
+
 		Bone&				GetBone(uint32_t index) { return m_Bones[index]; }
 		const Bone&			GetBone(uint32_t index) const { return m_Bones[index]; }
 
@@ -29,6 +33,8 @@ namespace RenderDog
 
 	private:
 		std::vector<Bone>	m_Bones;
+
+		Matrix4x4			m_LocalMatrix;
 	};
 
 }// namespace RenderDog
