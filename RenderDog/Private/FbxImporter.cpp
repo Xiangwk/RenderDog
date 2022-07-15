@@ -479,11 +479,11 @@ namespace RenderDog
 			FbxNode* pFbxBone = pCluster->GetLink();
 			RawBoneData* pBone = m_pSkeleton->GetBone(pFbxBone->GetName());
 			
-			FbxAMatrix fbxLocalToWorldMatrix;
-			FbxAMatrix fbxBoneToWorldMatrix;
-			pCluster->GetTransformLinkMatrix(fbxBoneToWorldMatrix);
-			pCluster->GetTransformMatrix(fbxLocalToWorldMatrix);
-			FbxAMatrix fbxOffsetMatrix = fbxLocalToWorldMatrix * fbxBoneToWorldMatrix.Inverse();
+			FbxAMatrix fbxWorldToLocal;
+			FbxAMatrix fbxWorldToBone;
+			pCluster->GetTransformLinkMatrix(fbxWorldToLocal);
+			pCluster->GetTransformMatrix(fbxWorldToBone);
+			FbxAMatrix fbxOffsetMatrix = fbxWorldToLocal.Inverse() * fbxWorldToBone;
 
 			Matrix4x4 boneOffsetMatrix;
 			for (int i = 0; i < 4; ++i)

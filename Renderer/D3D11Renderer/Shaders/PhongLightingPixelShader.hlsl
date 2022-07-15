@@ -58,7 +58,7 @@ float4 Main(VSOutput vsOutput) : SV_Target
 	//Shadow
 	float3 ShadowPos = vsOutput.ShadowPos.xyz / vsOutput.ShadowPos.w;
 	float ShadowFactor = ComFunc_ShadowDepth_GetShadowFactor(ShadowPos);
-	//LightResult *= ShadowFactor;
+	LightResult *= ShadowFactor;
 
 	float3 Ambient = ReflectionColor * 0.4f;
 

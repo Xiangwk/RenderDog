@@ -52,7 +52,10 @@ namespace RenderDog
 				parentIndex(-1),
 				upToParentMatrix(),
 				offsetMatrix()
-			{}
+			{
+				upToParentMatrix.Identity();
+				offsetMatrix.Identity();
+			}
 		};
 
 		struct RawSkeletonData
