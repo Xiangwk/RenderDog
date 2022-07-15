@@ -153,11 +153,13 @@ namespace RenderDog
 
 			ProcessSkeletonNode(m_pScene->GetRootNode(), nullptr);
 
-			Matrix4x4 transAxisMatrix(1.0f, 0.0f, 0.0f, 0.0f,
-									  0.0f, 0.0f, 1.0f, 0.0f,
-									  0.0f, 1.0f, 0.0f, 0.0f,
-									  0.0f, 0.0f, 0.0f, 1.0f);
-			//m_pSkeleton->LocalMatrix = transAxisMatrix;
+			//NOTE!!! 顶点坐标在加载的过程中已经变换为Y轴朝上的左手坐标系，这里无需再次变换
+			//至于为何在顶点加载时进行变换，可参考顶点加载时的注释；
+			/*Matrix4x4 transAxisMatrix(1.0f, 0.0f, 0.0f, 0.0f,
+				0.0f, 0.0f, 1.0f, 0.0f,
+				0.0f, 1.0f, 0.0f, 0.0f,
+				0.0f, 0.0f, 0.0f, 1.0f);
+			m_pSkeleton->LocalMatrix = transAxisMatrix;*/
 			m_pSkeleton->LocalMatrix.Identity();
 		}
 
@@ -536,6 +538,7 @@ namespace RenderDog
 		outputPos.z = static_cast<float>(pCtrlPoint[vertexIndex][2]);
 
 		//NOTE!!! 调研清楚如何使用FbxSDK中的Axis变换之后，应该把这里去掉
+		//这里的变换很重要！将顶点从右手系变换到左手系中，这里的坐标系描述会影响到加载完顶点之后面法线的计算；
 		Matrix4x4 transAxisMatrix(1.0f, 0.0f, 0.0f, 0.0f,
 								  0.0f, 0.0f, 1.0f, 0.0f,
 								  0.0f, 1.0f, 0.0f, 0.0f,

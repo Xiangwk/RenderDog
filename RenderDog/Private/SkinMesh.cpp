@@ -311,6 +311,7 @@ namespace RenderDog
 			}
 
 			//重新计算法线
+			//这里必须保证顶点的坐标定义在左手系中，否则叉积的顺序需要调换；
 			Vector3 faceNormal0 = CrossProduct(pos1 - pos0, pos2 - pos0);
 			Vector3 faceNormal1 = CrossProduct(pos2 - pos1, pos0 - pos1);
 			Vector3 faceNormal2 = CrossProduct(pos0 - pos2, pos1 - pos2);
