@@ -351,9 +351,9 @@ bool ModelViewer::LoadFbxModel(const std::string& fileName, LOAD_MODEL_TYPE mode
 	{
 		m_pStaticModel = new RenderDog::StaticModel();
 
-		bool bIsSkinModel = false;
-		bool bFlipUV = false;
-		if (!RenderDog::g_pRDFbxImporter->LoadFbxFile(fileName, bIsSkinModel, bFlipUV))
+		RenderDog::RDFbxImporter::FbxLoadParam fbxLoadParam;
+		fbxLoadParam.bIsFlipTexcoordV = false;
+		if (!RenderDog::g_pRDFbxImporter->LoadFbxFile(fileName, RenderDog::RDFbxImporter::FBX_LOAD_TYPE::STATIC_MODEL, fbxLoadParam))
 		{
 			MessageBox(nullptr, "Import FBX File Failed!", "ERROR", MB_OK);
 			return false;
@@ -377,9 +377,9 @@ bool ModelViewer::LoadFbxModel(const std::string& fileName, LOAD_MODEL_TYPE mode
 	{
 		m_pSkinModel = new RenderDog::SkinModel();
 
-		bool bIsSkinModel = true;
-		bool bFlipUV = false;
-		if (!RenderDog::g_pRDFbxImporter->LoadFbxFile(fileName, bIsSkinModel, bFlipUV))
+		RenderDog::RDFbxImporter::FbxLoadParam fbxLoadParam;
+		fbxLoadParam.bIsFlipTexcoordV = false;
+		if (!RenderDog::g_pRDFbxImporter->LoadFbxFile(fileName, RenderDog::RDFbxImporter::FBX_LOAD_TYPE::SKIN_MODEL, fbxLoadParam))
 		{
 			MessageBox(nullptr, "Import FBX File Failed!", "ERROR", MB_OK);
 			return false;

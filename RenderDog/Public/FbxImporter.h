@@ -18,6 +18,7 @@ namespace RenderDog
 {
 	class RDFbxImporter
 	{
+	public:
 		enum class FBX_LOAD_TYPE
 		{
 			UNKNOWN = 0,
@@ -26,7 +27,15 @@ namespace RenderDog
 			ANIMATION
 		};
 
-	public:
+		struct FbxLoadParam
+		{
+			bool bIsFlipTexcoordV;
+
+			FbxLoadParam() :
+				bIsFlipTexcoordV(false)
+			{}
+		};
+
 		struct RawMeshData 
 		{
 			std::string					name;
@@ -95,14 +104,14 @@ namespace RenderDog
 		void								Release();
 
 											//FlipUV为true时，v坐标要做反转（v = 1.0f - v）
-		bool								LoadFbxFile(const std::string& filePath, bool bIsSkinModel, bool bFlipUV = false);
+		bool								LoadFbxFile(const std::string& filePath, FBX_LOAD_TYPE loadType, const FbxLoadParam& loadParam);
 
 		std::vector<RawMeshData>&			GetRawMeshData() { return m_RawData; }
 		const RawSkeletonData*				GetRawSkeletonData() const { return m_pSkeleton; }
 
 	private:
-		bool								ProcessMeshNode(FbxNode* pNode, bool bFlipUV = false);
-		bool								GetMeshData(FbxNode* pNode, bool bFlipUV = false);
+		bool								ProcessMeshNode(FbxNode* pNode, bool bIsFlipTexcoordV = false);
+		bool								GetMeshData(FbxNode* pNode, bool bIsFlipTexcoordV = false);
 
 		void								ProcessSkeletonNode(FbxNode* pNode, RawBoneData* pParentBone);
 		void								GetBoneSkins(FbxSkin* pSkin, std::unordered_map<int, VertexBones>& vertBonesMap);
@@ -121,7 +130,7 @@ namespace RenderDog
 
 		std::vector<RawMeshData>			m_RawData;
 		RawSkeletonData*					m_pSkeleton;
-		bool								m_bNeedGetBoneMatrix;
+		bool								m_bNeedBoneSkin;
 	};
 
 	extern RDFbxImporter* g_pRDFbxImporter;

@@ -14,8 +14,8 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
 	ModelViewerInitDesc initDesc;
-	initDesc.wndDesc.width = 1024;
-	initDesc.wndDesc.height = 768;
+	initDesc.wndDesc.width = 1920;
+	initDesc.wndDesc.height = 1080;
 	initDesc.wndDesc.caption = "ModelViewer";
 	initDesc.wndDesc.className = "ModelViewerWindowClass";
 	initDesc.wndDesc.hAppInstance = hInstance;

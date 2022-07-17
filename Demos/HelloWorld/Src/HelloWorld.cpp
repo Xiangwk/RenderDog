@@ -270,9 +270,9 @@ bool DemoApp::LoadModel(const std::string& fileName, LOAD_MODEL_TYPE modelType)
 	}
 	else if (modelType == LOAD_MODEL_TYPE::CUSTOM_STATIC)
 	{
-		bool bFlipUV = true;
-		bool bIsSkinModel = false;
-		if (!RenderDog::g_pRDFbxImporter->LoadFbxFile(fileName, bIsSkinModel, bFlipUV))
+		RenderDog::RDFbxImporter::FbxLoadParam fbxLoadParam;
+		fbxLoadParam.bIsFlipTexcoordV = true;
+		if (!RenderDog::g_pRDFbxImporter->LoadFbxFile(fileName, RenderDog::RDFbxImporter::FBX_LOAD_TYPE::STATIC_MODEL, fbxLoadParam))
 		{
 			MessageBox(nullptr, "Import FBX File Failed!", "ERROR", MB_OK);
 			return false;

@@ -30,7 +30,7 @@ namespace RenderDog
 		m_pScene(nullptr),
 		m_pImporter(nullptr),
 		m_RawData(0),
-		m_bNeedGetBoneMatrix(false)
+		m_bNeedBoneSkin(false)
 	{}
 
 	RDFbxImporter::~RDFbxImporter()
@@ -101,10 +101,10 @@ namespace RenderDog
 		}
 	}
 
-	bool RDFbxImporter::LoadFbxFile(const std::string& filePath, bool bIsSkinModel, bool bFlipUV)
+	bool RDFbxImporter::LoadFbxFile(const std::string& filePath, FBX_LOAD_TYPE loadType, const FbxLoadParam& loadParam)
 	{
-		m_bNeedGetBoneMatrix = bIsSkinModel;
-
+		m_bNeedBoneSkin = (loadType == FBX_LOAD_TYPE::SKIN_MODEL);
+		
 		if (!m_pImporter->Initialize(filePath.c_str(), -1, m_pManager->GetIOSettings()))
 		{
 			return false;
@@ -130,7 +130,7 @@ namespace RenderDog
 			RenderDogAxisSystem.ConvertScene(m_pScene);
 		}*/
 
-		if (bIsSkinModel)
+		if (m_bNeedBoneSkin)
 		{
 			if (m_pSkeleton)
 			{
@@ -165,7 +165,7 @@ namespace RenderDog
 
 		m_RawData.clear();
 
-		if (!ProcessMeshNode(m_pScene->GetRootNode(), bFlipUV))
+		if (!ProcessMeshNode(m_pScene->GetRootNode(), loadParam.bIsFlipTexcoordV))
 		{
 			return false;
 		}
@@ -173,11 +173,11 @@ namespace RenderDog
 		return true;
 	}
 
-	bool RDFbxImporter::ProcessMeshNode(FbxNode* pNode, bool bFlipUV)
+	bool RDFbxImporter::ProcessMeshNode(FbxNode* pNode, bool bIsFlipTexcoordV)
 	{
 		if (pNode->GetNodeAttribute() && pNode->GetNodeAttribute()->GetAttributeType() == FbxNodeAttribute::eMesh)
 		{
-			if (!GetMeshData(pNode, bFlipUV))
+			if (!GetMeshData(pNode, bIsFlipTexcoordV))
 			{
 				return false;
 			}
@@ -187,7 +187,7 @@ namespace RenderDog
 		for (int i = 0; i < childCnt; ++i)
 		{
 			FbxNode* pChildNode = pNode->GetChild(i);
-			if (!ProcessMeshNode(pChildNode, bFlipUV))
+			if (!ProcessMeshNode(pChildNode, bIsFlipTexcoordV))
 			{
 				return false;
 			}
@@ -196,7 +196,7 @@ namespace RenderDog
 		return true;
 	}
 
-	bool RDFbxImporter::GetMeshData(FbxNode* pNode, bool bFlipUV)
+	bool RDFbxImporter::GetMeshData(FbxNode* pNode, bool bIsFlipTexcoordV)
 	{
 		RawMeshData meshData;
 
@@ -204,7 +204,7 @@ namespace RenderDog
 
 		FbxSkin* pFbxSkin = nullptr;
 		std::unordered_map<int, VertexBones> vertBonesMap;
-		if (m_bNeedGetBoneMatrix)
+		if (m_bNeedBoneSkin)
 		{
 			int deformerCnt = pMesh->GetDeformerCount();
 			for (int i = 0; i < deformerCnt; ++i)
@@ -281,7 +281,7 @@ namespace RenderDog
 						int uvIndex = pMesh->GetTextureUVIndex(i, j);
 						int uvLayer = 0;
 						ReadTexcoord(pMesh, ctrlPointIndex, uvIndex, uvLayer, tex[j]);
-						if (bFlipUV)
+						if (bIsFlipTexcoordV)
 						{
 							tex[j].y = 1.0f - tex[j].y;
 						}
