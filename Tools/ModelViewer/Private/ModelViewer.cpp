@@ -353,7 +353,7 @@ bool ModelViewer::LoadFbxModel(const std::string& fileName, LOAD_MODEL_TYPE mode
 
 		bool bIsSkinModel = false;
 		bool bFlipUV = false;
-		if (!RenderDog::g_pRDFbxImporter->LoadFbxModel(fileName, bIsSkinModel, bFlipUV))
+		if (!RenderDog::g_pRDFbxImporter->LoadFbxFile(fileName, bIsSkinModel, bFlipUV))
 		{
 			MessageBox(nullptr, "Import FBX File Failed!", "ERROR", MB_OK);
 			return false;
@@ -379,7 +379,7 @@ bool ModelViewer::LoadFbxModel(const std::string& fileName, LOAD_MODEL_TYPE mode
 
 		bool bIsSkinModel = true;
 		bool bFlipUV = false;
-		if (!RenderDog::g_pRDFbxImporter->LoadFbxModel(fileName, bIsSkinModel, bFlipUV))
+		if (!RenderDog::g_pRDFbxImporter->LoadFbxFile(fileName, bIsSkinModel, bFlipUV))
 		{
 			MessageBox(nullptr, "Import FBX File Failed!", "ERROR", MB_OK);
 			return false;

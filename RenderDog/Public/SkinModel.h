@@ -28,6 +28,8 @@ namespace RenderDog
 														const RDFbxImporter::RawSkeletonData* pSkeletonData,
 														const std::string& vsFile, const std::string& psFile,
 														const std::string& fileName);
+		
+
 
 		bool						LoadTextureFromFile(const std::wstring& diffuseTexturePath, const std::wstring& normalTexturePath);
 
