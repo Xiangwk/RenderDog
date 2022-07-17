@@ -810,8 +810,8 @@
                                             "priority": 4,
                                             "note": "改用更为清晰的实现方式（使用向量相乘）",
                                             "layout_right_offset": {
-                                                "x": 303.7499954737725,
-                                                "y": -2.499999962747097
+                                                "x": 388.7499954737725,
+                                                "y": -20.499999962747097
                                             }
                                         },
                                         "children": []
@@ -825,11 +825,25 @@
                                     "text": "Quaternion",
                                     "progress": 1,
                                     "layout_right_offset": {
-                                        "x": 381.74999413266755,
-                                        "y": -24.2499995343386
+                                        "x": 393.74999413266755,
+                                        "y": -17.2499995343386
                                     }
                                 },
-                                "children": []
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "clhxdlhpzr40",
+                                            "created": 1658060454756,
+                                            "text": "四元数和旋转矩阵互转",
+                                            "layout_right_offset": {
+                                                "x": 425,
+                                                "y": 14
+                                            },
+                                            "priority": 2
+                                        },
+                                        "children": []
+                                    }
+                                ]
                             },
                             {
                                 "data": {

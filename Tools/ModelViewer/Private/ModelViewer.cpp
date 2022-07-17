@@ -95,19 +95,19 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 		return false;
 	}
 
-	if (!LoadFbxModel("Models/Crunch/Crunch_Crash_Site.FBX", LOAD_MODEL_TYPE::CUSTOM_STATIC))
+	/*if (!LoadFbxModel("Models/Crunch/Crunch_Crash_Site.FBX", LOAD_MODEL_TYPE::CUSTOM_STATIC))
 	{
 		MessageBox(nullptr, "Load Static Model Failed!", "ERROR", MB_OK);
 		return false;
 	}
-	m_pStaticModel->SetPosGesture(RenderDog::Vector3(150.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
+	m_pStaticModel->SetPosGesture(RenderDog::Vector3(150.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));*/
 
 	if (!LoadFbxModel("Models/Crunch/Crunch_Crash_Site.FBX", LOAD_MODEL_TYPE::CUSTOM_SKIN))
 	{
 		MessageBox(nullptr, "Load Skin Model Failed!", "ERROR", MB_OK);
 		return false;
 	}
-	m_pSkinModel->SetPosGesture(RenderDog::Vector3(-150.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
+	m_pSkinModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
 
 	if (!LoadFbxAnimation("Models/Crunch/Animations/Idle_Combat.FBX", m_pSkinModel))
 	{
@@ -431,6 +431,8 @@ bool ModelViewer::LoadFbxAnimation(const std::string& fileName, RenderDog::SkinM
 		return false;
 	}
 
+
+
 	return true;
 }
 
@@ -467,7 +469,7 @@ void ModelViewer::Update()
 		m_pFPSCamera->Move(RenderDog::FPSCamera::MOVE_MODE::DOWN);
 	}
 
-	if (m_bModelMoved)
+	if (m_bModelMoved && m_pStaticModel)
 	{
 		m_pStaticModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
 	}
@@ -490,9 +492,15 @@ void ModelViewer::RegisterObjectToScene()
 
 	m_pSkyBox->RegisterToScene(m_pScene);
 
-	m_pStaticModel->RegisterToScene(m_pScene);
-
-	m_pSkinModel->RegisterToScene(m_pScene);
+	if (m_pStaticModel)
+	{
+		m_pStaticModel->RegisterToScene(m_pScene);
+	}
+	
+	if (m_pSkinModel)
+	{
+		m_pSkinModel->RegisterToScene(m_pScene);
+	}
 }
 
 void ModelViewer::CalculateFrameStats()

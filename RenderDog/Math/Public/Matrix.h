@@ -32,13 +32,19 @@ namespace RenderDog
 
 		void		Identity();
 
+		Vector3		GetTranslatePart();
+		Vector3		GetScalePart();
+		Matrix4x4	GetRotationPart();
+
 	private:
 		float		m_fData[4][4];
 	};
 
 	Vector4			operator*(const Vector4& vec, const Matrix4x4& mat);
 	Matrix4x4		operator*(const Matrix4x4& matLHS, const Matrix4x4& matRHS);
+
 	Matrix4x4		GetIdentityMatrix();
+
 	Matrix4x4		Transpose(const Matrix4x4& mat);
 
 }// namespace RenderDog

@@ -89,6 +89,49 @@ namespace RenderDog
 			RawBoneData* GetBone(const std::string& name);
 		};
 
+		struct RawKeyFrameData
+		{
+			float		timePos;
+			Vector3		translation;
+			Vector3		scales;
+			Vector4		rotationQuat;
+
+			RawKeyFrameData() :
+				timePos(0.0f),
+				translation(0.0f),
+				scales(1.0f),
+				rotationQuat(0.0f)
+			{}
+		};
+
+		//某一根骨骼的动画
+		struct RawBoneAnimation
+		{
+			std::string						boneName;
+			std::vector<RawKeyFrameData>	keyFrames;
+
+			RawBoneAnimation() :
+				boneName(""),
+				keyFrames(0)
+			{}
+
+			void Clear()
+			{
+				keyFrames.clear();
+			}
+		};
+
+		struct RawAnimation
+		{
+			std::string						name;				//动画名
+			std::vector<RawBoneAnimation>	boneAnimations;		//每一根骨骼的动画合集
+
+			RawAnimation() :
+				name(""),
+				boneAnimations(0)
+			{}
+		};
+
 		//影响该顶点的骨骼以及权重
 		struct VertexBones
 		{
@@ -108,29 +151,33 @@ namespace RenderDog
 
 		std::vector<RawMeshData>&			GetRawMeshData() { return m_RawData; }
 		const RawSkeletonData*				GetRawSkeletonData() const { return m_pSkeleton; }
+		const RawAnimation&					GetRawBoneAnimation() const { return m_BoneAnimations; }
 
 	private:
 		bool								ProcessMeshNode(FbxNode* pNode, bool bIsFlipTexcoordV = false);
 		bool								GetMeshData(FbxNode* pNode, bool bIsFlipTexcoordV = false);
 
-		void								ProcessSkeletonNode(FbxNode* pNode, RawBoneData* pParentBone);
-		void								GetBoneSkins(FbxSkin* pSkin, std::unordered_map<int, VertexBones>& vertBonesMap);
-		void								GetOffsetMatrix(FbxSkin* pSkin);
-
 		void								GetTriangleMaterialIndices(FbxMesh* pMesh, int triNum, std::vector<uint32_t>& outputIndices);
 		void								GetTriangleSmoothIndices(FbxMesh* pMesh, int triNum, std::vector<uint32_t>& outputIndices);
 		void								ReadPositions(FbxMesh* pMesh, int vertexIndex, Vector3& outputPos);
 		void								ReadTexcoord(FbxMesh* pMesh, int vertexIndex, int textureUVIndex, int uvLayer, Vector2& outputUV);
+		
+		void								ProcessSkeletonNode(FbxNode* pNode, RawBoneData* pParentBone);
+		void								GetBoneSkins(FbxSkin* pSkin, std::unordered_map<int, VertexBones>& vertBonesMap);
+		void								GetOffsetMatrix(FbxSkin* pSkin);
 		void								ReadBoneSkin(int vertexIndex, const std::unordered_map<int, VertexBones>& vertBonesMap, std::vector<std::string>& outputBone, std::vector<float>& outputWeights);
+
+		void								ProcessAnimation(FbxNode* pNode);
 
 	private:
 		FbxManager*							m_pManager;
 		FbxScene*							m_pScene;
 		FbxImporter*						m_pImporter;
 
+		bool								m_bNeedBoneSkin;
 		std::vector<RawMeshData>			m_RawData;
 		RawSkeletonData*					m_pSkeleton;
-		bool								m_bNeedBoneSkin;
+		RawAnimation						m_BoneAnimations;
 	};
 
 	extern RDFbxImporter* g_pRDFbxImporter;

@@ -146,6 +146,33 @@ namespace RenderDog
 	// ----------------------       Vector4         ---------------------------------//
 	///////////////////////////////////////////////////////////////////////////////////
 #pragma region Vector4
+	void Vector4::Normalize()
+	{
+		float len = this->Length();
+		if (std::abs(len - 0.0f) >= 0.000001f)
+		{
+			float invLen = 1.0f / len;
+
+			x *= invLen;
+			y *= invLen;
+			z *= invLen;
+			w *= invLen;
+		}
+	}
+
+	Vector4 Normalize(const Vector4& vec)
+	{
+		float len = vec.Length();
+		if (std::abs(len - 0.0f) < 0.000001f)
+		{
+			return Vector4(0);
+		}
+
+		float invLen = 1.0f / len;
+
+		return Vector4(vec.x * invLen, vec.y * invLen, vec.z * invLen, vec.w * invLen);
+	}
+
 	Vector4 operator+(const Vector4& lhs, const Vector4& rhs)
 	{
 		return Vector4(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z, lhs.w + rhs.w);

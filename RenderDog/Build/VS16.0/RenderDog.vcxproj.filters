@@ -55,6 +55,9 @@
     <Filter Include="Utility\Private">
       <UniqueIdentifier>{20ab27ab-07d7-413f-adac-8c409197e2b1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Animation">
+      <UniqueIdentifier>{23532228-a91d-4321-8856-b5b9cf16cdfa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Math\Private\Matrix.cpp">
@@ -131,6 +134,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Private\SimpleModel.cpp">
       <Filter>Primitive\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Private\BoneAnimation.cpp">
+      <Filter>Animation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -229,6 +235,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Public\SimpleMesh.h">
       <Filter>Primitive\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Public\BoneAnimation.h">
+      <Filter>Animation</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

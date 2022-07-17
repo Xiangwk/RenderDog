@@ -16,6 +16,7 @@
     <ClCompile Include="..\..\Math\Private\Utility.cpp" />
     <ClCompile Include="..\..\Math\Private\Vector.cpp" />
     <ClCompile Include="..\..\Private\Bone.cpp" />
+    <ClCompile Include="..\..\Private\BoneAnimation.cpp" />
     <ClCompile Include="..\..\Private\Camera.cpp" />
     <ClCompile Include="..\..\Private\FbxImporter.cpp" />
     <ClCompile Include="..\..\Private\Framework.cpp" />
@@ -43,6 +44,7 @@
     <ClInclude Include="..\..\Math\Public\Utility.h" />
     <ClInclude Include="..\..\Math\Public\Vector.h" />
     <ClInclude Include="..\..\Public\Bone.h" />
+    <ClInclude Include="..\..\Public\BoneAnimation.h" />
     <ClInclude Include="..\..\Public\Bounding.h" />
     <ClInclude Include="..\..\Public\Buffer.h" />
     <ClInclude Include="..\..\Public\Camera.h" />

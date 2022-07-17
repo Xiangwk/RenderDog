@@ -124,6 +124,50 @@ namespace RenderDog
 		m_fData[3][2] = 0.0f;
 	}
 
+	Vector3	Matrix4x4::GetTranslatePart()
+	{
+		return Vector3(m_fData[3][0], m_fData[3][1], m_fData[3][2]);
+	}
+
+	Vector3	Matrix4x4::GetScalePart()
+	{
+		Vector3 row0(m_fData[0][0], m_fData[0][1], m_fData[0][2]);
+		float scale0 = row0.Length();
+
+		Vector3 row1(m_fData[1][0], m_fData[1][1], m_fData[1][2]);
+		float scale1 = row1.Length();
+
+		Vector3 row2(m_fData[2][0], m_fData[2][1], m_fData[2][2]);
+		float scale2 = row2.Length();
+
+		return Vector3(scale0, scale1, scale2);
+	}
+
+	Matrix4x4 Matrix4x4::GetRotationPart()
+	{
+		Matrix4x4 rotateMatrix = *this;
+
+		Vector3 scalePart = GetScalePart();
+
+		rotateMatrix.m_fData[0][0] /= scalePart.x;
+		rotateMatrix.m_fData[0][1] /= scalePart.x;
+		rotateMatrix.m_fData[0][2] /= scalePart.x;
+
+		rotateMatrix.m_fData[1][0] /= scalePart.y;
+		rotateMatrix.m_fData[1][1] /= scalePart.y;
+		rotateMatrix.m_fData[1][2] /= scalePart.y;
+
+		rotateMatrix.m_fData[2][0] /= scalePart.z;
+		rotateMatrix.m_fData[2][1] /= scalePart.z;
+		rotateMatrix.m_fData[2][2] /= scalePart.z;
+
+		rotateMatrix.m_fData[3][0] = 0.0f;
+		rotateMatrix.m_fData[3][1] = 0.0f;
+		rotateMatrix.m_fData[3][2] = 0.0f;
+
+		return rotateMatrix;
+	}
+
 	Vector4 operator*(const Vector4& vec, const Matrix4x4& mat)
 	{
 		Vector4 result;

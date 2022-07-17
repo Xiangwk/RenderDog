@@ -255,7 +255,16 @@ namespace RenderDog
 			z(v3.z), 
 			w(f)
 		{}
+
+		float	Length() const
+		{
+			return std::sqrt(x * x + y * y + z * z + w * w);
+		}
+
+		void	Normalize();
 	};
+
+	Vector4		Normalize(const Vector4& vec);
 
 	Vector4		operator+(const Vector4& lhs, const Vector4& rhs);
 	Vector4		operator-(const Vector4& lhs, const Vector4& rhs);

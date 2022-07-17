@@ -132,11 +132,15 @@ namespace RenderDog
 
 		if (loadType == FBX_LOAD_TYPE::ANIMATION)
 		{
+			m_BoneAnimations.boneAnimations.clear();
+
 			auto strIter0 = filePath.rfind("/") + 1;
 			auto strIter1 = filePath.rfind(".");
 			std::string animName = filePath.substr(strIter0, strIter1 - strIter0);
 
+			m_BoneAnimations.name = animName;
 
+			ProcessAnimation(m_pScene->GetRootNode());
 		}
 		else
 		{
@@ -404,6 +408,81 @@ namespace RenderDog
 		return true;
 	}
 
+	void RDFbxImporter::GetTriangleMaterialIndices(FbxMesh* pMesh, int triNum, std::vector<uint32_t>& outputIndices)
+	{
+		FbxLayerElementMaterial* pMaterial = pMesh->GetElementMaterial();
+		if (!pMaterial)
+		{
+			return;
+		}
+
+		for (int triangleIndex = 0; triangleIndex < triNum; ++triangleIndex)
+		{
+			uint32_t materialIndex = pMaterial->GetIndexArray().GetAt(triangleIndex);
+			outputIndices.push_back(materialIndex);
+		}
+	}
+
+	void RDFbxImporter::GetTriangleSmoothIndices(FbxMesh* pMesh, int triNum, std::vector<uint32_t>& outputIndices)
+	{
+		FbxLayerElementSmoothing* pSmoothing = pMesh->GetElementSmoothing();
+		if (pSmoothing)
+		{
+			for (int i = 0; i < triNum; ++i)
+			{
+				int SmoothGroupIndex = (pSmoothing->GetReferenceMode() == FbxLayerElement::eDirect) ? i : pSmoothing->GetIndexArray().GetAt(i);
+				int smoothIndex = pSmoothing->GetDirectArray().GetAt(SmoothGroupIndex);
+
+				outputIndices.push_back(smoothIndex);
+			}
+		}
+	}
+
+	void RDFbxImporter::ReadPositions(FbxMesh* pMesh, int vertexIndex, Vector3& outputPos)
+	{
+		FbxVector4* pCtrlPoint = pMesh->GetControlPoints();
+
+		outputPos.x = static_cast<float>(pCtrlPoint[vertexIndex][0]);
+		outputPos.y = static_cast<float>(pCtrlPoint[vertexIndex][1]);
+		outputPos.z = static_cast<float>(pCtrlPoint[vertexIndex][2]);
+
+		//NOTE!!! 调研清楚如何使用FbxSDK中的Axis变换之后，应该把这里去掉
+		//这里的变换很重要！将顶点从右手系变换到左手系中，这里的坐标系描述会影响到加载完顶点之后面法线的计算；
+		Matrix4x4 transAxisMatrix(1.0f, 0.0f, 0.0f, 0.0f,
+			0.0f, 0.0f, 1.0f, 0.0f,
+			0.0f, 1.0f, 0.0f, 0.0f,
+			0.0f, 0.0f, 0.0f, 1.0f);
+
+		Vector4 newPos(outputPos, 1.0f);
+		newPos = newPos * transAxisMatrix;
+		outputPos = Vector3(newPos.x, newPos.y, newPos.z);
+	}
+
+	void RDFbxImporter::ReadTexcoord(FbxMesh* pMesh, int vertexIndex, int textureUVIndex, int uvLayer, Vector2& OutputUV)
+	{
+		FbxGeometryElementUV* pVertexUV = pMesh->GetElementUV(uvLayer);
+
+		if (pVertexUV->GetMappingMode() == FbxGeometryElement::eByControlPoint)
+		{
+			if (pVertexUV->GetReferenceMode() == FbxGeometryElement::eDirect)
+			{
+				OutputUV.x = static_cast<float>(pVertexUV->GetDirectArray().GetAt(vertexIndex)[0]);
+				OutputUV.y = static_cast<float>(pVertexUV->GetDirectArray().GetAt(vertexIndex)[1]);
+			}
+			else if (pVertexUV->GetReferenceMode() == FbxGeometryElement::eIndexToDirect)
+			{
+				int id = pVertexUV->GetIndexArray().GetAt(vertexIndex);
+				OutputUV.x = static_cast<float>(pVertexUV->GetDirectArray().GetAt(id)[0]);
+				OutputUV.y = static_cast<float>(pVertexUV->GetDirectArray().GetAt(id)[1]);
+			}
+		}
+		else if (pVertexUV->GetMappingMode() == FbxGeometryElement::eByPolygonVertex)
+		{
+			OutputUV.x = static_cast<float>(pVertexUV->GetDirectArray().GetAt(textureUVIndex)[0]);
+			OutputUV.y = static_cast<float>(pVertexUV->GetDirectArray().GetAt(textureUVIndex)[1]);
+		}
+	}
+
 	void RDFbxImporter::ProcessSkeletonNode(FbxNode* pNode, RawBoneData* pParentBone)
 	{
 		RawBoneData* pBone = nullptr;
@@ -510,81 +589,6 @@ namespace RenderDog
 		}
 	}
 
-	void RDFbxImporter::GetTriangleMaterialIndices(FbxMesh* pMesh, int triNum, std::vector<uint32_t>& outputIndices)
-	{
-		FbxLayerElementMaterial* pMaterial = pMesh->GetElementMaterial();
-		if (!pMaterial)
-		{
-			return;
-		}
-
-		for (int triangleIndex = 0; triangleIndex < triNum; ++triangleIndex)
-		{
-			uint32_t materialIndex = pMaterial->GetIndexArray().GetAt(triangleIndex);
-			outputIndices.push_back(materialIndex);
-		}
-	}
-
-	void RDFbxImporter::GetTriangleSmoothIndices(FbxMesh* pMesh, int triNum, std::vector<uint32_t>& outputIndices)
-	{
-		FbxLayerElementSmoothing* pSmoothing = pMesh->GetElementSmoothing();
-		if (pSmoothing)
-		{
-			for (int i = 0; i < triNum; ++i)
-			{
-				int SmoothGroupIndex = (pSmoothing->GetReferenceMode() == FbxLayerElement::eDirect) ? i : pSmoothing->GetIndexArray().GetAt(i);
-				int smoothIndex = pSmoothing->GetDirectArray().GetAt(SmoothGroupIndex);
-
-				outputIndices.push_back(smoothIndex);
-			}
-		}
-	}
-
-	void RDFbxImporter::ReadPositions(FbxMesh* pMesh, int vertexIndex, Vector3& outputPos)
-	{
-		FbxVector4* pCtrlPoint = pMesh->GetControlPoints();
-
-		outputPos.x = static_cast<float>(pCtrlPoint[vertexIndex][0]);
-		outputPos.y = static_cast<float>(pCtrlPoint[vertexIndex][1]);
-		outputPos.z = static_cast<float>(pCtrlPoint[vertexIndex][2]);
-
-		//NOTE!!! 调研清楚如何使用FbxSDK中的Axis变换之后，应该把这里去掉
-		//这里的变换很重要！将顶点从右手系变换到左手系中，这里的坐标系描述会影响到加载完顶点之后面法线的计算；
-		Matrix4x4 transAxisMatrix(1.0f, 0.0f, 0.0f, 0.0f,
-								  0.0f, 0.0f, 1.0f, 0.0f,
-								  0.0f, 1.0f, 0.0f, 0.0f,
-								  0.0f, 0.0f, 0.0f, 1.0f);
-
-		Vector4 newPos(outputPos, 1.0f);
-		newPos = newPos * transAxisMatrix;
-		outputPos = Vector3(newPos.x, newPos.y, newPos.z);
-	}
-
-	void RDFbxImporter::ReadTexcoord(FbxMesh* pMesh, int vertexIndex, int textureUVIndex, int uvLayer, Vector2& OutputUV)
-	{
-		FbxGeometryElementUV* pVertexUV = pMesh->GetElementUV(uvLayer);
-
-		if (pVertexUV->GetMappingMode() == FbxGeometryElement::eByControlPoint)
-		{
-			if (pVertexUV->GetReferenceMode() == FbxGeometryElement::eDirect)
-			{
-				OutputUV.x = static_cast<float>(pVertexUV->GetDirectArray().GetAt(vertexIndex)[0]);
-				OutputUV.y = static_cast<float>(pVertexUV->GetDirectArray().GetAt(vertexIndex)[1]);
-			}
-			else if (pVertexUV->GetReferenceMode() == FbxGeometryElement::eIndexToDirect)
-			{
-				int id = pVertexUV->GetIndexArray().GetAt(vertexIndex);
-				OutputUV.x = static_cast<float>(pVertexUV->GetDirectArray().GetAt(id)[0]);
-				OutputUV.y = static_cast<float>(pVertexUV->GetDirectArray().GetAt(id)[1]);
-			}
-		}
-		else if (pVertexUV->GetMappingMode() == FbxGeometryElement::eByPolygonVertex)
-		{
-			OutputUV.x = static_cast<float>(pVertexUV->GetDirectArray().GetAt(textureUVIndex)[0]);
-			OutputUV.y = static_cast<float>(pVertexUV->GetDirectArray().GetAt(textureUVIndex)[1]);
-		}
-	}
-
 	void RDFbxImporter::ReadBoneSkin(int vertexIndex, const std::unordered_map<int, VertexBones>& vertBonesMap, 
 									 std::vector<std::string>& outputBone, std::vector<float>& outputWeights)
 	{
@@ -598,6 +602,86 @@ namespace RenderDog
 
 		outputBone = vertBones.boneNames;
 		outputWeights = vertBones.boneWeights;
+	}
+
+	void RDFbxImporter::ProcessAnimation(FbxNode* pNode)
+	{
+		RawBoneAnimation currBoneAnimation;
+
+		FbxNodeAttribute* pNodeAttribute = pNode->GetNodeAttribute();
+		if (pNodeAttribute && 
+			(pNodeAttribute->GetAttributeType() == FbxNodeAttribute::eNull || pNodeAttribute->GetAttributeType() == FbxNodeAttribute::eSkeleton))
+		{
+			currBoneAnimation.boneName = pNode->GetName();
+
+			FbxTime frameTime;
+			frameTime.SetTime(0, 0, 0, 1, 0, m_pScene->GetGlobalSettings().GetTimeMode());
+
+			FbxTimeSpan timeSpan;
+			m_pScene->GetGlobalSettings().GetTimelineDefaultTimeSpan(timeSpan);
+			FbxTime startTime = timeSpan.GetStart();
+			FbxTime endTime = timeSpan.GetStop();
+			for (FbxTime currTime = startTime; currTime < endTime; currTime += frameTime)
+			{
+				FbxLongLong msTime = currTime.GetMilliSeconds() - startTime.GetMilliSeconds();
+
+				FbxAMatrix fbxBoneUpToParent = pNode->EvaluateLocalTransform(currTime);
+
+				FbxVector4 fbxTrans = fbxBoneUpToParent.GetT();
+				FbxVector4 fbxScales = fbxBoneUpToParent.GetS();
+				FbxQuaternion fbxQuat = fbxBoneUpToParent.GetQ();
+
+				RawKeyFrameData keyFrameData;
+				keyFrameData.timePos = static_cast<float>(msTime);
+
+				keyFrameData.translation.x = static_cast<float>(fbxTrans[0]);
+				keyFrameData.translation.y = static_cast<float>(fbxTrans[1]);
+				keyFrameData.translation.z = static_cast<float>(fbxTrans[2]);
+
+				keyFrameData.scales.x = static_cast<float>(fbxScales[0]);
+				keyFrameData.scales.y = static_cast<float>(fbxScales[1]);
+				keyFrameData.scales.z = static_cast<float>(fbxScales[2]);
+
+				keyFrameData.rotationQuat.x = static_cast<float>(fbxQuat[0]);
+				keyFrameData.rotationQuat.y = static_cast<float>(fbxQuat[1]);
+				keyFrameData.rotationQuat.z = static_cast<float>(fbxQuat[2]);
+				keyFrameData.rotationQuat.w = static_cast<float>(fbxQuat[2]);
+
+				currBoneAnimation.keyFrames.push_back(keyFrameData);
+			}
+
+			FbxLongLong msEndTime = endTime.GetMilliSeconds() - startTime.GetMilliSeconds();
+			FbxAMatrix fbxEndBoneUpToParent = pNode->EvaluateLocalTransform(msEndTime);
+
+			FbxVector4 fbxEndTrans = fbxEndBoneUpToParent.GetT();
+			FbxVector4 fbxEndScales = fbxEndBoneUpToParent.GetS();
+			FbxQuaternion fbxEndQuat = fbxEndBoneUpToParent.GetQ();
+
+			RawKeyFrameData endFrameData;
+			endFrameData.timePos = static_cast<float>(msEndTime);
+
+			endFrameData.translation.x = static_cast<float>(fbxEndTrans[0]);
+			endFrameData.translation.y = static_cast<float>(fbxEndTrans[1]);
+			endFrameData.translation.z = static_cast<float>(fbxEndTrans[2]);
+
+			endFrameData.scales.x = static_cast<float>(fbxEndScales[0]);
+			endFrameData.scales.y = static_cast<float>(fbxEndScales[1]);
+			endFrameData.scales.z = static_cast<float>(fbxEndScales[2]);
+
+			endFrameData.rotationQuat.x = static_cast<float>(fbxEndQuat[0]);
+			endFrameData.rotationQuat.y = static_cast<float>(fbxEndQuat[1]);
+			endFrameData.rotationQuat.z = static_cast<float>(fbxEndQuat[2]);
+			endFrameData.rotationQuat.w = static_cast<float>(fbxEndQuat[2]);
+
+			currBoneAnimation.keyFrames.push_back(endFrameData);
+
+			m_BoneAnimations.boneAnimations.push_back(currBoneAnimation);
+		}
+
+		for (int i = 0; i < pNode->GetChildCount(); ++i)
+		{
+			ProcessAnimation(pNode->GetChild(i));
+		}
 	}
 
 }// namespace RenderDog
