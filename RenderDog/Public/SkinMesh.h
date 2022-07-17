@@ -53,6 +53,7 @@ namespace RenderDog
 		virtual const AABB&				GetAABB() const override { return m_AABB; }
 
 		void							LoadFromSkinData(const std::vector<SkinVertex>& vertices, const std::vector<uint32_t>& indices, const std::string& name);
+		
 		bool							LoadTextureFromFile(const std::wstring& diffuseTexturePath, const std::wstring& normalTexturePath);
 
 		void							InitRenderData(const std::string& vsFile, const std::string& psFile);

@@ -95,19 +95,19 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 		return false;
 	}
 
-	/*if (!LoadFbxModel("Models/Crunch/Crunch_Crash_Site.FBX", LOAD_MODEL_TYPE::CUSTOM_STATIC))
+	if (!LoadFbxModel("Models/Crunch/Crunch_Crash_Site.FBX", LOAD_MODEL_TYPE::CUSTOM_STATIC))
 	{
 		MessageBox(nullptr, "Load Static Model Failed!", "ERROR", MB_OK);
 		return false;
 	}
-	m_pStaticModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 200.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));*/
+	m_pStaticModel->SetPosGesture(RenderDog::Vector3(150.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
 
 	if (!LoadFbxModel("Models/Crunch/Crunch_Crash_Site.FBX", LOAD_MODEL_TYPE::CUSTOM_SKIN))
 	{
 		MessageBox(nullptr, "Load Skin Model Failed!", "ERROR", MB_OK);
 		return false;
 	}
-	m_pSkinModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
+	m_pSkinModel->SetPosGesture(RenderDog::Vector3(-150.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
 
 	RenderDog::LightDesc lightDesc = {};
 	lightDesc.type = RenderDog::LIGHT_TYPE::DIRECTIONAL;
@@ -351,7 +351,9 @@ bool ModelViewer::LoadFbxModel(const std::string& fileName, LOAD_MODEL_TYPE mode
 	{
 		m_pStaticModel = new RenderDog::StaticModel();
 
-		if (!RenderDog::g_pRDFbxImporter->LoadFbxFile(fileName, false, true))
+		bool bIsSkinModel = false;
+		bool bFlipUV = false;
+		if (!RenderDog::g_pRDFbxImporter->LoadFbxModel(fileName, bIsSkinModel, bFlipUV))
 		{
 			MessageBox(nullptr, "Import FBX File Failed!", "ERROR", MB_OK);
 			return false;
@@ -375,7 +377,9 @@ bool ModelViewer::LoadFbxModel(const std::string& fileName, LOAD_MODEL_TYPE mode
 	{
 		m_pSkinModel = new RenderDog::SkinModel();
 
-		if (!RenderDog::g_pRDFbxImporter->LoadFbxFile(fileName, true, true))
+		bool bIsSkinModel = true;
+		bool bFlipUV = false;
+		if (!RenderDog::g_pRDFbxImporter->LoadFbxModel(fileName, bIsSkinModel, bFlipUV))
 		{
 			MessageBox(nullptr, "Import FBX File Failed!", "ERROR", MB_OK);
 			return false;
@@ -441,7 +445,7 @@ void ModelViewer::Update()
 
 	if (m_bModelMoved)
 	{
-		//m_pStaticModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
+		m_pStaticModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
 	}
 
 	m_pSkinModel->Tick(0);
@@ -462,7 +466,7 @@ void ModelViewer::RegisterObjectToScene()
 
 	m_pSkyBox->RegisterToScene(m_pScene);
 
-	//m_pStaticModel->RegisterToScene(m_pScene);
+	m_pStaticModel->RegisterToScene(m_pScene);
 
 	m_pSkinModel->RegisterToScene(m_pScene);
 }

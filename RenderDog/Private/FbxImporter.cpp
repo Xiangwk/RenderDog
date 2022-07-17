@@ -101,7 +101,7 @@ namespace RenderDog
 		}
 	}
 
-	bool RDFbxImporter::LoadFbxFile(const std::string& filePath, bool bIsSkinModel, bool bFlipUV)
+	bool RDFbxImporter::LoadFbxModel(const std::string& filePath, bool bIsSkinModel, bool bFlipUV)
 	{
 		m_bNeedGetBoneMatrix = bIsSkinModel;
 
