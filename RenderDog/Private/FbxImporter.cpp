@@ -101,7 +101,7 @@ namespace RenderDog
 		}
 	}
 
-	bool RDFbxImporter::LoadFbxFile(const std::string& filePath, FBX_LOAD_TYPE loadType, const FbxLoadParam& loadParam)
+	bool RDFbxImporter::LoadFbxFile(const std::string& filePath, FBX_LOAD_TYPE loadType, const FbxLoadParam& loadParam/* = FbxLoadParam()*/)
 	{
 		m_bNeedBoneSkin = (loadType == FBX_LOAD_TYPE::SKIN_MODEL);
 		
@@ -122,7 +122,7 @@ namespace RenderDog
 			return false;
 		}
 
-		//NOTE!!! Why not work??? Have to use a Matrix to transform vertices to Y up Left handed Axis;
+		//NOTE!!! 这里的代码不知道为何不起作用，暂时在读取顶点位置数据的时候，手动转换为Y轴朝上的左手系；
 		/*FbxAxisSystem SceneAxisSystem = m_pScene->GetGlobalSettings().GetAxisSystem();
 		FbxAxisSystem RenderDogAxisSystem(FbxAxisSystem::eYAxis, FbxAxisSystem::eParityOdd, FbxAxisSystem::eLeftHanded);
 		if (SceneAxisSystem != RenderDogAxisSystem)
@@ -130,44 +130,55 @@ namespace RenderDog
 			RenderDogAxisSystem.ConvertScene(m_pScene);
 		}*/
 
-		if (m_bNeedBoneSkin)
+		if (loadType == FBX_LOAD_TYPE::ANIMATION)
 		{
-			if (m_pSkeleton)
+			auto strIter0 = filePath.rfind("/") + 1;
+			auto strIter1 = filePath.rfind(".");
+			std::string animName = filePath.substr(strIter0, strIter1 - strIter0);
+
+
+		}
+		else
+		{
+			if (m_bNeedBoneSkin)
 			{
-				for (int i = 0; i < m_pSkeleton->bones.size(); ++i)
+				if (m_pSkeleton)
 				{
-					RawBoneData* pBone = m_pSkeleton->bones[i];
-					if (pBone)
+					for (int i = 0; i < m_pSkeleton->bones.size(); ++i)
 					{
-						delete pBone;
-						pBone = nullptr;
+						RawBoneData* pBone = m_pSkeleton->bones[i];
+						if (pBone)
+						{
+							delete pBone;
+							pBone = nullptr;
+						}
 					}
+
+					m_pSkeleton->boneMap.clear();
+				}
+				else
+				{
+					m_pSkeleton = new RawSkeletonData;
 				}
 
-				m_pSkeleton->boneMap.clear();
+				ProcessSkeletonNode(m_pScene->GetRootNode(), nullptr);
+
+				//NOTE!!! 顶点坐标在加载的过程中已经变换为Y轴朝上的左手坐标系，这里无需再次变换
+				//至于为何在顶点加载时进行变换，可参考顶点加载时的注释；
+				/*Matrix4x4 transAxisMatrix(1.0f, 0.0f, 0.0f, 0.0f,
+					0.0f, 0.0f, 1.0f, 0.0f,
+					0.0f, 1.0f, 0.0f, 0.0f,
+					0.0f, 0.0f, 0.0f, 1.0f);
+				m_pSkeleton->LocalMatrix = transAxisMatrix;*/
+				m_pSkeleton->LocalMatrix.Identity();
 			}
-			else
+
+			m_RawData.clear();
+
+			if (!ProcessMeshNode(m_pScene->GetRootNode(), loadParam.bIsFlipTexcoordV))
 			{
-				m_pSkeleton = new RawSkeletonData;
+				return false;
 			}
-
-			ProcessSkeletonNode(m_pScene->GetRootNode(), nullptr);
-
-			//NOTE!!! 顶点坐标在加载的过程中已经变换为Y轴朝上的左手坐标系，这里无需再次变换
-			//至于为何在顶点加载时进行变换，可参考顶点加载时的注释；
-			/*Matrix4x4 transAxisMatrix(1.0f, 0.0f, 0.0f, 0.0f,
-				0.0f, 0.0f, 1.0f, 0.0f,
-				0.0f, 1.0f, 0.0f, 0.0f,
-				0.0f, 0.0f, 0.0f, 1.0f);
-			m_pSkeleton->LocalMatrix = transAxisMatrix;*/
-			m_pSkeleton->LocalMatrix.Identity();
-		}
-
-		m_RawData.clear();
-
-		if (!ProcessMeshNode(m_pScene->GetRootNode(), loadParam.bIsFlipTexcoordV))
-		{
-			return false;
 		}
 
 		return true;

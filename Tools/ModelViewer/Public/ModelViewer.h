@@ -46,6 +46,7 @@ private:
 	bool						LoadFloor(uint32_t width, uint32_t depth, float unit);
 	bool						LoadSkyBox(const std::wstring& texFileName);
 	bool						LoadFbxModel(const std::string& fileName, LOAD_MODEL_TYPE modelType);
+	bool						LoadFbxAnimation(const std::string& fileName, RenderDog::SkinModel* pSkinModel);
 
 	void						Update();
 	void						RegisterObjectToScene();

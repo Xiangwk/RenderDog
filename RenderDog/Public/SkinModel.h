@@ -44,7 +44,7 @@ namespace RenderDog
 
 	private:
 		void						CalculateBoundings();
-		//设置位姿的时候更新包围球
+									//设置位姿的时候更新包围球
 		void						UpdateBoundings();
 
 	private:

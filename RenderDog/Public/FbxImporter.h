@@ -104,7 +104,7 @@ namespace RenderDog
 		void								Release();
 
 											//FlipUV为true时，v坐标要做反转（v = 1.0f - v）
-		bool								LoadFbxFile(const std::string& filePath, FBX_LOAD_TYPE loadType, const FbxLoadParam& loadParam);
+		bool								LoadFbxFile(const std::string& filePath, FBX_LOAD_TYPE loadType, const FbxLoadParam& loadParam = FbxLoadParam());
 
 		std::vector<RawMeshData>&			GetRawMeshData() { return m_RawData; }
 		const RawSkeletonData*				GetRawSkeletonData() const { return m_pSkeleton; }

@@ -109,6 +109,12 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 	}
 	m_pSkinModel->SetPosGesture(RenderDog::Vector3(-150.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
 
+	if (!LoadFbxAnimation("Models/Crunch/Animations/Idle_Combat.FBX", m_pSkinModel))
+	{
+		MessageBox(nullptr, "Load Skin Model Animation Failed!", "ERROR", MB_OK);
+		return false;
+	}
+
 	RenderDog::LightDesc lightDesc = {};
 	lightDesc.type = RenderDog::LIGHT_TYPE::DIRECTIONAL;
 	lightDesc.color = RenderDog::Vector3(1.0f, 1.0f, 1.0f);
@@ -404,6 +410,24 @@ bool ModelViewer::LoadFbxModel(const std::string& fileName, LOAD_MODEL_TYPE mode
 	else
 	{
 		MessageBox(nullptr, "Load Unknown Type Model!", "ERROR", MB_OK);
+		return false;
+	}
+
+	return true;
+}
+
+bool ModelViewer::LoadFbxAnimation(const std::string& fileName, RenderDog::SkinModel* pSkinModel)
+{
+	if (!pSkinModel)
+	{
+		MessageBox(nullptr, "Load FBX Animation: Unknown SkinModel Model!", "ERROR", MB_OK);
+		return false;
+	}
+
+	if (!RenderDog::g_pRDFbxImporter->LoadFbxFile(fileName, RenderDog::RDFbxImporter::FBX_LOAD_TYPE::ANIMATION))
+	{
+		MessageBox(nullptr, "Import FBX Animation Failed!", "ERROR", MB_OK);
+
 		return false;
 	}
 
