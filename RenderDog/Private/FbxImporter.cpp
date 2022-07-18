@@ -133,6 +133,7 @@ namespace RenderDog
 		if (loadType == FBX_LOAD_TYPE::ANIMATION)
 		{
 			m_BoneAnimations.boneAnimations.clear();
+			m_BoneAnimations.boneAnimIndexMap.clear();
 
 			auto strIter0 = filePath.rfind("/") + 1;
 			auto strIter1 = filePath.rfind(".");
@@ -676,6 +677,7 @@ namespace RenderDog
 			currBoneAnimation.keyFrames.push_back(endFrameData);
 
 			m_BoneAnimations.boneAnimations.push_back(currBoneAnimation);
+			m_BoneAnimations.boneAnimIndexMap.insert({currBoneAnimation.boneName, m_BoneAnimations.boneAnimations.size() - 1});
 		}
 
 		for (int i = 0; i < pNode->GetChildCount(); ++i)

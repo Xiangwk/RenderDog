@@ -13,6 +13,7 @@
 namespace RenderDog
 {
 	class Bone;
+	class BoneAnimationClip;
 
 	class Skeleton
 	{
@@ -30,6 +31,7 @@ namespace RenderDog
 		uint32_t			GetBoneNum() const { return (uint32_t)m_Bones.size(); }
 
 		void				Update();
+		void				UpdateByAnimation(float timePos, BoneAnimationClip& animClip);
 
 	private:
 		std::vector<Bone>	m_Bones;

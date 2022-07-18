@@ -207,6 +207,8 @@ namespace RenderDog
 	Vector3		Normalize(const Vector3& v);
 	float		DotProduct(const Vector3& lhs, const Vector3& rhs);
 	Vector3		CrossProduct(const Vector3& lhs, const Vector3& rhs);
+
+	Vector3		Lerp(const Vector3& lhs, const Vector3& rhs, float lerpFactor);
 #pragma endregion Vector3
 
 	///////////////////////////////////////////////////////////////////////////////////
@@ -275,6 +277,8 @@ namespace RenderDog
 
 	bool		operator==(const Vector4& lhs, const Vector4& rhs);
 	bool		operator!=(const Vector4& lhs, const Vector4& rhs);
+
+	Vector4		Lerp(const Vector4& lhs, const Vector4& rhs, float lerpFactor);
 #pragma endregion Vector4
 
 } // End namespace RenderDog

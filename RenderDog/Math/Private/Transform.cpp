@@ -72,10 +72,10 @@ namespace RenderDog
 	{
 		Vector4 normalizeQuat = Normalize(quat);
 
-		float x = normalizeQuat.x;
-		float y = normalizeQuat.y;
-		float z = normalizeQuat.z;
-		float w = normalizeQuat.w;
+		float x = normalizeQuat.y;
+		float y = normalizeQuat.z;
+		float z = normalizeQuat.w;
+		float w = normalizeQuat.x;
 
 		Matrix4x4 rotationMatrix;
 		rotationMatrix(0, 0) = 1.0f - 2.0f * y * y - 2.0f * z * z;
@@ -97,6 +97,8 @@ namespace RenderDog
 		rotationMatrix(3, 1) = 0.0f;
 		rotationMatrix(3, 2) = 0.0f;
 		rotationMatrix(3, 3) = 1.0f;
+
+		rotationMatrix = Transpose(rotationMatrix);
 
 		return rotationMatrix;
 	}

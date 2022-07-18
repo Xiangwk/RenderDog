@@ -123,8 +123,9 @@ namespace RenderDog
 
 		struct RawAnimation
 		{
-			std::string						name;				//动画名
-			std::vector<RawBoneAnimation>	boneAnimations;		//每一根骨骼的动画合集
+			std::string									name;					//动画名
+			std::vector<RawBoneAnimation>				boneAnimations;			//每一根骨骼的动画合集
+			std::unordered_map<std::string, size_t>		boneAnimIndexMap;		//带动画的骨骼名称与其在boneAnimations中的索引
 
 			RawAnimation() :
 				name(""),

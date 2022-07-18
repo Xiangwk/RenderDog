@@ -140,6 +140,15 @@ namespace RenderDog
 
 		return result;
 	}
+
+	Vector3 Lerp(const Vector3& lhs, const Vector3& rhs, float lerpFactor)
+	{
+		float x = lhs.x * (1.0f - lerpFactor) + rhs.x * lerpFactor;
+		float y = lhs.y * (1.0f - lerpFactor) + rhs.y * lerpFactor;
+		float z = lhs.z * (1.0f - lerpFactor) + rhs.z * lerpFactor;
+
+		return Vector3(x, y, z);
+	}
 #pragma endregion Vector3
 
 	///////////////////////////////////////////////////////////////////////////////////
@@ -214,6 +223,16 @@ namespace RenderDog
 	bool operator!=(const Vector4& lhs, const Vector4& rhs)
 	{
 		return !(lhs == rhs);
+	}
+
+	Vector4 Lerp(const Vector4& lhs, const Vector4& rhs, float lerpFactor)
+	{
+		float x = lhs.x * (1.0f - lerpFactor) + rhs.x * lerpFactor;
+		float y = lhs.y * (1.0f - lerpFactor) + rhs.y * lerpFactor;
+		float z = lhs.z * (1.0f - lerpFactor) + rhs.z * lerpFactor;
+		float w = lhs.w * (1.0f - lerpFactor) + rhs.w * lerpFactor;
+
+		return Vector4(x, y, z, w);
 	}
 #pragma endregion Vector4
 

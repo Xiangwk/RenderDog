@@ -10,6 +10,7 @@
 #include "Matrix.h"
 
 #include <vector>
+#include <unordered_map>
 
 namespace RenderDog
 {
@@ -56,15 +57,35 @@ namespace RenderDog
 			m_BoneAnimations(0)
 		{}
 
+		BoneAnimationClip(const std::string& name,
+						  const std::vector<BoneAnimation>& boneAnimations,
+						  const std::unordered_map<std::string, size_t>& boneAnimIndexMap) :
+			m_Name(name),
+			m_BoneAnimations(boneAnimations),
+			m_BoneAnimIndexMap(boneAnimIndexMap)
+		{
+			m_AnimTimeLength = GetClipEndTime() - GetClipStartTime();
+		}
+
 		~BoneAnimationClip() = default;
 
-		float						GetClipStartTime() const;
-		float						GetClipEndTime() const;
+		float										GetClipStartTime() const;
+		float										GetClipEndTime() const;
 
-		void						Interpolate(float timePos, std::vector<Matrix4x4>& boneTransforms) const;
+		float										GetAnimTimeLength() const { return m_AnimTimeLength; }
+
+		void										Interpolate(float timePos);
+
+		int											GetBoneAnimIndexByName(const std::string& boneName) const;
+		const Matrix4x4&							GetBoneAnimTransform(int boneAnimIndex) const;
 
 	private:
-		std::vector<BoneAnimation>	m_BoneAnimations;
+		std::string									m_Name;
+		float										m_AnimTimeLength;
+		std::vector<BoneAnimation>					m_BoneAnimations;
+		std::unordered_map<std::string, size_t>		m_BoneAnimIndexMap;
+
+		std::vector<Matrix4x4>						m_BoneAnimTransforms;	//某一个时刻下所有带动画的骨骼的UpToParent矩阵
 	};
 
 }// namespace RenderDog

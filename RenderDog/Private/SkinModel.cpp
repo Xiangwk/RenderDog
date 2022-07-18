@@ -31,7 +31,9 @@ namespace RenderDog
 		}
 	}
 
-	bool SkinModel::LoadFromRawMeshData(const std::vector<RDFbxImporter::RawMeshData>& rawMeshDatas, const RDFbxImporter::RawSkeletonData* pSkeletonData, const std::string& vsFile, const std::string& psFile, const std::string& fileName)
+	bool SkinModel::LoadFromRawMeshData(const std::vector<RDFbxImporter::RawMeshData>& rawMeshDatas, const RDFbxImporter::RawSkeletonData* pSkeletonData, 
+									    const std::string& vsFile, const std::string& psFile, 
+										const std::string& modelName)
 	{
 		for (uint32_t i = 0; i < rawMeshDatas.size(); ++i)
 		{
@@ -61,7 +63,7 @@ namespace RenderDog
 				vertices.push_back(vert);
 			}
 
-			std::string meshName = fileName + "_" + meshData.name;
+			std::string meshName = modelName + "_" + meshData.name;
 			SkinMesh mesh(meshName);
 			mesh.CalcTangentsAndGenIndices(vertices, meshData.smoothGroup);
 
@@ -86,6 +88,39 @@ namespace RenderDog
 
 			m_pSkeleton->AddBone(bone);
 		}
+
+		m_pSkeleton->Update();
+
+		return true;
+	}
+
+	bool SkinModel::LoadBoneAnimation(const RDFbxImporter::RawAnimation& rawAnimation)
+	{
+		std::vector<BoneAnimation> boneAnimations;
+		boneAnimations.resize(rawAnimation.boneAnimations.size());
+		std::unordered_map<std::string, size_t> boneAnimIndexMap;
+
+		for (size_t i = 0; i < rawAnimation.boneAnimations.size(); ++i)
+		{
+			const RDFbxImporter::RawBoneAnimation& rawBoneAnimation = rawAnimation.boneAnimations[i];
+			BoneAnimation& newBoneAnimation = boneAnimations[i];
+			for (size_t j = 0; j < rawBoneAnimation.keyFrames.size(); ++j)
+			{
+				const RDFbxImporter::RawKeyFrameData& keyFrameData = rawBoneAnimation.keyFrames[j];
+				BoneKeyFrame boneKeyFrame;
+				boneKeyFrame.timePos = keyFrameData.timePos;
+				boneKeyFrame.translation = keyFrameData.translation;
+				boneKeyFrame.scales = keyFrameData.scales;
+				boneKeyFrame.rotationQuat = keyFrameData.rotationQuat;
+
+				newBoneAnimation.AddKeyFrame(boneKeyFrame);
+			}
+
+			boneAnimIndexMap.insert({ rawBoneAnimation.boneName, i });
+		}
+
+		BoneAnimationClip boneAnimClip(rawAnimation.name, boneAnimations, boneAnimIndexMap);
+		m_BoneAnimationClips.push_back(boneAnimClip);
 
 		return true;
 	}
@@ -133,7 +168,7 @@ namespace RenderDog
 		UpdateBoundings();
 	}
 
-	void SkinModel::Tick(float time)
+	void SkinModel::Tick(float deltaTime)
 	{
 		SkinMesh::SkinModelPerObjectTransform perModelTransform;
 
@@ -144,7 +179,17 @@ namespace RenderDog
 			return;
 		}
 
-		m_pSkeleton->Update();
+		//FIXME!!! 以后在这里选择要播放的动作
+		BoneAnimationClip& boneAnimClips = m_BoneAnimationClips[0];
+		float animTimeLength = boneAnimClips.GetAnimTimeLength();
+		static float animTime = 0.0f;
+		animTime += (deltaTime * 1000.0f);	//deltaTime的单位是s，而动画时间的单位是ms
+		if (animTime > animTimeLength)
+		{
+			animTime = 0.0f;
+		}
+
+		m_pSkeleton->UpdateByAnimation(animTime, boneAnimClips);
 
 		for (uint32_t i = 0; i < m_pSkeleton->GetBoneNum(); ++i)
 		{

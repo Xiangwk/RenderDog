@@ -26,6 +26,8 @@ namespace RenderDog
 			m_FinalTransformMatrix()
 		{}
 
+		const std::string&	GetName() const { return m_Name; }
+
 		int					GetParentIndex() const { return m_ParentIndex; }
 
 		void				SetUpdateToParentMatrix(const Matrix4x4& matrix) { m_UpToParentMatrix = matrix; }

@@ -431,7 +431,12 @@ bool ModelViewer::LoadFbxAnimation(const std::string& fileName, RenderDog::SkinM
 		return false;
 	}
 
+	if (!pSkinModel->LoadBoneAnimation(RenderDog::g_pRDFbxImporter->GetRawBoneAnimation()))
+	{
+		MessageBox(nullptr, "SkinModel Load Animation Failed!", "ERROR", MB_OK);
 
+		return false;
+	}
 
 	return true;
 }
@@ -474,7 +479,7 @@ void ModelViewer::Update()
 		m_pStaticModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
 	}
 
-	m_pSkinModel->Tick(0);
+	m_pSkinModel->Tick((float)(m_pGameTimer->GetDeltaTime()));
 
 	RegisterObjectToScene();
 }
