@@ -41,9 +41,12 @@ namespace RenderDog
 			m_SimplePris.push_back(pPri);
 			break;
 		}
-		case PRIMITIVE_TYPE::OPAQUE_PRI:
+		case PRIMITIVE_TYPE::STATIC_PRI:
+		case PRIMITIVE_TYPE::SKIN_PRI:
+		{
 			m_OpaquePris.push_back(pPri);
 			break;
+		}
 		default:
 			break;
 		}

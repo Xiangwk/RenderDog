@@ -20,7 +20,8 @@ namespace RenderDog
 	enum class PRIMITIVE_TYPE
 	{
 		SIMPLE_PRI = 0,
-		OPAQUE_PRI
+		STATIC_PRI,
+		SKIN_PRI
 	};
 
 	struct PrimitiveRenderParam

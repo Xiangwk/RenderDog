@@ -459,7 +459,8 @@ namespace RenderDog
 		ITexture2D*					m_pShadowDepthTexture;
 		ISamplerState*				m_pShadowDepthTextureSampler;
 
-		IShader*					m_pShadowDepthVS;
+		IShader*					m_pShadowDepthStaticModelVS;
+		IShader*					m_pShadowDepthSkinModelVS;
 		IShader*					m_pShadowDepthPS;
 
 		ID3D11RasterizerState*		m_pSkyRasterizerState;
@@ -487,7 +488,8 @@ namespace RenderDog
 		m_pShadowTestConstantBuffer(nullptr),
 		m_pShadowDepthTexture(nullptr),
 		m_pShadowDepthTextureSampler(nullptr),
-		m_pShadowDepthVS(nullptr),
+		m_pShadowDepthStaticModelVS(nullptr),
+		m_pShadowDepthSkinModelVS(nullptr),
 		m_pShadowDepthPS(nullptr),
 		m_pSkyRasterizerState(nullptr),
 		m_pSkyDepthStencilState(nullptr)
@@ -590,8 +592,11 @@ namespace RenderDog
 		int ShadowMapSize = g_ShadowMapRTSize;
 		CreateShadowResources(ShadowMapSize, ShadowMapSize);
 
-		ShaderCompileDesc vsDesc("Shaders/ShadowDepthVertexShader.hlsl", nullptr, "Main", "vs_5_0", 0);
-		m_pShadowDepthVS = g_pIShaderManager->GetVertexShader(VERTEX_TYPE::STANDARD, vsDesc);
+		ShaderCompileDesc vsDesc("Shaders/ShadowDepthStaticModelVertexShader.hlsl", nullptr, "Main", "vs_5_0", 0);
+		m_pShadowDepthStaticModelVS = g_pIShaderManager->GetVertexShader(VERTEX_TYPE::STANDARD, vsDesc);
+
+		vsDesc = ShaderCompileDesc("Shaders/ShadowDepthSkinModelVertexShader.hlsl", nullptr, "Main", "vs_5_0", 0);
+		m_pShadowDepthSkinModelVS = g_pIShaderManager->GetVertexShader(VERTEX_TYPE::SKIN, vsDesc);
 
 		ShaderCompileDesc psDesc("Shaders/ShadowDepthPixelShader.hlsl", nullptr, "Main", "ps_5_0", 0);
 		m_pShadowDepthPS = g_pIShaderManager->GetPixelShader(psDesc);
@@ -657,10 +662,16 @@ namespace RenderDog
 
 		ReleaseShadowResources();
 
-		if (m_pShadowDepthVS)
+		if (m_pShadowDepthStaticModelVS)
 		{
-			m_pShadowDepthVS->Release();
-			m_pShadowDepthVS = nullptr;
+			m_pShadowDepthStaticModelVS->Release();
+			m_pShadowDepthStaticModelVS = nullptr;
+		}
+
+		if (m_pShadowDepthSkinModelVS)
+		{
+			m_pShadowDepthSkinModelVS->Release();
+			m_pShadowDepthSkinModelVS = nullptr;
 		}
 
 		if (m_pShadowDepthPS)
@@ -974,13 +985,22 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->ClearDepthStencilView(pShadowDSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
 		g_pD3D11ImmediateContext->OMSetRenderTargets(0, nullptr, pShadowDSV);
 
-		D3D11MeshShadowRenderer shadowRenderer(m_pShadowDepthConstantBuffer, m_pShadowDepthVS, m_pShadowDepthPS);
+		D3D11MeshShadowRenderer staticModelShadowRenderer(m_pShadowDepthConstantBuffer, m_pShadowDepthStaticModelVS, m_pShadowDepthPS);
+		D3D11MeshShadowRenderer skinModelShadowRenderer(m_pShadowDepthConstantBuffer, m_pShadowDepthSkinModelVS, m_pShadowDepthPS);
+
 
 		uint32_t opaquePriNum = m_pSceneView->GetOpaquePrisNum();
 		for (uint32_t i = 0; i < opaquePriNum; ++i)
 		{
 			IPrimitive* pPri = m_pSceneView->GetOpaquePri(i);
-			pPri->Render(&shadowRenderer);
+			if (pPri->GetPriType() != PRIMITIVE_TYPE::SKIN_PRI)
+			{
+				pPri->Render(&staticModelShadowRenderer);
+			}
+			else
+			{
+				pPri->Render(&skinModelShadowRenderer);
+			}
 		}
 	}
 

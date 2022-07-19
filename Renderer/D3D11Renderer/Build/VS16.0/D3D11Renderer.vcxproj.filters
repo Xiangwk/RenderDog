@@ -55,7 +55,7 @@
     <None Include="..\..\Shaders\ShadowDepthPixelShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\..\Shaders\ShadowDepthVertexShader.hlsl">
+    <None Include="..\..\Shaders\ShadowDepthStaticModelVertexShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
     <None Include="..\..\Shaders\ShadowTestCommon.hlsl">
@@ -71,6 +71,9 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="..\..\Shaders\SkinModelVertexShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\Shaders\ShadowDepthSkinModelVertexShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

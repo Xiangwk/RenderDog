@@ -1,6 +1,6 @@
 ////////////////////////////////////////
 //RenderDog <¡¤,¡¤>
-//FileName: ShadowDepthVertexShader.hlsl
+//FileName: ShadowDepthStaticModelVertexShader.hlsl
 //Written by Xiang Weikang
 ////////////////////////////////////////
 

@@ -201,7 +201,7 @@ xcopy ..\..\Shaders\*.* ..\..\..\..\EngineSDK\Renderer\Shaders\ /i /s /y</Comman
     <None Include="..\..\Shaders\ShadowDepthPixelShader.hlsl">
       <FileType>Document</FileType>
     </None>
-    <None Include="..\..\Shaders\ShadowDepthVertexShader.hlsl">
+    <None Include="..\..\Shaders\ShadowDepthStaticModelVertexShader.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>
@@ -225,6 +225,11 @@ xcopy ..\..\Shaders\*.* ..\..\..\..\EngineSDK\Renderer\Shaders\ /i /s /y</Comman
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Shaders\SkinModelVertexShader.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Shaders\ShadowDepthSkinModelVertexShader.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

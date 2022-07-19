@@ -49,7 +49,7 @@ namespace RenderDog
 		explicit SkinMesh(const std::string& name);
 
 		virtual void					Render(IPrimitiveRenderer* pPrimitiveRenderer) override;
-		virtual PRIMITIVE_TYPE			GetPriType() const override { return PRIMITIVE_TYPE::OPAQUE_PRI; }
+		virtual PRIMITIVE_TYPE			GetPriType() const override { return PRIMITIVE_TYPE::SKIN_PRI; }
 		virtual const AABB&				GetAABB() const override { return m_AABB; }
 
 		void							LoadFromSkinData(const std::vector<SkinVertex>& vertices, const std::vector<uint32_t>& indices, const std::string& name);
