@@ -23,5 +23,5 @@ namespace RenderDog
 	Matrix4x4	GetPerspectiveMatrixLH(float fov, float aspectRatio, float near, float farPlane);
 	Matrix4x4	GetOrthographicMatrixLH(float viewLeft, float viewRight, float viewBottom, float viewTop, float nearZ, float farZ);
 
-	Matrix4x4	GetTransformation(const Vector3& translation, const Vector3& scales, const Vector4& rotationQuat);
+	Matrix4x4	GetTransformation(const Vector3& translation, const Vector3& scales, const Vector3& eulers);
 }

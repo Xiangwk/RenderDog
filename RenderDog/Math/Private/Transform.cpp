@@ -72,10 +72,10 @@ namespace RenderDog
 	{
 		Vector4 normalizeQuat = Normalize(quat);
 
-		float x = normalizeQuat.y;
-		float y = normalizeQuat.z;
-		float z = normalizeQuat.w;
-		float w = normalizeQuat.x;
+		float x = normalizeQuat.x;
+		float y = normalizeQuat.y;
+		float z = normalizeQuat.z;
+		float w = normalizeQuat.w;
 
 		Matrix4x4 rotationMatrix;
 		rotationMatrix(0, 0) = 1.0f - 2.0f * y * y - 2.0f * z * z;
@@ -181,10 +181,10 @@ namespace RenderDog
 		return orthoMatrix;
 	}
 
-	Matrix4x4 GetTransformation(const Vector3& translation, const Vector3& scales, const Vector4& rotationQuat)
+	Matrix4x4 GetTransformation(const Vector3& translation, const Vector3& scales, const Vector3& eulers)
 	{
 		Matrix4x4 scaleMatrix = GetScaleMatrix(scales.x, scales.y, scales.z);
-		Matrix4x4 rotationMatrix = GetRotationMatrix(rotationQuat);
+		Matrix4x4 rotationMatrix = GetRotationMatrix(eulers.x, eulers.y, eulers.z);
 		Matrix4x4 translationMatrix = GetTranslationMatrix(translation.x, translation.y, translation.z);
 
 		return scaleMatrix * rotationMatrix * translationMatrix;

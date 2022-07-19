@@ -111,7 +111,8 @@ namespace RenderDog
 				boneKeyFrame.timePos = keyFrameData.timePos;
 				boneKeyFrame.translation = keyFrameData.translation;
 				boneKeyFrame.scales = keyFrameData.scales;
-				boneKeyFrame.rotationQuat = keyFrameData.rotationQuat;
+				//boneKeyFrame.rotationQuat = keyFrameData.rotationQuat;
+				boneKeyFrame.eulers = keyFrameData.eulers;
 
 				newBoneAnimation.AddKeyFrame(boneKeyFrame);
 			}
@@ -183,13 +184,12 @@ namespace RenderDog
 		BoneAnimationClip& boneAnimClips = m_BoneAnimationClips[0];
 		float animTimeLength = boneAnimClips.GetAnimTimeLength();
 		static float animTime = 0.0f;
-		animTime += (deltaTime * 1000.0f);	//deltaTime的单位是s，而动画时间的单位是ms
 		if (animTime > animTimeLength)
 		{
 			animTime = 0.0f;
 		}
-
 		m_pSkeleton->UpdateByAnimation(animTime, boneAnimClips);
+		animTime += (deltaTime * 1000.0f);	//deltaTime的单位是s，而动画时间的单位是ms
 
 		for (uint32_t i = 0; i < m_pSkeleton->GetBoneNum(); ++i)
 		{

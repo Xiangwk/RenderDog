@@ -133,7 +133,6 @@ namespace RenderDog
 		if (loadType == FBX_LOAD_TYPE::ANIMATION)
 		{
 			m_BoneAnimations.boneAnimations.clear();
-			m_BoneAnimations.boneAnimIndexMap.clear();
 
 			auto strIter0 = filePath.rfind("/") + 1;
 			auto strIter1 = filePath.rfind(".");
@@ -170,12 +169,12 @@ namespace RenderDog
 
 				//NOTE!!! 顶点坐标在加载的过程中已经变换为Y轴朝上的左手坐标系，这里无需再次变换
 				//至于为何在顶点加载时进行变换，可参考顶点加载时的注释；
-				/*Matrix4x4 transAxisMatrix(1.0f, 0.0f, 0.0f, 0.0f,
+				Matrix4x4 transAxisMatrix(1.0f, 0.0f, 0.0f, 0.0f,
 					0.0f, 0.0f, 1.0f, 0.0f,
 					0.0f, 1.0f, 0.0f, 0.0f,
 					0.0f, 0.0f, 0.0f, 1.0f);
-				m_pSkeleton->LocalMatrix = transAxisMatrix;*/
-				m_pSkeleton->LocalMatrix.Identity();
+				m_pSkeleton->LocalMatrix = transAxisMatrix;
+				//m_pSkeleton->LocalMatrix.Identity();
 			}
 
 			m_RawData.clear();
@@ -455,7 +454,7 @@ namespace RenderDog
 			0.0f, 0.0f, 0.0f, 1.0f);
 
 		Vector4 newPos(outputPos, 1.0f);
-		newPos = newPos * transAxisMatrix;
+		//newPos = newPos * transAxisMatrix;
 		outputPos = Vector3(newPos.x, newPos.y, newPos.z);
 	}
 
@@ -608,18 +607,24 @@ namespace RenderDog
 	void RDFbxImporter::ProcessAnimation(FbxNode* pNode)
 	{
 		RawBoneAnimation currBoneAnimation;
+		FbxTimeSpan GlobalTimeSpan(FBXSDK_TIME_INFINITE, FBXSDK_TIME_MINUS_INFINITE);
 
 		FbxNodeAttribute* pNodeAttribute = pNode->GetNodeAttribute();
+
 		if (pNodeAttribute && 
 			(pNodeAttribute->GetAttributeType() == FbxNodeAttribute::eNull || pNodeAttribute->GetAttributeType() == FbxNodeAttribute::eSkeleton))
 		{
 			currBoneAnimation.boneName = pNode->GetName();
 
+			FbxTimeSpan AnimTimeSpan(FBXSDK_TIME_INFINITE, FBXSDK_TIME_MINUS_INFINITE);
+			pNode->GetAnimationInterval(AnimTimeSpan);
+			//GlobalTimeSpan.UnionAssignment(AnimTimeSpan);
+
 			FbxTime frameTime;
 			frameTime.SetTime(0, 0, 0, 1, 0, m_pScene->GetGlobalSettings().GetTimeMode());
 
-			FbxTimeSpan timeSpan;
-			m_pScene->GetGlobalSettings().GetTimelineDefaultTimeSpan(timeSpan);
+			FbxTimeSpan timeSpan = AnimTimeSpan;
+			//m_pScene->GetGlobalSettings().GetTimelineDefaultTimeSpan(timeSpan);
 			FbxTime startTime = timeSpan.GetStart();
 			FbxTime endTime = timeSpan.GetStop();
 			for (FbxTime currTime = startTime; currTime < endTime; currTime += frameTime)
@@ -630,7 +635,8 @@ namespace RenderDog
 
 				FbxVector4 fbxTrans = fbxBoneUpToParent.GetT();
 				FbxVector4 fbxScales = fbxBoneUpToParent.GetS();
-				FbxQuaternion fbxQuat = fbxBoneUpToParent.GetQ();
+				//FbxQuaternion fbxQuat = fbxBoneUpToParent.GetQ();
+				FbxVector4 fbxEulers = fbxBoneUpToParent.GetR();
 
 				RawKeyFrameData keyFrameData;
 				keyFrameData.timePos = static_cast<float>(msTime);
@@ -643,10 +649,14 @@ namespace RenderDog
 				keyFrameData.scales.y = static_cast<float>(fbxScales[1]);
 				keyFrameData.scales.z = static_cast<float>(fbxScales[2]);
 
-				keyFrameData.rotationQuat.x = static_cast<float>(fbxQuat[0]);
+				/*keyFrameData.rotationQuat.x = static_cast<float>(fbxQuat[0]);
 				keyFrameData.rotationQuat.y = static_cast<float>(fbxQuat[1]);
 				keyFrameData.rotationQuat.z = static_cast<float>(fbxQuat[2]);
-				keyFrameData.rotationQuat.w = static_cast<float>(fbxQuat[2]);
+				keyFrameData.rotationQuat.w = static_cast<float>(fbxQuat[3]);*/
+
+				keyFrameData.eulers.x = static_cast<float>(fbxEulers[0]);
+				keyFrameData.eulers.y = static_cast<float>(fbxEulers[1]);
+				keyFrameData.eulers.z = static_cast<float>(fbxEulers[2]);
 
 				currBoneAnimation.keyFrames.push_back(keyFrameData);
 			}
@@ -656,7 +666,8 @@ namespace RenderDog
 
 			FbxVector4 fbxEndTrans = fbxEndBoneUpToParent.GetT();
 			FbxVector4 fbxEndScales = fbxEndBoneUpToParent.GetS();
-			FbxQuaternion fbxEndQuat = fbxEndBoneUpToParent.GetQ();
+			//FbxQuaternion fbxEndQuat = fbxEndBoneUpToParent.GetQ();
+			FbxVector4 fbxEndEulers = fbxEndBoneUpToParent.GetR();
 
 			RawKeyFrameData endFrameData;
 			endFrameData.timePos = static_cast<float>(msEndTime);
@@ -669,15 +680,18 @@ namespace RenderDog
 			endFrameData.scales.y = static_cast<float>(fbxEndScales[1]);
 			endFrameData.scales.z = static_cast<float>(fbxEndScales[2]);
 
-			endFrameData.rotationQuat.x = static_cast<float>(fbxEndQuat[0]);
+			/*endFrameData.rotationQuat.x = static_cast<float>(fbxEndQuat[0]);
 			endFrameData.rotationQuat.y = static_cast<float>(fbxEndQuat[1]);
 			endFrameData.rotationQuat.z = static_cast<float>(fbxEndQuat[2]);
-			endFrameData.rotationQuat.w = static_cast<float>(fbxEndQuat[2]);
+			endFrameData.rotationQuat.w = static_cast<float>(fbxEndQuat[3]);*/
+
+			endFrameData.eulers.x = static_cast<float>(fbxEndEulers[0]);
+			endFrameData.eulers.y = static_cast<float>(fbxEndEulers[1]);
+			endFrameData.eulers.z = static_cast<float>(fbxEndEulers[2]);
 
 			currBoneAnimation.keyFrames.push_back(endFrameData);
 
 			m_BoneAnimations.boneAnimations.push_back(currBoneAnimation);
-			m_BoneAnimations.boneAnimIndexMap.insert({currBoneAnimation.boneName, m_BoneAnimations.boneAnimations.size() - 1});
 		}
 
 		for (int i = 0; i < pNode->GetChildCount(); ++i)

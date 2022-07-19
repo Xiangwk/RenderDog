@@ -312,9 +312,16 @@ namespace RenderDog
 
 			//重新计算法线
 			//这里必须保证顶点的坐标定义在左手系中，否则叉积的顺序需要调换；
-			Vector3 faceNormal0 = CrossProduct(pos1 - pos0, pos2 - pos0);
+			/*Vector3 faceNormal0 = CrossProduct(pos1 - pos0, pos2 - pos0);
 			Vector3 faceNormal1 = CrossProduct(pos2 - pos1, pos0 - pos1);
-			Vector3 faceNormal2 = CrossProduct(pos0 - pos2, pos1 - pos2);
+			Vector3 faceNormal2 = CrossProduct(pos0 - pos2, pos1 - pos2);*/
+
+			//FIXME!!! 为了保证动画效果正确，这里临时使用3DsMAX中的右手系来计算面法线
+			//但是目前这样修改会导致静态模型效果不正确，后续可以将计算切线空间的代码转移到FBXImport时即可；
+			Vector3 faceNormal0 = CrossProduct(pos2 - pos0, pos1 - pos0);
+			Vector3 faceNormal1 = CrossProduct(pos0 - pos1, pos2 - pos1);
+			Vector3 faceNormal2 = CrossProduct(pos1 - pos2, pos0 - pos2);
+
 
 			float rawHandParty = DotProduct(CrossProduct(faceTangent, faceBiTangent), faceNormal0) > 0.0f ? 1.0f : -1.0f;
 

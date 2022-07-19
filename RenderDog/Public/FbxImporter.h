@@ -94,13 +94,15 @@ namespace RenderDog
 			float		timePos;
 			Vector3		translation;
 			Vector3		scales;
-			Vector4		rotationQuat;
+			//Vector4		rotationQuat;
+			Vector3		eulers;					//x, y, z
 
 			RawKeyFrameData() :
 				timePos(0.0f),
 				translation(0.0f),
 				scales(1.0f),
-				rotationQuat(0.0f)
+				//rotationQuat(0.0f)
+				eulers(0.0f)
 			{}
 		};
 
@@ -125,7 +127,6 @@ namespace RenderDog
 		{
 			std::string									name;					//动画名
 			std::vector<RawBoneAnimation>				boneAnimations;			//每一根骨骼的动画合集
-			std::unordered_map<std::string, size_t>		boneAnimIndexMap;		//带动画的骨骼名称与其在boneAnimations中的索引
 
 			RawAnimation() :
 				name(""),

@@ -27,17 +27,19 @@ namespace RenderDog
 		{
 			Vector3 translation = m_KeyFrames.front().translation;
 			Vector3 scales = m_KeyFrames.front().scales;
-			Vector4 rotationQuat = m_KeyFrames.front().rotationQuat;
+			//Vector4 rotationQuat = m_KeyFrames.front().rotationQuat;
+			Vector3 eulers = m_KeyFrames.front().eulers;
 
-			outputUpToParent = GetTransformation(translation, scales, rotationQuat);
+			outputUpToParent = GetTransformation(translation, scales, eulers);
 		}
 		else if (timePos >= m_KeyFrames.back().timePos)
 		{
 			Vector3 translation = m_KeyFrames.back().translation;
 			Vector3 scales = m_KeyFrames.back().scales;
-			Vector4 rotationQuat = m_KeyFrames.back().rotationQuat;
+			//Vector4 rotationQuat = m_KeyFrames.back().rotationQuat;
+			Vector3 eulers = m_KeyFrames.back().eulers;
 
-			outputUpToParent = GetTransformation(translation, scales, rotationQuat);
+			outputUpToParent = GetTransformation(translation, scales, eulers);
 		}
 		else
 		{
@@ -52,15 +54,21 @@ namespace RenderDog
 					Vector3 scales1 = m_KeyFrames[i + 1].scales;
 					Vector3 currScales = Lerp(scales0, scales1, lerpFactor);
 
-					Vector4 rotationQuat0 = m_KeyFrames[i].rotationQuat;
+					/*Vector4 rotationQuat0 = m_KeyFrames[i].rotationQuat;
 					Vector4 rotationQuat1 = m_KeyFrames[i + 1].rotationQuat;
-					Vector4 currRotationQuat = Lerp(rotationQuat0, rotationQuat1, lerpFactor);
+					Vector4 currRotationQuat = Lerp(rotationQuat0, rotationQuat1, lerpFactor);*/
+					
+					Vector3 eulers0 = m_KeyFrames[i].eulers;
+					Vector3 eulers1 = m_KeyFrames[i + 1].eulers;
+					Vector3 currEulers = Lerp(eulers0, eulers1, lerpFactor);
 
 					Vector3 translation0 = m_KeyFrames[i].translation;
 					Vector3 translation1 = m_KeyFrames[i + 1].translation;
 					Vector3 currTranslation = Lerp(translation0, translation1, lerpFactor);
 
-					outputUpToParent = GetTransformation(currTranslation, currScales, currRotationQuat);
+					outputUpToParent = GetTransformation(currTranslation, currScales, currEulers);
+
+					break;
 				}
 			}
 		}
