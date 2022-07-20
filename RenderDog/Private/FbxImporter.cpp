@@ -166,18 +166,15 @@ namespace RenderDog
 
 				ProcessSkeletonNode(m_pScene->GetRootNode(), nullptr);
 
-				//NOTE!!! 顶点坐标在加载的过程中已经变换为Y轴朝上的左手坐标系，这里无需再次变换
-				//至于为何在顶点加载时进行变换，可参考顶点加载时的注释；
+				//对于SkinModel来说，坐标系转换应该在根节点上做
 				Matrix4x4 transAxisMatrix(1.0f, 0.0f, 0.0f, 0.0f,
-					0.0f, 0.0f, 1.0f, 0.0f,
-					0.0f, 1.0f, 0.0f, 0.0f,
-					0.0f, 0.0f, 0.0f, 1.0f);
+										  0.0f, 0.0f, 1.0f, 0.0f,
+										  0.0f, 1.0f, 0.0f, 0.0f,
+										  0.0f, 0.0f, 0.0f, 1.0f);
 				m_pSkeleton->LocalMatrix = transAxisMatrix;
-				//m_pSkeleton->LocalMatrix.Identity();
 			}
 
 			m_RawData.clear();
-
 			if (!ProcessMeshNode(m_pScene->GetRootNode(), loadParam.bIsFlipTexcoordV))
 			{
 				return false;
@@ -598,8 +595,8 @@ namespace RenderDog
 		if (pNodeAttribute && 
 			(pNodeAttribute->GetAttributeType() == FbxNodeAttribute::eNull || pNodeAttribute->GetAttributeType() == FbxNodeAttribute::eSkeleton))
 		{
-			RawBoneAnimation currBoneAnimation;
-			currBoneAnimation.boneName = pNode->GetName();
+			RawBoneAnimation* pCurrBoneAnimation = new RawBoneAnimation();
+			pCurrBoneAnimation->boneName = pNode->GetName();
 
 			FbxTimeSpan AnimTimeSpan(FBXSDK_TIME_INFINITE, FBXSDK_TIME_MINUS_INFINITE);
 			pNode->GetAnimationInterval(AnimTimeSpan);
@@ -612,7 +609,7 @@ namespace RenderDog
 			FbxTime endTime = timeSpan.GetStop();
 
 			size_t stepTime = (size_t)((endTime.Get() - startTime.Get()) / frameTime.Get());
-			currBoneAnimation.keyFrames.reserve(stepTime + 1);
+			pCurrBoneAnimation->keyFrames.reserve(stepTime + 1);
 			for (FbxTime currTime = startTime; currTime < endTime; currTime += frameTime)
 			{
 				FbxLongLong msTime = currTime.GetMilliSeconds() - startTime.GetMilliSeconds();
@@ -644,7 +641,7 @@ namespace RenderDog
 				keyFrameData.eulers.y = static_cast<float>(fbxEulers[1]);
 				keyFrameData.eulers.z = static_cast<float>(fbxEulers[2]);
 
-				currBoneAnimation.keyFrames.push_back(keyFrameData);
+				pCurrBoneAnimation->keyFrames.push_back(keyFrameData);
 			}
 
 			FbxLongLong msEndTime = endTime.GetMilliSeconds() - startTime.GetMilliSeconds();
@@ -675,9 +672,9 @@ namespace RenderDog
 			endFrameData.eulers.y = static_cast<float>(fbxEndEulers[1]);
 			endFrameData.eulers.z = static_cast<float>(fbxEndEulers[2]);
 
-			currBoneAnimation.keyFrames.push_back(endFrameData);
+			pCurrBoneAnimation->keyFrames.push_back(endFrameData);
 
-			m_BoneAnimations.boneAnimations.push_back(currBoneAnimation);
+			m_BoneAnimations.boneAnimations.push_back(pCurrBoneAnimation);
 		}
 
 		for (int i = 0; i < pNode->GetChildCount(); ++i)

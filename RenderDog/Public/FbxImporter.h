@@ -127,12 +127,22 @@ namespace RenderDog
 		struct RawAnimation
 		{
 			std::string									name;					//动画名
-			std::vector<RawBoneAnimation>				boneAnimations;			//每一根骨骼的动画合集
+			std::vector<RawBoneAnimation*>				boneAnimations;			//每一根骨骼的动画合集
 
 			RawAnimation() :
 				name(""),
 				boneAnimations(0)
 			{}
+
+			~RawAnimation()
+			{
+				for (size_t i = 0; i < boneAnimations.size(); ++i)
+				{
+					RawBoneAnimation* pboneAnim = boneAnimations[i];
+					delete pboneAnim;
+					pboneAnim = nullptr;
+				}
+			}
 		};
 
 		//影响该顶点的骨骼以及权重

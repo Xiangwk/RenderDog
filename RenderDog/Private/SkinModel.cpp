@@ -102,11 +102,11 @@ namespace RenderDog
 
 		for (size_t i = 0; i < rawAnimation.boneAnimations.size(); ++i)
 		{
-			const RDFbxImporter::RawBoneAnimation& rawBoneAnimation = rawAnimation.boneAnimations[i];
+			const RDFbxImporter::RawBoneAnimation* pRawBoneAnimation = rawAnimation.boneAnimations[i];
 			BoneAnimation& newBoneAnimation = boneAnimations[i];
-			for (size_t j = 0; j < rawBoneAnimation.keyFrames.size(); ++j)
+			for (size_t j = 0; j < pRawBoneAnimation->keyFrames.size(); ++j)
 			{
-				const RDFbxImporter::RawKeyFrameData& keyFrameData = rawBoneAnimation.keyFrames[j];
+				const RDFbxImporter::RawKeyFrameData& keyFrameData = pRawBoneAnimation->keyFrames[j];
 				BoneKeyFrame boneKeyFrame;
 				boneKeyFrame.timePos = keyFrameData.timePos;
 				boneKeyFrame.translation = keyFrameData.translation;
@@ -117,7 +117,7 @@ namespace RenderDog
 				newBoneAnimation.AddKeyFrame(boneKeyFrame);
 			}
 
-			boneAnimIndexMap.insert({ rawBoneAnimation.boneName, i });
+			boneAnimIndexMap.insert({ pRawBoneAnimation->boneName, i });
 		}
 
 		BoneAnimationClip boneAnimClip(rawAnimation.name, boneAnimations, boneAnimIndexMap);
