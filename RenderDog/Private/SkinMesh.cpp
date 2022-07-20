@@ -310,14 +310,7 @@ namespace RenderDog
 				faceBiTangent = Normalize(Vector3(bx, by, bz)) * abs(div);
 			}
 
-			//重新计算法线
-			//这里必须保证顶点的坐标定义在左手系中，否则叉积的顺序需要调换；
-			/*Vector3 faceNormal0 = CrossProduct(pos1 - pos0, pos2 - pos0);
-			Vector3 faceNormal1 = CrossProduct(pos2 - pos1, pos0 - pos1);
-			Vector3 faceNormal2 = CrossProduct(pos0 - pos2, pos1 - pos2);*/
-
-			//FIXME!!! 为了保证动画效果正确，这里临时使用3DsMAX中的右手系来计算面法线
-			//但是目前这样修改会导致静态模型效果不正确，后续可以将计算切线空间的代码转移到FBXImport时即可；
+			//对于SkinModel来说，坐标系转换矩阵作用在根骨骼上，因此这里仍然按照3dsMax中的右手坐标系来计算面法线
 			Vector3 faceNormal0 = CrossProduct(pos2 - pos0, pos1 - pos0);
 			Vector3 faceNormal1 = CrossProduct(pos0 - pos1, pos2 - pos1);
 			Vector3 faceNormal2 = CrossProduct(pos1 - pos2, pos0 - pos2);

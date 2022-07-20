@@ -139,7 +139,6 @@ namespace RenderDog
 			std::string animName = filePath.substr(strIter0, strIter1 - strIter0);
 
 			m_BoneAnimations.name = animName;
-
 			ProcessAnimation(m_pScene->GetRootNode());
 		}
 		else
@@ -445,17 +444,6 @@ namespace RenderDog
 		outputPos.x = static_cast<float>(pCtrlPoint[vertexIndex][0]);
 		outputPos.y = static_cast<float>(pCtrlPoint[vertexIndex][1]);
 		outputPos.z = static_cast<float>(pCtrlPoint[vertexIndex][2]);
-
-		//NOTE!!! 调研清楚如何使用FbxSDK中的Axis变换之后，应该把这里去掉
-		//这里的变换很重要！将顶点从右手系变换到左手系中，这里的坐标系描述会影响到加载完顶点之后面法线的计算；
-		Matrix4x4 transAxisMatrix(1.0f, 0.0f, 0.0f, 0.0f,
-			0.0f, 0.0f, 1.0f, 0.0f,
-			0.0f, 1.0f, 0.0f, 0.0f,
-			0.0f, 0.0f, 0.0f, 1.0f);
-
-		Vector4 newPos(outputPos, 1.0f);
-		//newPos = newPos * transAxisMatrix;
-		outputPos = Vector3(newPos.x, newPos.y, newPos.z);
 	}
 
 	void RDFbxImporter::ReadTexcoord(FbxMesh* pMesh, int vertexIndex, int textureUVIndex, int uvLayer, Vector2& OutputUV)
@@ -606,27 +594,25 @@ namespace RenderDog
 
 	void RDFbxImporter::ProcessAnimation(FbxNode* pNode)
 	{
-		RawBoneAnimation currBoneAnimation;
-		FbxTimeSpan GlobalTimeSpan(FBXSDK_TIME_INFINITE, FBXSDK_TIME_MINUS_INFINITE);
-
 		FbxNodeAttribute* pNodeAttribute = pNode->GetNodeAttribute();
-
 		if (pNodeAttribute && 
 			(pNodeAttribute->GetAttributeType() == FbxNodeAttribute::eNull || pNodeAttribute->GetAttributeType() == FbxNodeAttribute::eSkeleton))
 		{
+			RawBoneAnimation currBoneAnimation;
 			currBoneAnimation.boneName = pNode->GetName();
 
 			FbxTimeSpan AnimTimeSpan(FBXSDK_TIME_INFINITE, FBXSDK_TIME_MINUS_INFINITE);
 			pNode->GetAnimationInterval(AnimTimeSpan);
-			//GlobalTimeSpan.UnionAssignment(AnimTimeSpan);
 
 			FbxTime frameTime;
 			frameTime.SetTime(0, 0, 0, 1, 0, m_pScene->GetGlobalSettings().GetTimeMode());
 
 			FbxTimeSpan timeSpan = AnimTimeSpan;
-			//m_pScene->GetGlobalSettings().GetTimelineDefaultTimeSpan(timeSpan);
 			FbxTime startTime = timeSpan.GetStart();
 			FbxTime endTime = timeSpan.GetStop();
+
+			size_t stepTime = (size_t)((endTime.Get() - startTime.Get()) / frameTime.Get());
+			currBoneAnimation.keyFrames.reserve(stepTime + 1);
 			for (FbxTime currTime = startTime; currTime < endTime; currTime += frameTime)
 			{
 				FbxLongLong msTime = currTime.GetMilliSeconds() - startTime.GetMilliSeconds();

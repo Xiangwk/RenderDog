@@ -59,10 +59,18 @@ namespace RenderDog
 			std::vector<StandardVertex> vertices;
 			vertices.reserve(meshData.postions.size());
 
+			//FBX中为Z轴朝上的右手系，使用下面的矩阵顶点坐标转换为Y轴朝上的左手系
+			Matrix4x4 transAxisMatrix(1.0f, 0.0f, 0.0f, 0.0f,
+									  0.0f, 0.0f, 1.0f, 0.0f,
+									  0.0f, 1.0f, 0.0f, 0.0f,
+									  0.0f, 0.0f, 0.0f, 1.0f);
+
 			for (uint32_t index = 0; index < meshData.postions.size(); ++index)
 			{
 				StandardVertex vert;
-				vert.position = meshData.postions[index];
+				Vector4 tempPos = Vector4(meshData.postions[index], 1.0f);
+				tempPos = tempPos * transAxisMatrix;
+				vert.position = Vector3(tempPos.x, tempPos.y, tempPos.z);
 				vert.color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 				vert.normal = Vector3(0.0f, 0.0f, 0.0f);
 				vert.tangent = Vector4(0.0f, 0.0f, 0.0f, 0.0f);

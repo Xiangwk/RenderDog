@@ -332,6 +332,7 @@ namespace RenderDog
 			}
 
 			//重新计算法线
+			//注意，对于静态模型来说，顶点位置加载进来之后即转换到左手系了，因此这里使用左手定则计算面法线
 			Vector3 faceNormal0 = CrossProduct(pos1 - pos0, pos2 - pos0);
 			Vector3 faceNormal1 = CrossProduct(pos2 - pos1, pos0 - pos1);
 			Vector3 faceNormal2 = CrossProduct(pos0 - pos2, pos1 - pos2);

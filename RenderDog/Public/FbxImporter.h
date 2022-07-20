@@ -41,7 +41,8 @@ namespace RenderDog
 			std::string					name;
 			std::vector<Vector3>		postions;
 			std::vector<Vector2>		texcoords;
-			std::vector<uint32_t>		smoothGroup;		//每个三角形所在的光滑组索引
+			std::vector<uint32_t>		smoothGroup;
+
 			std::vector<Vector4>		boneIndices;
 			std::vector<Vector4>		boneWeighs;
 			
