@@ -138,6 +138,9 @@
     <ClCompile Include="..\..\Private\BoneAnimation.cpp">
       <Filter>Animation</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Math\Private\Quaternion.cpp">
+      <Filter>Math\Private</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Math\Public\Matrix.h">
@@ -238,6 +241,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Public\BoneAnimation.h">
       <Filter>Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Math\Public\Quaternion.h">
+      <Filter>Math\Public</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

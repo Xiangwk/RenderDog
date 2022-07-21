@@ -61,15 +61,17 @@ namespace RenderDog
 	float Vector3::Normalize()
 	{
 		float len = this->Length();
-		if (std::abs(len - 0.0f) >= 0.000001f)
+		if (std::abs(len - 0.0f) < RD_FLT_EPSILON)
 		{
-			float invLen = 1.0f / len;
-
-			x *= invLen;
-			y *= invLen;
-			z *= invLen;
+			return 0.0f;
 		}
+		
+		float invLen = 1.0f / len;
 
+		x *= invLen;
+		y *= invLen;
+		z *= invLen;
+		
 		return len;
 	}
 
@@ -116,7 +118,7 @@ namespace RenderDog
 	Vector3 Normalize(const Vector3& v)
 	{
 		float len = v.Length();
-		if (std::abs(len - 0.0f) < 0.000001f)
+		if (std::abs(len - 0.0f) < RD_FLT_EPSILON)
 		{
 			return Vector3(0);
 		}
@@ -158,7 +160,7 @@ namespace RenderDog
 	void Vector4::Normalize()
 	{
 		float len = this->Length();
-		if (std::abs(len - 0.0f) >= 0.000001f)
+		if (std::abs(len - 0.0f) >= RD_FLT_EPSILON)
 		{
 			float invLen = 1.0f / len;
 
@@ -172,7 +174,7 @@ namespace RenderDog
 	Vector4 Normalize(const Vector4& vec)
 	{
 		float len = vec.Length();
-		if (std::abs(len - 0.0f) < 0.000001f)
+		if (std::abs(len - 0.0f) < RD_FLT_EPSILON)
 		{
 			return Vector4(0);
 		}
