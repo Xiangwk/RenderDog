@@ -97,14 +97,12 @@ namespace RenderDog
 			Vector3		translation;
 			Vector3		scales;
 			Quaternion	rotationQuat;
-			//Vector3		eulers;					//x, y, z
 
 			RawKeyFrameData() :
 				timePos(0.0f),
 				translation(0.0f),
 				scales(1.0f),
 				rotationQuat()
-				//eulers(0.0f)
 			{}
 		};
 

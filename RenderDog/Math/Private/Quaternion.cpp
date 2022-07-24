@@ -11,6 +11,21 @@
 
 namespace RenderDog
 {
+	Quaternion& Quaternion::operator*=(const Quaternion& rhs)
+	{
+		float resX = w * rhs.x + x * rhs.w + y * rhs.z - z * rhs.y;
+		float resY = w * rhs.y - x * rhs.z + y * rhs.w + z * rhs.x;
+		float resZ = w * rhs.z + x * rhs.y - y * rhs.x + z * rhs.w;
+		float resW = w * rhs.w - x * rhs.x - y * rhs.y - z * rhs.z;
+
+		x = resX;
+		y = resY;
+		z = resZ;
+		w = resW;
+
+		return *this;
+	}
+
 	void Quaternion::Normalize()
 	{
 		float sqrSum = x * x + y * y + z * z + w * w;
@@ -27,19 +42,23 @@ namespace RenderDog
 		w *= invSqrt;
 	}
 
-	Quaternion& Quaternion::operator*=(const Quaternion& rhs)
+	float Quaternion::Length() const
 	{
-		float resX = w * rhs.x + x * rhs.w + y * rhs.z - z * rhs.y;
-		float resY = w * rhs.y - x * rhs.z + y * rhs.w + z * rhs.x;
-		float resZ = w * rhs.z + x * rhs.y - y * rhs.x + z * rhs.w;
-		float resW = w * rhs.w - x * rhs.x - y * rhs.y - z * rhs.z;
+		return std::sqrt(x * x + y * y + z * z + w * w);
+	}
 
-		x = resX;
-		y = resY;
-		z = resZ;
-		w = resW;
+	float Quaternion::GetAngle() const
+	{
+		return 2.0f * std::acosf(w);
+	}
 
-		return *this;
+	Vector3 Quaternion::GetRotateAxis() const
+	{
+		Vector3 rotAxis(x, y, z);
+
+		rotAxis.Normalize();
+
+		return rotAxis;
 	}
 
 	Quaternion Normalize(const Quaternion& quat)
@@ -95,7 +114,7 @@ namespace RenderDog
 		return Normalize(result);
 	}
 
-	Quaternion operator*(const Quaternion& lhs, const Quaternion& rhs)
+	const Quaternion operator*(const Quaternion& lhs, const Quaternion& rhs)
 	{
 		float resX = lhs.w * rhs.x + lhs.x * rhs.w + lhs.y * rhs.z - lhs.z * rhs.y;
 		float resY = lhs.w * rhs.y - lhs.x * rhs.z + lhs.y * rhs.w + lhs.z * rhs.x;

@@ -21,14 +21,12 @@ namespace RenderDog
 		Vector3		translation;
 		Vector3		scales;
 		Quaternion	rotationQuat;
-		//Vector3		eulers;				//x, y, z
 
 		BoneKeyFrame() :
 			timePos(0.0f),
 			translation(0.0f),
 			scales(1.0f),
 			rotationQuat()
-			//eulers(0.0f)
 		{}
 	};
 
@@ -57,7 +55,11 @@ namespace RenderDog
 	{
 	public:
 		BoneAnimationClip() :
-			m_BoneAnimations(0)
+			m_Name(""),
+			m_AnimTimeLength(0.0f),
+			m_BoneAnimations(0),
+			m_BoneAnimIndexMap(),
+			m_BoneAnimTransforms(0)
 		{}
 
 		BoneAnimationClip(const std::string& name,

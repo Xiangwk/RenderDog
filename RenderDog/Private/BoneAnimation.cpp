@@ -28,7 +28,6 @@ namespace RenderDog
 			Vector3 translation = m_KeyFrames.front().translation;
 			Vector3 scales = m_KeyFrames.front().scales;
 			Quaternion rotationQuat = m_KeyFrames.front().rotationQuat;
-			//Vector3 eulers = m_KeyFrames.front().eulers;
 
 			outputUpToParent = GetTransformation(translation, scales, rotationQuat);
 		}
@@ -37,7 +36,6 @@ namespace RenderDog
 			Vector3 translation = m_KeyFrames.back().translation;
 			Vector3 scales = m_KeyFrames.back().scales;
 			Quaternion rotationQuat = m_KeyFrames.back().rotationQuat;
-			//Vector3 eulers = m_KeyFrames.back().eulers;
 
 			outputUpToParent = GetTransformation(translation, scales, rotationQuat);
 		}
@@ -57,10 +55,6 @@ namespace RenderDog
 					Quaternion rotationQuat0 = m_KeyFrames[i].rotationQuat;
 					Quaternion rotationQuat1 = m_KeyFrames[i + 1].rotationQuat;
 					Quaternion currRotationQuat = SLerp(rotationQuat0, rotationQuat1, lerpFactor);
-					
-					/*Vector3 eulers0 = m_KeyFrames[i].eulers;
-					Vector3 eulers1 = m_KeyFrames[i + 1].eulers;
-					Vector3 currEulers = Lerp(eulers0, eulers1, lerpFactor);*/
 
 					Vector3 translation0 = m_KeyFrames[i].translation;
 					Vector3 translation1 = m_KeyFrames[i + 1].translation;
