@@ -36,14 +36,46 @@ namespace RenderDog
 		return result;
 	}
 
-	Quaternion Lerp(const Quaternion& lhs, const Quaternion& rhs, float lerpFactor)
+	Quaternion Lerp(const Quaternion& quat1, const Quaternion& quat2, float lerpFactor)
 	{
-		float x = lhs.x * (1.0f - lerpFactor) + rhs.x * lerpFactor;
-		float y = lhs.y * (1.0f - lerpFactor) + rhs.y * lerpFactor;
-		float z = lhs.z * (1.0f - lerpFactor) + rhs.z * lerpFactor;
-		float w = lhs.w * (1.0f - lerpFactor) + rhs.w * lerpFactor;
+		float x = quat1.x * (1.0f - lerpFactor) + quat2.x * lerpFactor;
+		float y = quat1.y * (1.0f - lerpFactor) + quat2.y * lerpFactor;
+		float z = quat1.z * (1.0f - lerpFactor) + quat2.z * lerpFactor;
+		float w = quat1.w * (1.0f - lerpFactor) + quat2.w * lerpFactor;
 
 		return Quaternion(x, y, z, w);
+	}
+
+	Quaternion SLerp(const Quaternion& quat1, const Quaternion& quat2, float lerpFactor)
+	{
+		float rawCosine = quat1.x * quat2.x + quat1.y * quat2.y + quat1.z * quat2.z + quat1.w * quat2.w;
+		float cosine = rawCosine >= 0.0f ? rawCosine : -rawCosine;
+
+		float scale0 = 0.0f;
+		float scale1 = 0.0f;
+		if (cosine < 0.9999f)
+		{
+			float omega = std::acosf(cosine);
+			float invSin = 1.0f / std::sinf(omega);
+
+			scale0 = std::sinf((1.0f - lerpFactor) * omega) * invSin;
+			scale1 = std::sinf(lerpFactor * omega) * invSin;
+		}
+		else
+		{
+			scale0 = 1.0f - lerpFactor;
+			scale1 = lerpFactor;
+		}
+
+		scale1 = rawCosine >= 0.0f ? scale1 : -scale1;
+
+		Quaternion result;
+		result.x = scale0 * quat1.x + scale1 * quat2.x;
+		result.y = scale0 * quat1.y + scale1 * quat2.y;
+		result.z = scale0 * quat1.z + scale1 * quat2.z;
+		result.w = scale0 * quat1.w + scale1 * quat2.w;
+
+		return Normalize(result);
 	}
 
 }// namespace RenderDog

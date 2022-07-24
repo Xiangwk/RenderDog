@@ -56,7 +56,7 @@ namespace RenderDog
 
 					Quaternion rotationQuat0 = m_KeyFrames[i].rotationQuat;
 					Quaternion rotationQuat1 = m_KeyFrames[i + 1].rotationQuat;
-					Quaternion currRotationQuat = Lerp(rotationQuat0, rotationQuat1, lerpFactor);
+					Quaternion currRotationQuat = SLerp(rotationQuat0, rotationQuat1, lerpFactor);
 					
 					/*Vector3 eulers0 = m_KeyFrames[i].eulers;
 					Vector3 eulers1 = m_KeyFrames[i + 1].eulers;
