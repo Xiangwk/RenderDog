@@ -67,6 +67,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\..\..\..\EngineSDK\RenderDog\Libs;..\..\..\..\EngineSDK\Renderer\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>RenderDog_d.lib;D3D11Renderer_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PostBuildEvent>
       <Command>xcopy $(TargetDir)*.exe ..\..\..\..\Bin\Tools\$(ProjectName)\ /i /s /y
@@ -94,6 +95,7 @@ xcopy ..\..\..\..\EngineSDK\RenderDog\EngineAsset\*.* ..\..\..\..\Bin\Tools\$(Pr
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\..\..\..\EngineSDK\RenderDog\Libs;..\..\..\..\EngineSDK\Renderer\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>RenderDog.lib;D3D11Renderer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PostBuildEvent>
       <Command>xcopy $(TargetDir)*.exe ..\..\..\..\Bin\Tools\$(ProjectName)\ /i /s /y

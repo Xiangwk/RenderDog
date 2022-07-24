@@ -43,7 +43,9 @@ namespace RenderDog
 		float z = quat1.z * (1.0f - lerpFactor) + quat2.z * lerpFactor;
 		float w = quat1.w * (1.0f - lerpFactor) + quat2.w * lerpFactor;
 
-		return Quaternion(x, y, z, w);
+		Quaternion result(x, y, z, w);
+
+		return Normalize(result);
 	}
 
 	Quaternion SLerp(const Quaternion& quat1, const Quaternion& quat2, float lerpFactor)

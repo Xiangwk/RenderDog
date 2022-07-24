@@ -138,6 +138,7 @@ xcopy ..\..\EngineAsset\*.* ..\..\..\EngineSDK\RenderDog\EngineAsset\ /i /s /y</
     <Lib>
       <AdditionalDependencies>libfbxsdk_d-md.lib;libxml2_d-md.lib;zlib_d-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\EngineSDK\3rdSDK\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -167,6 +168,7 @@ xcopy ..\..\EngineAsset\*.* ..\..\..\EngineSDK\RenderDog\EngineAsset\ /i /s /y</
     <Lib>
       <AdditionalDependencies>libfbxsdk-md.lib;libxml2-md.lib;zlib-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\EngineSDK\3rdSDK\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
     </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
