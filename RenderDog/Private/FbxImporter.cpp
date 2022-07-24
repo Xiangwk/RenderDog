@@ -618,8 +618,8 @@ namespace RenderDog
 
 				FbxVector4 fbxTrans = fbxBoneUpToParent.GetT();
 				FbxVector4 fbxScales = fbxBoneUpToParent.GetS();
-				//FbxQuaternion fbxQuat = fbxBoneUpToParent.GetQ();
-				FbxVector4 fbxEulers = fbxBoneUpToParent.GetR();
+				FbxQuaternion fbxQuat = fbxBoneUpToParent.GetQ();
+				//FbxVector4 fbxEulers = fbxBoneUpToParent.GetR();
 
 				RawKeyFrameData keyFrameData;
 				keyFrameData.timePos = static_cast<float>(msTime);
@@ -632,14 +632,14 @@ namespace RenderDog
 				keyFrameData.scales.y = static_cast<float>(fbxScales[1]);
 				keyFrameData.scales.z = static_cast<float>(fbxScales[2]);
 
-				/*keyFrameData.rotationQuat.x = static_cast<float>(fbxQuat[0]);
+				keyFrameData.rotationQuat.x = static_cast<float>(fbxQuat[0]);
 				keyFrameData.rotationQuat.y = static_cast<float>(fbxQuat[1]);
 				keyFrameData.rotationQuat.z = static_cast<float>(fbxQuat[2]);
-				keyFrameData.rotationQuat.w = static_cast<float>(fbxQuat[3]);*/
+				keyFrameData.rotationQuat.w = static_cast<float>(fbxQuat[3]);
 
-				keyFrameData.eulers.x = static_cast<float>(fbxEulers[0]);
+				/*keyFrameData.eulers.x = static_cast<float>(fbxEulers[0]);
 				keyFrameData.eulers.y = static_cast<float>(fbxEulers[1]);
-				keyFrameData.eulers.z = static_cast<float>(fbxEulers[2]);
+				keyFrameData.eulers.z = static_cast<float>(fbxEulers[2]);*/
 
 				pCurrBoneAnimation->keyFrames.push_back(keyFrameData);
 			}
@@ -649,8 +649,8 @@ namespace RenderDog
 
 			FbxVector4 fbxEndTrans = fbxEndBoneUpToParent.GetT();
 			FbxVector4 fbxEndScales = fbxEndBoneUpToParent.GetS();
-			//FbxQuaternion fbxEndQuat = fbxEndBoneUpToParent.GetQ();
-			FbxVector4 fbxEndEulers = fbxEndBoneUpToParent.GetR();
+			FbxQuaternion fbxEndQuat = fbxEndBoneUpToParent.GetQ();
+			//FbxVector4 fbxEndEulers = fbxEndBoneUpToParent.GetR();
 
 			RawKeyFrameData endFrameData;
 			endFrameData.timePos = static_cast<float>(msEndTime);
@@ -663,14 +663,14 @@ namespace RenderDog
 			endFrameData.scales.y = static_cast<float>(fbxEndScales[1]);
 			endFrameData.scales.z = static_cast<float>(fbxEndScales[2]);
 
-			/*endFrameData.rotationQuat.x = static_cast<float>(fbxEndQuat[0]);
+			endFrameData.rotationQuat.x = static_cast<float>(fbxEndQuat[0]);
 			endFrameData.rotationQuat.y = static_cast<float>(fbxEndQuat[1]);
 			endFrameData.rotationQuat.z = static_cast<float>(fbxEndQuat[2]);
-			endFrameData.rotationQuat.w = static_cast<float>(fbxEndQuat[3]);*/
+			endFrameData.rotationQuat.w = static_cast<float>(fbxEndQuat[3]);
 
-			endFrameData.eulers.x = static_cast<float>(fbxEndEulers[0]);
+			/*endFrameData.eulers.x = static_cast<float>(fbxEndEulers[0]);
 			endFrameData.eulers.y = static_cast<float>(fbxEndEulers[1]);
-			endFrameData.eulers.z = static_cast<float>(fbxEndEulers[2]);
+			endFrameData.eulers.z = static_cast<float>(fbxEndEulers[2]);*/
 
 			pCurrBoneAnimation->keyFrames.push_back(endFrameData);
 

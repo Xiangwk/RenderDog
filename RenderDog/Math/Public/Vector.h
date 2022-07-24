@@ -130,10 +130,10 @@ namespace RenderDog
 			z(f)
 		{}
 
-		Vector3(float x, float y, float z) :
-			x(x), 
-			y(y), 
-			z(z)
+		Vector3(float inX, float inY, float inZ) :
+			x(inX),
+			y(inY),
+			z(inZ)
 		{}
 
 		float Length() const
@@ -244,11 +244,11 @@ namespace RenderDog
 			w(f)
 		{}
 
-		Vector4(float x, float y, float z, float w) :
-			x(x), 
-			y(y), 
-			z(z),
-			w(w)
+		Vector4(float inX, float inY, float inZ, float inW) :
+			x(inX),
+			y(inY),
+			z(inZ),
+			w(inW)
 		{}
 
 		Vector4(const Vector3& v3, float f) :

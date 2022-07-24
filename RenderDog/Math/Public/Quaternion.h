@@ -8,14 +8,20 @@
 
 namespace RenderDog
 {
-	class Quaternion
+	struct Quaternion
 	{
+	public:
+		float x;
+		float y;
+		float z;
+		float w;
+
 	public:
 		Quaternion() :
 			x(0.0f),
 			y(0.0f),
 			z(0.0f),
-			w(0.0f)
+			w(1.0f)
 		{}
 
 		~Quaternion() = default;
@@ -28,13 +34,9 @@ namespace RenderDog
 		{}
 
 		void Normalize();
-
-
-	private:
-		float x;
-		float y;
-		float z;
-		float w;
 	};
 
-}// RenderDog
+	Quaternion Normalize(const Quaternion& quat);
+	Quaternion Lerp(const Quaternion& lhs, const Quaternion& rhs, float lerpFactor);
+
+}// namespace RenderDog

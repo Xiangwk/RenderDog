@@ -5,6 +5,7 @@
 ///////////////////////////////////
 
 #include "Transform.h"
+#include "Quaternion.h"
 #include "Utility.h"
 
 namespace RenderDog
@@ -68,9 +69,9 @@ namespace RenderDog
 		return result;
 	}
 
-	Matrix4x4 GetRotationMatrix(const Vector4& quat)
+	Matrix4x4 GetRotationMatrix(const Quaternion& quat)
 	{
-		Vector4 normalizeQuat = Normalize(quat);
+		Quaternion normalizeQuat = Normalize(quat);
 
 		float x = normalizeQuat.x;
 		float y = normalizeQuat.y;
@@ -79,17 +80,17 @@ namespace RenderDog
 
 		Matrix4x4 rotationMatrix;
 		rotationMatrix(0, 0) = 1.0f - 2.0f * y * y - 2.0f * z * z;
-		rotationMatrix(0, 1) = 2.0f * x * y - 2.0f * w * z;
-		rotationMatrix(0, 2) = 2.0f * x * z + 2.0f * w * y;
+		rotationMatrix(0, 1) = 2.0f * x * y + 2.0f * w * z;
+		rotationMatrix(0, 2) = 2.0f * x * z - 2.0f * w * y;
 		rotationMatrix(0, 3) = 0.0f;
 
-		rotationMatrix(1, 0) = 2.0f * x * y + 2.0f * w * z;
+		rotationMatrix(1, 0) = 2.0f * x * y - 2.0f * w * z;
 		rotationMatrix(1, 1) = 1.0f - 2.0f * x * x - 2.0f * z * z;
-		rotationMatrix(1, 2) = 2.0f * y * z - 2.0f * w * x;
+		rotationMatrix(1, 2) = 2.0f * y * z + 2.0f * w * x;
 		rotationMatrix(1, 3) = 0.0f;
 
-		rotationMatrix(2, 0) = 2.0f * x * z - 2.0f * w * y;
-		rotationMatrix(2, 1) = 2.0f * y * z + 2.0f * w * x;
+		rotationMatrix(2, 0) = 2.0f * x * z + 2.0f * w * y;
+		rotationMatrix(2, 1) = 2.0f * y * z - 2.0f * w * x;
 		rotationMatrix(2, 2) = 1.0f - 2.0f * x * x - 2.0f * y * y;
 		rotationMatrix(2, 3) = 0.0f;
 
@@ -97,8 +98,6 @@ namespace RenderDog
 		rotationMatrix(3, 1) = 0.0f;
 		rotationMatrix(3, 2) = 0.0f;
 		rotationMatrix(3, 3) = 1.0f;
-
-		rotationMatrix = Transpose(rotationMatrix);
 
 		return rotationMatrix;
 	}
@@ -185,6 +184,15 @@ namespace RenderDog
 	{
 		Matrix4x4 scaleMatrix = GetScaleMatrix(scales.x, scales.y, scales.z);
 		Matrix4x4 rotationMatrix = GetRotationMatrix(eulers.x, eulers.y, eulers.z);
+		Matrix4x4 translationMatrix = GetTranslationMatrix(translation.x, translation.y, translation.z);
+
+		return scaleMatrix * rotationMatrix * translationMatrix;
+	}
+
+	Matrix4x4 GetTransformation(const Vector3& translation, const Vector3& scales, const Quaternion& rotQuat)
+	{
+		Matrix4x4 scaleMatrix = GetScaleMatrix(scales.x, scales.y, scales.z);
+		Matrix4x4 rotationMatrix = GetRotationMatrix(rotQuat);
 		Matrix4x4 translationMatrix = GetTranslationMatrix(translation.x, translation.y, translation.z);
 
 		return scaleMatrix * rotationMatrix * translationMatrix;

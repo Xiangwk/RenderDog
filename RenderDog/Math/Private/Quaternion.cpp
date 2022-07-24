@@ -27,4 +27,23 @@ namespace RenderDog
 		w *= invSqrt;
 	}
 
+	Quaternion Normalize(const Quaternion& quat)
+	{
+		Quaternion result = quat;
+
+		result.Normalize();
+
+		return result;
+	}
+
+	Quaternion Lerp(const Quaternion& lhs, const Quaternion& rhs, float lerpFactor)
+	{
+		float x = lhs.x * (1.0f - lerpFactor) + rhs.x * lerpFactor;
+		float y = lhs.y * (1.0f - lerpFactor) + rhs.y * lerpFactor;
+		float z = lhs.z * (1.0f - lerpFactor) + rhs.z * lerpFactor;
+		float w = lhs.w * (1.0f - lerpFactor) + rhs.w * lerpFactor;
+
+		return Quaternion(x, y, z, w);
+	}
+
 }// namespace RenderDog

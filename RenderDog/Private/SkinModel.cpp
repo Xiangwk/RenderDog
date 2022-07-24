@@ -111,8 +111,8 @@ namespace RenderDog
 				boneKeyFrame.timePos = keyFrameData.timePos;
 				boneKeyFrame.translation = keyFrameData.translation;
 				boneKeyFrame.scales = keyFrameData.scales;
-				//boneKeyFrame.rotationQuat = keyFrameData.rotationQuat;
-				boneKeyFrame.eulers = keyFrameData.eulers;
+				boneKeyFrame.rotationQuat = keyFrameData.rotationQuat;
+				//boneKeyFrame.eulers = keyFrameData.eulers;
 
 				newBoneAnimation.AddKeyFrame(boneKeyFrame);
 			}

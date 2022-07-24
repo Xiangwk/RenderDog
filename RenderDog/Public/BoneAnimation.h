@@ -8,6 +8,7 @@
 
 #include "Vector.h"
 #include "Matrix.h"
+#include "Quaternion.h"
 
 #include <vector>
 #include <unordered_map>
@@ -19,15 +20,15 @@ namespace RenderDog
 		float		timePos;
 		Vector3		translation;
 		Vector3		scales;
-		//Vector4		rotationQuat;
-		Vector3		eulers;				//x, y, z
+		Quaternion	rotationQuat;
+		//Vector3		eulers;				//x, y, z
 
 		BoneKeyFrame() :
 			timePos(0.0f),
 			translation(0.0f),
 			scales(1.0f),
-			//rotationQuat(0.0f)
-			eulers(0.0f)
+			rotationQuat()
+			//eulers(0.0f)
 		{}
 	};
 
