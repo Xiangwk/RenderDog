@@ -33,11 +33,15 @@ namespace RenderDog
 			w(inW)
 		{}
 
+		Quaternion& operator*=(const Quaternion& rhs);
+
 		void Normalize();
 	};
 
 	Quaternion Normalize(const Quaternion& quat);
 	Quaternion Lerp(const Quaternion& quat1, const Quaternion& quat2, float lerpFactor);
 	Quaternion SLerp(const Quaternion& quat1, const Quaternion& quat2, float lerpFactor);
+
+	Quaternion operator*(const Quaternion& lhs, const Quaternion& rhs);
 
 }// namespace RenderDog

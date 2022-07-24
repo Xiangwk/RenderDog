@@ -27,6 +27,21 @@ namespace RenderDog
 		w *= invSqrt;
 	}
 
+	Quaternion& Quaternion::operator*=(const Quaternion& rhs)
+	{
+		float resX = w * rhs.x + x * rhs.w + y * rhs.z - z * rhs.y;
+		float resY = w * rhs.y - x * rhs.z + y * rhs.w + z * rhs.x;
+		float resZ = w * rhs.z + x * rhs.y - y * rhs.x + z * rhs.w;
+		float resW = w * rhs.w - x * rhs.x - y * rhs.y - z * rhs.z;
+
+		x = resX;
+		y = resY;
+		z = resZ;
+		w = resW;
+
+		return *this;
+	}
+
 	Quaternion Normalize(const Quaternion& quat)
 	{
 		Quaternion result = quat;
@@ -78,6 +93,16 @@ namespace RenderDog
 		result.w = scale0 * quat1.w + scale1 * quat2.w;
 
 		return Normalize(result);
+	}
+
+	Quaternion operator*(const Quaternion& lhs, const Quaternion& rhs)
+	{
+		float resX = lhs.w * rhs.x + lhs.x * rhs.w + lhs.y * rhs.z - lhs.z * rhs.y;
+		float resY = lhs.w * rhs.y - lhs.x * rhs.z + lhs.y * rhs.w + lhs.z * rhs.x;
+		float resZ = lhs.w * rhs.z + lhs.x * rhs.y - lhs.y * rhs.x + lhs.z * rhs.w;
+		float resW = lhs.w * rhs.w - lhs.x * rhs.x - lhs.y * rhs.y - lhs.z * rhs.z;
+
+		return Quaternion(resX, resY, resZ, resW);
 	}
 
 }// namespace RenderDog
