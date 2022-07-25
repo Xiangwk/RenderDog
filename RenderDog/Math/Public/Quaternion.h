@@ -1,7 +1,7 @@
 ////////////////////////////////////////
-//RenderDog <，,，>
-//FileName: Quaternion.h
-//Written by Xiang Weikang
+// RenderDog <，,，>
+// FileName: Quaternion.h
+// Written by Xiang Weikang
 ////////////////////////////////////////
 
 #pragma once

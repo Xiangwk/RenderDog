@@ -141,6 +141,9 @@
     <ClCompile Include="..\..\Math\Private\Quaternion.cpp">
       <Filter>Math\Private</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Private\Material.cpp">
+      <Filter>Private</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Math\Public\Matrix.h">

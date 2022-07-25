@@ -1,13 +1,91 @@
+////////////////////////////////////////
+// RenderDog <¡¤,¡¤>
+// FileName: Material.h
+// Written by Xiang Weikang
+// Interface of Material
+////////////////////////////////////////
+
 #pragma once
+
+#include <string>
 
 namespace RenderDog
 {
-	class IMaterial
+	struct	Vector4;
+	class	ITexture2D;
+
+	enum class MATERIAL_PARAM_TYPE
+	{
+		UNKNOWN = 0,
+		SCALAR,
+		VECTOR4,
+		TEXTURE2D
+	};
+
+	class MaterialParam
 	{
 	public:
+		MaterialParam() :
+			m_Name(""),
+			m_ParamType(MATERIAL_PARAM_TYPE::UNKNOWN)
+		{}
+
+		~MaterialParam() = default;
+
+		float*					GetScalar() { return pfloatValue; }
+		Vector4*				GetVector4() { return pVector4Value; }
+		ITexture2D*				GetTexture2D() { return pTexture2DValue; }
+
+		const std::string&		GetName() const { return m_Name; }
+		MATERIAL_PARAM_TYPE		GetType() const { return m_ParamType; }
+
+	private:
+		union
+		{
+			float*				pfloatValue;
+			Vector4*			pVector4Value;
+			ITexture2D*			pTexture2DValue;
+		};
+
+		std::string				m_Name;
+		MATERIAL_PARAM_TYPE		m_ParamType;
+	};
+
+	class IMaterial
+	{
+	protected:
 		virtual ~IMaterial() = default;
 
+	public:
+		virtual void				Release() = 0;
 
+		virtual const std::string&	GetName() const = 0;
+		virtual MaterialParam		GetParamByName(const std::string& name) = 0;
 	};
+
+
+	class IMaterialInstance
+	{
+	protected:
+		virtual ~IMaterialInstance() = default;
+
+	public:
+		virtual void				Release() = 0;
+
+		virtual const std::string&	GetName() const = 0;
+	};
+
+
+	class IMaterialManager
+	{
+	protected:
+		virtual ~IMaterialManager() = default;
+
+	public:
+		virtual IMaterial*			GetMaterial(const std::string& filePath) = 0;
+		virtual IMaterialInstance*	GetMaterialInstance(const IMaterial* pMaterial) = 0;
+	};
+
+	extern IMaterialManager* g_pMaterialManager;
 
 }// namespace RenderDog

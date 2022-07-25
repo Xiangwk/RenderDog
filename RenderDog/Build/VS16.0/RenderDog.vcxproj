@@ -25,6 +25,7 @@
     <ClCompile Include="..\..\Private\GeometryGenerator.cpp" />
     <ClCompile Include="..\..\Private\GlobalValue.cpp" />
     <ClCompile Include="..\..\Private\Light.cpp" />
+    <ClCompile Include="..\..\Private\Material.cpp" />
     <ClCompile Include="..\..\Private\RefCntObject.cpp" />
     <ClCompile Include="..\..\Private\RenderDog.cpp" />
     <ClCompile Include="..\..\Private\Scene.cpp" />
