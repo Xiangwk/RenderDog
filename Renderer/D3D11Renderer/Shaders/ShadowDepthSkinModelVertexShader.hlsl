@@ -40,8 +40,8 @@ VSOutput Main(VSInput vsInput)
 	}
 
 	vsOutput.Pos = mul(float4(PosL, 1.0f), WorldMat);
-	vsOutput.Pos = mul(vsOutput.Pos, ViewMat);
-	vsOutput.Pos = mul(vsOutput.Pos, ProjMat);
+	vsOutput.Pos = mul(vsOutput.Pos, ComVar_Matrix_WorldToView);
+	vsOutput.Pos = mul(vsOutput.Pos, ComVar_Matrix_ViewToClip);
 
 	return vsOutput;
 }
