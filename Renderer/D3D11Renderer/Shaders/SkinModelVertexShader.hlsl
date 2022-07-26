@@ -60,8 +60,8 @@ VSOutput Main(VSInput vsInput)
 	vsOutput.Pos = mul(float4(PosL, 1.0f), WorldMat);
 	vsOutput.PosW = vsOutput.Pos;
 
-	vsOutput.Pos = mul(vsOutput.Pos, ViewMat);
-	vsOutput.Pos = mul(vsOutput.Pos, ProjMat);
+	vsOutput.Pos = mul(vsOutput.Pos, ComVar_Matrix_WorldToView);
+	vsOutput.Pos = mul(vsOutput.Pos, ComVar_Matrix_ViewToClip);
 
 	float4 WorldNormal = mul(float4(normal, 0.0f), WorldMat);
 	vsOutput.Normal = normalize(normal.xyz);
@@ -80,7 +80,7 @@ VSOutput Main(VSInput vsInput)
 	vsOutput.ShadowPos = mul(vsOutput.ShadowPos, ShadowViewMat);
 	vsOutput.ShadowPos = mul(vsOutput.ShadowPos, ShadowProjMat);
 
-	vsOutput.EyePosW = EyePosW;
+	vsOutput.EyePosW = ComVar_Vector_WorldEyePosition;
 
 	return vsOutput;
 }

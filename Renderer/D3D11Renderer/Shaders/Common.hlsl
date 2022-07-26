@@ -6,9 +6,9 @@
 
 cbuffer GlobleCB : register(b0)
 {
-	row_major matrix	ViewMat;
-	row_major matrix	ProjMat;
-	float4				EyePosW;
+	row_major matrix	ComVar_Matrix_WorldToView;
+	row_major matrix	ComVar_Matrix_ViewToClip;
+	float4				ComVar_Vector_WorldEyePosition;
 };
 
 cbuffer PerObjCB : register(b1)
