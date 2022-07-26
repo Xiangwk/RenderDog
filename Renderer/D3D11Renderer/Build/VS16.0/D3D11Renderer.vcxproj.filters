@@ -13,6 +13,12 @@
     <Filter Include="Shaders\Common">
       <UniqueIdentifier>{d4844369-991a-4eb6-9ad7-2a8ca034e832}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\VertexShader">
+      <UniqueIdentifier>{368f24a1-1469-4d43-ac73-148e880b0a51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\PixelShader">
+      <UniqueIdentifier>{19ea13df-2764-4f95-a693-27ee00ef2faa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Private\D3D11Renderer.cpp">
@@ -40,44 +46,44 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Shaders\PhongLightingPixelShader.hlsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\Shaders\SingleColorPixelShader.hlsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\Shaders\StaticModelVertexShader.hlsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\Shaders\SimpleModelVertexShader.hlsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\Shaders\ShadowDepthPixelShader.hlsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\Shaders\ShadowDepthStaticModelVertexShader.hlsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\Shaders\ShadowTestCommon.hlsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\Shaders\SkyPixelShader.hlsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\Shaders\SkyVertexShader.hlsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\Shaders\SkinModelVertexShader.hlsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\Shaders\ShadowDepthSkinModelVertexShader.hlsl">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="..\..\Shaders\Common.hlsl">
       <Filter>Shaders\Common</Filter>
     </None>
     <None Include="..\..\Shaders\PhongLightingCommon.hlsl">
       <Filter>Shaders\Common</Filter>
+    </None>
+    <None Include="..\..\Shaders\ShadowDepthSkinModelVertexShader.hlsl">
+      <Filter>Shaders\VertexShader</Filter>
+    </None>
+    <None Include="..\..\Shaders\ShadowDepthStaticModelVertexShader.hlsl">
+      <Filter>Shaders\VertexShader</Filter>
+    </None>
+    <None Include="..\..\Shaders\SimpleModelVertexShader.hlsl">
+      <Filter>Shaders\VertexShader</Filter>
+    </None>
+    <None Include="..\..\Shaders\SkinModelVertexShader.hlsl">
+      <Filter>Shaders\VertexShader</Filter>
+    </None>
+    <None Include="..\..\Shaders\SkyVertexShader.hlsl">
+      <Filter>Shaders\VertexShader</Filter>
+    </None>
+    <None Include="..\..\Shaders\StaticModelVertexShader.hlsl">
+      <Filter>Shaders\VertexShader</Filter>
+    </None>
+    <None Include="..\..\Shaders\ShadowTestCommon.hlsl">
+      <Filter>Shaders\Common</Filter>
+    </None>
+    <None Include="..\..\Shaders\PhongLightingPixelShader.hlsl">
+      <Filter>Shaders\PixelShader</Filter>
+    </None>
+    <None Include="..\..\Shaders\ShadowDepthPixelShader.hlsl">
+      <Filter>Shaders\PixelShader</Filter>
+    </None>
+    <None Include="..\..\Shaders\SingleColorPixelShader.hlsl">
+      <Filter>Shaders\PixelShader</Filter>
+    </None>
+    <None Include="..\..\Shaders\SkyPixelShader.hlsl">
+      <Filter>Shaders\PixelShader</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -6,16 +6,16 @@
 
 #define PCF_SAMPLE_COUNT 9
 
-Texture2D				ShadowDepthTexture			: register(t3);
-SamplerComparisonState	ShadowDepthTextureSampler	: register(s3);
+Texture2D				ComVar_Texture_ShadowDepthTexture			: register(t3);
+SamplerComparisonState	ComVar_Texture_ShadowDepthTextureSampler	: register(s3);
 
 cbuffer ShadowParam : register(b1)
 {
-	float4 ShadowParam0;
+	float4 ComVar_Vector_ShadowParam0;
 };
 
-#define ComVar_ShadowDepth_Offset	ShadowParam0.x
-#define ComVar_ShadowDepth_RTSize	ShadowParam0.y
+#define ComVar_ShadowDepth_Offset	ComVar_Vector_ShadowParam0.x
+#define ComVar_ShadowDepth_RTSize	ComVar_Vector_ShadowParam0.y
 
 float ComFunc_ShadowDepth_GetShadowFactor(float3 ShadowPos)
 {
@@ -39,7 +39,7 @@ float ComFunc_ShadowDepth_GetShadowFactor(float3 ShadowPos)
 		// no need to do this manually, to DXGI_FORMAT_R24_UNORM_X8_TYPELESS srv, SampleCmpLevelZero can clamp sceneDepthInLightSpace to 0~1;
 		// clamp sceneDepthInLightSpace to 0~1 can make the pixel that depth is larger than the light camera's viewport's far plane get a correct shadow factor
 		//sceneDepthInLightSpace = clamp(sceneDepthInLightSpace, 0.0f, 1.0f);
-		ShadowFactor += ShadowDepthTexture.SampleCmpLevelZero(ShadowDepthTextureSampler, ShadowTex + sampleOffset[i], sceneDepthInLightSpace).r;
+		ShadowFactor += ComVar_Texture_ShadowDepthTexture.SampleCmpLevelZero(ComVar_Texture_ShadowDepthTextureSampler, ShadowTex + sampleOffset[i], sceneDepthInLightSpace).r;
 	}
 	
 	ShadowFactor /= PCF_SAMPLE_COUNT;
