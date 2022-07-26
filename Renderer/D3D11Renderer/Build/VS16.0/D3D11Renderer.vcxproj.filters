@@ -10,6 +10,9 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{494c14e3-6fb9-461e-b374-dbd99b3b836f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\Common">
+      <UniqueIdentifier>{d4844369-991a-4eb6-9ad7-2a8ca034e832}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Private\D3D11Renderer.cpp">
@@ -37,9 +40,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Shaders\PhongLightingCommon.hlsl">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="..\..\Shaders\PhongLightingPixelShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
@@ -67,14 +67,17 @@
     <None Include="..\..\Shaders\SkyVertexShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\..\Shaders\Common.hlsl">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="..\..\Shaders\SkinModelVertexShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
     <None Include="..\..\Shaders\ShadowDepthSkinModelVertexShader.hlsl">
       <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\Shaders\Common.hlsl">
+      <Filter>Shaders\Common</Filter>
+    </None>
+    <None Include="..\..\Shaders\PhongLightingCommon.hlsl">
+      <Filter>Shaders\Common</Filter>
     </None>
   </ItemGroup>
 </Project>

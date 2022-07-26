@@ -7,6 +7,13 @@
 TextureCube		ComVar_Texture_SkyCubeTexture			: register(t0);
 SamplerState	ComVar_Texture_SkyCubeTextureSampler	: register(s0);
 
+cbuffer LightingParam : register(b0)
+{
+	float4	ComVar_Vector_DirLightColor;
+	float3	ComVar_Vector_DirLightDirection;
+	float	ComVar_Vector_DirLightLuminance;
+};
+
 float3 ComFunc_Phong_Diffuse(float3 lightColor, float luminance, float3 surfaceColor, float NoL)
 {
 	float3 diffuseColor = lightColor * luminance * surfaceColor * NoL;

@@ -14,13 +14,6 @@ Texture2D		NormalTexture				: register(t2);
 SamplerState	NormalTextureSampler		: register(s2);
 
 
-cbuffer LightingParam : register(b0)
-{
-	float4	LightColor;
-	float3	LightDirection;
-	float	Luminance;
-};
-
 struct VSOutput
 {
 	float4 Pos			: SV_POSITION;
@@ -48,8 +41,8 @@ float4 Main(VSOutput vsOutput) : SV_Target
 
 	float3 WorldNormal = normalize(mul(TangentNormal, TBN));
 	
-	float NoL = saturate(dot(WorldNormal, -LightDirection));
-	float3 Diffuse = ComFunc_Phong_Diffuse(LightColor.rgb, Luminance, BaseColor, NoL);
+	float NoL = saturate(dot(WorldNormal, -ComVar_Vector_DirLightDirection));
+	float3 Diffuse = ComFunc_Phong_Diffuse(ComVar_Vector_DirLightColor.rgb, ComVar_Vector_DirLightLuminance, BaseColor, NoL);
 
 	float3 EyeDir = normalize(vsOutput.EyePosW.xyz - vsOutput.PosW.xyz);
 	float3 ReflectionColor = ComFunc_Phong_Specular(EyeDir, WorldNormal);
