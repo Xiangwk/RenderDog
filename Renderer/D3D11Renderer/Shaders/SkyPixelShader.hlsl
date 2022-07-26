@@ -4,8 +4,7 @@
 //Written by Xiang Weikang
 ////////////////////////////////////////
 
-TextureCube		SkyCubeTexture			: register(t0);
-SamplerState	SkyCubeTextureSampler	: register(s0);
+#include "PhongLightingCommon.hlsl"
 
 struct VSOutput
 {
@@ -15,5 +14,5 @@ struct VSOutput
 
 float4 Main(VSOutput vsOutput) : SV_Target
 {
-	return SkyCubeTexture.Sample(SkyCubeTextureSampler, vsOutput.PosL);
+	return ComVar_Texture_SkyCubeTexture.Sample(ComVar_Texture_SkyCubeTextureSampler, vsOutput.PosL);
 }

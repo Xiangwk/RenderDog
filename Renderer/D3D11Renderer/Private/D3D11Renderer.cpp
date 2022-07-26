@@ -355,7 +355,7 @@ namespace RenderDog
 
 		ID3D11Buffer* pVB = (ID3D11Buffer*)(renderParam.pVB->GetResource());
 		ID3D11Buffer* pIB = (ID3D11Buffer*)(renderParam.pIB->GetResource());
-
+		
 		uint32_t indexNum = renderParam.pIB->GetIndexNum();
 
 		uint32_t stride = renderParam.pVB->GetStride();
