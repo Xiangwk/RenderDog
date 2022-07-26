@@ -1,6 +1,6 @@
 ////////////////////////////////////////
 //RenderDog <¡¤,¡¤>
-//FileName: StaticModelVertexShader.hlsl
+//FileName: Common.hlsl
 //Written by Xiang Weikang
 ////////////////////////////////////////
 
@@ -13,6 +13,6 @@ cbuffer GlobleCB : register(b0)
 
 cbuffer PerObjCB : register(b1)
 {
-	row_major matrix ComVar_Matrix_LocalToWorld;
-	row_major matrix ComVar_Matrix_BoneTransforms[256];
+	row_major matrix	ComVar_Matrix_LocalToWorld;
+	row_major matrix	ComVar_Matrix_BoneTransforms[256];
 };
