@@ -479,7 +479,10 @@ void ModelViewer::Update()
 		m_pStaticModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
 	}
 
-	m_pSkinModel->Tick((float)(m_pGameTimer->GetDeltaTime()));
+	if (m_pSkinModel)
+	{
+		m_pSkinModel->Tick((float)(m_pGameTimer->GetDeltaTime()));
+	}
 
 	RegisterObjectToScene();
 }

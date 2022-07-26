@@ -4,16 +4,7 @@
 //Written by Xiang Weikang
 ////////////////////////////////////////
 
-cbuffer ShadowLightCB : register(b0)
-{
-	row_major matrix ViewMat;
-	row_major matrix ProjMat;
-};
-
-cbuffer PerObjCB : register(b1)
-{
-	row_major matrix WorldMat;
-};
+#include "Common.hlsl"
 
 struct VSInput
 {

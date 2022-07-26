@@ -199,7 +199,7 @@ namespace RenderDog
 		m_pRenderData = new StaticMeshRenderData();
 
 		BufferDesc vbDesc = {};
-		vbDesc.name = m_Name + "_VertexBuffer";
+		vbDesc.name = m_Name + "_Static" + "_VertexBuffer";
 		vbDesc.byteWidth = sizeof(StandardVertex) * (uint32_t)m_Vertices.size();
 		vbDesc.stride = sizeof(StandardVertex);
 		vbDesc.offset = 0;
@@ -208,14 +208,14 @@ namespace RenderDog
 		m_pRenderData->pVB = (IVertexBuffer*)g_pIBufferManager->GetVertexBuffer(vbDesc);
 
 		BufferDesc ibDesc = {};
-		ibDesc.name = m_Name + "_IndexBuffer";
+		ibDesc.name = m_Name + "_Static" + "_IndexBuffer";
 		ibDesc.byteWidth = sizeof(uint32_t) * (uint32_t)m_Indices.size();
 		ibDesc.pInitData = &(m_Indices[0]);
 		ibDesc.isDynamic = false;
 		m_pRenderData->pIB = (IIndexBuffer*)g_pIBufferManager->GetIndexBuffer(ibDesc);
 
 		BufferDesc cbDesc = {};
-		cbDesc.name = m_Name + "_ConstantBuffer";
+		cbDesc.name = m_Name + "_Static" + "_ConstantBuffer";
 		cbDesc.byteWidth = sizeof(Matrix4x4);
 		cbDesc.pInitData = nullptr;
 		cbDesc.isDynamic = false;
