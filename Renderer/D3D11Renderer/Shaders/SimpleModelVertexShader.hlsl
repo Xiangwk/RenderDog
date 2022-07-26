@@ -22,7 +22,7 @@ VSOutput Main(VSInput vsInput)
 {
 	VSOutput vsOutput = (VSOutput)0;
 	float4 PosL = float4(vsInput.Pos, 1.0f);
-	vsOutput.Pos = mul(PosL, WorldMat);
+	vsOutput.Pos = mul(PosL, ComVar_Matrix_LocalToWorld);
 	vsOutput.Pos = mul(vsOutput.Pos, ComVar_Matrix_WorldToView);
 	vsOutput.Pos = mul(vsOutput.Pos, ComVar_Matrix_ViewToClip);
 

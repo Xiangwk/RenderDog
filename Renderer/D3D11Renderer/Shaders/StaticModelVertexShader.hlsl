@@ -38,18 +38,18 @@ VSOutput Main(VSInput vsInput)
 {
 	VSOutput vsOutput = (VSOutput)0;
 	float4 PosL = float4(vsInput.Pos, 1.0f);
-	vsOutput.Pos = mul(PosL, WorldMat);
+	vsOutput.Pos = mul(PosL, ComVar_Matrix_LocalToWorld);
 	vsOutput.PosW = vsOutput.Pos;
 
 	vsOutput.Pos = mul(vsOutput.Pos, ComVar_Matrix_WorldToView);
 	vsOutput.Pos = mul(vsOutput.Pos, ComVar_Matrix_ViewToClip);
 
 	float4 normal = float4(vsInput.Normal, 0.0f);
-	normal = mul(normal, WorldMat);
+	normal = mul(normal, ComVar_Matrix_LocalToWorld);
 	vsOutput.Normal = normalize(normal.xyz);
 
 	float4 tangent = float4(vsInput.Tangent.xyz, 0.0f);
-	tangent = mul(tangent, WorldMat);
+	tangent = mul(tangent, ComVar_Matrix_LocalToWorld);
 	vsOutput.Tangent = normalize(tangent.xyz);
 
 	float3 biTangent = normalize(cross(normal.xyz, tangent.xyz) * vsInput.Tangent.w);

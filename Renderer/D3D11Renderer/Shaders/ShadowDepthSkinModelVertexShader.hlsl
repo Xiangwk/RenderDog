@@ -36,10 +36,10 @@ VSOutput Main(VSInput vsInput)
 	//Skinned
 	for (int i = 0; i < 4; ++i)
 	{
-		PosL += (Weights[i] * mul(float4(vsInput.Pos, 1.0f), BoneTransforms[vsInput.BoneIndices[i]])).xyz;
+		PosL += (Weights[i] * mul(float4(vsInput.Pos, 1.0f), ComVar_Matrix_BoneTransforms[vsInput.BoneIndices[i]])).xyz;
 	}
 
-	vsOutput.Pos = mul(float4(PosL, 1.0f), WorldMat);
+	vsOutput.Pos = mul(float4(PosL, 1.0f), ComVar_Matrix_LocalToWorld);
 	vsOutput.Pos = mul(vsOutput.Pos, ComVar_Matrix_WorldToView);
 	vsOutput.Pos = mul(vsOutput.Pos, ComVar_Matrix_ViewToClip);
 

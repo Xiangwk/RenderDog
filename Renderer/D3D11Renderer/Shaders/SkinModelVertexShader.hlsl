@@ -52,21 +52,21 @@ VSOutput Main(VSInput vsInput)
 	//Skinned
 	for (int i = 0; i < 4; ++i)
 	{
-		PosL += (Weights[i] * mul(float4(vsInput.Pos, 1.0f), BoneTransforms[vsInput.BoneIndices[i]])).xyz;
-		normal += (Weights[i] * mul(float4(vsInput.Normal, 0.0f), BoneTransforms[vsInput.BoneIndices[i]])).xyz;
-		tangent += (Weights[i] * mul(float4(vsInput.Tangent.xyz, 0.0f), BoneTransforms[vsInput.BoneIndices[i]])).xyz;
+		PosL += (Weights[i] * mul(float4(vsInput.Pos, 1.0f), ComVar_Matrix_BoneTransforms[vsInput.BoneIndices[i]])).xyz;
+		normal += (Weights[i] * mul(float4(vsInput.Normal, 0.0f), ComVar_Matrix_BoneTransforms[vsInput.BoneIndices[i]])).xyz;
+		tangent += (Weights[i] * mul(float4(vsInput.Tangent.xyz, 0.0f), ComVar_Matrix_BoneTransforms[vsInput.BoneIndices[i]])).xyz;
 	}
 
-	vsOutput.Pos = mul(float4(PosL, 1.0f), WorldMat);
+	vsOutput.Pos = mul(float4(PosL, 1.0f), ComVar_Matrix_LocalToWorld);
 	vsOutput.PosW = vsOutput.Pos;
 
 	vsOutput.Pos = mul(vsOutput.Pos, ComVar_Matrix_WorldToView);
 	vsOutput.Pos = mul(vsOutput.Pos, ComVar_Matrix_ViewToClip);
 
-	float4 WorldNormal = mul(float4(normal, 0.0f), WorldMat);
+	float4 WorldNormal = mul(float4(normal, 0.0f), ComVar_Matrix_LocalToWorld);
 	vsOutput.Normal = normalize(normal.xyz);
 
-	float4 WorldTangent = mul(float4(tangent, 1.0f), WorldMat);
+	float4 WorldTangent = mul(float4(tangent, 1.0f), ComVar_Matrix_LocalToWorld);
 	vsOutput.Tangent = normalize(tangent.xyz);
 
 	float3 WorldBiTangent = cross(WorldNormal.xyz, WorldTangent.xyz) * vsInput.Tangent.w;
