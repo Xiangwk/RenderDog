@@ -219,6 +219,7 @@ namespace RenderDog
 		m_pRenderData = new SkinMeshRenderData();
 
 		BufferDesc vbDesc = {};
+		vbDesc.name = m_Name + "_VertexBuffer";
 		vbDesc.byteWidth = sizeof(SkinVertex) * (uint32_t)m_Vertices.size();
 		vbDesc.stride = sizeof(SkinVertex);
 		vbDesc.offset = 0;
@@ -227,12 +228,14 @@ namespace RenderDog
 		m_pRenderData->pVB = (IVertexBuffer*)g_pIBufferManager->GetVertexBuffer(vbDesc);
 
 		BufferDesc ibDesc = {};
+		ibDesc.name = m_Name + "_IndexBuffer";
 		ibDesc.byteWidth = sizeof(uint32_t) * (uint32_t)m_Indices.size();
 		ibDesc.pInitData = &(m_Indices[0]);
 		ibDesc.isDynamic = false;
 		m_pRenderData->pIB = (IIndexBuffer*)g_pIBufferManager->GetIndexBuffer(ibDesc);
 
 		BufferDesc cbDesc = {};
+		cbDesc.name = m_Name + "_ConstantBuffer";
 		cbDesc.byteWidth = sizeof(SkinModelPerObjectTransform);
 		cbDesc.pInitData = nullptr;
 		cbDesc.isDynamic = true;

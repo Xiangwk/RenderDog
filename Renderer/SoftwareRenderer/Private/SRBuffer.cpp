@@ -239,6 +239,7 @@ namespace RenderDog
 		else
 		{
 			pBuffer = new SRVertexBuffer(desc);
+			m_BufferMap.insert({ desc.name, pBuffer });
 		}
 
 		return pBuffer;
@@ -257,6 +258,7 @@ namespace RenderDog
 		else
 		{
 			pBuffer = new SRIndexBuffer(desc);
+			m_BufferMap.insert({ desc.name, pBuffer });
 		}
 
 		return pBuffer;
@@ -275,6 +277,7 @@ namespace RenderDog
 		else
 		{
 			pBuffer = new SRConstantBuffer(desc);
+			m_BufferMap.insert({ desc.name, pBuffer });
 		}
 
 		return pBuffer;

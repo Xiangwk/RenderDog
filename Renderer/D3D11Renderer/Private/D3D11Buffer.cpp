@@ -256,6 +256,7 @@ namespace RenderDog
 		else
 		{
 			pBuffer = new D3D11VertexBuffer(desc);
+			m_BufferMap.insert({ desc.name, pBuffer });
 		}
 
 		return pBuffer;
@@ -274,6 +275,7 @@ namespace RenderDog
 		else
 		{
 			pBuffer = new D3D11IndexBuffer(desc);
+			m_BufferMap.insert({ desc.name, pBuffer });
 		}
 
 		return pBuffer;
@@ -292,6 +294,7 @@ namespace RenderDog
 		else
 		{
 			pBuffer = new D3D11ConstantBuffer(desc);
+			m_BufferMap.insert({ desc.name, pBuffer });
 		}
 
 		return pBuffer;

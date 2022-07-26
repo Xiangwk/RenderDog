@@ -60,7 +60,10 @@ namespace RenderDog
 		virtual void				Release() = 0;
 
 		virtual const std::string&	GetName() const = 0;
+
 		virtual MaterialParam		GetParamByName(const std::string& name) = 0;
+		virtual MaterialParam		GetParamByIndex(uint32_t index) = 0;
+		virtual uint32_t			GetParamNum() const = 0;
 	};
 
 
@@ -83,7 +86,7 @@ namespace RenderDog
 
 	public:
 		virtual IMaterial*			GetMaterial(const std::string& filePath) = 0;
-		virtual IMaterialInstance*	GetMaterialInstance(const IMaterial* pMaterial) = 0;
+		virtual IMaterialInstance*	GetMaterialInstance(IMaterial* pMaterial) = 0;
 	};
 
 	extern IMaterialManager* g_pMaterialManager;
