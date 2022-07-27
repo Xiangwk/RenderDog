@@ -14,6 +14,12 @@ cbuffer ShadowParam : register(b1)
 	float4 ComVar_Vector_ShadowParam0;
 };
 
+cbuffer ShadowCB : register(b2)
+{
+	row_major matrix ComVar_Matrix_ShadowView;
+	row_major matrix ComVar_Matrix_ShadowProjection;
+}
+
 #define ComVar_ShadowDepth_Offset	ComVar_Vector_ShadowParam0.x
 #define ComVar_ShadowDepth_RTSize	ComVar_Vector_ShadowParam0.y
 

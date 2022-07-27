@@ -8,7 +8,7 @@
 
 struct VSInput
 {
-	float3 Pos			: POSITION;
+	float3 PosL			: POSITION;
 	float4 Color		: COLOR;
 	float3 Normal		: NORMAL;
 	float4 Tangent		: TANGENT;
@@ -22,26 +22,26 @@ struct VSOutput
 	float4 Pos			: SV_POSITION;
 };
 
-VSOutput Main(VSInput vsInput)
+VSOutput Main(VSInput VsInput)
 {
-	VSOutput vsOutput = (VSOutput)0;
+	VSOutput VsOutput = (VSOutput)0;
 
 	float Weights[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	Weights[0] = vsInput.BoneWeights.x;
-	Weights[1] = vsInput.BoneWeights.y;
-	Weights[2] = vsInput.BoneWeights.z;
-	Weights[3] = 1.0f - vsInput.BoneWeights.x - vsInput.BoneWeights.y - vsInput.BoneWeights.z;
+	Weights[0] = VsInput.BoneWeights.x;
+	Weights[1] = VsInput.BoneWeights.y;
+	Weights[2] = VsInput.BoneWeights.z;
+	Weights[3] = 1.0f - VsInput.BoneWeights.x - VsInput.BoneWeights.y - VsInput.BoneWeights.z;
 
 	float3 PosL = float3(0.0f, 0.0f, 0.0f);
 	//Skinned
 	for (int i = 0; i < 4; ++i)
 	{
-		PosL += (Weights[i] * mul(float4(vsInput.Pos, 1.0f), ComVar_Matrix_BoneTransforms[vsInput.BoneIndices[i]])).xyz;
+		PosL += (Weights[i] * mul(float4(VsInput.PosL, 1.0f), ComVar_Matrix_BoneTransforms[VsInput.BoneIndices[i]])).xyz;
 	}
 
-	vsOutput.Pos = mul(float4(PosL, 1.0f), ComVar_Matrix_LocalToWorld);
-	vsOutput.Pos = mul(vsOutput.Pos, ComVar_Matrix_WorldToView);
-	vsOutput.Pos = mul(vsOutput.Pos, ComVar_Matrix_ViewToClip);
+	VsOutput.Pos = mul(float4(PosL, 1.0f), ComVar_Matrix_LocalToWorld);
+	VsOutput.Pos = mul(VsOutput.Pos, ComVar_Matrix_WorldToView);
+	VsOutput.Pos = mul(VsOutput.Pos, ComVar_Matrix_ViewToClip);
 
-	return vsOutput;
+	return VsOutput;
 }

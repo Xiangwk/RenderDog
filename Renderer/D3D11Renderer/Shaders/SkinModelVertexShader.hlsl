@@ -5,7 +5,7 @@
 ////////////////////////////////////////
 
 #include "Common.hlsl"
-#include "ShadowDepthCommon.hlsl"
+#include "ShadowTestCommon.hlsl"
 
 
 struct VSInput

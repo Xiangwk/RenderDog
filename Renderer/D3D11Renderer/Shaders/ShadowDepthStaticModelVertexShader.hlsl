@@ -8,7 +8,7 @@
 
 struct VSInput
 {
-	float3 Pos			: POSITION;
+	float3 PosL			: POSITION;
 	float4 Color		: COLOR;
 	float3 Normal		: NORMAL;
 	float4 Tangent		: TANGENT;
@@ -20,13 +20,13 @@ struct VSOutput
 	float4 Pos			: SV_POSITION;
 };
 
-VSOutput Main(VSInput vsInput)
+VSOutput Main(VSInput VsInput)
 {
-	VSOutput vsOutput = (VSOutput)0;
-	float4 PosL = float4(vsInput.Pos, 1.0f);
-	vsOutput.Pos = mul(PosL, ComVar_Matrix_LocalToWorld);
-	vsOutput.Pos = mul(vsOutput.Pos, ComVar_Matrix_WorldToView);
-	vsOutput.Pos = mul(vsOutput.Pos, ComVar_Matrix_ViewToClip);
+	VSOutput VsOutput = (VSOutput)0;
+	float4 PosL = float4(VsInput.PosL, 1.0f);
+	VsOutput.Pos = mul(PosL, ComVar_Matrix_LocalToWorld);
+	VsOutput.Pos = mul(VsOutput.Pos, ComVar_Matrix_WorldToView);
+	VsOutput.Pos = mul(VsOutput.Pos, ComVar_Matrix_ViewToClip);
 
-	return vsOutput;
+	return VsOutput;
 }
