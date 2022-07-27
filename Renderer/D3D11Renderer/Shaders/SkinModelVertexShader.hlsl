@@ -21,7 +21,7 @@ struct VSInput
 
 struct VSOutput
 {
-	float4 Pos			: SV_POSITION;
+	float4 PosH			: SV_POSITION;
 	float4 PosW			: POSITION;
 	float4 Color		: COLOR;
 	float3 Normal		: NORMAL;
@@ -53,11 +53,11 @@ VSOutput Main(VSInput vsInput)
 		tangent += (Weights[i] * mul(float4(vsInput.Tangent.xyz, 0.0f), ComVar_Matrix_BoneTransforms[vsInput.BoneIndices[i]])).xyz;
 	}
 
-	vsOutput.Pos = mul(float4(PosL, 1.0f), ComVar_Matrix_LocalToWorld);
-	vsOutput.PosW = vsOutput.Pos;
+	vsOutput.PosH = mul(float4(PosL, 1.0f), ComVar_Matrix_LocalToWorld);
+	vsOutput.PosW = vsOutput.PosH;
 
-	vsOutput.Pos = mul(vsOutput.Pos, ComVar_Matrix_WorldToView);
-	vsOutput.Pos = mul(vsOutput.Pos, ComVar_Matrix_ViewToClip);
+	vsOutput.PosH = mul(vsOutput.PosH, ComVar_Matrix_WorldToView);
+	vsOutput.PosH = mul(vsOutput.PosH, ComVar_Matrix_ViewToClip);
 
 	float4 WorldNormal = mul(float4(normal, 0.0f), ComVar_Matrix_LocalToWorld);
 	vsOutput.Normal = normalize(normal.xyz);

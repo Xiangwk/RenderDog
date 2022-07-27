@@ -18,7 +18,7 @@ struct VSInput
 
 struct VSOutput
 {
-	float4 Pos			: SV_POSITION;
+	float4 PosH			: SV_POSITION;
 	float4 PosW			: POSITION;
 	float4 Color		: COLOR;
 	float3 Normal		: NORMAL;
@@ -33,11 +33,11 @@ VSOutput Main(VSInput VsInput)
 {
 	VSOutput VsOutput = (VSOutput)0;
 	float4 PosL = float4(VsInput.PosL, 1.0f);
-	VsOutput.Pos = mul(PosL, ComVar_Matrix_LocalToWorld);
-	VsOutput.PosW = VsOutput.Pos;
+	VsOutput.PosH = mul(PosL, ComVar_Matrix_LocalToWorld);
+	VsOutput.PosW = VsOutput.PosH;
 
-	VsOutput.Pos = mul(VsOutput.Pos, ComVar_Matrix_WorldToView);
-	VsOutput.Pos = mul(VsOutput.Pos, ComVar_Matrix_ViewToClip);
+	VsOutput.PosH = mul(VsOutput.PosH, ComVar_Matrix_WorldToView);
+	VsOutput.PosH = mul(VsOutput.PosH, ComVar_Matrix_ViewToClip);
 
 	float4 normal = float4(VsInput.Normal, 0.0f);
 	normal = mul(normal, ComVar_Matrix_LocalToWorld);

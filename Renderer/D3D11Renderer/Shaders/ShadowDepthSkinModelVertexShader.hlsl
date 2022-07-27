@@ -19,7 +19,7 @@ struct VSInput
 
 struct VSOutput
 {
-	float4 Pos			: SV_POSITION;
+	float4 PosH			: SV_POSITION;
 };
 
 VSOutput Main(VSInput VsInput)
@@ -39,9 +39,9 @@ VSOutput Main(VSInput VsInput)
 		PosL += (Weights[i] * mul(float4(VsInput.PosL, 1.0f), ComVar_Matrix_BoneTransforms[VsInput.BoneIndices[i]])).xyz;
 	}
 
-	VsOutput.Pos = mul(float4(PosL, 1.0f), ComVar_Matrix_LocalToWorld);
-	VsOutput.Pos = mul(VsOutput.Pos, ComVar_Matrix_WorldToView);
-	VsOutput.Pos = mul(VsOutput.Pos, ComVar_Matrix_ViewToClip);
+	VsOutput.PosH = mul(float4(PosL, 1.0f), ComVar_Matrix_LocalToWorld);
+	VsOutput.PosH = mul(VsOutput.PosH, ComVar_Matrix_WorldToView);
+	VsOutput.PosH = mul(VsOutput.PosH, ComVar_Matrix_ViewToClip);
 
 	return VsOutput;
 }

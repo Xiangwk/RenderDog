@@ -6,10 +6,10 @@
 
 struct VSOutput
 {
-	float4 Pos : SV_POSITION;
+	float4 PosH : SV_POSITION;
 };
 
-void Main(VSOutput vsOutput)
+void Main(VSOutput VsOutput)
 {
 	return;
 }

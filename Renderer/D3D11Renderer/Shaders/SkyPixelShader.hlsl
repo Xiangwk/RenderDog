@@ -8,11 +8,11 @@
 
 struct VSOutput
 {
-	float4 Pos   : SV_POSITION;
+	float4 PosH  : SV_POSITION;
 	float3 PosL	 : POSITION;
 };
 
-float4 Main(VSOutput vsOutput) : SV_Target
+float4 Main(VSOutput VsOutput) : SV_Target
 {
-	return ComVar_Texture_SkyCubeTexture.Sample(ComVar_Texture_SkyCubeTextureSampler, vsOutput.PosL);
+	return ComVar_Texture_SkyCubeTexture.Sample(ComVar_Texture_SkyCubeTextureSampler, VsOutput.PosL);
 }

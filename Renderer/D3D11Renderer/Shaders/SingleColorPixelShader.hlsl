@@ -6,11 +6,11 @@
 
 struct VSOutput
 {
-	float4 Pos   : SV_POSITION;
+	float4 PosH   : SV_POSITION;
 	float4 Color : COLOR;
 };
 
-float4 Main(VSOutput vsOutput) : SV_Target
+float4 Main(VSOutput VsOutput) : SV_Target
 {
-	return vsOutput.Color;
+	return VsOutput.Color;
 }
