@@ -5,16 +5,12 @@
 ////////////////////////////////////////
 
 #include "Common.hlsl"
+#include "ShadowDepthCommon.hlsl"
 
-cbuffer ShadowCB : register(b2)
-{
-	row_major matrix ShadowViewMat;
-	row_major matrix ShadowProjMat;
-}
 
 struct VSInput
 {
-	float3 Pos			: POSITION;
+	float3 PosL			: POSITION;
 	float4 Color		: COLOR;
 	float3 Normal		: NORMAL;
 	float4 Tangent		: TANGENT;
@@ -52,7 +48,7 @@ VSOutput Main(VSInput vsInput)
 	//Skinned
 	for (int i = 0; i < 4; ++i)
 	{
-		PosL += (Weights[i] * mul(float4(vsInput.Pos, 1.0f), ComVar_Matrix_BoneTransforms[vsInput.BoneIndices[i]])).xyz;
+		PosL += (Weights[i] * mul(float4(vsInput.PosL, 1.0f), ComVar_Matrix_BoneTransforms[vsInput.BoneIndices[i]])).xyz;
 		normal += (Weights[i] * mul(float4(vsInput.Normal, 0.0f), ComVar_Matrix_BoneTransforms[vsInput.BoneIndices[i]])).xyz;
 		tangent += (Weights[i] * mul(float4(vsInput.Tangent.xyz, 0.0f), ComVar_Matrix_BoneTransforms[vsInput.BoneIndices[i]])).xyz;
 	}
@@ -77,8 +73,8 @@ VSOutput Main(VSInput vsInput)
 	vsOutput.Texcoord = vsInput.Texcoord;
 
 	vsOutput.ShadowPos = vsOutput.PosW;
-	vsOutput.ShadowPos = mul(vsOutput.ShadowPos, ShadowViewMat);
-	vsOutput.ShadowPos = mul(vsOutput.ShadowPos, ShadowProjMat);
+	vsOutput.ShadowPos = mul(vsOutput.ShadowPos, ComVar_Matrix_ShadowView);
+	vsOutput.ShadowPos = mul(vsOutput.ShadowPos, ComVar_Matrix_ShadowProjection);
 
 	vsOutput.EyePosW = ComVar_Vector_WorldEyePosition;
 

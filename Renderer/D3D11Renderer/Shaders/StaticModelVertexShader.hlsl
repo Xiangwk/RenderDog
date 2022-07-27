@@ -5,16 +5,11 @@
 ////////////////////////////////////////
 
 #include "Common.hlsl"
-
-cbuffer ShadowCB : register(b2)
-{
-	row_major matrix ShadowViewMat;
-	row_major matrix ShadowProjMat;
-}
+#include "ShadowDepthCommon.hlsl"
 
 struct VSInput
 {
-	float3 Pos			: POSITION;
+	float3 PosL			: POSITION;
 	float4 Color		: COLOR;
 	float3 Normal		: NORMAL;
 	float4 Tangent		: TANGENT;
@@ -34,36 +29,36 @@ struct VSOutput
 	float4 EyePosW		: TEXCOORD2;
 };
 
-VSOutput Main(VSInput vsInput)
+VSOutput Main(VSInput VsInput)
 {
-	VSOutput vsOutput = (VSOutput)0;
-	float4 PosL = float4(vsInput.Pos, 1.0f);
-	vsOutput.Pos = mul(PosL, ComVar_Matrix_LocalToWorld);
-	vsOutput.PosW = vsOutput.Pos;
+	VSOutput VsOutput = (VSOutput)0;
+	float4 PosL = float4(VsInput.PosL, 1.0f);
+	VsOutput.Pos = mul(PosL, ComVar_Matrix_LocalToWorld);
+	VsOutput.PosW = VsOutput.Pos;
 
-	vsOutput.Pos = mul(vsOutput.Pos, ComVar_Matrix_WorldToView);
-	vsOutput.Pos = mul(vsOutput.Pos, ComVar_Matrix_ViewToClip);
+	VsOutput.Pos = mul(VsOutput.Pos, ComVar_Matrix_WorldToView);
+	VsOutput.Pos = mul(VsOutput.Pos, ComVar_Matrix_ViewToClip);
 
-	float4 normal = float4(vsInput.Normal, 0.0f);
+	float4 normal = float4(VsInput.Normal, 0.0f);
 	normal = mul(normal, ComVar_Matrix_LocalToWorld);
-	vsOutput.Normal = normalize(normal.xyz);
+	VsOutput.Normal = normalize(normal.xyz);
 
-	float4 tangent = float4(vsInput.Tangent.xyz, 0.0f);
+	float4 tangent = float4(VsInput.Tangent.xyz, 0.0f);
 	tangent = mul(tangent, ComVar_Matrix_LocalToWorld);
-	vsOutput.Tangent = normalize(tangent.xyz);
+	VsOutput.Tangent = normalize(tangent.xyz);
 
-	float3 biTangent = normalize(cross(normal.xyz, tangent.xyz) * vsInput.Tangent.w);
-	vsOutput.BiTangent = biTangent;
+	float3 biTangent = normalize(cross(normal.xyz, tangent.xyz) * VsInput.Tangent.w);
+	VsOutput.BiTangent = biTangent;
 
-	vsOutput.Color = vsInput.Color;
+	VsOutput.Color = VsInput.Color;
 
-	vsOutput.Texcoord = vsInput.Texcoord;
+	VsOutput.Texcoord = VsInput.Texcoord;
 
-	vsOutput.ShadowPos = vsOutput.PosW;
-	vsOutput.ShadowPos = mul(vsOutput.ShadowPos, ShadowViewMat);
-	vsOutput.ShadowPos = mul(vsOutput.ShadowPos, ShadowProjMat);
+	VsOutput.ShadowPos = VsOutput.PosW;
+	VsOutput.ShadowPos = mul(VsOutput.ShadowPos, ComVar_Matrix_ShadowView);
+	VsOutput.ShadowPos = mul(VsOutput.ShadowPos, ComVar_Matrix_ShadowProjection);
 
-	vsOutput.EyePosW = ComVar_Vector_WorldEyePosition;
+	VsOutput.EyePosW = ComVar_Vector_WorldEyePosition;
 
-	return vsOutput;
+	return VsOutput;
 }
