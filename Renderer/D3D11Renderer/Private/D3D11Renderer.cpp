@@ -271,7 +271,7 @@ namespace RenderDog
 
 		ID3D11Buffer* pGlobalCB = (ID3D11Buffer*)(m_pGlobalCB->GetResource());
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(0, 1, &pGlobalCB);
-
+		
 		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetResource());
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(1, 1, &pPerObjCB);
 
