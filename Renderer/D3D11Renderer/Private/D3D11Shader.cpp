@@ -27,12 +27,13 @@ namespace RenderDog
 
 		virtual const std::string&	GetFileName() const { return m_fileName; }
 
-		void						CompileFromFile(const ShaderCompileDesc& desc);
+		bool						CompileFromFile(const ShaderCompileDesc& desc);
 
 	protected:
 		std::string					m_fileName;
 
 		ID3DBlob*					m_pCompiledCode;
+		ID3D11ShaderReflection*		m_pShaderReflector;
 	};
 
 	//=========================================================================
@@ -104,19 +105,20 @@ namespace RenderDog
 	//=========================================================================
 	D3D11Shader::D3D11Shader() :
 		m_pCompiledCode(nullptr),
+		m_pShaderReflector(nullptr),
 		m_fileName("")
 	{}
 
 	D3D11Shader::~D3D11Shader()
 	{}
 
-	void D3D11Shader::CompileFromFile(const ShaderCompileDesc& desc)
+	bool D3D11Shader::CompileFromFile(const ShaderCompileDesc& desc)
 	{
 		std::ifstream input(desc.fileName);
 		if (!input)
 		{
 			MessageBox(NULL, "Cannot open shader file!", NULL, MB_OK);
-			return;
+			return false;
 		}
 
 		std::string sourceCode;
@@ -148,7 +150,7 @@ namespace RenderDog
 				OutputDebugString(output);
 				pErroMsg->Release();
 
-				return;
+				return false;
 			}
 		}
 		else
@@ -159,16 +161,20 @@ namespace RenderDog
 				const char* output = static_cast<const char*>(pErroMsg->GetBufferPointer());
 				OutputDebugString(output);
 				pErroMsg->Release();
+			}
+			
+			return false;
+		}
 
-				return;
-			}
-			else
-			{
-				return;
-			}
+		D3DReflect(m_pCompiledCode->GetBufferPointer(), m_pCompiledCode->GetBufferSize(), __uuidof(ID3D11ShaderReflection), (void**)&m_pShaderReflector);
+		if (!m_pShaderReflector)
+		{
+			return false;
 		}
 
 		m_fileName = desc.fileName;
+
+		return true;
 	}
 
 	D3D11VertexShader::D3D11VertexShader() :
@@ -199,6 +205,12 @@ namespace RenderDog
 		{
 			m_pCompiledCode->Release();
 			m_pCompiledCode = nullptr;
+		}
+
+		if (m_pShaderReflector)
+		{
+			m_pShaderReflector->Release();
+			m_pShaderReflector = nullptr;
 		}
 
 		if (m_pVS)
@@ -248,6 +260,12 @@ namespace RenderDog
 		{
 			m_pCompiledCode->Release();
 			m_pCompiledCode = nullptr;
+		}
+
+		if (m_pShaderReflector)
+		{
+			m_pShaderReflector->Release();
+			m_pShaderReflector = nullptr;
 		}
 
 		if (m_pPS)
