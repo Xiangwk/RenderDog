@@ -12,6 +12,9 @@
 
 namespace RenderDog
 {
+	class ITexture;
+	class IConstantBuffer;
+
 	struct ShaderMacro
 	{
 		std::string	name;
@@ -48,9 +51,12 @@ namespace RenderDog
 		virtual bool				Init() = 0;
 		virtual void				Release() = 0;
 
+		virtual const std::string& GetFileName() const = 0;
+
 		virtual void				SetToContext() = 0;
 
-		virtual const std::string&	GetFileName() const = 0;
+		virtual void				SetConstantBufferByName(const std::string& name, IConstantBuffer* pConstantBuffer) = 0;
+		virtual void				SetShaderResourceViewByName(const std::string& name, ITexture* pTexture) = 0;
 	};
 
 	class IShaderManager

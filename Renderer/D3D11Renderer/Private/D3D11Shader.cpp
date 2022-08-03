@@ -8,6 +8,8 @@
 #include "RefCntObject.h"
 #include "D3D11InputLayout.h"
 #include "D3D11Renderer.h"
+#include "Buffer.h"
+#include "Texture.h"
 
 #include <fstream>
 #include <d3d11.h>
@@ -25,15 +27,20 @@ namespace RenderDog
 		D3D11Shader();
 		virtual ~D3D11Shader();
 
-		virtual const std::string&	GetFileName() const { return m_fileName; }
+		virtual const std::string&					GetFileName() const override { return m_fileName; }
 
-		bool						CompileFromFile(const ShaderCompileDesc& desc);
+		virtual void								SetConstantBufferByName(const std::string& name, IConstantBuffer* pConstantBuffer) override;
+		virtual void								SetShaderResourceViewByName(const std::string& name, ITexture* pTexture) override;
+
+		bool										CompileFromFile(const ShaderCompileDesc& desc);
 
 	protected:
-		std::string					m_fileName;
+		std::string									m_fileName;
 
-		ID3DBlob*					m_pCompiledCode;
-		ID3D11ShaderReflection*		m_pShaderReflector;
+		ID3DBlob*									m_pCompiledCode;
+		ID3D11ShaderReflection*						m_pShaderReflector;
+
+		std::vector<D3D11_SHADER_INPUT_BIND_DESC>	m_ShaderInputBindDescs;
 	};
 
 	//=========================================================================
@@ -50,6 +57,9 @@ namespace RenderDog
 		virtual void				Release() override;
 
 		virtual void				SetToContext() override;
+
+		virtual void				SetConstantBufferByName(const std::string& name, IConstantBuffer* pConstantBuffer) override;
+		virtual void				SetShaderResourceViewByName(const std::string& name, ITexture* pTexture) override;
 
 	private:
 		ID3D11VertexShader*			m_pVS;
@@ -70,6 +80,9 @@ namespace RenderDog
 		virtual void				Release() override;
 
 		virtual void				SetToContext() override;
+
+		virtual void				SetConstantBufferByName(const std::string& name, IConstantBuffer* pConstantBuffer) override;
+		virtual void				SetShaderResourceViewByName(const std::string& name, ITexture* pTexture) override;
 
 	private:
 		ID3D11PixelShader*			m_pPS;
@@ -111,6 +124,16 @@ namespace RenderDog
 
 	D3D11Shader::~D3D11Shader()
 	{}
+
+	void D3D11Shader::SetConstantBufferByName(const std::string& name, IConstantBuffer* pConstantBuffer)
+	{
+		return;
+	}
+
+	void D3D11Shader::SetShaderResourceViewByName(const std::string& name, ITexture* pTexture)
+	{
+		return;
+	}
 
 	bool D3D11Shader::CompileFromFile(const ShaderCompileDesc& desc)
 	{
@@ -170,6 +193,17 @@ namespace RenderDog
 		if (!m_pShaderReflector)
 		{
 			return false;
+		}
+
+		for (size_t i = 0; ; ++i)
+		{
+			D3D11_SHADER_INPUT_BIND_DESC desc;
+			if (FAILED(m_pShaderReflector->GetResourceBindingDesc(i, &desc)))
+			{
+				break;
+			}
+
+			m_ShaderInputBindDescs.push_back(desc);
 		}
 
 		m_fileName = desc.fileName;
@@ -248,6 +282,20 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->VSSetShader(m_pVS, nullptr, 0);
 	}
 
+	void D3D11VertexShader::SetConstantBufferByName(const std::string& name, IConstantBuffer* pConstantBuffer)
+	{
+		ID3D11ShaderReflectionConstantBuffer* pReflectedConstantBuffer = m_pShaderReflector->GetConstantBufferByName(name.c_str());
+
+		
+
+		return;
+	}
+
+	void D3D11VertexShader::SetShaderResourceViewByName(const std::string& name, ITexture* pTexture)
+	{
+		return;
+	}
+
 	
 
 	D3D11PixelShader::D3D11PixelShader() :
@@ -293,6 +341,16 @@ namespace RenderDog
 	void D3D11PixelShader::SetToContext()
 	{
 		g_pD3D11ImmediateContext->PSSetShader(m_pPS, nullptr, 0);
+	}
+
+	void D3D11PixelShader::SetConstantBufferByName(const std::string& name, IConstantBuffer* pConstantBuffer)
+	{
+		return;
+	}
+
+	void D3D11PixelShader::SetShaderResourceViewByName(const std::string& name, ITexture* pTexture)
+	{
+		return;
 	}
 
 

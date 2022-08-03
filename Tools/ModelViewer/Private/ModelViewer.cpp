@@ -13,7 +13,8 @@
 #include <windowsx.h>
 #include <sstream>
 
-#define MODEL_VIEWER_LOAD_STATIC_MODEL 0
+#define MODEL_VIEWER_LOAD_STATIC_MODEL	0
+#define MODEL_VIEWER_LOAD_SKIN_MODEL	1
 
 ModelViewer g_ModelViewer;
 ModelViewer* g_pModelViewer = &g_ModelViewer;
@@ -103,26 +104,23 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 		MessageBox(nullptr, "Load Static Model Failed!", "ERROR", MB_OK);
 		return false;
 	}
-	m_pStaticModel->SetPosGesture(RenderDog::Vector3(150.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
-#endif
+	m_pStaticModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
+#endif //MODEL_VIEWER_LOAD_STATIC_MODEL
 
+#if MODEL_VIEWER_LOAD_SKIN_MODEL
 	if (!LoadFbxModel("Models/Crunch/Crunch_Crash_Site.FBX", LOAD_MODEL_TYPE::CUSTOM_SKIN))
 	{
 		MessageBox(nullptr, "Load Skin Model Failed!", "ERROR", MB_OK);
 		return false;
 	}
-#if MODEL_VIEWER_LOAD_STATIC_MODEL
-	RenderDog::Vector3 skinModelPos(-150.0f, 0.0f, 0.0f);
-#else
-	RenderDog::Vector3 skinModelPos(0.0f, 0.0f, 0.0f);
-#endif
-	m_pSkinModel->SetPosGesture(skinModelPos, RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
+	m_pSkinModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
 
 	if (!LoadFbxAnimation("Models/Crunch/Animations/Idle_Combat.FBX", m_pSkinModel))
 	{
 		MessageBox(nullptr, "Load Skin Model Animation Failed!", "ERROR", MB_OK);
 		return false;
 	}
+#endif //MODEL_VIEWER_LOAD_SKIN_MODEL
 
 	RenderDog::LightDesc lightDesc = {};
 	lightDesc.type = RenderDog::LIGHT_TYPE::DIRECTIONAL;
