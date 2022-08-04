@@ -4,8 +4,8 @@
 //Written by Xiang Weikang
 ////////////////////////////////////////
 
-TextureCube		ComVar_Texture_SkyCubeTexture			: register(t0);
-SamplerState	ComVar_Texture_SkyCubeTextureSampler	: register(s0);
+TextureCube		ComVar_Texture_SkyCubeTexture;
+SamplerState	ComVar_Texture_SkyCubeTextureSampler;
 
 cbuffer LightingParam : register(b0)
 {

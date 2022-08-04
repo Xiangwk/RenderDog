@@ -7,11 +7,11 @@
 #include "PhongLightingCommon.hlsl"
 #include "ShadowTestCommon.hlsl"
 
-Texture2D		DiffuseTexture				: register(t1);
-SamplerState	DiffuseTextureSampler		: register(s1);
+Texture2D		DiffuseTexture;
+SamplerState	DiffuseTextureSampler;
 
-Texture2D		NormalTexture				: register(t2);
-SamplerState	NormalTextureSampler		: register(s2);
+Texture2D		NormalTexture;
+SamplerState	NormalTextureSampler;
 
 
 struct VSOutput

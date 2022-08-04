@@ -165,10 +165,7 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(1, 1, &pPerObjCB);
 
 		renderParam.pPS->SetToContext();
-
-		ID3D11ShaderResourceView* pDiffSRV = (ID3D11ShaderResourceView*)(renderParam.pDiffuseTexture->GetShaderResourceView());
-		g_pD3D11ImmediateContext->PSSetShaderResources(0, 1, &pDiffSRV);
-		renderParam.pDiffuseTextureSampler->SetToPixelShader(0);
+		renderParam.pPS->SetShaderResourceViewByName("ComVar_Texture_SkyCubeTexture", renderParam.pDiffuseTexture, renderParam.pDiffuseTextureSampler);
 
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
 	}
@@ -286,21 +283,10 @@ namespace RenderDog
 		ID3D11Buffer* pShadowTestCB = (ID3D11Buffer*)(m_pShadowTestCB->GetResource());
 		g_pD3D11ImmediateContext->PSSetConstantBuffers(1, 1, &pShadowTestCB);
 
-		ID3D11ShaderResourceView* pEnvReflectionSRV = (ID3D11ShaderResourceView*)(m_pEnvReflectionTexture->GetShaderResourceView());
-		g_pD3D11ImmediateContext->PSSetShaderResources(0, 1, &pEnvReflectionSRV);
-		m_pEnvReflectionTextureSampler->SetToPixelShader(0);
-
-		ID3D11ShaderResourceView* pDiffSRV = (ID3D11ShaderResourceView*)(renderParam.pDiffuseTexture->GetShaderResourceView());
-		g_pD3D11ImmediateContext->PSSetShaderResources(1, 1, &pDiffSRV);
-		renderParam.pDiffuseTextureSampler->SetToPixelShader(1);
-
-		ID3D11ShaderResourceView* pNormSRV = (ID3D11ShaderResourceView*)(renderParam.pNormalTexture->GetShaderResourceView());
-		g_pD3D11ImmediateContext->PSSetShaderResources(2, 1, &pNormSRV);
-		renderParam.pNormalTextureSampler->SetToPixelShader(2);
-
-		ID3D11ShaderResourceView* pShadowDepthSRV = (ID3D11ShaderResourceView*)m_pShadowDepthTexture->GetShaderResourceView();
-		g_pD3D11ImmediateContext->PSSetShaderResources(3, 1, &pShadowDepthSRV);
-		m_pShadowDepthTextureSampler->SetToPixelShader(3);
+		renderParam.pPS->SetShaderResourceViewByName("ComVar_Texture_SkyCubeTexture", m_pEnvReflectionTexture, m_pEnvReflectionTextureSampler);
+		renderParam.pPS->SetShaderResourceViewByName("DiffuseTexture", renderParam.pDiffuseTexture, renderParam.pDiffuseTextureSampler);
+		renderParam.pPS->SetShaderResourceViewByName("NormalTexture", renderParam.pNormalTexture, renderParam.pNormalTextureSampler);
+		renderParam.pPS->SetShaderResourceViewByName("ComVar_Texture_ShadowDepthTexture", m_pShadowDepthTexture, m_pShadowDepthTextureSampler);
 
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
 
