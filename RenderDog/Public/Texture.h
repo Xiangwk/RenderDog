@@ -51,6 +51,8 @@ namespace RenderDog
 		virtual void				Release() = 0;
 
 		virtual const std::wstring& GetName() const = 0;
+
+		virtual void*				GetShaderResourceView() = 0;
 	};
 
 	class ITexture2D : public ITexture
@@ -59,8 +61,6 @@ namespace RenderDog
 		virtual ~ITexture2D() = default;
 		
 	public:
-		
-		virtual void*				GetShaderResourceView() = 0;
 		virtual void*				GetRenderTargetView() = 0;
 		virtual void*				GetDepthStencilView() = 0;
 	};
