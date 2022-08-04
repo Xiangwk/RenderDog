@@ -124,6 +124,7 @@ namespace RenderDog
 	public:
 		virtual void			Release() = 0;
 
+		virtual void			SetToVertexShader(uint32_t startSlot) = 0;
 		virtual void			SetToPixelShader(uint32_t startSlot) = 0;
 	};
 

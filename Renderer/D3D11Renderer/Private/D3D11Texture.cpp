@@ -295,6 +295,7 @@ namespace RenderDog
 
 		virtual void			Release() override;
 
+		virtual void			SetToVertexShader(uint32_t startSlot) override;
 		virtual void			SetToPixelShader(uint32_t startSlot) override;
 
 	private:
@@ -388,6 +389,11 @@ namespace RenderDog
 	void D3D11SamplerState::Release()
 	{
 		g_D3D11SamplerStateManager.ReleaseSamplerState(this);
+	}
+
+	void D3D11SamplerState::SetToVertexShader(uint32_t startSlot)
+	{
+		g_pD3D11ImmediateContext->VSSetSamplers(startSlot, 1, &m_pSamplerState);
 	}
 
 	void D3D11SamplerState::SetToPixelShader(uint32_t startSlot)

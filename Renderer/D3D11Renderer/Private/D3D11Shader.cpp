@@ -200,6 +200,20 @@ namespace RenderDog
 			m_ShaderInputBindDescs.push_back(desc);
 		}
 
+		for (size_t i = 0; i < m_ShaderInputBindDescs.size(); ++i)
+		{
+			const D3D11_SHADER_INPUT_BIND_DESC& desc = m_ShaderInputBindDescs[i];
+			if (desc.Type == D3D_SIT_TEXTURE)
+			{
+				m_ShaderResourceViewMap.insert({ desc.Name, desc.BindPoint });
+			}
+			
+			if (desc.Type == D3D_SIT_SAMPLER)
+			{
+				m_SamplerStateMap.insert({ desc.Name, desc.BindPoint });
+			}
+		}
+
 		m_fileName = desc.fileName;
 
 		return true;
@@ -278,16 +292,27 @@ namespace RenderDog
 
 	void D3D11VertexShader::SetShaderResourceViewByName(const std::string& name, ITexture* pTexture, ISamplerState* pSampler)
 	{
-		/*auto srvIter = m_ShaderResourceViewMap.find(name);
+		auto srvIter = m_ShaderResourceViewMap.find(name);
 		if (srvIter == m_ShaderResourceViewMap.end())
 		{
 			return;
-		}*/
+		}
 
+		const std::string& samplerName = name + "Sampler";
+		auto samplerIter = m_SamplerStateMap.find(samplerName);
+		if (samplerIter == m_SamplerStateMap.end())
+		{
+			return;
+		}
 
+		uint32_t srtSlot = srvIter->second;
+		ID3D11ShaderResourceView* pDiffSRV = (ID3D11ShaderResourceView*)(pTexture->GetShaderResourceView());
+		g_pD3D11ImmediateContext->VSSetShaderResources(srtSlot, 1, &pDiffSRV);
+
+		uint32_t samplerSlot = samplerIter->second;
+		pSampler->SetToVertexShader(samplerSlot);
 	}
 
-	
 
 	D3D11PixelShader::D3D11PixelShader() :
 		m_pPS(nullptr)
@@ -336,7 +361,25 @@ namespace RenderDog
 
 	void D3D11PixelShader::SetShaderResourceViewByName(const std::string& name, ITexture* pTexture, ISamplerState* pSampler)
 	{
-		return;
+		auto srvIter = m_ShaderResourceViewMap.find(name);
+		if (srvIter == m_ShaderResourceViewMap.end())
+		{
+			return;
+		}
+
+		const std::string& samplerName = name + "Sampler";
+		auto samplerIter = m_SamplerStateMap.find(samplerName);
+		if (samplerIter == m_SamplerStateMap.end())
+		{
+			return;
+		}
+
+		uint32_t srtSlot = srvIter->second;
+		ID3D11ShaderResourceView* pDiffSRV = (ID3D11ShaderResourceView*)(pTexture->GetShaderResourceView());
+		g_pD3D11ImmediateContext->PSSetShaderResources(srtSlot, 1, &pDiffSRV);
+
+		uint32_t samplerSlot = samplerIter->second;
+		pSampler->SetToPixelShader(samplerSlot);
 	}
 
 
