@@ -225,7 +225,7 @@ namespace RenderDog
 		m_pRenderData->pVS = g_pIShaderManager->GetStaticModelVertexShader(VERTEX_TYPE::STANDARD, vsDesc);
 
 		ShaderCompileDesc psDesc(psFile, nullptr, "Main", "ps_5_0", 0);
-		m_pRenderData->pPS = g_pIShaderManager->GetPixelShader(psDesc);
+		m_pRenderData->pPS = g_pIShaderManager->GetDirectionLightingPixelShader(psDesc);
 	}
 
 	void StaticMesh::ReleaseRenderData()

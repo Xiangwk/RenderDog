@@ -175,8 +175,12 @@ namespace RenderDog
 		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetResource());
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(1, 1, &pPerObjCB);
 
+		/*ShaderParam* pSkyCubeTextureParam = renderParam.pPS->GetShaderParamPtrByName("ComVar_Texture_SkyCubeTexture");
+		pSkyCubeTextureParam->SetTexture(renderParam.pDiffuseTexture);
+
+		ShaderParam* pSkyCubeTextureSamplerParam = renderParam.pPS->GetShaderParamPtrByName("ComVar_Texture_SkyCubeTextureSampler");
+		pSkyCubeTextureSamplerParam->SetSampler(renderParam.pDiffuseTextureSampler);*/
 		renderParam.pPS->Apply();
-		//renderParam.pPS->SetTextureByName("ComVar_Texture_SkyCubeTexture", renderParam.pDiffuseTexture, renderParam.pDiffuseTextureSampler);
 
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
 	}
@@ -292,6 +296,30 @@ namespace RenderDog
 		ID3D11Buffer* pShadowDepthCB = (ID3D11Buffer*)(m_pShadowDepthCB->GetResource());
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(2, 1, &pShadowDepthCB);
 		
+		ShaderParam* pSkyCubeTextureParam = renderParam.pPS->GetShaderParamPtrByName("ComVar_Texture_SkyCubeTexture");
+		pSkyCubeTextureParam->SetTexture(m_pEnvReflectionTexture);
+
+		ShaderParam* pSkyCubeTextureSamplerParam = renderParam.pPS->GetShaderParamPtrByName("ComVar_Texture_SkyCubeTextureSampler");
+		pSkyCubeTextureSamplerParam->SetSampler(m_pEnvReflectionTextureSampler);
+
+		ShaderParam* pDiffuseTextureParam = renderParam.pPS->GetShaderParamPtrByName("DiffuseTexture");
+		pDiffuseTextureParam->SetTexture(renderParam.pDiffuseTexture);
+
+		ShaderParam* pDiffuseTextureSamplerParam = renderParam.pPS->GetShaderParamPtrByName("DiffuseTextureSampler");
+		pDiffuseTextureSamplerParam->SetSampler(renderParam.pDiffuseTextureSampler);
+
+		ShaderParam* pNormalTextureParam = renderParam.pPS->GetShaderParamPtrByName("NormalTexture");
+		pNormalTextureParam->SetTexture(renderParam.pNormalTexture);
+
+		ShaderParam* pNormalTextureSamplerParam = renderParam.pPS->GetShaderParamPtrByName("NormalTextureSampler");
+		pNormalTextureSamplerParam->SetSampler(renderParam.pNormalTextureSampler);
+
+		ShaderParam* pShadowDepthTextureParam = renderParam.pPS->GetShaderParamPtrByName("ComVar_Texture_ShadowDepthTexture");
+		pShadowDepthTextureParam->SetTexture(m_pShadowDepthTexture);
+
+		ShaderParam* pShadowDepthTextureSamplerParam = renderParam.pPS->GetShaderParamPtrByName("ComVar_Texture_ShadowDepthTextureSampler");
+		pShadowDepthTextureSamplerParam->SetSampler(m_pShadowDepthTextureSampler);
+
 		renderParam.pPS->Apply();
 
 		ID3D11Buffer* pLightingCB = (ID3D11Buffer*)(m_pLightingCB->GetResource());
@@ -300,10 +328,7 @@ namespace RenderDog
 		ID3D11Buffer* pShadowTestCB = (ID3D11Buffer*)(m_pShadowTestCB->GetResource());
 		g_pD3D11ImmediateContext->PSSetConstantBuffers(1, 1, &pShadowTestCB);
 
-		/*renderParam.pPS->SetTextureByName("ComVar_Texture_SkyCubeTexture", m_pEnvReflectionTexture, m_pEnvReflectionTextureSampler);
-		renderParam.pPS->SetTextureByName("DiffuseTexture", renderParam.pDiffuseTexture, renderParam.pDiffuseTextureSampler);
-		renderParam.pPS->SetTextureByName("NormalTexture", renderParam.pNormalTexture, renderParam.pNormalTextureSampler);
-		renderParam.pPS->SetTextureByName("ComVar_Texture_ShadowDepthTexture", m_pShadowDepthTexture, m_pShadowDepthTextureSampler);*/
+		
 
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
 
@@ -805,7 +830,7 @@ namespace RenderDog
 
 		RenderPrimitives(pScene);
 		
-		RenderSky(pScene);
+		//RenderSky(pScene);
 		
 		m_pSwapChain->Present(0, 0);
 	}

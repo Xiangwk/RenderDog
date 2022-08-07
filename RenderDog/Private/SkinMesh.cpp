@@ -245,7 +245,7 @@ namespace RenderDog
 		m_pRenderData->pVS = g_pIShaderManager->GetVertexShader(VERTEX_TYPE::SKIN, vsDesc);
 
 		ShaderCompileDesc psDesc(psFile, nullptr, "Main", "ps_5_0", 0);
-		m_pRenderData->pPS = g_pIShaderManager->GetPixelShader(psDesc);
+		m_pRenderData->pPS = g_pIShaderManager->GetDirectionLightingPixelShader(psDesc);
 	}
 
 	void SkinMesh::SetPosGesture(const Vector3& pos, const Vector3& euler, const Vector3& scale)

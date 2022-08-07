@@ -91,10 +91,10 @@ namespace RenderDog
 		virtual void				Apply() override;
 
 	protected:
-		ShaderParam					m_LocalToWorldMatrix;
-		ShaderParam					m_WorldToViewMatrix;
-		ShaderParam					m_ViewToClipMatrix;
-		ShaderParam					m_WorldEyePostion;
+		ShaderParam					m_LocalToWorldMatrixParam;
+		ShaderParam					m_WorldToViewMatrixParam;
+		ShaderParam					m_ViewToClipMatrixParam;
+		ShaderParam					m_WorldEyePostionParam;
 	};
 
 
@@ -127,12 +127,19 @@ namespace RenderDog
 		virtual bool				Init() override;
 		virtual void				Release() override;
 
-		virtual ShaderParam*		GetShaderParamPtrByName(const std::string& name) override { return nullptr; }
+		virtual ShaderParam*		GetShaderParamPtrByName(const std::string& name) override;
 
 		virtual void				Apply() override;
 
 	protected:
-
+		ShaderParam					m_SkyCubeTextureParam;
+		ShaderParam					m_SkyCubeTextureSamplerParam;
+		ShaderParam					m_DiffuseTextureParam;
+		ShaderParam					m_DiffuseTextureSamplerParam;
+		ShaderParam					m_NormalTextureParam;
+		ShaderParam					m_NormalTextureSamplerParam;
+		ShaderParam					m_ShadowDepthTextureParam;
+		ShaderParam					m_ShadowDepthTextureSamplerParam;
 	};
 
 	//=========================================================================
@@ -150,6 +157,7 @@ namespace RenderDog
 		virtual IShader*			GetVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc) override;
 		virtual IShader*			GetPixelShader(const ShaderCompileDesc& desc) override;
 		virtual IShader*			GetStaticModelVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc) override;
+		virtual IShader*			GetDirectionLightingPixelShader(const ShaderCompileDesc& desc) override;
 
 		void						ReleaseShader(D3D11Shader* pShader);
 
@@ -341,28 +349,28 @@ namespace RenderDog
 
 	D3D11StaticModelVertexShader::D3D11StaticModelVertexShader() :
 		D3D11VertexShader(),
-		m_LocalToWorldMatrix("ComVar_Matrix_LocalToWorld", SHADER_PARAM_TYPE::MATRIX),
-		m_WorldToViewMatrix("ComVar_Matrix_WorldToView", SHADER_PARAM_TYPE::MATRIX),
-		m_ViewToClipMatrix("ComVar_Matrix_ViewToClip", SHADER_PARAM_TYPE::MATRIX),
-		m_WorldEyePostion("ComVar_Vector_WorldEyePosition", SHADER_PARAM_TYPE::FLOAT_VECTOR)
+		m_LocalToWorldMatrixParam("ComVar_Matrix_LocalToWorld", SHADER_PARAM_TYPE::MATRIX),
+		m_WorldToViewMatrixParam("ComVar_Matrix_WorldToView", SHADER_PARAM_TYPE::MATRIX),
+		m_ViewToClipMatrixParam("ComVar_Matrix_ViewToClip", SHADER_PARAM_TYPE::MATRIX),
+		m_WorldEyePostionParam("ComVar_Vector_WorldEyePosition", SHADER_PARAM_TYPE::FLOAT_VECTOR)
 	{
-		m_ShaderParamMap.insert({ "ComVar_Matrix_LocalToWorld", &m_LocalToWorldMatrix });
-		m_ShaderParamMap.insert({ "ComVar_Matrix_WorldToView", &m_WorldToViewMatrix });
-		m_ShaderParamMap.insert({ "ComVar_Matrix_ViewToClip", &m_ViewToClipMatrix });
-		m_ShaderParamMap.insert({ "ComVar_Vector_WorldEyePosition", &m_WorldEyePostion });
+		m_ShaderParamMap.insert({ "ComVar_Matrix_LocalToWorld", &m_LocalToWorldMatrixParam });
+		m_ShaderParamMap.insert({ "ComVar_Matrix_WorldToView", &m_WorldToViewMatrixParam });
+		m_ShaderParamMap.insert({ "ComVar_Matrix_ViewToClip", &m_ViewToClipMatrixParam });
+		m_ShaderParamMap.insert({ "ComVar_Vector_WorldEyePosition", &m_WorldEyePostionParam });
 	}
 
 	D3D11StaticModelVertexShader::D3D11StaticModelVertexShader(VERTEX_TYPE vertexType) :
 		D3D11VertexShader(vertexType),
-		m_LocalToWorldMatrix("ComVar_Matrix_LocalToWorld", SHADER_PARAM_TYPE::MATRIX),
-		m_WorldToViewMatrix("ComVar_Matrix_WorldToView", SHADER_PARAM_TYPE::MATRIX),
-		m_ViewToClipMatrix("ComVar_Matrix_ViewToClip", SHADER_PARAM_TYPE::MATRIX),
-		m_WorldEyePostion("ComVar_Vector_WorldEyePosition", SHADER_PARAM_TYPE::FLOAT_VECTOR)
+		m_LocalToWorldMatrixParam("ComVar_Matrix_LocalToWorld", SHADER_PARAM_TYPE::MATRIX),
+		m_WorldToViewMatrixParam("ComVar_Matrix_WorldToView", SHADER_PARAM_TYPE::MATRIX),
+		m_ViewToClipMatrixParam("ComVar_Matrix_ViewToClip", SHADER_PARAM_TYPE::MATRIX),
+		m_WorldEyePostionParam("ComVar_Vector_WorldEyePosition", SHADER_PARAM_TYPE::FLOAT_VECTOR)
 	{
-		m_ShaderParamMap.insert({ "ComVar_Matrix_LocalToWorld", &m_LocalToWorldMatrix });
-		m_ShaderParamMap.insert({ "ComVar_Matrix_WorldToView", &m_WorldToViewMatrix });
-		m_ShaderParamMap.insert({ "ComVar_Matrix_ViewToClip", &m_ViewToClipMatrix });
-		m_ShaderParamMap.insert({ "ComVar_Vector_WorldEyePosition", &m_WorldEyePostion });
+		m_ShaderParamMap.insert({ "ComVar_Matrix_LocalToWorld", &m_LocalToWorldMatrixParam });
+		m_ShaderParamMap.insert({ "ComVar_Matrix_WorldToView", &m_WorldToViewMatrixParam });
+		m_ShaderParamMap.insert({ "ComVar_Matrix_ViewToClip", &m_ViewToClipMatrixParam });
+		m_ShaderParamMap.insert({ "ComVar_Vector_WorldEyePosition", &m_WorldEyePostionParam });
 	}
 
 	D3D11StaticModelVertexShader::~D3D11StaticModelVertexShader()
@@ -403,9 +411,9 @@ namespace RenderDog
 		}
 
 		GlobalConstantData globalCBData;
-		globalCBData.viewMatrix = m_WorldToViewMatrix.GetMatrix4x4();
-		globalCBData.projMatrix = m_ViewToClipMatrix.GetMatrix4x4();
-		globalCBData.mainCameraWorldPos = m_WorldEyePostion.GetVector4();
+		globalCBData.viewMatrix = m_WorldToViewMatrixParam.GetMatrix4x4();
+		globalCBData.projMatrix = m_ViewToClipMatrixParam.GetMatrix4x4();
+		globalCBData.mainCameraWorldPos = m_WorldEyePostionParam.GetVector4();
 
 		pGlobalConstantBuffer->Update(&globalCBData, sizeof(globalCBData));
 
@@ -463,29 +471,124 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->PSSetShader(m_pPS, nullptr, 0);
 	}
 
-	/*void D3D11PixelShader::SetTextureByName(const std::string& name, ITexture* pTexture, ISamplerState* pSampler)
+	D3D11DirectionalLightingPixelShader::D3D11DirectionalLightingPixelShader() :
+		m_SkyCubeTextureParam("ComVar_Texture_SkyCubeTexture", SHADER_PARAM_TYPE::TEXTURE),
+		m_SkyCubeTextureSamplerParam("ComVar_Texture_SkyCubeTextureSampler", SHADER_PARAM_TYPE::SAMPLER),
+		m_DiffuseTextureParam("DiffuseTexture", SHADER_PARAM_TYPE::TEXTURE),
+		m_DiffuseTextureSamplerParam("DiffuseTextureSampler", SHADER_PARAM_TYPE::SAMPLER),
+		m_NormalTextureParam("NormalTexture", SHADER_PARAM_TYPE::TEXTURE),
+		m_NormalTextureSamplerParam("NormalTextureSampler", SHADER_PARAM_TYPE::SAMPLER),
+		m_ShadowDepthTextureParam("ComVar_Texture_ShadowDepthTexture", SHADER_PARAM_TYPE::TEXTURE),
+		m_ShadowDepthTextureSamplerParam("ComVar_Texture_ShadowDepthTextureSampler", SHADER_PARAM_TYPE::SAMPLER)
 	{
-		auto srvIter = m_ShaderResourceViewMap.find(name);
+		m_ShaderParamMap.insert({ "ComVar_Texture_SkyCubeTexture", &m_SkyCubeTextureParam });
+		m_ShaderParamMap.insert({ "ComVar_Texture_SkyCubeTextureSampler", &m_SkyCubeTextureSamplerParam });
+		m_ShaderParamMap.insert({ "DiffuseTexture", &m_DiffuseTextureParam });
+		m_ShaderParamMap.insert({ "DiffuseTextureSampler", &m_DiffuseTextureSamplerParam });
+		m_ShaderParamMap.insert({ "NormalTexture", &m_NormalTextureParam });
+		m_ShaderParamMap.insert({ "NormalTextureSampler", &m_NormalTextureSamplerParam });
+		m_ShaderParamMap.insert({ "ComVar_Texture_ShadowDepthTexture", &m_ShadowDepthTextureParam });
+		m_ShaderParamMap.insert({ "ComVar_Texture_ShadowDepthTextureSampler", &m_ShadowDepthTextureSamplerParam });
+	}
+
+	D3D11DirectionalLightingPixelShader::~D3D11DirectionalLightingPixelShader()
+	{}
+
+	bool D3D11DirectionalLightingPixelShader::Init()
+	{
+		return D3D11PixelShader::Init();
+	}
+
+	void D3D11DirectionalLightingPixelShader::Release()
+	{
+		D3D11PixelShader::Release();
+	}
+
+	ShaderParam* D3D11DirectionalLightingPixelShader::GetShaderParamPtrByName(const std::string& name)
+	{
+		auto shaderParamIter = m_ShaderParamMap.find(name);
+		if (shaderParamIter != m_ShaderParamMap.end())
+		{
+			return shaderParamIter->second;
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+
+	void D3D11DirectionalLightingPixelShader::Apply()
+	{
+		D3D11PixelShader::Apply();
+
+		//SkyTexture
+		auto srvIter = m_ShaderResourceViewMap.find(m_SkyCubeTextureParam.GetName());
 		if (srvIter == m_ShaderResourceViewMap.end())
 		{
 			return;
 		}
+		ID3D11ShaderResourceView* pSkySRV = (ID3D11ShaderResourceView*)(m_SkyCubeTextureParam.GetTexture()->GetShaderResourceView());
+		g_pD3D11ImmediateContext->PSSetShaderResources(srvIter->second, 1, &pSkySRV);
 
-		const std::string& samplerName = name + "Sampler";
-		auto samplerIter = m_SamplerStateMap.find(samplerName);
+		auto samplerIter = m_SamplerStateMap.find(m_SkyCubeTextureSamplerParam.GetName());
+		ISamplerState* pSkySampler = m_SkyCubeTextureSamplerParam.GetSampler();
 		if (samplerIter == m_SamplerStateMap.end())
 		{
 			return;
 		}
+		pSkySampler->SetToPixelShader(samplerIter->second);
 
-		uint32_t srtSlot = srvIter->second;
-		ID3D11ShaderResourceView* pDiffSRV = (ID3D11ShaderResourceView*)(pTexture->GetShaderResourceView());
-		g_pD3D11ImmediateContext->PSSetShaderResources(srtSlot, 1, &pDiffSRV);
+		//DiffuseTexture
+		srvIter = m_ShaderResourceViewMap.find(m_DiffuseTextureParam.GetName());
+		if (srvIter == m_ShaderResourceViewMap.end())
+		{
+			return;
+		}
+		ID3D11ShaderResourceView* pDiffSRV = (ID3D11ShaderResourceView*)(m_DiffuseTextureParam.GetTexture()->GetShaderResourceView());
+		g_pD3D11ImmediateContext->PSSetShaderResources(srvIter->second, 1, &pDiffSRV);
 
-		uint32_t samplerSlot = samplerIter->second;
-		pSampler->SetToPixelShader(samplerSlot);
-	}*/
+		samplerIter = m_SamplerStateMap.find(m_DiffuseTextureSamplerParam.GetName());
+		ISamplerState* pDiffSampler = m_DiffuseTextureSamplerParam.GetSampler();
+		if (samplerIter == m_SamplerStateMap.end())
+		{
+			return;
+		}
+		pDiffSampler->SetToPixelShader(samplerIter->second);
 
+		//NormalTexture
+		srvIter = m_ShaderResourceViewMap.find(m_NormalTextureParam.GetName());
+		if (srvIter == m_ShaderResourceViewMap.end())
+		{
+			return;
+		}
+		ID3D11ShaderResourceView* pNormSRV = (ID3D11ShaderResourceView*)(m_NormalTextureParam.GetTexture()->GetShaderResourceView());
+		g_pD3D11ImmediateContext->PSSetShaderResources(srvIter->second, 1, &pNormSRV);
+
+		samplerIter = m_SamplerStateMap.find(m_NormalTextureSamplerParam.GetName());
+		ISamplerState* pNormSampler = m_NormalTextureSamplerParam.GetSampler();
+		if (samplerIter == m_SamplerStateMap.end())
+		{
+			return;
+		}
+		pNormSampler->SetToPixelShader(samplerIter->second);
+
+		//ShadowTexture
+		srvIter = m_ShaderResourceViewMap.find(m_ShadowDepthTextureParam.GetName());
+		if (srvIter == m_ShaderResourceViewMap.end())
+		{
+			return;
+		}
+		ID3D11ShaderResourceView* pShadowDepthSRV = (ID3D11ShaderResourceView*)(m_ShadowDepthTextureParam.GetTexture()->GetShaderResourceView());
+		g_pD3D11ImmediateContext->PSSetShaderResources(srvIter->second, 1, &pShadowDepthSRV);
+
+		samplerIter = m_SamplerStateMap.find(m_ShadowDepthTextureSamplerParam.GetName());
+		ISamplerState* pShadowDepthSampler = m_ShadowDepthTextureSamplerParam.GetSampler();
+		if (samplerIter == m_SamplerStateMap.end())
+		{
+			return;
+		}
+		pShadowDepthSampler->SetToPixelShader(samplerIter->second);
+	}
 
 	IShader* D3D11ShaderManager::GetVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc)
 	{
@@ -551,6 +654,28 @@ namespace RenderDog
 		}
 
 		return pVertexShader;
+	}
+
+	IShader* D3D11ShaderManager::GetDirectionLightingPixelShader(const ShaderCompileDesc& desc)
+	{
+		D3D11Shader* pPixelShader = nullptr;
+
+		auto shader = m_ShaderMap.find(desc.fileName);
+		if (shader != m_ShaderMap.end())
+		{
+			pPixelShader = shader->second;
+			pPixelShader->AddRef();
+		}
+		else
+		{
+			pPixelShader = new D3D11DirectionalLightingPixelShader();
+			pPixelShader->CompileFromFile(desc);
+			pPixelShader->Init();
+
+			m_ShaderMap.insert({ desc.fileName, pPixelShader });
+		}
+
+		return pPixelShader;
 	}
 
 	void D3D11ShaderManager::ReleaseShader(D3D11Shader* pShader)

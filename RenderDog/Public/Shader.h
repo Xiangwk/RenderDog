@@ -58,16 +58,18 @@ namespace RenderDog
 	{
 	public:
 		ShaderParam() :
-			name(""),
-			type(SHADER_PARAM_TYPE::UNKNOWN)
+			m_Name(""),
+			m_Type(SHADER_PARAM_TYPE::UNKNOWN)
 		{}
 		ShaderParam(const std::string& name, SHADER_PARAM_TYPE paramType) :
-			name(name),
-			type(paramType)
+			m_Name(name),
+			m_Type(paramType)
 		{}
 
 		~ShaderParam()
 		{}
+
+		const std::string&		GetName() const							{ return m_Name; }
 
 		void					SetFloat(float value)					{ m_Float = value; }
 		void					SetVector4(const Vector4& value)		{ m_Vector = value; }
@@ -91,8 +93,8 @@ namespace RenderDog
 			ISamplerState*		m_pSampler;
 		};
 
-		std::string				name;
-		SHADER_PARAM_TYPE		type;
+		std::string				m_Name;
+		SHADER_PARAM_TYPE		m_Type;
 	};
 
 	class IShader
@@ -118,7 +120,9 @@ namespace RenderDog
 
 		virtual IShader*			GetVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc) = 0;
 		virtual IShader*			GetPixelShader(const ShaderCompileDesc& desc) = 0;
+
 		virtual IShader*			GetStaticModelVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc) = 0;
+		virtual IShader*			GetDirectionLightingPixelShader(const ShaderCompileDesc& desc) = 0;
 	};
 
 	extern IShaderManager* g_pIShaderManager;
