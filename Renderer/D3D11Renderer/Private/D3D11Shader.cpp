@@ -10,6 +10,7 @@
 #include "D3D11Renderer.h"
 #include "Buffer.h"
 #include "Texture.h"
+#include "Matrix.h"
 
 #include <fstream>
 #include <d3d11.h>
@@ -27,21 +28,21 @@ namespace RenderDog
 		D3D11Shader();
 		virtual ~D3D11Shader();
 
-		virtual const std::string&					GetFileName() const override { return m_fileName; }
+		virtual const std::string&						GetFileName() const override { return m_fileName; }
 
-		virtual void								SetShaderResourceViewByName(const std::string& name, ITexture* pTexture, ISamplerState* pSampler) override;
-
-		bool										CompileFromFile(const ShaderCompileDesc& desc);
+		bool											CompileFromFile(const ShaderCompileDesc& desc);
 
 	protected:
-		std::string									m_fileName;
+		std::string										m_fileName;
 
-		ID3DBlob*									m_pCompiledCode;
-		ID3D11ShaderReflection*						m_pShaderReflector;
+		ID3DBlob*										m_pCompiledCode;
+		ID3D11ShaderReflection*							m_pShaderReflector;
 
-		std::vector<D3D11_SHADER_INPUT_BIND_DESC>	m_ShaderInputBindDescs;
-		std::unordered_map<std::string, uint32_t>	m_ShaderResourceViewMap;
-		std::unordered_map<std::string, uint32_t>	m_SamplerStateMap;
+		std::vector<D3D11_SHADER_INPUT_BIND_DESC>		m_ShaderInputBindDescs;
+		std::unordered_map<std::string, uint32_t>		m_ShaderResourceViewMap;
+		std::unordered_map<std::string, uint32_t>		m_SamplerStateMap;
+		std::unordered_map<std::string, uint32_t>		m_ConstantBufferMap;
+		std::unordered_map<std::string, ShaderParam*>	m_ShaderParamMap;
 	};
 
 	//=========================================================================
@@ -57,15 +58,45 @@ namespace RenderDog
 		virtual bool				Init() override;
 		virtual void				Release() override;
 
-		virtual void				SetToContext() override;
+		virtual ShaderParam*		GetShaderParamPtrByName(const std::string& name) override { return nullptr; }
 
-		virtual void				SetShaderResourceViewByName(const std::string& name, ITexture* pTexture, ISamplerState* pSampler) override;
+		virtual void				Apply() override;
 
 	private:
 		ID3D11VertexShader*			m_pVS;
 		D3D11InputLayout*			m_pInputLayout;
 		VERTEX_TYPE					m_VertexType;
 	};
+
+	class D3D11StaticModelVertexShader : public D3D11VertexShader
+	{
+	private:
+		struct GlobalConstantData
+		{
+			Matrix4x4	viewMatrix;
+			Matrix4x4	projMatrix;
+			Vector4		mainCameraWorldPos;
+		};
+
+	public:
+		D3D11StaticModelVertexShader();
+		explicit D3D11StaticModelVertexShader(VERTEX_TYPE vertexType);
+		virtual ~D3D11StaticModelVertexShader();
+
+		virtual bool				Init() override;
+		virtual void				Release() override;
+
+		virtual ShaderParam*		GetShaderParamPtrByName(const std::string& name) override;
+
+		virtual void				Apply() override;
+
+	protected:
+		ShaderParam					m_LocalToWorldMatrix;
+		ShaderParam					m_WorldToViewMatrix;
+		ShaderParam					m_ViewToClipMatrix;
+		ShaderParam					m_WorldEyePostion;
+	};
+
 
 	//=========================================================================
 	//    D3D11PixelShader
@@ -79,12 +110,29 @@ namespace RenderDog
 		virtual bool				Init() override;
 		virtual void				Release() override;
 
-		virtual void				SetToContext() override;
+		virtual ShaderParam*		GetShaderParamPtrByName(const std::string& name) override { return nullptr; }
 
-		virtual void				SetShaderResourceViewByName(const std::string& name, ITexture* pTexture, ISamplerState* pSampler) override;
+		virtual void				Apply() override;
 
 	private:
 		ID3D11PixelShader*			m_pPS;
+	};
+
+	class D3D11DirectionalLightingPixelShader : public D3D11PixelShader
+	{
+	public:
+		D3D11DirectionalLightingPixelShader();
+		virtual ~D3D11DirectionalLightingPixelShader();
+
+		virtual bool				Init() override;
+		virtual void				Release() override;
+
+		virtual ShaderParam*		GetShaderParamPtrByName(const std::string& name) override { return nullptr; }
+
+		virtual void				Apply() override;
+
+	protected:
+
 	};
 
 	//=========================================================================
@@ -101,6 +149,7 @@ namespace RenderDog
 
 		virtual IShader*			GetVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc) override;
 		virtual IShader*			GetPixelShader(const ShaderCompileDesc& desc) override;
+		virtual IShader*			GetStaticModelVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc) override;
 
 		void						ReleaseShader(D3D11Shader* pShader);
 
@@ -123,11 +172,6 @@ namespace RenderDog
 
 	D3D11Shader::~D3D11Shader()
 	{}
-
-	void D3D11Shader::SetShaderResourceViewByName(const std::string& name, ITexture* pTexture, ISamplerState* pSampler)
-	{
-		return;
-	}
 
 	bool D3D11Shader::CompileFromFile(const ShaderCompileDesc& desc)
 	{
@@ -212,6 +256,11 @@ namespace RenderDog
 			{
 				m_SamplerStateMap.insert({ desc.Name, desc.BindPoint });
 			}
+
+			if (desc.Type == D3D_SIT_CBUFFER)
+			{
+				m_ConstantBufferMap.insert({ desc.Name, desc.BindPoint });
+			}
 		}
 
 		m_fileName = desc.fileName;
@@ -283,36 +332,91 @@ namespace RenderDog
 		g_D3D11ShaderManager.ReleaseShader(this);
 	}
 
-	void D3D11VertexShader::SetToContext()
+	void D3D11VertexShader::Apply()
 	{
 		m_pInputLayout->SetToContext();
 
 		g_pD3D11ImmediateContext->VSSetShader(m_pVS, nullptr, 0);
 	}
 
-	void D3D11VertexShader::SetShaderResourceViewByName(const std::string& name, ITexture* pTexture, ISamplerState* pSampler)
+	D3D11StaticModelVertexShader::D3D11StaticModelVertexShader() :
+		D3D11VertexShader(),
+		m_LocalToWorldMatrix("ComVar_Matrix_LocalToWorld", SHADER_PARAM_TYPE::MATRIX),
+		m_WorldToViewMatrix("ComVar_Matrix_WorldToView", SHADER_PARAM_TYPE::MATRIX),
+		m_ViewToClipMatrix("ComVar_Matrix_ViewToClip", SHADER_PARAM_TYPE::MATRIX),
+		m_WorldEyePostion("ComVar_Vector_WorldEyePosition", SHADER_PARAM_TYPE::FLOAT_VECTOR)
 	{
-		auto srvIter = m_ShaderResourceViewMap.find(name);
-		if (srvIter == m_ShaderResourceViewMap.end())
-		{
-			return;
-		}
-
-		const std::string& samplerName = name + "Sampler";
-		auto samplerIter = m_SamplerStateMap.find(samplerName);
-		if (samplerIter == m_SamplerStateMap.end())
-		{
-			return;
-		}
-
-		uint32_t srtSlot = srvIter->second;
-		ID3D11ShaderResourceView* pDiffSRV = (ID3D11ShaderResourceView*)(pTexture->GetShaderResourceView());
-		g_pD3D11ImmediateContext->VSSetShaderResources(srtSlot, 1, &pDiffSRV);
-
-		uint32_t samplerSlot = samplerIter->second;
-		pSampler->SetToVertexShader(samplerSlot);
+		m_ShaderParamMap.insert({ "ComVar_Matrix_LocalToWorld", &m_LocalToWorldMatrix });
+		m_ShaderParamMap.insert({ "ComVar_Matrix_WorldToView", &m_WorldToViewMatrix });
+		m_ShaderParamMap.insert({ "ComVar_Matrix_ViewToClip", &m_ViewToClipMatrix });
+		m_ShaderParamMap.insert({ "ComVar_Vector_WorldEyePosition", &m_WorldEyePostion });
 	}
 
+	D3D11StaticModelVertexShader::D3D11StaticModelVertexShader(VERTEX_TYPE vertexType) :
+		D3D11VertexShader(vertexType),
+		m_LocalToWorldMatrix("ComVar_Matrix_LocalToWorld", SHADER_PARAM_TYPE::MATRIX),
+		m_WorldToViewMatrix("ComVar_Matrix_WorldToView", SHADER_PARAM_TYPE::MATRIX),
+		m_ViewToClipMatrix("ComVar_Matrix_ViewToClip", SHADER_PARAM_TYPE::MATRIX),
+		m_WorldEyePostion("ComVar_Vector_WorldEyePosition", SHADER_PARAM_TYPE::FLOAT_VECTOR)
+	{
+		m_ShaderParamMap.insert({ "ComVar_Matrix_LocalToWorld", &m_LocalToWorldMatrix });
+		m_ShaderParamMap.insert({ "ComVar_Matrix_WorldToView", &m_WorldToViewMatrix });
+		m_ShaderParamMap.insert({ "ComVar_Matrix_ViewToClip", &m_ViewToClipMatrix });
+		m_ShaderParamMap.insert({ "ComVar_Vector_WorldEyePosition", &m_WorldEyePostion });
+	}
+
+	D3D11StaticModelVertexShader::~D3D11StaticModelVertexShader()
+	{}
+
+	bool D3D11StaticModelVertexShader::Init()
+	{
+		return D3D11VertexShader::Init();
+	}
+
+	void D3D11StaticModelVertexShader::Release()
+	{
+		D3D11VertexShader::Release();
+	}
+
+	ShaderParam* D3D11StaticModelVertexShader::GetShaderParamPtrByName(const std::string& name)
+	{
+		auto shaderParamIter = m_ShaderParamMap.find(name);
+		if (shaderParamIter != m_ShaderParamMap.end())
+		{
+			return shaderParamIter->second;
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+
+	void D3D11StaticModelVertexShader::Apply()
+	{
+		D3D11VertexShader::Apply();
+
+		//TODO: 更新ConstantBuffer，并设置到context上；
+		IConstantBuffer* pGlobalConstantBuffer = g_pIBufferManager->GetConstantBufferByName("ComVar_ConstantBuffer_Global");
+		if (!pGlobalConstantBuffer)
+		{
+			return;
+		}
+
+		GlobalConstantData globalCBData;
+		globalCBData.viewMatrix = m_WorldToViewMatrix.GetMatrix4x4();
+		globalCBData.projMatrix = m_ViewToClipMatrix.GetMatrix4x4();
+		globalCBData.mainCameraWorldPos = m_WorldEyePostion.GetVector4();
+
+		pGlobalConstantBuffer->Update(&globalCBData, sizeof(globalCBData));
+
+		auto cbIter = m_ConstantBufferMap.find(pGlobalConstantBuffer->GetName());
+		if (cbIter != m_ConstantBufferMap.end())
+		{
+			uint32_t cbSlot = cbIter->second;
+			ID3D11Buffer* pCB = (ID3D11Buffer*)(pGlobalConstantBuffer->GetResource());
+			g_pD3D11ImmediateContext->VSSetConstantBuffers(cbSlot, 1, (ID3D11Buffer**)&pCB);
+		}
+	}
 
 	D3D11PixelShader::D3D11PixelShader() :
 		m_pPS(nullptr)
@@ -354,12 +458,12 @@ namespace RenderDog
 		g_D3D11ShaderManager.ReleaseShader(this);
 	}
 
-	void D3D11PixelShader::SetToContext()
+	void D3D11PixelShader::Apply()
 	{
 		g_pD3D11ImmediateContext->PSSetShader(m_pPS, nullptr, 0);
 	}
 
-	void D3D11PixelShader::SetShaderResourceViewByName(const std::string& name, ITexture* pTexture, ISamplerState* pSampler)
+	/*void D3D11PixelShader::SetTextureByName(const std::string& name, ITexture* pTexture, ISamplerState* pSampler)
 	{
 		auto srvIter = m_ShaderResourceViewMap.find(name);
 		if (srvIter == m_ShaderResourceViewMap.end())
@@ -380,7 +484,7 @@ namespace RenderDog
 
 		uint32_t samplerSlot = samplerIter->second;
 		pSampler->SetToPixelShader(samplerSlot);
-	}
+	}*/
 
 
 	IShader* D3D11ShaderManager::GetVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc)
@@ -425,6 +529,28 @@ namespace RenderDog
 		}
 
 		return pPixelShader;
+	}
+
+	IShader* D3D11ShaderManager::GetStaticModelVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc)
+	{
+		D3D11Shader* pVertexShader = nullptr;
+
+		auto shader = m_ShaderMap.find(desc.fileName);
+		if (shader != m_ShaderMap.end())
+		{
+			pVertexShader = shader->second;
+			pVertexShader->AddRef();
+		}
+		else
+		{
+			pVertexShader = new D3D11StaticModelVertexShader(vertexType);
+			pVertexShader->CompileFromFile(desc);
+			pVertexShader->Init();
+
+			m_ShaderMap.insert({ desc.fileName, pVertexShader });
+		}
+
+		return pVertexShader;
 	}
 
 	void D3D11ShaderManager::ReleaseShader(D3D11Shader* pShader)

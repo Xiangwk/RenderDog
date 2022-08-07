@@ -27,8 +27,8 @@ namespace RenderDog
 
 		virtual void				Update(void* srcData, uint32_t srcSize) override;
 
-		virtual const std::string&	GetName() const { return m_Name; }
-		virtual void*				GetResource() override { return (void*)m_pVB; }
+		virtual const std::string& GetName() const { return m_Name; }
+		virtual void* GetResource() override { return (void*)m_pVB; }
 
 		virtual uint32_t			GetStride() const override { return m_Stride; }
 		virtual uint32_t			GetOffset() const override { return m_Offset; }
@@ -36,7 +36,7 @@ namespace RenderDog
 	private:
 		std::string					m_Name;
 
-		ID3D11Buffer*				m_pVB;
+		ID3D11Buffer* m_pVB;
 		uint32_t					m_Stride;
 		uint32_t					m_Offset;
 	};
@@ -54,15 +54,15 @@ namespace RenderDog
 
 		virtual void				Update(void* srcData, uint32_t srcSize) override;
 
-		virtual const std::string&	GetName() const { return m_Name; }
-		virtual void*				GetResource() override { return (void*)m_pIB; }
+		virtual const std::string& GetName() const { return m_Name; }
+		virtual void* GetResource() override { return (void*)m_pIB; }
 
 		virtual uint32_t			GetIndexNum() const override { return m_indexNum; }
 
 	private:
 		std::string					m_Name;
 
-		ID3D11Buffer*				m_pIB;
+		ID3D11Buffer* m_pIB;
 		uint32_t					m_indexNum;
 	};
 
@@ -79,13 +79,13 @@ namespace RenderDog
 
 		virtual void				Update(void* srcData, uint32_t srcSize) override;
 
-		virtual const std::string&	GetName() const { return m_Name; }
-		virtual void*				GetResource() override { return (void*)m_pCB; }
+		virtual const std::string& GetName() const { return m_Name; }
+		virtual void* GetResource() override { return (void*)m_pCB; }
 
 	private:
 		std::string					m_Name;
 
-		ID3D11Buffer*				m_pCB;
+		ID3D11Buffer* m_pCB;
 		bool						m_IsDynamic;
 	};
 
@@ -101,9 +101,10 @@ namespace RenderDog
 		D3D11BufferManager() = default;
 		virtual ~D3D11BufferManager() = default;
 
-		virtual IVertexBuffer*		GetVertexBuffer(const BufferDesc& desc) override;
-		virtual IIndexBuffer*		GetIndexBuffer(const BufferDesc& desc) override;
-		virtual IConstantBuffer*	GetConstantBuffer(const BufferDesc& desc) override;
+		virtual IVertexBuffer* GetVertexBuffer(const BufferDesc& desc) override;
+		virtual IIndexBuffer* GetIndexBuffer(const BufferDesc& desc) override;
+		virtual IConstantBuffer* GetConstantBuffer(const BufferDesc& desc) override;
+		virtual IConstantBuffer* GetConstantBufferByName(const std::string& name) override;
 
 		void						ReleaseVertexBuffer(D3D11VertexBuffer* pBuffer);
 		void						ReleaseIndexBuffer(D3D11IndexBuffer* pBuffer);
@@ -114,8 +115,8 @@ namespace RenderDog
 	};
 
 	D3D11BufferManager	g_D3D11BufferManager;
-	IBufferManager*		g_pIBufferManager = &g_D3D11BufferManager;
-	
+	IBufferManager* g_pIBufferManager = &g_D3D11BufferManager;
+
 
 	//================================================================
 	//       Function Implementation
@@ -128,10 +129,10 @@ namespace RenderDog
 		m_Offset(desc.offset)
 	{
 		D3D11_BUFFER_DESC bufferDesc = {};
-		bufferDesc.Usage			= desc.isDynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
-		bufferDesc.ByteWidth		= desc.byteWidth;
-		bufferDesc.BindFlags		= D3D11_BIND_VERTEX_BUFFER;
-		bufferDesc.CPUAccessFlags	= desc.isDynamic ? D3D11_CPU_ACCESS_WRITE : 0;
+		bufferDesc.Usage = desc.isDynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
+		bufferDesc.ByteWidth = desc.byteWidth;
+		bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		bufferDesc.CPUAccessFlags = desc.isDynamic ? D3D11_CPU_ACCESS_WRITE : 0;
 
 		D3D11_SUBRESOURCE_DATA initData = {};
 		initData.pSysMem = desc.pInitData;
@@ -165,10 +166,10 @@ namespace RenderDog
 		m_indexNum(desc.byteWidth / sizeof(uint32_t))
 	{
 		D3D11_BUFFER_DESC bufferDesc = {};
-		bufferDesc.Usage			= desc.isDynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
-		bufferDesc.ByteWidth		= desc.byteWidth;
-		bufferDesc.BindFlags		= D3D11_BIND_INDEX_BUFFER;
-		bufferDesc.CPUAccessFlags	= desc.isDynamic ? D3D11_CPU_ACCESS_WRITE : 0;
+		bufferDesc.Usage = desc.isDynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
+		bufferDesc.ByteWidth = desc.byteWidth;
+		bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+		bufferDesc.CPUAccessFlags = desc.isDynamic ? D3D11_CPU_ACCESS_WRITE : 0;
 
 		D3D11_SUBRESOURCE_DATA initData = {};
 		initData.pSysMem = desc.pInitData;
@@ -194,7 +195,7 @@ namespace RenderDog
 	{
 
 	}
-	
+
 	D3D11ConstantBuffer::D3D11ConstantBuffer(const BufferDesc& desc) :
 		RefCntObject(),
 		m_Name(desc.name),
@@ -202,10 +203,10 @@ namespace RenderDog
 		m_IsDynamic(desc.isDynamic)
 	{
 		D3D11_BUFFER_DESC bufferDesc = {};
-		bufferDesc.Usage			= desc.isDynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
-		bufferDesc.ByteWidth		= desc.byteWidth;
-		bufferDesc.BindFlags		= D3D11_BIND_CONSTANT_BUFFER;
-		bufferDesc.CPUAccessFlags	= desc.isDynamic ? D3D11_CPU_ACCESS_WRITE : 0;
+		bufferDesc.Usage = desc.isDynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
+		bufferDesc.ByteWidth = desc.byteWidth;
+		bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		bufferDesc.CPUAccessFlags = desc.isDynamic ? D3D11_CPU_ACCESS_WRITE : 0;
 
 		D3D11_SUBRESOURCE_DATA initData = {};
 		initData.pSysMem = desc.pInitData;
@@ -297,6 +298,19 @@ namespace RenderDog
 			m_BufferMap.insert({ desc.name, pBuffer });
 		}
 
+		return pBuffer;
+	}
+
+	IConstantBuffer* D3D11BufferManager::GetConstantBufferByName(const std::string& name)
+	{
+		D3D11ConstantBuffer* pBuffer = nullptr;
+
+		auto buffer = m_BufferMap.find(name);
+		if (buffer != m_BufferMap.end())
+		{
+			pBuffer = (D3D11ConstantBuffer*)(buffer->second);
+		}
+		
 		return pBuffer;
 	}
 

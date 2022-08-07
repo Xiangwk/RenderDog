@@ -7,14 +7,25 @@
 #pragma once
 
 #include "Vertex.h"
+#include "Matrix.h"
 
 #include <string>
 
 namespace RenderDog
 {
-	class ITexture;
-	class ISamplerState;
-	class IConstantBuffer;
+	class	ITexture;
+	class	ISamplerState;
+	class	IConstantBuffer;
+
+	enum class SHADER_PARAM_TYPE
+	{
+		UNKNOWN = 0,
+		FLOAT_SCALAR,
+		FLOAT_VECTOR,
+		MATRIX,
+		TEXTURE,
+		SAMPLER
+	};
 
 	struct ShaderMacro
 	{
@@ -43,6 +54,47 @@ namespace RenderDog
 		{}
 	};
 
+	class ShaderParam
+	{
+	public:
+		ShaderParam() :
+			name(""),
+			type(SHADER_PARAM_TYPE::UNKNOWN)
+		{}
+		ShaderParam(const std::string& name, SHADER_PARAM_TYPE paramType) :
+			name(name),
+			type(paramType)
+		{}
+
+		~ShaderParam()
+		{}
+
+		void					SetFloat(float value)					{ m_Float = value; }
+		void					SetVector4(const Vector4& value)		{ m_Vector = value; }
+		void					SetMatrix4x4(const Matrix4x4& value)	{ m_Matrix = value; }
+		void					SetTexture(ITexture* pValue)			{ m_pTexture = pValue; }
+		void					SetSampler(ISamplerState* pValue)		{ m_pSampler = pValue; }
+
+		float					GetFloat() const						{ return m_Float; }
+		Vector4					GetVector4() const						{ return m_Vector; }
+		Matrix4x4				GetMatrix4x4() const					{ return m_Matrix; }
+		ITexture*				GetTexture() const						{ return m_pTexture; }
+		ISamplerState*			GetSampler() const						{ return m_pSampler; }
+
+	private:
+		union
+		{
+			float				m_Float;
+			Vector4				m_Vector;
+			Matrix4x4			m_Matrix;
+			ITexture*			m_pTexture;
+			ISamplerState*		m_pSampler;
+		};
+
+		std::string				name;
+		SHADER_PARAM_TYPE		type;
+	};
+
 	class IShader
 	{
 	protected:
@@ -54,9 +106,9 @@ namespace RenderDog
 
 		virtual const std::string&	GetFileName() const = 0;
 
-		virtual void				SetToContext() = 0;
+		virtual ShaderParam*		GetShaderParamPtrByName(const std::string& name) = 0;
 
-		virtual void				SetShaderResourceViewByName(const std::string& name, ITexture* pTexture, ISamplerState* pSampler) = 0;
+		virtual void				Apply() = 0;
 	};
 
 	class IShaderManager
@@ -66,6 +118,7 @@ namespace RenderDog
 
 		virtual IShader*			GetVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc) = 0;
 		virtual IShader*			GetPixelShader(const ShaderCompileDesc& desc) = 0;
+		virtual IShader*			GetStaticModelVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc) = 0;
 	};
 
 	extern IShaderManager* g_pIShaderManager;

@@ -32,22 +32,22 @@ namespace RenderDog
 	{
 	public:
 		D3D11MeshRenderer();
-		D3D11MeshRenderer(IConstantBuffer* pGlobalCB);
+		D3D11MeshRenderer(SceneView* pSceneView);
 		virtual ~D3D11MeshRenderer();
 
 	protected:
-		IConstantBuffer*				m_pGlobalCB;
+		SceneView*				m_pSceneView;
 	};
 
 	D3D11MeshRenderer::D3D11MeshRenderer() :
-		m_pGlobalCB(nullptr)
+		m_pSceneView(nullptr)
 	{}
 
 	D3D11MeshRenderer::~D3D11MeshRenderer()
 	{}
 
-	D3D11MeshRenderer::D3D11MeshRenderer(IConstantBuffer* pGlobalCB) :
-		m_pGlobalCB(pGlobalCB)
+	D3D11MeshRenderer::D3D11MeshRenderer(SceneView* pSceneView) :
+		m_pSceneView(pSceneView)
 	{}
 #pragma endregion MeshRenderer
 
@@ -57,7 +57,7 @@ namespace RenderDog
 	{
 	public:
 		D3D11LineMeshRenderer();
-		D3D11LineMeshRenderer(IConstantBuffer* pGlobalCB);
+		D3D11LineMeshRenderer(SceneView* pSceneView);
 		virtual ~D3D11LineMeshRenderer();
 
 		virtual void					Render(const PrimitiveRenderParam& renderParam) override;
@@ -69,8 +69,8 @@ namespace RenderDog
 	D3D11LineMeshRenderer::~D3D11LineMeshRenderer()
 	{}
 
-	D3D11LineMeshRenderer::D3D11LineMeshRenderer(IConstantBuffer* pGlobalCB) :
-		D3D11MeshRenderer(pGlobalCB)
+	D3D11LineMeshRenderer::D3D11LineMeshRenderer(SceneView* pSceneView) :
+		D3D11MeshRenderer(pSceneView)
 	{}
 
 	void D3D11LineMeshRenderer::Render(const PrimitiveRenderParam& renderParam)
@@ -96,16 +96,22 @@ namespace RenderDog
 		uint32_t offset = renderParam.pVB->GetOffset();
 		g_pD3D11ImmediateContext->IASetVertexBuffers(0, 1, &pVB, &stride, &offset);
 		g_pD3D11ImmediateContext->IASetIndexBuffer(pIB, DXGI_FORMAT_R32_UINT, 0);
+		
+		ShaderParam* pWorldToViewMatrix = renderParam.pVS->GetShaderParamPtrByName("ComVar_Matrix_WorldToView");
+		ShaderParam* pViewToClipMatrix = renderParam.pVS->GetShaderParamPtrByName("ComVar_Matrix_ViewToClip");
+		ShaderParam* pWorldEyePosition = renderParam.pVS->GetShaderParamPtrByName("ComVar_Vector_WorldEyePosition");
 
-		renderParam.pVS->SetToContext();
+		FPSCamera* pCamera = m_pSceneView->GetCamera();
+		pWorldToViewMatrix->SetMatrix4x4(pCamera->GetViewMatrix());
+		pViewToClipMatrix->SetMatrix4x4(pCamera->GetPerspProjectionMatrix());
+		pWorldEyePosition->SetVector4(Vector4(pCamera->GetPosition(), 1.0f));
 
-		ID3D11Buffer* pGlobalCB = (ID3D11Buffer*)(m_pGlobalCB->GetResource());
-		g_pD3D11ImmediateContext->VSSetConstantBuffers(0, 1, &pGlobalCB);
+		renderParam.pVS->Apply();
 
 		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetResource());
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(1, 1, &pPerObjCB);
 
-		renderParam.pPS->SetToContext();
+		renderParam.pPS->Apply();
 
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
 	}
@@ -116,7 +122,7 @@ namespace RenderDog
 	{
 	public:
 		D3D11SkyRenderer();
-		D3D11SkyRenderer(IConstantBuffer* pGlobalCB);
+		D3D11SkyRenderer(SceneView* pSceneView);
 		virtual ~D3D11SkyRenderer();
 
 		virtual void					Render(const PrimitiveRenderParam& renderParam) override;
@@ -128,8 +134,8 @@ namespace RenderDog
 	D3D11SkyRenderer::~D3D11SkyRenderer()
 	{}
 
-	D3D11SkyRenderer::D3D11SkyRenderer(IConstantBuffer* pGlobalCB) :
-		D3D11MeshRenderer(pGlobalCB)
+	D3D11SkyRenderer::D3D11SkyRenderer(SceneView* pSceneView) :
+		D3D11MeshRenderer(pSceneView)
 	{}
 
 	void D3D11SkyRenderer::Render(const PrimitiveRenderParam& renderParam)
@@ -156,16 +162,21 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->IASetVertexBuffers(0, 1, &pVB, &stride, &offset);
 		g_pD3D11ImmediateContext->IASetIndexBuffer(pIB, DXGI_FORMAT_R32_UINT, 0);
 
-		renderParam.pVS->SetToContext();
+		ShaderParam* pWorldToViewMatrix = renderParam.pVS->GetShaderParamPtrByName("ComVar_Matrix_WorldToView");
+		ShaderParam* pViewToClipMatrix = renderParam.pVS->GetShaderParamPtrByName("ComVar_Matrix_ViewToClip");
+		ShaderParam* pWorldEyePosition = renderParam.pVS->GetShaderParamPtrByName("ComVar_Vector_WorldEyePosition");
 
-		ID3D11Buffer* pGlobalCB = (ID3D11Buffer*)(m_pGlobalCB->GetResource());
-		g_pD3D11ImmediateContext->VSSetConstantBuffers(0, 1, &pGlobalCB);
+		FPSCamera* pCamera = m_pSceneView->GetCamera();
+		pWorldToViewMatrix->SetMatrix4x4(pCamera->GetViewMatrix());
+		pViewToClipMatrix->SetMatrix4x4(pCamera->GetPerspProjectionMatrix());
+		pWorldEyePosition->SetVector4(Vector4(pCamera->GetPosition(), 1.0f));
+		renderParam.pVS->Apply();
 
 		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetResource());
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(1, 1, &pPerObjCB);
 
-		renderParam.pPS->SetToContext();
-		renderParam.pPS->SetShaderResourceViewByName("ComVar_Texture_SkyCubeTexture", renderParam.pDiffuseTexture, renderParam.pDiffuseTextureSampler);
+		renderParam.pPS->Apply();
+		//renderParam.pPS->SetTextureByName("ComVar_Texture_SkyCubeTexture", renderParam.pDiffuseTexture, renderParam.pDiffuseTextureSampler);
 
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
 	}
@@ -175,7 +186,7 @@ namespace RenderDog
 #pragma region MeshLightingRenderer
 	struct MeshLightingGlobalData
 	{
-		IConstantBuffer*			pGlobalCB;
+		SceneView*					pSceneView;
 		IConstantBuffer*			pLightingCB;
 		IConstantBuffer*			pShadowDepthCB;
 		IConstantBuffer*			pShadowTestCB;
@@ -185,7 +196,7 @@ namespace RenderDog
 		ISamplerState*				pEnvReflectionTextureSampler;
 
 		MeshLightingGlobalData() :
-			pGlobalCB(nullptr),
+			pSceneView(nullptr),
 			pLightingCB(nullptr),
 			pShadowDepthCB(nullptr),
 			pShadowTestCB(nullptr),
@@ -227,7 +238,7 @@ namespace RenderDog
 	{}
 
 	D3D11MeshLightingRenderer::D3D11MeshLightingRenderer(const MeshLightingGlobalData& globalData):
-		D3D11MeshRenderer(globalData.pGlobalCB),
+		D3D11MeshRenderer(globalData.pSceneView),
 		m_pLightingCB(globalData.pLightingCB),
 		m_pShadowDepthCB(globalData.pShadowDepthCB),
 		m_pShadowTestCB(globalData.pShadowTestCB),
@@ -264,10 +275,16 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->IASetVertexBuffers(0, 1, &pVB, &stride, &offset);
 		g_pD3D11ImmediateContext->IASetIndexBuffer(pIB, DXGI_FORMAT_R32_UINT, 0);
 
-		renderParam.pVS->SetToContext();
+		ShaderParam* pWorldToViewMatrix = renderParam.pVS->GetShaderParamPtrByName("ComVar_Matrix_WorldToView");
+		ShaderParam* pViewToClipMatrix = renderParam.pVS->GetShaderParamPtrByName("ComVar_Matrix_ViewToClip");
+		ShaderParam* pWorldEyePosition = renderParam.pVS->GetShaderParamPtrByName("ComVar_Vector_WorldEyePosition");
 
-		ID3D11Buffer* pGlobalCB = (ID3D11Buffer*)(m_pGlobalCB->GetResource());
-		g_pD3D11ImmediateContext->VSSetConstantBuffers(0, 1, &pGlobalCB);
+		FPSCamera* pCamera = m_pSceneView->GetCamera();
+		pWorldToViewMatrix->SetMatrix4x4(pCamera->GetViewMatrix());
+		pViewToClipMatrix->SetMatrix4x4(pCamera->GetPerspProjectionMatrix());
+		pWorldEyePosition->SetVector4(Vector4(pCamera->GetPosition(), 1.0f));
+
+		renderParam.pVS->Apply();
 		
 		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetResource());
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(1, 1, &pPerObjCB);
@@ -275,7 +292,7 @@ namespace RenderDog
 		ID3D11Buffer* pShadowDepthCB = (ID3D11Buffer*)(m_pShadowDepthCB->GetResource());
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(2, 1, &pShadowDepthCB);
 		
-		renderParam.pPS->SetToContext();
+		renderParam.pPS->Apply();
 
 		ID3D11Buffer* pLightingCB = (ID3D11Buffer*)(m_pLightingCB->GetResource());
 		g_pD3D11ImmediateContext->PSSetConstantBuffers(0, 1, &pLightingCB);
@@ -283,10 +300,10 @@ namespace RenderDog
 		ID3D11Buffer* pShadowTestCB = (ID3D11Buffer*)(m_pShadowTestCB->GetResource());
 		g_pD3D11ImmediateContext->PSSetConstantBuffers(1, 1, &pShadowTestCB);
 
-		renderParam.pPS->SetShaderResourceViewByName("ComVar_Texture_SkyCubeTexture", m_pEnvReflectionTexture, m_pEnvReflectionTextureSampler);
-		renderParam.pPS->SetShaderResourceViewByName("DiffuseTexture", renderParam.pDiffuseTexture, renderParam.pDiffuseTextureSampler);
-		renderParam.pPS->SetShaderResourceViewByName("NormalTexture", renderParam.pNormalTexture, renderParam.pNormalTextureSampler);
-		renderParam.pPS->SetShaderResourceViewByName("ComVar_Texture_ShadowDepthTexture", m_pShadowDepthTexture, m_pShadowDepthTextureSampler);
+		/*renderParam.pPS->SetTextureByName("ComVar_Texture_SkyCubeTexture", m_pEnvReflectionTexture, m_pEnvReflectionTextureSampler);
+		renderParam.pPS->SetTextureByName("DiffuseTexture", renderParam.pDiffuseTexture, renderParam.pDiffuseTextureSampler);
+		renderParam.pPS->SetTextureByName("NormalTexture", renderParam.pNormalTexture, renderParam.pNormalTextureSampler);
+		renderParam.pPS->SetTextureByName("ComVar_Texture_ShadowDepthTexture", m_pShadowDepthTexture, m_pShadowDepthTextureSampler);*/
 
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
 
@@ -301,7 +318,7 @@ namespace RenderDog
 	{
 	public:
 		D3D11MeshShadowRenderer();
-		D3D11MeshShadowRenderer(IConstantBuffer* pGlobalCB, IShader* pVS, IShader* pPS);
+		D3D11MeshShadowRenderer(SceneView* pSceneView, IShader* pVS, IShader* pPS);
 		virtual ~D3D11MeshShadowRenderer();
 
 		virtual void					Render(const PrimitiveRenderParam& renderParam) override;
@@ -316,8 +333,8 @@ namespace RenderDog
 		m_pPS(nullptr)
 	{}
 
-	D3D11MeshShadowRenderer::D3D11MeshShadowRenderer(IConstantBuffer* pGlobalCB, IShader* pVS, IShader* pPS):
-		D3D11MeshRenderer(pGlobalCB),
+	D3D11MeshShadowRenderer::D3D11MeshShadowRenderer(SceneView* pSceneView, IShader* pVS, IShader* pPS):
+		D3D11MeshRenderer(pSceneView),
 		m_pVS(pVS),
 		m_pPS(pPS)
 	{}
@@ -349,15 +366,20 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->IASetVertexBuffers(0, 1, &pVB, &stride, &offset);
 		g_pD3D11ImmediateContext->IASetIndexBuffer(pIB, DXGI_FORMAT_R32_UINT, 0);
 
-		m_pVS->SetToContext();
+		ShaderParam* pWorldToViewMatrix = renderParam.pVS->GetShaderParamPtrByName("ComVar_Matrix_WorldToView");
+		ShaderParam* pViewToClipMatrix = renderParam.pVS->GetShaderParamPtrByName("ComVar_Matrix_ViewToClip");
+		ShaderParam* pWorldEyePosition = renderParam.pVS->GetShaderParamPtrByName("ComVar_Vector_WorldEyePosition");
 
-		ID3D11Buffer* pGlobalCB = (ID3D11Buffer*)(m_pGlobalCB->GetResource());
-		g_pD3D11ImmediateContext->VSSetConstantBuffers(0, 1, &pGlobalCB);
+		FPSCamera* pCamera = m_pSceneView->GetCamera();
+		pWorldToViewMatrix->SetMatrix4x4(pCamera->GetViewMatrix());
+		pViewToClipMatrix->SetMatrix4x4(pCamera->GetPerspProjectionMatrix());
+		pWorldEyePosition->SetVector4(Vector4(pCamera->GetPosition(), 1.0f));
+		m_pVS->Apply();
 
 		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetResource());
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(1, 1, &pPerObjCB);
 
-		m_pPS->SetToContext();
+		m_pPS->Apply();
 
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
 	}
@@ -563,7 +585,7 @@ namespace RenderDog
 		m_pSceneView = new SceneView(desc.pMainCamera);
 
 		BufferDesc cbDesc = {};
-		cbDesc.name = "GlobalConstantBuffer";
+		cbDesc.name = "ComVar_ConstantBuffer_Global";
 		cbDesc.byteWidth = sizeof(GlobalConstantData);
 		cbDesc.pInitData = nullptr;
 		cbDesc.isDynamic = true;
@@ -730,11 +752,11 @@ namespace RenderDog
 		FPSCamera* pCamera = m_pSceneView->GetCamera();
 		GlobalConstantData globalCBData = {};
 
-		globalCBData.viewMatrix = pCamera->GetViewMatrix();
+		/*globalCBData.viewMatrix = pCamera->GetViewMatrix();
 		globalCBData.projMatrix = pCamera->GetPerspProjectionMatrix();
 		globalCBData.mainCameraWorldPos = Vector4(pCamera->GetPosition(), 1.0f);
 
-		m_pGlobalConstantBuffer->Update(&globalCBData, sizeof(globalCBData));
+		m_pGlobalConstantBuffer->Update(&globalCBData, sizeof(globalCBData));*/
 
 		if (m_pSceneView->GetLightNum() > 0)
 		{
@@ -971,8 +993,8 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->ClearDepthStencilView(pShadowDSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
 		g_pD3D11ImmediateContext->OMSetRenderTargets(0, nullptr, pShadowDSV);
 
-		D3D11MeshShadowRenderer staticModelShadowRenderer(m_pShadowDepthConstantBuffer, m_pShadowDepthStaticModelVS, m_pShadowDepthPS);
-		D3D11MeshShadowRenderer skinModelShadowRenderer(m_pShadowDepthConstantBuffer, m_pShadowDepthSkinModelVS, m_pShadowDepthPS);
+		D3D11MeshShadowRenderer staticModelShadowRenderer(m_pSceneView, m_pShadowDepthStaticModelVS, m_pShadowDepthPS);
+		D3D11MeshShadowRenderer skinModelShadowRenderer(m_pSceneView, m_pShadowDepthSkinModelVS, m_pShadowDepthPS);
 
 
 		uint32_t opaquePriNum = m_pSceneView->GetOpaquePrisNum();
@@ -1025,7 +1047,7 @@ namespace RenderDog
 	{
 		g_pD3D11ImmediateContext->RSSetViewports(1, &m_ScreenViewport);
 
-		D3D11LineMeshRenderer lineRender(m_pGlobalConstantBuffer);
+		D3D11LineMeshRenderer lineRender(m_pSceneView);
 
 		uint32_t simplePriNum = m_pSceneView->GetSimplePrisNum();
 		for (uint32_t i = 0; i < simplePriNum; ++i)
@@ -1039,7 +1061,7 @@ namespace RenderDog
 		ISamplerState* pEnvReflectionTextureSampler = pSkyBox->GetCubeTextureSampler();
 
 		MeshLightingGlobalData meshLightingData;
-		meshLightingData.pGlobalCB = m_pGlobalConstantBuffer;
+		meshLightingData.pSceneView = m_pSceneView;
 		meshLightingData.pLightingCB = m_pLightingConstantBuffer;
 		meshLightingData.pShadowDepthCB = m_pShadowDepthConstantBuffer;
 		meshLightingData.pShadowTestCB = m_pShadowTestConstantBuffer;
@@ -1066,7 +1088,7 @@ namespace RenderDog
 
 		IPrimitive* pPri = pSkyBox->GetPrimitive();
 
-		D3D11SkyRenderer skyRender(m_pGlobalConstantBuffer);
+		D3D11SkyRenderer skyRender(m_pSceneView);
 		if (pPri)
 		{
 			pPri->Render(&skyRender);

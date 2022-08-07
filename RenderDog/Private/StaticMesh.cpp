@@ -222,7 +222,7 @@ namespace RenderDog
 		m_pRenderData->pCB = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
 
 		ShaderCompileDesc vsDesc(vsFile, nullptr, "Main", "vs_5_0", 0);
-		m_pRenderData->pVS = g_pIShaderManager->GetVertexShader(VERTEX_TYPE::STANDARD, vsDesc);
+		m_pRenderData->pVS = g_pIShaderManager->GetStaticModelVertexShader(VERTEX_TYPE::STANDARD, vsDesc);
 
 		ShaderCompileDesc psDesc(psFile, nullptr, "Main", "ps_5_0", 0);
 		m_pRenderData->pPS = g_pIShaderManager->GetPixelShader(psDesc);

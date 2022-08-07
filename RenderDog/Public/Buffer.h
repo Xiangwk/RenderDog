@@ -80,6 +80,7 @@ namespace RenderDog
 		virtual IVertexBuffer*			GetVertexBuffer(const BufferDesc& desc) = 0;
 		virtual IIndexBuffer*			GetIndexBuffer(const BufferDesc& desc) = 0;
 		virtual IConstantBuffer*		GetConstantBuffer(const BufferDesc& desc) = 0;
+		virtual IConstantBuffer*		GetConstantBufferByName(const std::string& name) = 0;
 	};
 
 	extern IBufferManager* g_pIBufferManager;

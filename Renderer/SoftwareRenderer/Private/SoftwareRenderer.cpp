@@ -282,7 +282,7 @@ namespace RenderDog
 		m_pSceneView = new SceneView(desc.pMainCamera);
 
 		BufferDesc cbDesc = {};
-		cbDesc.name = "GlobalConstantBuffer";
+		cbDesc.name = "ComVar_ConstantBuffer_Global";
 		cbDesc.byteWidth = sizeof(GlobalConstantData);
 		cbDesc.pInitData = nullptr;
 		cbDesc.isDynamic = true;

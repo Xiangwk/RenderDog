@@ -4,7 +4,7 @@
 //Written by Xiang Weikang
 ////////////////////////////////////////
 
-cbuffer ComVar_ConstantBuffer_Global : register(b0)
+cbuffer ComVar_ConstantBuffer_Global
 {
 	row_major matrix	ComVar_Matrix_WorldToView;
 	row_major matrix	ComVar_Matrix_ViewToClip;
