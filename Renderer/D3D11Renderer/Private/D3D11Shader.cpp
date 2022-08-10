@@ -19,6 +19,9 @@
 
 namespace RenderDog
 {
+
+
+
 	//=========================================================================
 	//    D3D11Shader
 	//=========================================================================
@@ -118,6 +121,24 @@ namespace RenderDog
 		ID3D11PixelShader*			m_pPS;
 	};
 
+	class D3D11SkyPixelShader : public D3D11PixelShader
+	{
+	public:
+		D3D11SkyPixelShader();
+		virtual ~D3D11SkyPixelShader();
+
+		virtual bool				Init() override;
+		virtual void				Release() override;
+
+		virtual ShaderParam*		GetShaderParamPtrByName(const std::string& name) override;
+
+		virtual void				Apply() override;
+
+	protected:
+		ShaderParam					m_SkyCubeTextureParam;
+		ShaderParam					m_SkyCubeTextureSamplerParam;
+	};
+
 	class D3D11DirectionalLightingPixelShader : public D3D11PixelShader
 	{
 	public:
@@ -157,7 +178,9 @@ namespace RenderDog
 		virtual IShader*			GetVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc) override;
 		virtual IShader*			GetPixelShader(const ShaderCompileDesc& desc) override;
 		virtual IShader*			GetStaticModelVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc) override;
+
 		virtual IShader*			GetDirectionLightingPixelShader(const ShaderCompileDesc& desc) override;
+		virtual IShader*			GetSkyPixelShader(const ShaderCompileDesc& desc) override;
 
 		void						ReleaseShader(D3D11Shader* pShader);
 
@@ -403,7 +426,6 @@ namespace RenderDog
 	{
 		D3D11VertexShader::Apply();
 
-		//TODO: 更新ConstantBuffer，并设置到context上；
 		IConstantBuffer* pGlobalConstantBuffer = g_pIBufferManager->GetConstantBufferByName("ComVar_ConstantBuffer_Global");
 		if (!pGlobalConstantBuffer)
 		{
@@ -590,6 +612,62 @@ namespace RenderDog
 		pShadowDepthSampler->SetToPixelShader(samplerIter->second);
 	}
 
+	D3D11SkyPixelShader::D3D11SkyPixelShader() :
+		m_SkyCubeTextureParam("ComVar_Texture_SkyCubeTexture", SHADER_PARAM_TYPE::TEXTURE),
+		m_SkyCubeTextureSamplerParam("ComVar_Texture_SkyCubeTextureSampler", SHADER_PARAM_TYPE::SAMPLER)
+	{
+		m_ShaderParamMap.insert({ "ComVar_Texture_SkyCubeTexture", &m_SkyCubeTextureParam });
+		m_ShaderParamMap.insert({ "ComVar_Texture_SkyCubeTextureSampler", &m_SkyCubeTextureSamplerParam });
+	}
+
+	D3D11SkyPixelShader::~D3D11SkyPixelShader()
+	{}
+
+	bool D3D11SkyPixelShader::Init()
+	{
+		return D3D11PixelShader::Init();
+	}
+
+	void D3D11SkyPixelShader::Release()
+	{
+		D3D11PixelShader::Release();
+	}
+
+	ShaderParam* D3D11SkyPixelShader::GetShaderParamPtrByName(const std::string& name)
+	{
+		auto shaderParamIter = m_ShaderParamMap.find(name);
+		if (shaderParamIter != m_ShaderParamMap.end())
+		{
+			return shaderParamIter->second;
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+
+	void D3D11SkyPixelShader::Apply()
+	{
+		D3D11PixelShader::Apply();
+
+		//SkyTexture
+		auto srvIter = m_ShaderResourceViewMap.find(m_SkyCubeTextureParam.GetName());
+		if (srvIter == m_ShaderResourceViewMap.end())
+		{
+			return;
+		}
+		ID3D11ShaderResourceView* pSkySRV = (ID3D11ShaderResourceView*)(m_SkyCubeTextureParam.GetTexture()->GetShaderResourceView());
+		g_pD3D11ImmediateContext->PSSetShaderResources(srvIter->second, 1, &pSkySRV);
+
+		auto samplerIter = m_SamplerStateMap.find(m_SkyCubeTextureSamplerParam.GetName());
+		ISamplerState* pSkySampler = m_SkyCubeTextureSamplerParam.GetSampler();
+		if (samplerIter == m_SamplerStateMap.end())
+		{
+			return;
+		}
+		pSkySampler->SetToPixelShader(samplerIter->second);
+	}
+
 	IShader* D3D11ShaderManager::GetVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc)
 	{
 		D3D11Shader* pVertexShader = nullptr;
@@ -669,6 +747,28 @@ namespace RenderDog
 		else
 		{
 			pPixelShader = new D3D11DirectionalLightingPixelShader();
+			pPixelShader->CompileFromFile(desc);
+			pPixelShader->Init();
+
+			m_ShaderMap.insert({ desc.fileName, pPixelShader });
+		}
+
+		return pPixelShader;
+	}
+
+	IShader* D3D11ShaderManager::GetSkyPixelShader(const ShaderCompileDesc& desc)
+	{
+		D3D11Shader* pPixelShader = nullptr;
+
+		auto shader = m_ShaderMap.find(desc.fileName);
+		if (shader != m_ShaderMap.end())
+		{
+			pPixelShader = shader->second;
+			pPixelShader->AddRef();
+		}
+		else
+		{
+			pPixelShader = new D3D11SkyPixelShader();
 			pPixelShader->CompileFromFile(desc);
 			pPixelShader->Init();
 

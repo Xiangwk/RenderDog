@@ -24,12 +24,11 @@ namespace RenderDog
 		StaticModel(const StaticModel&) = default;
 		StaticModel& operator=(const StaticModel&) = default;
 
-		void						LoadFromStandardData(const std::vector<StandardVertex>& vertices, const std::vector<uint32_t>& indices, 
-														 const std::string& vsFile, const std::string& psFile,
+		void						LoadFromStandardData(const std::vector<StandardVertex>& vertices, 
+														 const std::vector<uint32_t>& indices,
 														 const std::string& name);
 
-		bool						LoadFromRawMeshData(const std::vector<RDFbxImporter::RawMeshData>& rawMeshDatas, 
-														const std::string& vsFile, const std::string& psFile, 
+		bool						LoadFromRawMeshData(const std::vector<RDFbxImporter::RawMeshData>& rawMeshDatas,
 														const std::string& fileName);
 
 		bool						LoadTextureFromFile(const std::wstring& diffuseTexturePath, const std::wstring& normalTexturePath);

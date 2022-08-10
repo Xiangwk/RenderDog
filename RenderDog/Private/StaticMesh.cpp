@@ -19,15 +19,10 @@ namespace RenderDog
 		IIndexBuffer* pIB;
 		IConstantBuffer* pCB;
 
-		IShader* pVS;
-		IShader* pPS;
-
 		StaticMeshRenderData() :
 			pVB(nullptr),
 			pIB(nullptr),
-			pCB(nullptr),
-			pVS(nullptr),
-			pPS(nullptr)
+			pCB(nullptr)
 		{}
 	};
 
@@ -138,8 +133,6 @@ namespace RenderDog
 		renderParam.pDiffuseTextureSampler	= m_pDiffuseTextureSampler;
 		renderParam.pNormalTexture			= m_pNormalTexture;
 		renderParam.pNormalTextureSampler	= m_pNormalTextureSampler;
-		renderParam.pVS						= m_pRenderData->pVS;
-		renderParam.pPS						= m_pRenderData->pPS;
 
 		pPrimitiveRenderer->Render(renderParam);
 	}
@@ -194,7 +187,7 @@ namespace RenderDog
 		return true;
 	}
 
-	void StaticMesh::InitRenderData(const std::string& vsFile, const std::string& psFile)
+	void StaticMesh::InitRenderData()
 	{
 		m_pRenderData = new StaticMeshRenderData();
 
@@ -220,12 +213,6 @@ namespace RenderDog
 		cbDesc.pInitData = nullptr;
 		cbDesc.isDynamic = false;
 		m_pRenderData->pCB = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
-
-		ShaderCompileDesc vsDesc(vsFile, nullptr, "Main", "vs_5_0", 0);
-		m_pRenderData->pVS = g_pIShaderManager->GetStaticModelVertexShader(VERTEX_TYPE::STANDARD, vsDesc);
-
-		ShaderCompileDesc psDesc(psFile, nullptr, "Main", "ps_5_0", 0);
-		m_pRenderData->pPS = g_pIShaderManager->GetDirectionLightingPixelShader(psDesc);
 	}
 
 	void StaticMesh::ReleaseRenderData()
@@ -235,8 +222,6 @@ namespace RenderDog
 			m_pRenderData->pVB->Release();
 			m_pRenderData->pIB->Release();
 			m_pRenderData->pCB->Release();
-			m_pRenderData->pVS->Release();
-			m_pRenderData->pPS->Release();
 
 			delete m_pRenderData;
 			m_pRenderData = nullptr;
@@ -478,10 +463,7 @@ namespace RenderDog
 	{
 		if (mesh.m_pRenderData)
 		{
-			const std::string& vsFile = mesh.m_pRenderData->pVS->GetFileName();
-			const std::string& psFile = mesh.m_pRenderData->pPS->GetFileName();
-
-			InitRenderData(vsFile, psFile);
+			InitRenderData();
 		}
 
 		if (mesh.m_pDiffuseTexture)

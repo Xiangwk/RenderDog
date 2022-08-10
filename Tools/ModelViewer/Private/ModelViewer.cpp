@@ -323,7 +323,7 @@ bool ModelViewer::LoadFloor(uint32_t width, uint32_t depth, float unit)
 	RenderDog::GeometryGenerator::StandardMeshData GridMeshData;
 	RenderDog::g_pGeometryGenerator->GenerateGrid(width, depth, unit, GridMeshData);
 	m_pFloor = new RenderDog::StaticModel();
-	m_pFloor->LoadFromStandardData(GridMeshData.vertices, GridMeshData.indices, "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl", "MainSceneFloor");
+	m_pFloor->LoadFromStandardData(GridMeshData.vertices, GridMeshData.indices, "MainSceneFloor");
 	if (!m_pFloor->LoadTextureFromFile(L"EngineAsset/Textures/White_diff.dds", L"EngineAsset/Textures/FlatNormal_norm.dds"))
 	{
 		MessageBox(nullptr, "Load Texture Failed!", "ERROR", MB_OK);
@@ -338,7 +338,6 @@ bool ModelViewer::LoadFloor(uint32_t width, uint32_t depth, float unit)
 bool ModelViewer::LoadSkyBox(const std::wstring& texFileName)
 {
 	m_pSkyBox = new RenderDog::SkyBox(texFileName);
-	
 
 	return true;
 }
@@ -351,7 +350,7 @@ bool ModelViewer::LoadFbxModel(const std::string& fileName, LOAD_MODEL_TYPE mode
 
 		RenderDog::GeometryGenerator::StandardMeshData SphereMeshData;
 		RenderDog::g_pGeometryGenerator->GenerateSphere(50, 50, 50, SphereMeshData);
-		m_pStaticModel->LoadFromStandardData(SphereMeshData.vertices, SphereMeshData.indices, "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl", "Sphere");
+		m_pStaticModel->LoadFromStandardData(SphereMeshData.vertices, SphereMeshData.indices, "Sphere");
 		if (!m_pStaticModel->LoadTextureFromFile(L"EngineAsset/Textures/ErrorTexture_diff.dds", L"EngineAsset/Textures/FlatNormal_norm.dds"))
 		{
 			MessageBox(nullptr, "Load Texture Failed!", "ERROR", MB_OK);
@@ -372,7 +371,7 @@ bool ModelViewer::LoadFbxModel(const std::string& fileName, LOAD_MODEL_TYPE mode
 			return false;
 		}
 
-		if (!m_pStaticModel->LoadFromRawMeshData(RenderDog::g_pRDFbxImporter->GetRawMeshData(), "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl", fileName))
+		if (!m_pStaticModel->LoadFromRawMeshData(RenderDog::g_pRDFbxImporter->GetRawMeshData(), fileName))
 		{
 			MessageBox(nullptr, "Load Model Failed!", "ERROR", MB_OK);
 			return false;

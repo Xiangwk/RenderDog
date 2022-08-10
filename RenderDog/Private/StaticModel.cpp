@@ -23,13 +23,11 @@ namespace RenderDog
 
 	void StaticModel::LoadFromStandardData(const std::vector<StandardVertex>& vertices, 
 										   const std::vector<uint32_t>& indices,
-										   const std::string& vsFile, 
-										   const std::string& psFile,
 										   const std::string& name)
 	{
 		StaticMesh mesh;
 		mesh.LoadFromStandardData(vertices, indices, name);
-		mesh.InitRenderData(vsFile, psFile);
+		mesh.InitRenderData();
 
 		CalculateBoundings();
 
@@ -50,7 +48,7 @@ namespace RenderDog
 		return true;
 	}
 
-	bool StaticModel::LoadFromRawMeshData(const std::vector<RDFbxImporter::RawMeshData>& rawMeshDatas, const std::string& vsFile, const std::string& psFile, const std::string& fileName)
+	bool StaticModel::LoadFromRawMeshData(const std::vector<RDFbxImporter::RawMeshData>& rawMeshDatas, const std::string& fileName)
 	{
 		for (uint32_t i = 0; i < rawMeshDatas.size(); ++i)
 		{
@@ -89,7 +87,7 @@ namespace RenderDog
 		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
 		{
 			StaticMesh& mesh = m_Meshes[i];
-			mesh.InitRenderData(vsFile, psFile);
+			mesh.InitRenderData();
 		}
 
 		CalculateBoundings();

@@ -10,9 +10,6 @@ struct VSInput
 {
 	float3 PosL			: POSITION;
 	float4 Color		: COLOR;
-	float3 Normal		: NORMAL;
-	float4 Tangent		: TANGENT;
-	float2 Texcoord		: TEXCOORD;
 };
 
 struct VSOutput

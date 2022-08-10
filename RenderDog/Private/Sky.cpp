@@ -17,7 +17,7 @@ namespace RenderDog
 		RenderDog::g_pGeometryGenerator->GenerateBox(1, 1, 1, BoxMeshData);
 		m_pSkyMesh = new RenderDog::StaticMesh();
 		m_pSkyMesh->LoadFromStandardData(BoxMeshData.vertices, BoxMeshData.indices, "SkyBox");
-		m_pSkyMesh->InitRenderData("Shaders/SkyVertexShader.hlsl", "Shaders/SkyPixelShader.hlsl");
+		m_pSkyMesh->InitRenderData();
 		if (!m_pSkyMesh->LoadTextureFromFile(texFilePath, L""))
 		{
 			MessageBox(nullptr, "SkyBox Load Texture Failed!", "ERROR", MB_OK);
