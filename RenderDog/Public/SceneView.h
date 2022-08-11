@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "Matrix.h"
+
 #include <vector>
 
 namespace RenderDog
@@ -36,6 +38,18 @@ namespace RenderDog
 		FPSCamera*					GetCamera() { return m_pCamera; }
 		void						SetCamera(FPSCamera* pCamera) { m_pCamera = pCamera; }
 
+		void						SetWorldToViewMatrix(const Matrix4x4& mat) { m_WorldToViewMatrix = mat; }
+		const Matrix4x4&			GetWorldToViewMatrix() const { return m_WorldToViewMatrix; }
+
+		void						SetViewToClipMatrix(const Matrix4x4& mat) { m_ViewToClipMatrix = mat; }
+		const Matrix4x4&			GetViewToClipMatrix() const { return m_ViewToClipMatrix; }
+
+		void						SetShadowWorldToViewMatrix(const Matrix4x4& mat) { m_ShadowWorldToViewMatrix = mat; }
+		const Matrix4x4&			GetShadowWorldToViewMatrix() const { return m_ShadowWorldToViewMatrix; }
+
+		void						SetShadowViewToClipMatrix(const Matrix4x4& mat) { m_ShadowViewToClipMatrix = mat; }
+		const Matrix4x4&			GetShadowViewToClipMatrix() const { return m_ShadowViewToClipMatrix; }
+
 		void						ClearPrimitives();
 		void						ClearLights();
 
@@ -44,6 +58,12 @@ namespace RenderDog
 		std::vector<IPrimitive*>	m_SimplePris;
 		std::vector<ILight*>		m_Lights;
 		FPSCamera*					m_pCamera;
+
+		Matrix4x4					m_WorldToViewMatrix;
+		Matrix4x4					m_ViewToClipMatrix;
+
+		Matrix4x4					m_ShadowWorldToViewMatrix;
+		Matrix4x4					m_ShadowViewToClipMatrix;
 	};
 
 }// namespace RenderDog

@@ -14,8 +14,17 @@ namespace RenderDog
 		m_OpaquePris(0),
 		m_SimplePris(0),
 		m_Lights(0),
-		m_pCamera(nullptr)
-	{}
+		m_pCamera(nullptr),
+		m_WorldToViewMatrix(),
+		m_ViewToClipMatrix(),
+		m_ShadowWorldToViewMatrix(),
+		m_ShadowViewToClipMatrix()
+	{
+		m_WorldToViewMatrix.Identity();
+		m_ViewToClipMatrix.Identity();
+		m_ShadowWorldToViewMatrix.Identity();
+		m_ShadowViewToClipMatrix.Identity();
+	}
 
 	SceneView::SceneView(FPSCamera* pCamera) :
 		m_OpaquePris(0),

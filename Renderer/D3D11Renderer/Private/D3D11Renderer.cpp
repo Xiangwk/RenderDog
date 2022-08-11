@@ -28,6 +28,8 @@ namespace RenderDog
 	const std::string g_DirectionalLightingPixelShaderFilePath = "Shaders/PhongLightingPixelShader.hlsl";
 	const std::string g_SkyVertexShaderFilePath = "Shaders/SkyVertexShader.hlsl";
 	const std::string g_SkyPixelShaderFilePath = "Shaders/SkyPixelShader.hlsl";
+	const std::string g_ShadowDepthStaticVertexShaderFilePath = "Shaders/ShadowDepthStaticModelVertexShader.hlsl";
+	const std::string g_ShadowDepthPixelShaderFilePath = "Shaders/ShadowDepthStaticModelVertexShader.hlsl";
 
 	//===========================================================
 	//    Mesh Renderer
@@ -301,11 +303,15 @@ namespace RenderDog
 		ShaderParam* pWorldToViewMatrix = m_pVertexShader->GetShaderParamPtrByName("ComVar_Matrix_WorldToView");
 		ShaderParam* pViewToClipMatrix = m_pVertexShader->GetShaderParamPtrByName("ComVar_Matrix_ViewToClip");
 		ShaderParam* pWorldEyePosition = m_pVertexShader->GetShaderParamPtrByName("ComVar_Vector_WorldEyePosition");
+		ShaderParam* pShadowWorldToViewMatrix = m_pVertexShader->GetShaderParamPtrByName("ComVar_Matrix_ShadowView");
+		ShaderParam* pShadowViewToClipMatrix = m_pVertexShader->GetShaderParamPtrByName("ComVar_Matrix_ShadowProjection");
 
 		FPSCamera* pCamera = m_pSceneView->GetCamera();
 		pWorldToViewMatrix->SetMatrix4x4(pCamera->GetViewMatrix());
 		pViewToClipMatrix->SetMatrix4x4(pCamera->GetPerspProjectionMatrix());
 		pWorldEyePosition->SetVector4(Vector4(pCamera->GetPosition(), 1.0f));
+		pShadowWorldToViewMatrix->SetMatrix4x4(m_pSceneView->GetShadowWorldToViewMatrix());
+		pShadowViewToClipMatrix->SetMatrix4x4(m_pSceneView->GetShadowViewToClipMatrix());
 
 		m_pVertexShader->Apply();
 		
@@ -339,6 +345,10 @@ namespace RenderDog
 		ShaderParam* pShadowDepthTextureSamplerParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Texture_ShadowDepthTextureSampler");
 		pShadowDepthTextureSamplerParam->SetSampler(m_pShadowDepthTextureSampler);
 
+		Vector4 shadowParams0(g_ShadowDepthOffset, (float)g_ShadowMapRTSize, 0.0f, 0.0f);
+		ShaderParam* pShadowParam0 = m_pPixelShader->GetShaderParamPtrByName("ComVar_Vector_ShadowParam0");
+		pShadowParam0->SetVector4(shadowParams0);
+
 		m_pPixelShader->Apply();
 
 		ID3D11Buffer* pLightingCB = (ID3D11Buffer*)(m_pLightingCB->GetResource());
@@ -361,8 +371,7 @@ namespace RenderDog
 	class D3D11MeshShadowRenderer : public D3D11MeshRenderer
 	{
 	public:
-		D3D11MeshShadowRenderer();
-		D3D11MeshShadowRenderer(SceneView* pSceneView, IShader* pVS, IShader* pPS);
+		D3D11MeshShadowRenderer(SceneView* pSceneView);
 		virtual ~D3D11MeshShadowRenderer();
 
 		virtual void					Render(const PrimitiveRenderParam& renderParam) override;
@@ -372,19 +381,30 @@ namespace RenderDog
 		IShader*						m_pPS;
 	};
 
-	D3D11MeshShadowRenderer::D3D11MeshShadowRenderer():
-		m_pVS(nullptr),
-		m_pPS(nullptr)
-	{}
+	D3D11MeshShadowRenderer::D3D11MeshShadowRenderer(SceneView* pSceneView):
+		D3D11MeshRenderer(pSceneView)
+	{
+		ShaderCompileDesc vsDesc = ShaderCompileDesc(g_ShadowDepthStaticVertexShaderFilePath, nullptr, "Main", "vs_5_0", 0);
+		m_pVS = g_pIShaderManager->GetStaticModelVertexShader(VERTEX_TYPE::STANDARD, vsDesc);
 
-	D3D11MeshShadowRenderer::D3D11MeshShadowRenderer(SceneView* pSceneView, IShader* pVS, IShader* pPS):
-		D3D11MeshRenderer(pSceneView),
-		m_pVS(pVS),
-		m_pPS(pPS)
-	{}
+		ShaderCompileDesc psDesc = ShaderCompileDesc(g_ShadowDepthPixelShaderFilePath, nullptr, "Main", "ps_5_0", 0);
+		m_pPS = g_pIShaderManager->GetPixelShader(psDesc);
+	}
 
 	D3D11MeshShadowRenderer::~D3D11MeshShadowRenderer()
-	{}
+	{
+		if (m_pVS)
+		{
+			m_pVS->Release();
+			m_pVS = nullptr;
+		}
+
+		if (m_pPS)
+		{
+			m_pPS->Release();
+			m_pPS = nullptr;
+		}
+	}
 
 	void D3D11MeshShadowRenderer::Render(const PrimitiveRenderParam& renderParam)
 	{
@@ -414,9 +434,9 @@ namespace RenderDog
 		ShaderParam* pViewToClipMatrix = m_pVS->GetShaderParamPtrByName("ComVar_Matrix_ViewToClip");
 		ShaderParam* pWorldEyePosition = m_pVS->GetShaderParamPtrByName("ComVar_Vector_WorldEyePosition");
 
+		pWorldToViewMatrix->SetMatrix4x4(m_pSceneView->GetShadowWorldToViewMatrix());
+		pViewToClipMatrix->SetMatrix4x4(m_pSceneView->GetShadowViewToClipMatrix());
 		FPSCamera* pCamera = m_pSceneView->GetCamera();
-		pWorldToViewMatrix->SetMatrix4x4(pCamera->GetViewMatrix());
-		pViewToClipMatrix->SetMatrix4x4(pCamera->GetPerspProjectionMatrix());
 		pWorldEyePosition->SetVector4(Vector4(pCamera->GetPosition(), 1.0f));
 		m_pVS->Apply();
 
@@ -794,15 +814,19 @@ namespace RenderDog
 				Matrix4x4 lightOrthoMatrix = GetOrthographicMatrixLH(-lightFrustumSize, lightFrustumSize,
 					-lightFrustumSize, lightFrustumSize,
 					0.0f, 2.0f * lightFrustumSize);
-				ShadowDepthConstantData shadowDepthData = {};
+
+				m_pSceneView->SetShadowWorldToViewMatrix(lightViewMatrix);
+				m_pSceneView->SetShadowViewToClipMatrix(lightOrthoMatrix);
+
+				/*ShadowDepthConstantData shadowDepthData = {};
 				shadowDepthData.viewMatrix = lightViewMatrix;
 				shadowDepthData.orthoMatrix = lightOrthoMatrix;
-				m_pShadowDepthConstantBuffer->Update(&shadowDepthData, sizeof(shadowDepthData));
+				m_pShadowDepthConstantBuffer->Update(&shadowDepthData, sizeof(shadowDepthData));*/
 
-				ShadowTestConstantData shadowTestData = {};
+				/*ShadowTestConstantData shadowTestData = {};
 				shadowTestData.param0.x = g_ShadowDepthOffset;
 				shadowTestData.param0.y = static_cast<float>(g_ShadowMapRTSize);
-				m_pShadowTestConstantBuffer->Update(&shadowTestData, sizeof(shadowTestData));
+				m_pShadowTestConstantBuffer->Update(&shadowTestData, sizeof(shadowTestData));*/
 			}
 		}
 
@@ -930,11 +954,11 @@ namespace RenderDog
 		psDesc = ShaderCompileDesc(g_SkyPixelShaderFilePath, nullptr, "Main", "ps_5_0", 0);
 		m_pSkyPixelShader = g_pIShaderManager->GetSkyPixelShader(psDesc);
 
-		vsDesc = ShaderCompileDesc("Shaders/ShadowDepthStaticModelVertexShader.hlsl", nullptr, "Main", "vs_5_0", 0);
+		vsDesc = ShaderCompileDesc(g_ShadowDepthStaticVertexShaderFilePath, nullptr, "Main", "vs_5_0", 0);
 		m_pShadowDepthStaticModelVS = g_pIShaderManager->GetStaticModelVertexShader(VERTEX_TYPE::STANDARD, vsDesc);
 		vsDesc = ShaderCompileDesc("Shaders/ShadowDepthSkinModelVertexShader.hlsl", nullptr, "Main", "vs_5_0", 0);
 		m_pShadowDepthSkinModelVS = g_pIShaderManager->GetVertexShader(VERTEX_TYPE::SKIN, vsDesc);
-		psDesc = ShaderCompileDesc("Shaders/ShadowDepthPixelShader.hlsl", nullptr, "Main", "ps_5_0", 0);
+		psDesc = ShaderCompileDesc(g_ShadowDepthPixelShaderFilePath, nullptr, "Main", "ps_5_0", 0);
 		m_pShadowDepthPS = g_pIShaderManager->GetPixelShader(psDesc);
 
 		return true;
@@ -989,13 +1013,13 @@ namespace RenderDog
 	bool D3D11Renderer::CreateShadowResources(uint32_t width, uint32_t height)
 	{
 		BufferDesc cbDesc = {};
-		cbDesc.name = "MainLightShadowDepthConstantBuffer";
+		cbDesc.name = "ComVar_ConstantBuffer_ShadowMatrixs";
 		cbDesc.byteWidth = sizeof(ShadowDepthConstantData);
 		cbDesc.pInitData = nullptr;
 		cbDesc.isDynamic = true;
 		m_pShadowDepthConstantBuffer = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
 
-		cbDesc.name = "MainLightShadowTestConstantBuffer";
+		cbDesc.name = "ComVar_ConstantBuffer_ShadowParam";
 		cbDesc.byteWidth = sizeof(ShadowTestConstantData);
 		cbDesc.pInitData = nullptr;
 		cbDesc.isDynamic = false;
@@ -1079,8 +1103,8 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->ClearDepthStencilView(pShadowDSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
 		g_pD3D11ImmediateContext->OMSetRenderTargets(0, nullptr, pShadowDSV);
 
-		D3D11MeshShadowRenderer staticModelShadowRenderer(m_pSceneView, m_pShadowDepthStaticModelVS, m_pShadowDepthPS);
-		D3D11MeshShadowRenderer skinModelShadowRenderer(m_pSceneView, m_pShadowDepthSkinModelVS, m_pShadowDepthPS);
+		D3D11MeshShadowRenderer staticModelShadowRenderer(m_pSceneView);
+		D3D11MeshShadowRenderer skinModelShadowRenderer(m_pSceneView);
 
 
 		uint32_t opaquePriNum = m_pSceneView->GetOpaquePrisNum();

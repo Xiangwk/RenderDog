@@ -11,6 +11,7 @@
 #include "Buffer.h"
 #include "Texture.h"
 #include "Matrix.h"
+#include "GlobalValue.h"
 
 #include <fstream>
 #include <d3d11.h>
@@ -81,6 +82,12 @@ namespace RenderDog
 			Vector4		mainCameraWorldPos;
 		};
 
+		struct ShadowDepthConstantData
+		{
+			Matrix4x4	viewMatrix;
+			Matrix4x4	projMatrix;
+		};
+
 	public:
 		D3D11StaticModelVertexShader();
 		explicit D3D11StaticModelVertexShader(VERTEX_TYPE vertexType);
@@ -98,6 +105,9 @@ namespace RenderDog
 		ShaderParam					m_WorldToViewMatrixParam;
 		ShaderParam					m_ViewToClipMatrixParam;
 		ShaderParam					m_WorldEyePostionParam;
+
+		ShaderParam					m_ShadowWorldToViewMatrixParam;
+		ShaderParam					m_ShadowViewToClipMatrixParam;
 	};
 
 
@@ -161,6 +171,8 @@ namespace RenderDog
 		ShaderParam					m_NormalTextureSamplerParam;
 		ShaderParam					m_ShadowDepthTextureParam;
 		ShaderParam					m_ShadowDepthTextureSamplerParam;
+
+		ShaderParam					m_ShadowParam0;						//x: shadow offset, y: shadowMap Size
 	};
 
 	//=========================================================================
@@ -375,12 +387,16 @@ namespace RenderDog
 		m_LocalToWorldMatrixParam("ComVar_Matrix_LocalToWorld", SHADER_PARAM_TYPE::MATRIX),
 		m_WorldToViewMatrixParam("ComVar_Matrix_WorldToView", SHADER_PARAM_TYPE::MATRIX),
 		m_ViewToClipMatrixParam("ComVar_Matrix_ViewToClip", SHADER_PARAM_TYPE::MATRIX),
-		m_WorldEyePostionParam("ComVar_Vector_WorldEyePosition", SHADER_PARAM_TYPE::FLOAT_VECTOR)
+		m_WorldEyePostionParam("ComVar_Vector_WorldEyePosition", SHADER_PARAM_TYPE::FLOAT_VECTOR),
+		m_ShadowWorldToViewMatrixParam("ComVar_Matrix_ShadowView", SHADER_PARAM_TYPE::MATRIX),
+		m_ShadowViewToClipMatrixParam("ComVar_Matrix_ShadowProjection", SHADER_PARAM_TYPE::MATRIX)
 	{
 		m_ShaderParamMap.insert({ "ComVar_Matrix_LocalToWorld", &m_LocalToWorldMatrixParam });
 		m_ShaderParamMap.insert({ "ComVar_Matrix_WorldToView", &m_WorldToViewMatrixParam });
 		m_ShaderParamMap.insert({ "ComVar_Matrix_ViewToClip", &m_ViewToClipMatrixParam });
 		m_ShaderParamMap.insert({ "ComVar_Vector_WorldEyePosition", &m_WorldEyePostionParam });
+		m_ShaderParamMap.insert({ "ComVar_Matrix_ShadowView", &m_ShadowWorldToViewMatrixParam});
+		m_ShaderParamMap.insert({ "ComVar_Matrix_ShadowProjection", &m_ShadowViewToClipMatrixParam });
 	}
 
 	D3D11StaticModelVertexShader::D3D11StaticModelVertexShader(VERTEX_TYPE vertexType) :
@@ -388,12 +404,16 @@ namespace RenderDog
 		m_LocalToWorldMatrixParam("ComVar_Matrix_LocalToWorld", SHADER_PARAM_TYPE::MATRIX),
 		m_WorldToViewMatrixParam("ComVar_Matrix_WorldToView", SHADER_PARAM_TYPE::MATRIX),
 		m_ViewToClipMatrixParam("ComVar_Matrix_ViewToClip", SHADER_PARAM_TYPE::MATRIX),
-		m_WorldEyePostionParam("ComVar_Vector_WorldEyePosition", SHADER_PARAM_TYPE::FLOAT_VECTOR)
+		m_WorldEyePostionParam("ComVar_Vector_WorldEyePosition", SHADER_PARAM_TYPE::FLOAT_VECTOR),
+		m_ShadowWorldToViewMatrixParam("ComVar_Matrix_ShadowView", SHADER_PARAM_TYPE::MATRIX),
+		m_ShadowViewToClipMatrixParam("ComVar_Matrix_ShadowProjection", SHADER_PARAM_TYPE::MATRIX)
 	{
 		m_ShaderParamMap.insert({ "ComVar_Matrix_LocalToWorld", &m_LocalToWorldMatrixParam });
 		m_ShaderParamMap.insert({ "ComVar_Matrix_WorldToView", &m_WorldToViewMatrixParam });
 		m_ShaderParamMap.insert({ "ComVar_Matrix_ViewToClip", &m_ViewToClipMatrixParam });
 		m_ShaderParamMap.insert({ "ComVar_Vector_WorldEyePosition", &m_WorldEyePostionParam });
+		m_ShaderParamMap.insert({ "ComVar_Matrix_ShadowView", &m_ShadowWorldToViewMatrixParam });
+		m_ShaderParamMap.insert({ "ComVar_Matrix_ShadowProjection", &m_ShadowViewToClipMatrixParam });
 	}
 
 	D3D11StaticModelVertexShader::~D3D11StaticModelVertexShader()
@@ -444,6 +464,25 @@ namespace RenderDog
 		{
 			uint32_t cbSlot = cbIter->second;
 			ID3D11Buffer* pCB = (ID3D11Buffer*)(pGlobalConstantBuffer->GetResource());
+			g_pD3D11ImmediateContext->VSSetConstantBuffers(cbSlot, 1, (ID3D11Buffer**)&pCB);
+		}
+
+		IConstantBuffer* pShadowMatrixConstantBuffer = g_pIBufferManager->GetConstantBufferByName("ComVar_ConstantBuffer_ShadowMatrixs");
+		if (!pShadowMatrixConstantBuffer)
+		{
+			return;
+		}
+
+		ShadowDepthConstantData shadowMatrixCBData;
+		shadowMatrixCBData.viewMatrix = m_ShadowWorldToViewMatrixParam.GetMatrix4x4();
+		shadowMatrixCBData.projMatrix = m_ShadowViewToClipMatrixParam.GetMatrix4x4();
+		pShadowMatrixConstantBuffer->Update(&shadowMatrixCBData, sizeof(shadowMatrixCBData));
+
+		cbIter = m_ConstantBufferMap.find(pShadowMatrixConstantBuffer->GetName());
+		if (cbIter != m_ConstantBufferMap.end())
+		{
+			uint32_t cbSlot = cbIter->second;
+			ID3D11Buffer* pCB = (ID3D11Buffer*)(pShadowMatrixConstantBuffer->GetResource());
 			g_pD3D11ImmediateContext->VSSetConstantBuffers(cbSlot, 1, (ID3D11Buffer**)&pCB);
 		}
 	}
@@ -501,7 +540,8 @@ namespace RenderDog
 		m_NormalTextureParam("NormalTexture", SHADER_PARAM_TYPE::TEXTURE),
 		m_NormalTextureSamplerParam("NormalTextureSampler", SHADER_PARAM_TYPE::SAMPLER),
 		m_ShadowDepthTextureParam("ComVar_Texture_ShadowDepthTexture", SHADER_PARAM_TYPE::TEXTURE),
-		m_ShadowDepthTextureSamplerParam("ComVar_Texture_ShadowDepthTextureSampler", SHADER_PARAM_TYPE::SAMPLER)
+		m_ShadowDepthTextureSamplerParam("ComVar_Texture_ShadowDepthTextureSampler", SHADER_PARAM_TYPE::SAMPLER),
+		m_ShadowParam0("ComVar_Vector_ShadowParam0", SHADER_PARAM_TYPE::FLOAT_VECTOR)
 	{
 		m_ShaderParamMap.insert({ "ComVar_Texture_SkyCubeTexture", &m_SkyCubeTextureParam });
 		m_ShaderParamMap.insert({ "ComVar_Texture_SkyCubeTextureSampler", &m_SkyCubeTextureSamplerParam });
@@ -511,6 +551,7 @@ namespace RenderDog
 		m_ShaderParamMap.insert({ "NormalTextureSampler", &m_NormalTextureSamplerParam });
 		m_ShaderParamMap.insert({ "ComVar_Texture_ShadowDepthTexture", &m_ShadowDepthTextureParam });
 		m_ShaderParamMap.insert({ "ComVar_Texture_ShadowDepthTextureSampler", &m_ShadowDepthTextureSamplerParam });
+		m_ShaderParamMap.insert({ "ComVar_Vector_ShadowParam0", &m_ShadowParam0 });
 	}
 
 	D3D11DirectionalLightingPixelShader::~D3D11DirectionalLightingPixelShader()
@@ -610,6 +651,14 @@ namespace RenderDog
 			return;
 		}
 		pShadowDepthSampler->SetToPixelShader(samplerIter->second);
+
+		IConstantBuffer* pShadowParamBuffer = g_pIBufferManager->GetConstantBufferByName("ComVar_ConstantBuffer_ShadowParam");
+		if (!pShadowParamBuffer)
+		{
+			return;
+		}
+		Vector4 shadowParam0 = m_ShadowParam0.GetVector4();
+		pShadowParamBuffer->Update(&shadowParam0, sizeof(shadowParam0));
 	}
 
 	D3D11SkyPixelShader::D3D11SkyPixelShader() :
