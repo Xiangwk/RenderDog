@@ -175,7 +175,7 @@ namespace RenderDog
 
 		perModelTransform.LocalToWorldMatrix = GetTranslationMatrix(m_WorldPosition.x, m_WorldPosition.y, m_WorldPosition.z);
 		
-		if (m_pSkeleton->GetBoneNum() > 256)
+		if (m_pSkeleton->GetBoneNum() > g_MaxBoneNum)
 		{
 			return;
 		}

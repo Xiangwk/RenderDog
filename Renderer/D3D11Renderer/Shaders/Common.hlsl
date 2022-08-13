@@ -4,6 +4,8 @@
 //Written by Xiang Weikang
 ////////////////////////////////////////
 
+#define MAX_BONE_NUM 256
+
 cbuffer ComVar_ConstantBuffer_Global
 {
 	row_major matrix	ComVar_Matrix_WorldToView;
@@ -14,5 +16,5 @@ cbuffer ComVar_ConstantBuffer_Global
 cbuffer ComVar_ConstantBuffer_PerObject : register(b1)
 {
 	row_major matrix	ComVar_Matrix_LocalToWorld;
-	row_major matrix	ComVar_Matrix_BoneTransforms[256];
+	row_major matrix	ComVar_Matrix_BoneTransforms[MAX_BONE_NUM];
 };

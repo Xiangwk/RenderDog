@@ -101,7 +101,6 @@ namespace RenderDog
 		virtual void				Apply() override;
 
 	protected:
-		ShaderParam					m_LocalToWorldMatrixParam;
 		ShaderParam					m_WorldToViewMatrixParam;
 		ShaderParam					m_ViewToClipMatrixParam;
 		ShaderParam					m_WorldEyePostionParam;
@@ -384,14 +383,12 @@ namespace RenderDog
 
 	D3D11StaticModelVertexShader::D3D11StaticModelVertexShader() :
 		D3D11VertexShader(),
-		m_LocalToWorldMatrixParam("ComVar_Matrix_LocalToWorld", SHADER_PARAM_TYPE::MATRIX),
 		m_WorldToViewMatrixParam("ComVar_Matrix_WorldToView", SHADER_PARAM_TYPE::MATRIX),
 		m_ViewToClipMatrixParam("ComVar_Matrix_ViewToClip", SHADER_PARAM_TYPE::MATRIX),
 		m_WorldEyePostionParam("ComVar_Vector_WorldEyePosition", SHADER_PARAM_TYPE::FLOAT_VECTOR),
 		m_ShadowWorldToViewMatrixParam("ComVar_Matrix_ShadowView", SHADER_PARAM_TYPE::MATRIX),
 		m_ShadowViewToClipMatrixParam("ComVar_Matrix_ShadowProjection", SHADER_PARAM_TYPE::MATRIX)
 	{
-		m_ShaderParamMap.insert({ "ComVar_Matrix_LocalToWorld", &m_LocalToWorldMatrixParam });
 		m_ShaderParamMap.insert({ "ComVar_Matrix_WorldToView", &m_WorldToViewMatrixParam });
 		m_ShaderParamMap.insert({ "ComVar_Matrix_ViewToClip", &m_ViewToClipMatrixParam });
 		m_ShaderParamMap.insert({ "ComVar_Vector_WorldEyePosition", &m_WorldEyePostionParam });
@@ -401,14 +398,12 @@ namespace RenderDog
 
 	D3D11StaticModelVertexShader::D3D11StaticModelVertexShader(VERTEX_TYPE vertexType) :
 		D3D11VertexShader(vertexType),
-		m_LocalToWorldMatrixParam("ComVar_Matrix_LocalToWorld", SHADER_PARAM_TYPE::MATRIX),
 		m_WorldToViewMatrixParam("ComVar_Matrix_WorldToView", SHADER_PARAM_TYPE::MATRIX),
 		m_ViewToClipMatrixParam("ComVar_Matrix_ViewToClip", SHADER_PARAM_TYPE::MATRIX),
 		m_WorldEyePostionParam("ComVar_Vector_WorldEyePosition", SHADER_PARAM_TYPE::FLOAT_VECTOR),
 		m_ShadowWorldToViewMatrixParam("ComVar_Matrix_ShadowView", SHADER_PARAM_TYPE::MATRIX),
 		m_ShadowViewToClipMatrixParam("ComVar_Matrix_ShadowProjection", SHADER_PARAM_TYPE::MATRIX)
 	{
-		m_ShaderParamMap.insert({ "ComVar_Matrix_LocalToWorld", &m_LocalToWorldMatrixParam });
 		m_ShaderParamMap.insert({ "ComVar_Matrix_WorldToView", &m_WorldToViewMatrixParam });
 		m_ShaderParamMap.insert({ "ComVar_Matrix_ViewToClip", &m_ViewToClipMatrixParam });
 		m_ShaderParamMap.insert({ "ComVar_Vector_WorldEyePosition", &m_WorldEyePostionParam });

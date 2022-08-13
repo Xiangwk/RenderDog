@@ -17,6 +17,8 @@
 
 namespace RenderDog
 {
+	const uint32_t g_MaxBoneNum = 256;
+
 	struct	SkinMeshRenderData;
 
 	class SkinMesh : public IPrimitive
@@ -25,14 +27,14 @@ namespace RenderDog
 		struct SkinModelPerObjectTransform
 		{
 			Matrix4x4			LocalToWorldMatrix;
-			Matrix4x4			BoneFinalTransformMatrix[256];
+			Matrix4x4			BoneFinalTransformMatrix[g_MaxBoneNum];
 
 			SkinModelPerObjectTransform() :
 				LocalToWorldMatrix()
 			{
 				LocalToWorldMatrix.Identity();
 
-				for (int i = 0; i < 256; ++i)
+				for (int i = 0; i < g_MaxBoneNum; ++i)
 				{
 					BoneFinalTransformMatrix[i].Identity();
 				}
