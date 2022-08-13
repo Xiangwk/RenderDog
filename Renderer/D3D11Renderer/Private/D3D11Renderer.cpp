@@ -732,11 +732,6 @@ namespace RenderDog
 		if (m_pSceneView->GetLightNum() > 0)
 		{
 			ILight* pMainLight = m_pSceneView->GetLight(0);
-			/*DirectionalLightData dirLightData = {};
-			dirLightData.direction = Vector4(pMainLight->GetDirection(), 0.0f);
-			dirLightData.color = Vector4(pMainLight->GetColor(), pMainLight->GetLuminance());
-			m_pLightingConstantBuffer->Update(&dirLightData, sizeof(dirLightData));*/
-
 			if (pMainLight->GetType() == LIGHT_TYPE::DIRECTIONAL)
 			{
 				BoundingSphere sceneBoundingSphere = pScene->GetBoundingSphere();
@@ -749,16 +744,6 @@ namespace RenderDog
 
 				m_pSceneView->SetShadowWorldToViewMatrix(lightViewMatrix);
 				m_pSceneView->SetShadowViewToClipMatrix(lightOrthoMatrix);
-
-				/*ShadowDepthConstantData shadowDepthData = {};
-				shadowDepthData.viewMatrix = lightViewMatrix;
-				shadowDepthData.orthoMatrix = lightOrthoMatrix;
-				m_pShadowDepthConstantBuffer->Update(&shadowDepthData, sizeof(shadowDepthData));*/
-
-				/*ShadowTestConstantData shadowTestData = {};
-				shadowTestData.param0.x = g_ShadowDepthOffset;
-				shadowTestData.param0.y = static_cast<float>(g_ShadowMapRTSize);
-				m_pShadowTestConstantBuffer->Update(&shadowTestData, sizeof(shadowTestData));*/
 			}
 		}
 
