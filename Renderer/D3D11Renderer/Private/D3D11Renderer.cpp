@@ -39,6 +39,7 @@ namespace RenderDog
 	protected:
 		IShader*				m_pVertexShader;
 		IShader*				m_pPixelShader;
+
 		SceneView*				m_pSceneView;
 	};
 
@@ -75,21 +76,20 @@ namespace RenderDog
 	class D3D11LineMeshRenderer : public D3D11MeshRenderer
 	{
 	public:
-		D3D11LineMeshRenderer();
-		D3D11LineMeshRenderer(SceneView* pSceneView);
+		explicit D3D11LineMeshRenderer(SceneView* pSceneView);
 		virtual ~D3D11LineMeshRenderer();
 
 		virtual void					Render(const PrimitiveRenderParam& renderParam) override;
 	};
 
-	D3D11LineMeshRenderer::D3D11LineMeshRenderer()
-	{}
-
-	D3D11LineMeshRenderer::~D3D11LineMeshRenderer()
-	{}
-
 	D3D11LineMeshRenderer::D3D11LineMeshRenderer(SceneView* pSceneView) :
 		D3D11MeshRenderer(pSceneView)
+	{
+		ShaderCompileDesc psDesc(g_SingleColorPixelShader, nullptr, "Main", "ps_5_0", 0);
+		m_pPixelShader = g_pIShaderManager->GetPixelShader(psDesc);
+	}
+
+	D3D11LineMeshRenderer::~D3D11LineMeshRenderer()
 	{}
 
 	void D3D11LineMeshRenderer::Render(const PrimitiveRenderParam& renderParam)
@@ -130,7 +130,7 @@ namespace RenderDog
 		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetResource());
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(1, 1, &pPerObjCB);
 
-		//renderParam.pPS->Apply();
+		m_pPixelShader->Apply();
 
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
 	}

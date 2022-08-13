@@ -31,6 +31,8 @@ namespace RenderDog
 
 		virtual const std::string&						GetFileName() const override { return m_fileName; }
 
+		virtual ShaderParam*							GetShaderParamPtrByName(const std::string& name) override;
+
 		bool											CompileFromFile(const ShaderCompileDesc& desc);
 
 	protected:
@@ -58,8 +60,6 @@ namespace RenderDog
 
 		virtual bool				Init() override;
 		virtual void				Release() override;
-
-		virtual ShaderParam*		GetShaderParamPtrByName(const std::string& name) override { return nullptr; }
 
 		virtual void				Apply() override;
 
@@ -93,8 +93,6 @@ namespace RenderDog
 		virtual bool				Init() override;
 		virtual void				Release() override;
 
-		virtual ShaderParam*		GetShaderParamPtrByName(const std::string& name) override;
-
 		virtual void				Apply() override;
 
 	protected:
@@ -119,8 +117,6 @@ namespace RenderDog
 		virtual bool				Init() override;
 		virtual void				Release() override;
 
-		virtual ShaderParam*		GetShaderParamPtrByName(const std::string& name) override { return nullptr; }
-
 		virtual void				Apply() override;
 
 	private:
@@ -135,8 +131,6 @@ namespace RenderDog
 
 		virtual bool				Init() override;
 		virtual void				Release() override;
-
-		virtual ShaderParam*		GetShaderParamPtrByName(const std::string& name) override;
 
 		virtual void				Apply() override;
 
@@ -153,8 +147,6 @@ namespace RenderDog
 
 		virtual bool				Init() override;
 		virtual void				Release() override;
-
-		virtual ShaderParam*		GetShaderParamPtrByName(const std::string& name) override;
 
 		virtual void				Apply() override;
 
@@ -307,6 +299,19 @@ namespace RenderDog
 		return true;
 	}
 
+	ShaderParam* D3D11Shader::GetShaderParamPtrByName(const std::string& name)
+	{
+		auto shaderParamIter = m_ShaderParamMap.find(name);
+		if (shaderParamIter != m_ShaderParamMap.end())
+		{
+			return shaderParamIter->second;
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+
 	D3D11VertexShader::D3D11VertexShader() :
 		D3D11Shader(),
 		m_pVS(nullptr),
@@ -419,19 +424,6 @@ namespace RenderDog
 	void D3D11ModelVertexShader::Release()
 	{
 		D3D11VertexShader::Release();
-	}
-
-	ShaderParam* D3D11ModelVertexShader::GetShaderParamPtrByName(const std::string& name)
-	{
-		auto shaderParamIter = m_ShaderParamMap.find(name);
-		if (shaderParamIter != m_ShaderParamMap.end())
-		{
-			return shaderParamIter->second;
-		}
-		else
-		{
-			return nullptr;
-		}
 	}
 
 	void D3D11ModelVertexShader::Apply()
@@ -559,19 +551,6 @@ namespace RenderDog
 		D3D11PixelShader::Release();
 	}
 
-	ShaderParam* D3D11DirectionalLightingPixelShader::GetShaderParamPtrByName(const std::string& name)
-	{
-		auto shaderParamIter = m_ShaderParamMap.find(name);
-		if (shaderParamIter != m_ShaderParamMap.end())
-		{
-			return shaderParamIter->second;
-		}
-		else
-		{
-			return nullptr;
-		}
-	}
-
 	void D3D11DirectionalLightingPixelShader::Apply()
 	{
 		D3D11PixelShader::Apply();
@@ -680,19 +659,6 @@ namespace RenderDog
 	void D3D11SkyPixelShader::Release()
 	{
 		D3D11PixelShader::Release();
-	}
-
-	ShaderParam* D3D11SkyPixelShader::GetShaderParamPtrByName(const std::string& name)
-	{
-		auto shaderParamIter = m_ShaderParamMap.find(name);
-		if (shaderParamIter != m_ShaderParamMap.end())
-		{
-			return shaderParamIter->second;
-		}
-		else
-		{
-			return nullptr;
-		}
 	}
 
 	void D3D11SkyPixelShader::Apply()
