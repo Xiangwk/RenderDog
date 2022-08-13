@@ -229,6 +229,7 @@ namespace RenderDog
 			m_pRenderData->pVB->Release();
 			m_pRenderData->pIB->Release();
 			m_pRenderData->pCB->Release();
+			m_pRenderData->pVS->Release();
 
 			delete m_pRenderData;
 			m_pRenderData = nullptr;
