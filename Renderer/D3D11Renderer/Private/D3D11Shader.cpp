@@ -654,6 +654,14 @@ namespace RenderDog
 		}
 		Vector4 shadowParam0 = m_ShadowParam0.GetVector4();
 		pShadowParamBuffer->Update(&shadowParam0, sizeof(shadowParam0));
+
+		auto cbIter = m_ConstantBufferMap.find(pShadowParamBuffer->GetName());
+		if (cbIter != m_ConstantBufferMap.end())
+		{
+			uint32_t cbSlot = cbIter->second;
+			ID3D11Buffer* pCB = (ID3D11Buffer*)(pShadowParamBuffer->GetResource());
+			g_pD3D11ImmediateContext->PSSetConstantBuffers(cbSlot, 1, (ID3D11Buffer**)&pCB);
+		}
 	}
 
 	D3D11SkyPixelShader::D3D11SkyPixelShader() :

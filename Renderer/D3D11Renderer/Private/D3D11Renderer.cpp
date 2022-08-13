@@ -219,8 +219,6 @@ namespace RenderDog
 	{
 		SceneView*					pSceneView;
 		IConstantBuffer*			pLightingCB;
-		IConstantBuffer*			pShadowDepthCB;
-		IConstantBuffer*			pShadowTestCB;
 		ITexture2D*					pShadowDepthTexture;
 		ISamplerState*				pShadowDepthTextureSampler;
 		ITexture2D*					pEnvReflectionTexture;
@@ -229,8 +227,6 @@ namespace RenderDog
 		MeshLightingGlobalData() :
 			pSceneView(nullptr),
 			pLightingCB(nullptr),
-			pShadowDepthCB(nullptr),
-			pShadowTestCB(nullptr),
 			pShadowDepthTexture(nullptr),
 			pShadowDepthTextureSampler(nullptr),
 			pEnvReflectionTexture(nullptr),
@@ -248,7 +244,7 @@ namespace RenderDog
 
 	protected:
 		IConstantBuffer*				m_pLightingCB;
-		IConstantBuffer*				m_pShadowTestCB;
+		IConstantBuffer*				m_pShadowParamCB;
 		ITexture2D*						m_pShadowDepthTexture;
 		ISamplerState*					m_pShadowDepthTextureSampler;
 		ITexture2D*						m_pEnvReflectionTexture;
@@ -258,7 +254,6 @@ namespace RenderDog
 	D3D11MeshLightingRenderer::D3D11MeshLightingRenderer(const MeshLightingGlobalData& globalData):
 		D3D11MeshRenderer(globalData.pSceneView),
 		m_pLightingCB(globalData.pLightingCB),
-		m_pShadowTestCB(globalData.pShadowTestCB),
 		m_pShadowDepthTexture(globalData.pShadowDepthTexture),
 		m_pShadowDepthTextureSampler(globalData.pShadowDepthTextureSampler),
 		m_pEnvReflectionTexture(globalData.pEnvReflectionTexture),
@@ -291,8 +286,6 @@ namespace RenderDog
 		ID3D11Buffer* pVB = (ID3D11Buffer*)(renderParam.pVB->GetResource());
 		ID3D11Buffer* pIB = (ID3D11Buffer*)(renderParam.pIB->GetResource());
 		
-		uint32_t indexNum = renderParam.pIB->GetIndexNum();
-
 		uint32_t stride = renderParam.pVB->GetStride();
 		uint32_t offset = renderParam.pVB->GetOffset();
 		g_pD3D11ImmediateContext->IASetVertexBuffers(0, 1, &pVB, &stride, &offset);
@@ -348,10 +341,8 @@ namespace RenderDog
 
 		ID3D11Buffer* pLightingCB = (ID3D11Buffer*)(m_pLightingCB->GetResource());
 		g_pD3D11ImmediateContext->PSSetConstantBuffers(0, 1, &pLightingCB);
-
-		ID3D11Buffer* pShadowTestCB = (ID3D11Buffer*)(m_pShadowTestCB->GetResource());
-		g_pD3D11ImmediateContext->PSSetConstantBuffers(1, 1, &pShadowTestCB);
 		
+		uint32_t indexNum = renderParam.pIB->GetIndexNum();
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
 
 		//Unbind ShadowDepthSRV
@@ -470,7 +461,7 @@ namespace RenderDog
 			Matrix4x4	orthoMatrix;
 		};
 
-		struct ShadowTestConstantData
+		struct ShadowParamConstantData
 		{
 			Vector4		param0;			//x: shadowDepthOffset, y: shadowDistance
 		};
@@ -516,8 +507,8 @@ namespace RenderDog
 
 		IConstantBuffer*			m_pGlobalConstantBuffer;
 		IConstantBuffer*			m_pLightingConstantBuffer;
-		IConstantBuffer*			m_pShadowDepthConstantBuffer;
-		IConstantBuffer*			m_pShadowTestConstantBuffer;
+		IConstantBuffer*			m_pShadowMatrixConstantBuffer;
+		IConstantBuffer*			m_pShadowParamConstantBuffer;
 
 		//Shadow
 		SceneView*					m_pShadowSceneView;
@@ -556,8 +547,8 @@ namespace RenderDog
 		m_pSceneView(nullptr),
 		m_pGlobalConstantBuffer(nullptr),
 		m_pLightingConstantBuffer(nullptr),
-		m_pShadowDepthConstantBuffer(nullptr),
-		m_pShadowTestConstantBuffer(nullptr),
+		m_pShadowMatrixConstantBuffer(nullptr),
+		m_pShadowParamConstantBuffer(nullptr),
 		m_pShadowDepthTexture(nullptr),
 		m_pShadowDepthTextureSampler(nullptr),
 		m_pShadowDepthStaticModelVS(nullptr),
@@ -1010,13 +1001,13 @@ namespace RenderDog
 		cbDesc.byteWidth = sizeof(ShadowDepthConstantData);
 		cbDesc.pInitData = nullptr;
 		cbDesc.isDynamic = true;
-		m_pShadowDepthConstantBuffer = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
+		m_pShadowMatrixConstantBuffer = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
 
 		cbDesc.name = "ComVar_ConstantBuffer_ShadowParam";
-		cbDesc.byteWidth = sizeof(ShadowTestConstantData);
+		cbDesc.byteWidth = sizeof(ShadowParamConstantData);
 		cbDesc.pInitData = nullptr;
 		cbDesc.isDynamic = false;
-		m_pShadowTestConstantBuffer = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
+		m_pShadowParamConstantBuffer = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
 
 		TextureDesc desc;
 		desc.name = L"ShadowDepthTexture";
@@ -1051,16 +1042,16 @@ namespace RenderDog
 
 	void D3D11Renderer::ReleaseShadowResources()
 	{
-		if (m_pShadowDepthConstantBuffer)
+		if (m_pShadowMatrixConstantBuffer)
 		{
-			m_pShadowDepthConstantBuffer->Release();
-			m_pShadowDepthConstantBuffer = nullptr;
+			m_pShadowMatrixConstantBuffer->Release();
+			m_pShadowMatrixConstantBuffer = nullptr;
 		}
 
-		if (m_pShadowTestConstantBuffer)
+		if (m_pShadowParamConstantBuffer)
 		{
-			m_pShadowTestConstantBuffer->Release();
-			m_pShadowTestConstantBuffer = nullptr;
+			m_pShadowParamConstantBuffer->Release();
+			m_pShadowParamConstantBuffer = nullptr;
 		}
 
 		if (m_pShadowDepthTexture)
@@ -1166,8 +1157,6 @@ namespace RenderDog
 		MeshLightingGlobalData meshLightingData;
 		meshLightingData.pSceneView = m_pSceneView;
 		meshLightingData.pLightingCB = m_pLightingConstantBuffer;
-		meshLightingData.pShadowDepthCB = m_pShadowDepthConstantBuffer;
-		meshLightingData.pShadowTestCB = m_pShadowTestConstantBuffer;
 		meshLightingData.pShadowDepthTexture = m_pShadowDepthTexture;
 		meshLightingData.pShadowDepthTextureSampler = m_pShadowDepthTextureSampler;
 		meshLightingData.pEnvReflectionTexture = pEnvReflectionTexture;

@@ -9,12 +9,12 @@
 Texture2D				ComVar_Texture_ShadowDepthTexture;
 SamplerComparisonState	ComVar_Texture_ShadowDepthTextureSampler;
 
-cbuffer ComVar_ConstantBuffer_ShadowParam : register(b1)
+cbuffer ComVar_ConstantBuffer_ShadowParam
 {
 	float4 ComVar_Vector_ShadowParam0;
 };
 
-cbuffer ComVar_ConstantBuffer_ShadowMatrixs : register(b2)
+cbuffer ComVar_ConstantBuffer_ShadowMatrixs
 {
 	row_major matrix ComVar_Matrix_ShadowView;
 	row_major matrix ComVar_Matrix_ShadowProjection;
