@@ -248,7 +248,6 @@ namespace RenderDog
 
 	protected:
 		IConstantBuffer*				m_pLightingCB;
-		IConstantBuffer*				m_pShadowDepthCB;
 		IConstantBuffer*				m_pShadowTestCB;
 		ITexture2D*						m_pShadowDepthTexture;
 		ISamplerState*					m_pShadowDepthTextureSampler;
@@ -259,7 +258,6 @@ namespace RenderDog
 	D3D11MeshLightingRenderer::D3D11MeshLightingRenderer(const MeshLightingGlobalData& globalData):
 		D3D11MeshRenderer(globalData.pSceneView),
 		m_pLightingCB(globalData.pLightingCB),
-		m_pShadowDepthCB(globalData.pShadowDepthCB),
 		m_pShadowTestCB(globalData.pShadowTestCB),
 		m_pShadowDepthTexture(globalData.pShadowDepthTexture),
 		m_pShadowDepthTextureSampler(globalData.pShadowDepthTextureSampler),
@@ -317,9 +315,6 @@ namespace RenderDog
 		
 		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetResource());
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(1, 1, &pPerObjCB);
-
-		ID3D11Buffer* pShadowDepthCB = (ID3D11Buffer*)(m_pShadowDepthCB->GetResource());
-		g_pD3D11ImmediateContext->VSSetConstantBuffers(2, 1, &pShadowDepthCB);
 		
 		ShaderParam* pSkyCubeTextureParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Texture_SkyCubeTexture");
 		pSkyCubeTextureParam->SetTexture(m_pEnvReflectionTexture);
@@ -356,9 +351,7 @@ namespace RenderDog
 
 		ID3D11Buffer* pShadowTestCB = (ID3D11Buffer*)(m_pShadowTestCB->GetResource());
 		g_pD3D11ImmediateContext->PSSetConstantBuffers(1, 1, &pShadowTestCB);
-
 		
-
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
 
 		//Unbind ShadowDepthSRV
