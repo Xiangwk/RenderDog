@@ -156,7 +156,7 @@ namespace RenderDog
 		D3D11MeshRenderer(pSceneView)
 	{
 		ShaderCompileDesc vsDesc(g_SkyVertexShaderFilePath, nullptr, "Main", "vs_5_0", 0);
-		m_pVertexShader = g_pIShaderManager->GetStaticModelVertexShader(VERTEX_TYPE::STANDARD, vsDesc);
+		m_pVertexShader = g_pIShaderManager->GetModelVertexShader(VERTEX_TYPE::STANDARD, vsDesc);
 
 		ShaderCompileDesc psDesc(g_SkyPixelShaderFilePath, nullptr, "Main", "ps_5_0", 0);
 		m_pPixelShader = g_pIShaderManager->GetSkyPixelShader(psDesc);
@@ -244,7 +244,6 @@ namespace RenderDog
 
 	protected:
 		IConstantBuffer*				m_pLightingCB;
-		IConstantBuffer*				m_pShadowParamCB;
 		ITexture2D*						m_pShadowDepthTexture;
 		ISamplerState*					m_pShadowDepthTextureSampler;
 		ITexture2D*						m_pEnvReflectionTexture;
@@ -260,7 +259,7 @@ namespace RenderDog
 		m_pEnvReflectionTextureSampler(globalData.pEnvReflectionTextureSampler)
 	{
 		ShaderCompileDesc vsDesc(g_StaticModelVertexShaderFilePath, nullptr, "Main", "vs_5_0", 0);
-		m_pVertexShader = g_pIShaderManager->GetStaticModelVertexShader(VERTEX_TYPE::STANDARD, vsDesc);
+		m_pVertexShader = g_pIShaderManager->GetModelVertexShader(VERTEX_TYPE::STANDARD, vsDesc);
 
 		ShaderCompileDesc psDesc(g_DirectionalLightingPixelShaderFilePath, nullptr, "Main", "ps_5_0", 0);
 		m_pPixelShader = g_pIShaderManager->GetDirectionLightingPixelShader(psDesc);
@@ -369,7 +368,7 @@ namespace RenderDog
 		D3D11MeshRenderer(pSceneView)
 	{
 		ShaderCompileDesc vsDesc = ShaderCompileDesc(g_ShadowDepthStaticVertexShaderFilePath, nullptr, "Main", "vs_5_0", 0);
-		m_pVS = g_pIShaderManager->GetStaticModelVertexShader(VERTEX_TYPE::STANDARD, vsDesc);
+		m_pVS = g_pIShaderManager->GetModelVertexShader(VERTEX_TYPE::STANDARD, vsDesc);
 
 		ShaderCompileDesc psDesc = ShaderCompileDesc(g_ShadowDepthPixelShaderFilePath, nullptr, "Main", "ps_5_0", 0);
 		m_pPS = g_pIShaderManager->GetPixelShader(psDesc);
@@ -929,17 +928,17 @@ namespace RenderDog
 	bool D3D11Renderer::CreateInternalShaders()
 	{
 		ShaderCompileDesc vsDesc(g_StaticModelVertexShaderFilePath, nullptr, "Main", "vs_5_0", 0);
-		m_pStaticModelVertexShader = g_pIShaderManager->GetStaticModelVertexShader(VERTEX_TYPE::STANDARD, vsDesc);
+		m_pStaticModelVertexShader = g_pIShaderManager->GetModelVertexShader(VERTEX_TYPE::STANDARD, vsDesc);
 		ShaderCompileDesc psDesc(g_DirectionalLightingPixelShaderFilePath, nullptr, "Main", "ps_5_0", 0);
 		m_pDirectionalLightingPixelShader = g_pIShaderManager->GetDirectionLightingPixelShader(psDesc);
 
 		vsDesc = ShaderCompileDesc(g_SkyVertexShaderFilePath, nullptr, "Main", "vs_5_0", 0);
-		m_pSkyVertexShader = g_pIShaderManager->GetStaticModelVertexShader(VERTEX_TYPE::STANDARD, vsDesc);
+		m_pSkyVertexShader = g_pIShaderManager->GetModelVertexShader(VERTEX_TYPE::STANDARD, vsDesc);
 		psDesc = ShaderCompileDesc(g_SkyPixelShaderFilePath, nullptr, "Main", "ps_5_0", 0);
 		m_pSkyPixelShader = g_pIShaderManager->GetSkyPixelShader(psDesc);
 
 		vsDesc = ShaderCompileDesc(g_ShadowDepthStaticVertexShaderFilePath, nullptr, "Main", "vs_5_0", 0);
-		m_pShadowDepthStaticModelVS = g_pIShaderManager->GetStaticModelVertexShader(VERTEX_TYPE::STANDARD, vsDesc);
+		m_pShadowDepthStaticModelVS = g_pIShaderManager->GetModelVertexShader(VERTEX_TYPE::STANDARD, vsDesc);
 		vsDesc = ShaderCompileDesc("Shaders/ShadowDepthSkinModelVertexShader.hlsl", nullptr, "Main", "vs_5_0", 0);
 		m_pShadowDepthSkinModelVS = g_pIShaderManager->GetVertexShader(VERTEX_TYPE::SKIN, vsDesc);
 		psDesc = ShaderCompileDesc(g_ShadowDepthPixelShaderFilePath, nullptr, "Main", "ps_5_0", 0);

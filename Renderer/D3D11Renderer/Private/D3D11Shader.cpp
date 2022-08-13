@@ -20,9 +20,6 @@
 
 namespace RenderDog
 {
-
-
-
 	//=========================================================================
 	//    D3D11Shader
 	//=========================================================================
@@ -72,7 +69,7 @@ namespace RenderDog
 		VERTEX_TYPE					m_VertexType;
 	};
 
-	class D3D11StaticModelVertexShader : public D3D11VertexShader
+	class D3D11ModelVertexShader : public D3D11VertexShader
 	{
 	private:
 		struct GlobalConstantData
@@ -89,9 +86,9 @@ namespace RenderDog
 		};
 
 	public:
-		D3D11StaticModelVertexShader();
-		explicit D3D11StaticModelVertexShader(VERTEX_TYPE vertexType);
-		virtual ~D3D11StaticModelVertexShader();
+		D3D11ModelVertexShader();
+		explicit D3D11ModelVertexShader(VERTEX_TYPE vertexType);
+		virtual ~D3D11ModelVertexShader();
 
 		virtual bool				Init() override;
 		virtual void				Release() override;
@@ -188,7 +185,7 @@ namespace RenderDog
 
 		virtual IShader*			GetVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc) override;
 		virtual IShader*			GetPixelShader(const ShaderCompileDesc& desc) override;
-		virtual IShader*			GetStaticModelVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc) override;
+		virtual IShader*			GetModelVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc) override;
 
 		virtual IShader*			GetDirectionLightingPixelShader(const ShaderCompileDesc& desc) override;
 		virtual IShader*			GetSkyPixelShader(const ShaderCompileDesc& desc) override;
@@ -381,7 +378,7 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->VSSetShader(m_pVS, nullptr, 0);
 	}
 
-	D3D11StaticModelVertexShader::D3D11StaticModelVertexShader() :
+	D3D11ModelVertexShader::D3D11ModelVertexShader() :
 		D3D11VertexShader(),
 		m_WorldToViewMatrixParam("ComVar_Matrix_WorldToView", SHADER_PARAM_TYPE::MATRIX),
 		m_ViewToClipMatrixParam("ComVar_Matrix_ViewToClip", SHADER_PARAM_TYPE::MATRIX),
@@ -396,7 +393,7 @@ namespace RenderDog
 		m_ShaderParamMap.insert({ "ComVar_Matrix_ShadowProjection", &m_ShadowViewToClipMatrixParam });
 	}
 
-	D3D11StaticModelVertexShader::D3D11StaticModelVertexShader(VERTEX_TYPE vertexType) :
+	D3D11ModelVertexShader::D3D11ModelVertexShader(VERTEX_TYPE vertexType) :
 		D3D11VertexShader(vertexType),
 		m_WorldToViewMatrixParam("ComVar_Matrix_WorldToView", SHADER_PARAM_TYPE::MATRIX),
 		m_ViewToClipMatrixParam("ComVar_Matrix_ViewToClip", SHADER_PARAM_TYPE::MATRIX),
@@ -411,20 +408,20 @@ namespace RenderDog
 		m_ShaderParamMap.insert({ "ComVar_Matrix_ShadowProjection", &m_ShadowViewToClipMatrixParam });
 	}
 
-	D3D11StaticModelVertexShader::~D3D11StaticModelVertexShader()
+	D3D11ModelVertexShader::~D3D11ModelVertexShader()
 	{}
 
-	bool D3D11StaticModelVertexShader::Init()
+	bool D3D11ModelVertexShader::Init()
 	{
 		return D3D11VertexShader::Init();
 	}
 
-	void D3D11StaticModelVertexShader::Release()
+	void D3D11ModelVertexShader::Release()
 	{
 		D3D11VertexShader::Release();
 	}
 
-	ShaderParam* D3D11StaticModelVertexShader::GetShaderParamPtrByName(const std::string& name)
+	ShaderParam* D3D11ModelVertexShader::GetShaderParamPtrByName(const std::string& name)
 	{
 		auto shaderParamIter = m_ShaderParamMap.find(name);
 		if (shaderParamIter != m_ShaderParamMap.end())
@@ -437,7 +434,7 @@ namespace RenderDog
 		}
 	}
 
-	void D3D11StaticModelVertexShader::Apply()
+	void D3D11ModelVertexShader::Apply()
 	{
 		D3D11VertexShader::Apply();
 
@@ -764,7 +761,7 @@ namespace RenderDog
 		return pPixelShader;
 	}
 
-	IShader* D3D11ShaderManager::GetStaticModelVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc)
+	IShader* D3D11ShaderManager::GetModelVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc)
 	{
 		D3D11Shader* pVertexShader = nullptr;
 
@@ -776,7 +773,7 @@ namespace RenderDog
 		}
 		else
 		{
-			pVertexShader = new D3D11StaticModelVertexShader(vertexType);
+			pVertexShader = new D3D11ModelVertexShader(vertexType);
 			pVertexShader->CompileFromFile(desc);
 			pVertexShader->Init();
 

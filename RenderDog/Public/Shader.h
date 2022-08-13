@@ -121,7 +121,7 @@ namespace RenderDog
 		virtual IShader*			GetVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc) = 0;
 		virtual IShader*			GetPixelShader(const ShaderCompileDesc& desc) = 0;
 
-		virtual IShader*			GetStaticModelVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc) = 0;
+		virtual IShader*			GetModelVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc) = 0;
 
 		virtual IShader*			GetDirectionLightingPixelShader(const ShaderCompileDesc& desc) = 0;
 		virtual IShader*			GetSkyPixelShader(const ShaderCompileDesc& desc) = 0;
