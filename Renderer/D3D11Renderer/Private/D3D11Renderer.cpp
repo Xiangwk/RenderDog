@@ -17,19 +17,13 @@
 #include "Texture.h"
 #include "Bounding.h"
 #include "Transform.h"
+#include "Shader.h"
 #include "GlobalValue.h"
 
 namespace RenderDog
 {
 	ID3D11Device*			g_pD3D11Device = nullptr;
 	ID3D11DeviceContext*	g_pD3D11ImmediateContext = nullptr;
-
-	const std::string g_StaticModelVertexShaderFilePath = "Shaders/StaticModelVertexShader.hlsl";
-	const std::string g_DirectionalLightingPixelShaderFilePath = "Shaders/PhongLightingPixelShader.hlsl";
-	const std::string g_SkyVertexShaderFilePath = "Shaders/SkyVertexShader.hlsl";
-	const std::string g_SkyPixelShaderFilePath = "Shaders/SkyPixelShader.hlsl";
-	const std::string g_ShadowDepthStaticVertexShaderFilePath = "Shaders/ShadowDepthStaticModelVertexShader.hlsl";
-	const std::string g_ShadowDepthPixelShaderFilePath = "Shaders/ShadowDepthStaticModelVertexShader.hlsl";
 
 	//===========================================================
 	//    Mesh Renderer
@@ -136,7 +130,7 @@ namespace RenderDog
 		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetResource());
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(1, 1, &pPerObjCB);
 
-		renderParam.pPS->Apply();
+		//renderParam.pPS->Apply();
 
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
 	}
@@ -258,9 +252,6 @@ namespace RenderDog
 		m_pEnvReflectionTexture(globalData.pEnvReflectionTexture),
 		m_pEnvReflectionTextureSampler(globalData.pEnvReflectionTextureSampler)
 	{
-		ShaderCompileDesc vsDesc(g_StaticModelVertexShaderFilePath, nullptr, "Main", "vs_5_0", 0);
-		m_pVertexShader = g_pIShaderManager->GetModelVertexShader(VERTEX_TYPE::STANDARD, vsDesc);
-
 		ShaderCompileDesc psDesc(g_DirectionalLightingPixelShaderFilePath, nullptr, "Main", "ps_5_0", 0);
 		m_pPixelShader = g_pIShaderManager->GetDirectionLightingPixelShader(psDesc);
 	}
@@ -290,11 +281,11 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->IASetVertexBuffers(0, 1, &pVB, &stride, &offset);
 		g_pD3D11ImmediateContext->IASetIndexBuffer(pIB, DXGI_FORMAT_R32_UINT, 0);
 
-		ShaderParam* pWorldToViewMatrix = m_pVertexShader->GetShaderParamPtrByName("ComVar_Matrix_WorldToView");
-		ShaderParam* pViewToClipMatrix = m_pVertexShader->GetShaderParamPtrByName("ComVar_Matrix_ViewToClip");
-		ShaderParam* pWorldEyePosition = m_pVertexShader->GetShaderParamPtrByName("ComVar_Vector_WorldEyePosition");
-		ShaderParam* pShadowWorldToViewMatrix = m_pVertexShader->GetShaderParamPtrByName("ComVar_Matrix_ShadowView");
-		ShaderParam* pShadowViewToClipMatrix = m_pVertexShader->GetShaderParamPtrByName("ComVar_Matrix_ShadowProjection");
+		ShaderParam* pWorldToViewMatrix = renderParam.pVS->GetShaderParamPtrByName("ComVar_Matrix_WorldToView");
+		ShaderParam* pViewToClipMatrix = renderParam.pVS->GetShaderParamPtrByName("ComVar_Matrix_ViewToClip");
+		ShaderParam* pWorldEyePosition = renderParam.pVS->GetShaderParamPtrByName("ComVar_Vector_WorldEyePosition");
+		ShaderParam* pShadowWorldToViewMatrix = renderParam.pVS->GetShaderParamPtrByName("ComVar_Matrix_ShadowView");
+		ShaderParam* pShadowViewToClipMatrix = renderParam.pVS->GetShaderParamPtrByName("ComVar_Matrix_ShadowProjection");
 
 		FPSCamera* pCamera = m_pSceneView->GetCamera();
 		pWorldToViewMatrix->SetMatrix4x4(pCamera->GetViewMatrix());
@@ -303,7 +294,7 @@ namespace RenderDog
 		pShadowWorldToViewMatrix->SetMatrix4x4(m_pSceneView->GetShadowWorldToViewMatrix());
 		pShadowViewToClipMatrix->SetMatrix4x4(m_pSceneView->GetShadowViewToClipMatrix());
 
-		m_pVertexShader->Apply();
+		renderParam.pVS->Apply();
 		
 		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetResource());
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(1, 1, &pPerObjCB);

@@ -58,7 +58,7 @@ namespace RenderDog
 		
 		bool							LoadTextureFromFile(const std::wstring& diffuseTexturePath, const std::wstring& normalTexturePath);
 
-		void							InitRenderData(const std::string& vsFile, const std::string& psFile);
+		void							InitRenderData();
 
 		void							SetPosGesture(const Vector3& pos, const Vector3& euler, const Vector3& scale);
 

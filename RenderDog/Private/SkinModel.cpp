@@ -73,7 +73,7 @@ namespace RenderDog
 		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
 		{
 			SkinMesh& mesh = m_Meshes[i];
-			mesh.InitRenderData(vsFile, psFile);
+			mesh.InitRenderData();
 		}
 
 		CalculateBoundings();

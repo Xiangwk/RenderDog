@@ -72,14 +72,12 @@ namespace RenderDog
 		IConstantBuffer*	pCB;
 
 		IShader*			pVS;
-		IShader*			pPS;
 
 		SkinMeshRenderData() :
 			pVB(nullptr),
 			pIB(nullptr),
 			pCB(nullptr),
-			pVS(nullptr),
-			pPS(nullptr)
+			pVS(nullptr)
 		{}
 	};
 
@@ -159,7 +157,6 @@ namespace RenderDog
 		renderParam.pNormalTexture			= m_pNormalTexture;
 		renderParam.pNormalTextureSampler	= m_pNormalTextureSampler;
 		renderParam.pVS						= m_pRenderData->pVS;
-		renderParam.pPS						= m_pRenderData->pPS;
 
 		pPrimitiveRenderer->Render(renderParam);
 	}
@@ -214,7 +211,7 @@ namespace RenderDog
 		return true;
 	}
 
-	void SkinMesh::InitRenderData(const std::string& vsFile, const std::string& psFile)
+	void SkinMesh::InitRenderData()
 	{
 		m_pRenderData = new SkinMeshRenderData();
 
@@ -241,11 +238,8 @@ namespace RenderDog
 		cbDesc.isDynamic = true;
 		m_pRenderData->pCB = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
 
-		ShaderCompileDesc vsDesc(vsFile, nullptr, "Main", "vs_5_0", 0);
+		ShaderCompileDesc vsDesc(g_SkinModelVertexShaderFilePath, nullptr, "Main", "vs_5_0", 0);
 		m_pRenderData->pVS = g_pIShaderManager->GetModelVertexShader(VERTEX_TYPE::SKIN, vsDesc);
-
-		ShaderCompileDesc psDesc(psFile, nullptr, "Main", "ps_5_0", 0);
-		m_pRenderData->pPS = g_pIShaderManager->GetDirectionLightingPixelShader(psDesc);
 	}
 
 	void SkinMesh::SetPosGesture(const Vector3& pos, const Vector3& euler, const Vector3& scale)
@@ -464,10 +458,7 @@ namespace RenderDog
 	{
 		if (mesh.m_pRenderData)
 		{
-			const std::string& vsFile = mesh.m_pRenderData->pVS->GetFileName();
-			const std::string& psFile = mesh.m_pRenderData->pPS->GetFileName();
-
-			InitRenderData(vsFile, psFile);
+			InitRenderData();
 		}
 
 		if (mesh.m_pDiffuseTexture)
@@ -501,7 +492,6 @@ namespace RenderDog
 			m_pRenderData->pIB->Release();
 			m_pRenderData->pCB->Release();
 			m_pRenderData->pVS->Release();
-			m_pRenderData->pPS->Release();
 
 			delete m_pRenderData;
 			m_pRenderData = nullptr;

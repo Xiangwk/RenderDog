@@ -82,7 +82,6 @@ namespace RenderDog
 		renderParam.pDiffuseTexture			= nullptr;
 		renderParam.pDiffuseTextureSampler	= nullptr;
 		renderParam.pVS						= m_pRenderData->pVS;
-		renderParam.pPS						= m_pRenderData->pPS;
 
 		pPrimitiveRenderer->Render(renderParam);
 	}

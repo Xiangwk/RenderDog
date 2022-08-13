@@ -17,6 +17,15 @@ namespace RenderDog
 	class	ISamplerState;
 	class	IConstantBuffer;
 
+	const std::string g_StaticModelVertexShaderFilePath = "Shaders/StaticModelVertexShader.hlsl";
+	const std::string g_SkinModelVertexShaderFilePath = "Shaders/SkinModelVertexShader.hlsl";
+	const std::string g_DirectionalLightingPixelShaderFilePath = "Shaders/PhongLightingPixelShader.hlsl";
+	const std::string g_SkyVertexShaderFilePath = "Shaders/SkyVertexShader.hlsl";
+	const std::string g_SkyPixelShaderFilePath = "Shaders/SkyPixelShader.hlsl";
+	const std::string g_ShadowDepthStaticVertexShaderFilePath = "Shaders/ShadowDepthStaticModelVertexShader.hlsl";
+	const std::string g_ShadowDepthSkinVertexShaderFilePath = "Shaders/ShadowDepthSkinModelVertexShader.hlsl";
+	const std::string g_ShadowDepthPixelShaderFilePath = "Shaders/ShadowDepthPixelShader.hlsl";
+
 	enum class SHADER_PARAM_TYPE
 	{
 		UNKNOWN = 0,

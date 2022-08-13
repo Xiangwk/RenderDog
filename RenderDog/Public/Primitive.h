@@ -37,7 +37,6 @@ namespace RenderDog
 		ISamplerState*		pNormalTextureSampler;
 
 		IShader*			pVS;
-		IShader*			pPS;
 
 		PrimitiveRenderParam() :
 			pVB(nullptr),
@@ -47,8 +46,7 @@ namespace RenderDog
 			pDiffuseTextureSampler(nullptr),
 			pNormalTexture(nullptr),
 			pNormalTextureSampler(nullptr),
-			pVS(nullptr),
-			pPS(nullptr)
+			pVS(nullptr)
 		{}
 	};
 

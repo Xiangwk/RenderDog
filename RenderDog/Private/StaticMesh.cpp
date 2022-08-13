@@ -15,14 +15,17 @@ namespace RenderDog
 {
 	struct StaticMeshRenderData
 	{
-		IVertexBuffer* pVB;
-		IIndexBuffer* pIB;
-		IConstantBuffer* pCB;
+		IVertexBuffer*		pVB;
+		IIndexBuffer*		pIB;
+		IConstantBuffer*	pCB;
+
+		IShader*			pVS;
 
 		StaticMeshRenderData() :
 			pVB(nullptr),
 			pIB(nullptr),
-			pCB(nullptr)
+			pCB(nullptr),
+			pVS(nullptr)
 		{}
 	};
 
@@ -133,6 +136,7 @@ namespace RenderDog
 		renderParam.pDiffuseTextureSampler	= m_pDiffuseTextureSampler;
 		renderParam.pNormalTexture			= m_pNormalTexture;
 		renderParam.pNormalTextureSampler	= m_pNormalTextureSampler;
+		renderParam.pVS						= m_pRenderData->pVS;
 
 		pPrimitiveRenderer->Render(renderParam);
 	}
@@ -213,6 +217,9 @@ namespace RenderDog
 		cbDesc.pInitData = nullptr;
 		cbDesc.isDynamic = false;
 		m_pRenderData->pCB = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
+
+		ShaderCompileDesc vsDesc(g_StaticModelVertexShaderFilePath, nullptr, "Main", "vs_5_0", 0);
+		m_pRenderData->pVS = g_pIShaderManager->GetModelVertexShader(VERTEX_TYPE::STANDARD, vsDesc);
 	}
 
 	void StaticMesh::ReleaseRenderData()
