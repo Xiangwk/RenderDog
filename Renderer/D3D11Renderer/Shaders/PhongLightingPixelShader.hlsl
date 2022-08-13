@@ -41,8 +41,9 @@ float4 Main(VSOutput VsOutput) : SV_Target
 
 	float3 WorldNormal = normalize(mul(TangentNormal, TBN));
 	
-	float NoL = saturate(dot(WorldNormal, -ComVar_Vector_DirLightDirection));
-	float3 Diffuse = ComFunc_Phong_Diffuse(ComVar_Vector_DirLightColor.rgb, ComVar_Vector_DirLightLuminance, BaseColor, NoL);
+	float LightLuminance = ComVar_Vector_DirLightColor.a;
+	float NoL = saturate(dot(WorldNormal, -ComVar_Vector_DirLightDirection.xyz));
+	float3 Diffuse = ComFunc_Phong_Diffuse(ComVar_Vector_DirLightColor.rgb, LightLuminance, BaseColor, NoL);
 
 	float3 EyeDir = normalize(VsOutput.EyePosW.xyz - VsOutput.PosW.xyz);
 	float3 ReflectionColor = ComFunc_Phong_Specular(EyeDir, WorldNormal);

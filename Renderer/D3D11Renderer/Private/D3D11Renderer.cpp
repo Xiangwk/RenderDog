@@ -422,8 +422,7 @@ namespace RenderDog
 		struct DirectionalLightData
 		{
 			Vector4		color;
-			Vector3		direction;
-			float		luminance;
+			Vector4		direction;
 		};
 
 		struct ShadowDepthConstantData
@@ -619,7 +618,7 @@ namespace RenderDog
 		cbDesc.isDynamic = true;
 		m_pGlobalConstantBuffer = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
 
-		cbDesc.name = "MainLightingConstantBuffer";
+		cbDesc.name = "ComVar_ConstantBuffer_LightingParam";
 		cbDesc.byteWidth = sizeof(DirectionalLightData);
 		cbDesc.pInitData = nullptr;
 		cbDesc.isDynamic = true;
@@ -757,9 +756,8 @@ namespace RenderDog
 		{
 			ILight* pMainLight = m_pSceneView->GetLight(0);
 			DirectionalLightData dirLightData = {};
-			dirLightData.direction = pMainLight->GetDirection();
-			dirLightData.color = Vector4(pMainLight->GetColor(), 1.0f);
-			dirLightData.luminance = pMainLight->GetLuminance();
+			dirLightData.direction = Vector4(pMainLight->GetDirection(), 0.0f);
+			dirLightData.color = Vector4(pMainLight->GetColor(), pMainLight->GetLuminance());
 			m_pLightingConstantBuffer->Update(&dirLightData, sizeof(dirLightData));
 
 			if (pMainLight->GetType() == LIGHT_TYPE::DIRECTIONAL)

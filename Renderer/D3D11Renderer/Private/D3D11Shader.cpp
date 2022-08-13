@@ -151,6 +151,10 @@ namespace RenderDog
 		virtual void				Apply() override;
 
 	protected:
+		ShaderParam					m_MainLightDirectionParam;
+		ShaderParam					m_MainLightColorParam;				//xyz: color, w: luminance
+		ShaderParam					m_ShadowParam0;						//x: shadow offset, y: shadowMap Size
+
 		ShaderParam					m_SkyCubeTextureParam;
 		ShaderParam					m_SkyCubeTextureSamplerParam;
 		ShaderParam					m_DiffuseTextureParam;
@@ -160,7 +164,7 @@ namespace RenderDog
 		ShaderParam					m_ShadowDepthTextureParam;
 		ShaderParam					m_ShadowDepthTextureSamplerParam;
 
-		ShaderParam					m_ShadowParam0;						//x: shadow offset, y: shadowMap Size
+		
 	};
 
 	//=========================================================================
