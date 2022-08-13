@@ -40,6 +40,30 @@ namespace RenderDog
 		SAMPLER
 	};
 
+	struct GlobalConstantData
+	{
+		Matrix4x4	viewMatrix;
+		Matrix4x4	projMatrix;
+		Vector4		mainCameraWorldPos;
+	};
+
+	struct DirectionalLightData
+	{
+		Vector4		direction;
+		Vector4		color;
+	};
+
+	struct ShadowDepthConstantData
+	{
+		Matrix4x4	viewMatrix;
+		Matrix4x4	orthoMatrix;
+	};
+
+	struct ShadowParamConstantData
+	{
+		Vector4		param0;			//x: shadowDepthOffset, y: shadowDistance
+	};
+
 	struct ShaderMacro
 	{
 		std::string	name;

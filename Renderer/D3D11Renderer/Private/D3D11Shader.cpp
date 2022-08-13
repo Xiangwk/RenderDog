@@ -521,6 +521,9 @@ namespace RenderDog
 	}
 
 	D3D11DirectionalLightingPixelShader::D3D11DirectionalLightingPixelShader() :
+		m_MainLightDirectionParam("ComVar_Vector_DirLightDirection", SHADER_PARAM_TYPE::FLOAT_VECTOR),
+		m_MainLightColorParam("ComVar_Vector_DirLightColor", SHADER_PARAM_TYPE::FLOAT_VECTOR),
+		m_ShadowParam0("ComVar_Vector_ShadowParam0", SHADER_PARAM_TYPE::FLOAT_VECTOR),
 		m_SkyCubeTextureParam("ComVar_Texture_SkyCubeTexture", SHADER_PARAM_TYPE::TEXTURE),
 		m_SkyCubeTextureSamplerParam("ComVar_Texture_SkyCubeTextureSampler", SHADER_PARAM_TYPE::SAMPLER),
 		m_DiffuseTextureParam("DiffuseTexture", SHADER_PARAM_TYPE::TEXTURE),
@@ -528,9 +531,12 @@ namespace RenderDog
 		m_NormalTextureParam("NormalTexture", SHADER_PARAM_TYPE::TEXTURE),
 		m_NormalTextureSamplerParam("NormalTextureSampler", SHADER_PARAM_TYPE::SAMPLER),
 		m_ShadowDepthTextureParam("ComVar_Texture_ShadowDepthTexture", SHADER_PARAM_TYPE::TEXTURE),
-		m_ShadowDepthTextureSamplerParam("ComVar_Texture_ShadowDepthTextureSampler", SHADER_PARAM_TYPE::SAMPLER),
-		m_ShadowParam0("ComVar_Vector_ShadowParam0", SHADER_PARAM_TYPE::FLOAT_VECTOR)
+		m_ShadowDepthTextureSamplerParam("ComVar_Texture_ShadowDepthTextureSampler", SHADER_PARAM_TYPE::SAMPLER)
+		
 	{
+		m_ShaderParamMap.insert({ "ComVar_Vector_DirLightDirection", &m_MainLightDirectionParam });
+		m_ShaderParamMap.insert({ "ComVar_Vector_DirLightColor", &m_MainLightColorParam });
+		m_ShaderParamMap.insert({ "ComVar_Vector_ShadowParam0", &m_ShadowParam0 });
 		m_ShaderParamMap.insert({ "ComVar_Texture_SkyCubeTexture", &m_SkyCubeTextureParam });
 		m_ShaderParamMap.insert({ "ComVar_Texture_SkyCubeTextureSampler", &m_SkyCubeTextureSamplerParam });
 		m_ShaderParamMap.insert({ "DiffuseTexture", &m_DiffuseTextureParam });
@@ -539,7 +545,6 @@ namespace RenderDog
 		m_ShaderParamMap.insert({ "NormalTextureSampler", &m_NormalTextureSamplerParam });
 		m_ShaderParamMap.insert({ "ComVar_Texture_ShadowDepthTexture", &m_ShadowDepthTextureParam });
 		m_ShaderParamMap.insert({ "ComVar_Texture_ShadowDepthTextureSampler", &m_ShadowDepthTextureSamplerParam });
-		m_ShaderParamMap.insert({ "ComVar_Vector_ShadowParam0", &m_ShadowParam0 });
 	}
 
 	D3D11DirectionalLightingPixelShader::~D3D11DirectionalLightingPixelShader()
@@ -558,6 +563,42 @@ namespace RenderDog
 	void D3D11DirectionalLightingPixelShader::Apply()
 	{
 		D3D11PixelShader::Apply();
+
+		//LightingParams
+		IConstantBuffer* pLightingParamsConstantBuffer = g_pIBufferManager->GetConstantBufferByName("ComVar_ConstantBuffer_LightingParam");
+		if (!pLightingParamsConstantBuffer)
+		{
+			return;
+		}
+		DirectionalLightData dirLightData = {};
+		dirLightData.direction = m_MainLightDirectionParam.GetVector4();
+		dirLightData.color = m_MainLightColorParam.GetVector4();
+		pLightingParamsConstantBuffer->Update(&dirLightData, sizeof(dirLightData));
+
+		auto cbIter = m_ConstantBufferMap.find(pLightingParamsConstantBuffer->GetName());
+		if (cbIter != m_ConstantBufferMap.end())
+		{
+			uint32_t cbSlot = cbIter->second;
+			ID3D11Buffer* pCB = (ID3D11Buffer*)(pLightingParamsConstantBuffer->GetResource());
+			g_pD3D11ImmediateContext->PSSetConstantBuffers(cbSlot, 1, (ID3D11Buffer**)&pCB);
+		}
+
+		//ShadowParams
+		IConstantBuffer* pShadowParamBuffer = g_pIBufferManager->GetConstantBufferByName("ComVar_ConstantBuffer_ShadowParam");
+		if (!pShadowParamBuffer)
+		{
+			return;
+		}
+		Vector4 shadowParam0 = m_ShadowParam0.GetVector4();
+		pShadowParamBuffer->Update(&shadowParam0, sizeof(shadowParam0));
+
+		cbIter = m_ConstantBufferMap.find(pShadowParamBuffer->GetName());
+		if (cbIter != m_ConstantBufferMap.end())
+		{
+			uint32_t cbSlot = cbIter->second;
+			ID3D11Buffer* pCB = (ID3D11Buffer*)(pShadowParamBuffer->GetResource());
+			g_pD3D11ImmediateContext->PSSetConstantBuffers(cbSlot, 1, (ID3D11Buffer**)&pCB);
+		}
 
 		//SkyTexture
 		auto srvIter = m_ShaderResourceViewMap.find(m_SkyCubeTextureParam.GetName());
@@ -626,22 +667,6 @@ namespace RenderDog
 			return;
 		}
 		pShadowDepthSampler->SetToPixelShader(samplerIter->second);
-
-		IConstantBuffer* pShadowParamBuffer = g_pIBufferManager->GetConstantBufferByName("ComVar_ConstantBuffer_ShadowParam");
-		if (!pShadowParamBuffer)
-		{
-			return;
-		}
-		Vector4 shadowParam0 = m_ShadowParam0.GetVector4();
-		pShadowParamBuffer->Update(&shadowParam0, sizeof(shadowParam0));
-
-		auto cbIter = m_ConstantBufferMap.find(pShadowParamBuffer->GetName());
-		if (cbIter != m_ConstantBufferMap.end())
-		{
-			uint32_t cbSlot = cbIter->second;
-			ID3D11Buffer* pCB = (ID3D11Buffer*)(pShadowParamBuffer->GetResource());
-			g_pD3D11ImmediateContext->PSSetConstantBuffers(cbSlot, 1, (ID3D11Buffer**)&pCB);
-		}
 	}
 
 	D3D11SkyPixelShader::D3D11SkyPixelShader() :

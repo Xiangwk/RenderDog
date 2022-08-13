@@ -212,7 +212,6 @@ namespace RenderDog
 	struct MeshLightingGlobalData
 	{
 		SceneView*					pSceneView;
-		IConstantBuffer*			pLightingCB;
 		ITexture2D*					pShadowDepthTexture;
 		ISamplerState*				pShadowDepthTextureSampler;
 		ITexture2D*					pEnvReflectionTexture;
@@ -220,7 +219,6 @@ namespace RenderDog
 
 		MeshLightingGlobalData() :
 			pSceneView(nullptr),
-			pLightingCB(nullptr),
 			pShadowDepthTexture(nullptr),
 			pShadowDepthTextureSampler(nullptr),
 			pEnvReflectionTexture(nullptr),
@@ -237,7 +235,6 @@ namespace RenderDog
 		virtual void					Render(const PrimitiveRenderParam& renderParam) override;
 
 	protected:
-		IConstantBuffer*				m_pLightingCB;
 		ITexture2D*						m_pShadowDepthTexture;
 		ISamplerState*					m_pShadowDepthTextureSampler;
 		ITexture2D*						m_pEnvReflectionTexture;
@@ -246,7 +243,6 @@ namespace RenderDog
 
 	D3D11MeshLightingRenderer::D3D11MeshLightingRenderer(const MeshLightingGlobalData& globalData):
 		D3D11MeshRenderer(globalData.pSceneView),
-		m_pLightingCB(globalData.pLightingCB),
 		m_pShadowDepthTexture(globalData.pShadowDepthTexture),
 		m_pShadowDepthTextureSampler(globalData.pShadowDepthTextureSampler),
 		m_pEnvReflectionTexture(globalData.pEnvReflectionTexture),
@@ -281,6 +277,7 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->IASetVertexBuffers(0, 1, &pVB, &stride, &offset);
 		g_pD3D11ImmediateContext->IASetIndexBuffer(pIB, DXGI_FORMAT_R32_UINT, 0);
 
+		//VertexShader
 		ShaderParam* pWorldToViewMatrix = renderParam.pVS->GetShaderParamPtrByName("ComVar_Matrix_WorldToView");
 		ShaderParam* pViewToClipMatrix = renderParam.pVS->GetShaderParamPtrByName("ComVar_Matrix_ViewToClip");
 		ShaderParam* pWorldEyePosition = renderParam.pVS->GetShaderParamPtrByName("ComVar_Vector_WorldEyePosition");
@@ -298,6 +295,18 @@ namespace RenderDog
 		
 		ID3D11Buffer* pPerObjCB = (ID3D11Buffer*)(renderParam.pPerObjCB->GetResource());
 		g_pD3D11ImmediateContext->VSSetConstantBuffers(1, 1, &pPerObjCB);
+
+		//PixShader
+		ShaderParam* pMainLightDirectionParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Vector_DirLightDirection");
+		ShaderParam* pMainLightColorParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Vector_DirLightColor");
+
+		ILight* pMainLight = m_pSceneView->GetLight(0);
+		pMainLightDirectionParam->SetVector4(Vector4(pMainLight->GetDirection(), 0.0f));
+		pMainLightColorParam->SetVector4(Vector4(pMainLight->GetColor(), pMainLight->GetLuminance()));
+
+		Vector4 shadowParams0(g_ShadowDepthOffset, (float)g_ShadowMapRTSize, 0.0f, 0.0f);
+		ShaderParam* pShadowParam0 = m_pPixelShader->GetShaderParamPtrByName("ComVar_Vector_ShadowParam0");
+		pShadowParam0->SetVector4(shadowParams0);
 		
 		ShaderParam* pSkyCubeTextureParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Texture_SkyCubeTexture");
 		pSkyCubeTextureParam->SetTexture(m_pEnvReflectionTexture);
@@ -323,14 +332,7 @@ namespace RenderDog
 		ShaderParam* pShadowDepthTextureSamplerParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Texture_ShadowDepthTextureSampler");
 		pShadowDepthTextureSamplerParam->SetSampler(m_pShadowDepthTextureSampler);
 
-		Vector4 shadowParams0(g_ShadowDepthOffset, (float)g_ShadowMapRTSize, 0.0f, 0.0f);
-		ShaderParam* pShadowParam0 = m_pPixelShader->GetShaderParamPtrByName("ComVar_Vector_ShadowParam0");
-		pShadowParam0->SetVector4(shadowParams0);
-
 		m_pPixelShader->Apply();
-
-		ID3D11Buffer* pLightingCB = (ID3D11Buffer*)(m_pLightingCB->GetResource());
-		g_pD3D11ImmediateContext->PSSetConstantBuffers(0, 1, &pLightingCB);
 		
 		uint32_t indexNum = renderParam.pIB->GetIndexNum();
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
@@ -411,31 +413,6 @@ namespace RenderDog
 #pragma region PipelineRenderer
 	class D3D11Renderer : public IRenderer
 	{
-	protected:
-		struct GlobalConstantData
-		{
-			Matrix4x4	viewMatrix;
-			Matrix4x4	projMatrix;
-			Vector4		mainCameraWorldPos;
-		};
-
-		struct DirectionalLightData
-		{
-			Vector4		color;
-			Vector4		direction;
-		};
-
-		struct ShadowDepthConstantData
-		{
-			Matrix4x4	viewMatrix;
-			Matrix4x4	orthoMatrix;
-		};
-
-		struct ShadowParamConstantData
-		{
-			Vector4		param0;			//x: shadowDepthOffset, y: shadowDistance
-		};
-
 	public:
 		D3D11Renderer();
 		virtual ~D3D11Renderer();
@@ -755,10 +732,10 @@ namespace RenderDog
 		if (m_pSceneView->GetLightNum() > 0)
 		{
 			ILight* pMainLight = m_pSceneView->GetLight(0);
-			DirectionalLightData dirLightData = {};
+			/*DirectionalLightData dirLightData = {};
 			dirLightData.direction = Vector4(pMainLight->GetDirection(), 0.0f);
 			dirLightData.color = Vector4(pMainLight->GetColor(), pMainLight->GetLuminance());
-			m_pLightingConstantBuffer->Update(&dirLightData, sizeof(dirLightData));
+			m_pLightingConstantBuffer->Update(&dirLightData, sizeof(dirLightData));*/
 
 			if (pMainLight->GetType() == LIGHT_TYPE::DIRECTIONAL)
 			{
@@ -1119,7 +1096,6 @@ namespace RenderDog
 
 		MeshLightingGlobalData meshLightingData;
 		meshLightingData.pSceneView = m_pSceneView;
-		meshLightingData.pLightingCB = m_pLightingConstantBuffer;
 		meshLightingData.pShadowDepthTexture = m_pShadowDepthTexture;
 		meshLightingData.pShadowDepthTextureSampler = m_pShadowDepthTextureSampler;
 		meshLightingData.pEnvReflectionTexture = pEnvReflectionTexture;
