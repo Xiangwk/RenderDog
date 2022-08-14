@@ -85,7 +85,7 @@ namespace RenderDog
 	private:
 		std::string					m_Name;
 
-		ID3D11Buffer* m_pCB;
+		ID3D11Buffer*				m_pCB;
 		bool						m_IsDynamic;
 	};
 

@@ -189,7 +189,6 @@ namespace RenderDog
 		{
 			renderParam.pBoneTransformMatrixs[i] = &(m_BoneTransform[i]);
 		}
-		
 
 		pPrimitiveRenderer->Render(renderParam);
 	}

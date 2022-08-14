@@ -71,7 +71,14 @@ namespace RenderDog
 		Vector3	weights;
 		uint8_t	boneIndices[4];
 
-		SkinVertex() = default;
+		SkinVertex() :
+			weights(0.0f)
+		{
+			for (int i = 0; i < 4; ++i)
+			{
+				boneIndices[i] = 0;
+			}
+		}
 
 		SkinVertex(const Vector3& pos, const Vector4& color, 
 				   const Vector3& norm, const Vector4& tan, const Vector2& tex,
