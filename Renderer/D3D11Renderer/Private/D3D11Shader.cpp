@@ -441,7 +441,7 @@ namespace RenderDog
 		Matrix4x4 localToWorldMatrix = m_LocalToWorldMatrixParam.GetMatrix4x4();
 		pPerObjectConstantBuffer->Update(&localToWorldMatrix, sizeof(Matrix4x4));
 
-		auto cbIter = m_ConstantBufferMap.find(pPerObjectConstantBuffer->GetName());
+		auto cbIter = m_ConstantBufferMap.find("ComVar_ConstantBuffer_PerObject");
 		if (cbIter != m_ConstantBufferMap.end())
 		{
 			uint32_t cbSlot = cbIter->second;
@@ -468,7 +468,7 @@ namespace RenderDog
 			delete []pboneTransforms;
 		}
 
-		cbIter = m_ConstantBufferMap.find(pBoneTransformsConstantBuffer->GetName());
+		cbIter = m_ConstantBufferMap.find("ComVar_ConstantBuffer_BoneTransforms");
 		if (cbIter != m_ConstantBufferMap.end())
 		{
 			uint32_t cbSlot = cbIter->second;
