@@ -284,6 +284,16 @@ namespace RenderDog
 		pShadowWorldToViewMatrix->SetMatrix4x4(m_pSceneView->GetShadowWorldToViewMatrix());
 		pShadowViewToClipMatrix->SetMatrix4x4(m_pSceneView->GetShadowViewToClipMatrix());
 
+		if (renderParam.pBoneTransformMatrixs != nullptr)
+		{
+			for (int i = 0; i < g_MaxBoneNum; ++i)
+			{
+				std::string boneTransformName = "ComVar_Matrix_BoneTransforms" + std::to_string(i);
+				ShaderParam* pBoneTransform = renderParam.pVS->GetShaderParamPtrByName(boneTransformName);
+				pBoneTransform->SetMatrix4x4(*(renderParam.pBoneTransformMatrixs[i]));
+			}
+		}
+
 		renderParam.pVS->Apply();
 
 		//PixShader
@@ -387,6 +397,17 @@ namespace RenderDog
 		pViewToClipMatrix->SetMatrix4x4(m_pSceneView->GetShadowViewToClipMatrix());
 		FPSCamera* pCamera = m_pSceneView->GetCamera();
 		pWorldEyePosition->SetVector4(Vector4(pCamera->GetPosition(), 1.0f));
+
+		if (renderParam.pBoneTransformMatrixs[0] != nullptr)
+		{
+			for (int i = 0; i < g_MaxBoneNum; ++i)
+			{
+				std::string boneTransformName = "ComVar_Matrix_BoneTransforms" + std::to_string(i);
+				ShaderParam* pBoneTransform = renderParam.pVS->GetShaderParamPtrByName(boneTransformName);
+				pBoneTransform->SetMatrix4x4(*(renderParam.pBoneTransformMatrixs[i]));
+			}
+		}
+
 		renderParam.pVS->Apply();
 
 		m_pPixelShader->Apply();
@@ -891,7 +912,7 @@ namespace RenderDog
 
 		vsDesc = ShaderCompileDesc(g_ShadowDepthStaticVertexShaderFilePath, nullptr, "Main", "vs_5_0", 0);
 		m_pShadowDepthStaticModelVS = g_pIShaderManager->GetModelVertexShader(VERTEX_TYPE::STANDARD, vsDesc);
-		vsDesc = ShaderCompileDesc("Shaders/ShadowDepthSkinModelVertexShader.hlsl", nullptr, "Main", "vs_5_0", 0);
+		vsDesc = ShaderCompileDesc(g_ShadowDepthSkinVertexShaderFilePath, nullptr, "Main", "vs_5_0", 0);
 		m_pShadowDepthSkinModelVS = g_pIShaderManager->GetVertexShader(VERTEX_TYPE::SKIN, vsDesc);
 		psDesc = ShaderCompileDesc(g_ShadowDepthPixelShaderFilePath, nullptr, "Main", "ps_5_0", 0);
 		m_pShadowDepthPS = g_pIShaderManager->GetPixelShader(psDesc);

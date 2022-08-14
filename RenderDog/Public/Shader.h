@@ -8,6 +8,7 @@
 
 #include "Vertex.h"
 #include "Matrix.h"
+#include "GlobalValue.h"
 
 #include <string>
 
@@ -16,8 +17,6 @@ namespace RenderDog
 	class	ITexture;
 	class	ISamplerState;
 	class	IConstantBuffer;
-
-	const uint32_t g_MaxBoneNum = 256;
 
 	//VertexShader
 	const std::string g_SimpleModelVertexShadreFilePath			= "Shaders/SimpleModelVertexShader.hlsl";
@@ -114,6 +113,35 @@ namespace RenderDog
 			m_Name(""),
 			m_Type(SHADER_PARAM_TYPE::UNKNOWN)
 		{}
+
+		ShaderParam(const ShaderParam& param) :
+			m_Name(param.m_Name),
+			m_Type(param.m_Type)
+		{
+			switch (m_Type)
+			{
+			case RenderDog::SHADER_PARAM_TYPE::UNKNOWN:
+				break;
+			case RenderDog::SHADER_PARAM_TYPE::FLOAT_SCALAR:
+				m_Float = param.m_Float;
+				break;
+			case RenderDog::SHADER_PARAM_TYPE::FLOAT_VECTOR:
+				m_Vector = param.m_Vector;
+				break;
+			case RenderDog::SHADER_PARAM_TYPE::MATRIX:
+				m_Matrix = param.m_Matrix;
+				break;
+			case RenderDog::SHADER_PARAM_TYPE::TEXTURE:
+				m_pTexture = param.m_pTexture;
+				break;
+			case RenderDog::SHADER_PARAM_TYPE::SAMPLER:
+				m_pSampler = param.m_pSampler;
+				break;
+			default:
+				break;
+			}
+		}
+
 		ShaderParam(const std::string& name, SHADER_PARAM_TYPE paramType) :
 			m_Name(name),
 			m_Type(paramType)
@@ -122,7 +150,39 @@ namespace RenderDog
 		~ShaderParam()
 		{}
 
+		ShaderParam& operator=(const ShaderParam& param)
+		{
+			m_Name = param.m_Name;
+			m_Type = param.m_Type;
+
+			switch (m_Type)
+			{
+			case RenderDog::SHADER_PARAM_TYPE::UNKNOWN:
+				break;
+			case RenderDog::SHADER_PARAM_TYPE::FLOAT_SCALAR:
+				m_Float = param.m_Float;
+				break;
+			case RenderDog::SHADER_PARAM_TYPE::FLOAT_VECTOR:
+				m_Vector = param.m_Vector;
+				break;
+			case RenderDog::SHADER_PARAM_TYPE::MATRIX:
+				m_Matrix = param.m_Matrix;
+				break;
+			case RenderDog::SHADER_PARAM_TYPE::TEXTURE:
+				m_pTexture = param.m_pTexture;
+				break;
+			case RenderDog::SHADER_PARAM_TYPE::SAMPLER:
+				m_pSampler = param.m_pSampler;
+				break;
+			default:
+				break;
+			}
+
+			return *this;
+		}
+
 		const std::string&		GetName() const							{ return m_Name; }
+		SHADER_PARAM_TYPE		GetType() const							{ return m_Type; }
 
 		void					SetFloat(float value)					{ m_Float = value; }
 		void					SetVector4(const Vector4& value)		{ m_Vector = value; }

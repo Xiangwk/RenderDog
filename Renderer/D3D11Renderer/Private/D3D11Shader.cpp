@@ -86,7 +86,6 @@ namespace RenderDog
 		};
 
 	public:
-		D3D11ModelVertexShader();
 		explicit D3D11ModelVertexShader(VERTEX_TYPE vertexType);
 		virtual ~D3D11ModelVertexShader();
 
@@ -389,23 +388,6 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->VSSetShader(m_pVS, nullptr, 0);
 	}
 
-	D3D11ModelVertexShader::D3D11ModelVertexShader() :
-		D3D11VertexShader(),
-		m_LocalToWorldMatrixParam("ComVar_Matrix_LocalToWorld", SHADER_PARAM_TYPE::MATRIX),
-		m_WorldToViewMatrixParam("ComVar_Matrix_WorldToView", SHADER_PARAM_TYPE::MATRIX),
-		m_ViewToClipMatrixParam("ComVar_Matrix_ViewToClip", SHADER_PARAM_TYPE::MATRIX),
-		m_WorldEyePostionParam("ComVar_Vector_WorldEyePosition", SHADER_PARAM_TYPE::FLOAT_VECTOR),
-		m_ShadowWorldToViewMatrixParam("ComVar_Matrix_ShadowView", SHADER_PARAM_TYPE::MATRIX),
-		m_ShadowViewToClipMatrixParam("ComVar_Matrix_ShadowProjection", SHADER_PARAM_TYPE::MATRIX)
-	{
-		m_ShaderParamMap.insert({ "ComVar_Matrix_LocalToWorld", &m_LocalToWorldMatrixParam });
-		m_ShaderParamMap.insert({ "ComVar_Matrix_WorldToView", &m_WorldToViewMatrixParam });
-		m_ShaderParamMap.insert({ "ComVar_Matrix_ViewToClip", &m_ViewToClipMatrixParam });
-		m_ShaderParamMap.insert({ "ComVar_Vector_WorldEyePosition", &m_WorldEyePostionParam });
-		m_ShaderParamMap.insert({ "ComVar_Matrix_ShadowView", &m_ShadowWorldToViewMatrixParam});
-		m_ShaderParamMap.insert({ "ComVar_Matrix_ShadowProjection", &m_ShadowViewToClipMatrixParam });
-	}
-
 	D3D11ModelVertexShader::D3D11ModelVertexShader(VERTEX_TYPE vertexType) :
 		D3D11VertexShader(vertexType),
 		m_LocalToWorldMatrixParam("ComVar_Matrix_LocalToWorld", SHADER_PARAM_TYPE::MATRIX),
@@ -421,6 +403,16 @@ namespace RenderDog
 		m_ShaderParamMap.insert({ "ComVar_Vector_WorldEyePosition", &m_WorldEyePostionParam });
 		m_ShaderParamMap.insert({ "ComVar_Matrix_ShadowView", &m_ShadowWorldToViewMatrixParam });
 		m_ShaderParamMap.insert({ "ComVar_Matrix_ShadowProjection", &m_ShadowViewToClipMatrixParam });
+
+		if (vertexType == VERTEX_TYPE::SKIN)
+		{
+			for (int i = 0; i < g_MaxBoneNum; ++i)
+			{
+				std::string boneTransName = "ComVar_Matrix_BoneTransforms" + std::to_string(i);
+				m_BoneTransformsParam[i] = ShaderParam(boneTransName, SHADER_PARAM_TYPE::MATRIX);
+				m_ShaderParamMap.insert({ boneTransName, &m_BoneTransformsParam[i] });
+			}
+		}
 	}
 
 	D3D11ModelVertexShader::~D3D11ModelVertexShader()
@@ -454,6 +446,31 @@ namespace RenderDog
 		{
 			uint32_t cbSlot = cbIter->second;
 			ID3D11Buffer* pCB = (ID3D11Buffer*)(pPerObjectConstantBuffer->GetResource());
+			g_pD3D11ImmediateContext->VSSetConstantBuffers(cbSlot, 1, (ID3D11Buffer**)&pCB);
+		}
+
+		IConstantBuffer* pBoneTransformsConstantBuffer = g_pIBufferManager->GetConstantBufferByName("ComVar_ConstantBuffer_BoneTransforms");
+		if (!pBoneTransformsConstantBuffer)
+		{
+			return;
+		}
+
+		if (m_BoneTransformsParam[0].GetType() == SHADER_PARAM_TYPE::MATRIX)
+		{
+			Matrix4x4 boneTransforms[g_MaxBoneNum];
+			for (int i = 0; i < g_MaxBoneNum; ++i)
+			{
+				boneTransforms[i] = m_BoneTransformsParam[i].GetMatrix4x4();
+			}
+
+			pBoneTransformsConstantBuffer->Update(&boneTransforms[0], sizeof(boneTransforms));
+		}
+
+		cbIter = m_ConstantBufferMap.find(pBoneTransformsConstantBuffer->GetName());
+		if (cbIter != m_ConstantBufferMap.end())
+		{
+			uint32_t cbSlot = cbIter->second;
+			ID3D11Buffer* pCB = (ID3D11Buffer*)(pBoneTransformsConstantBuffer->GetResource());
 			g_pD3D11ImmediateContext->VSSetConstantBuffers(cbSlot, 1, (ID3D11Buffer**)&pCB);
 		}
 

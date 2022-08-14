@@ -11,6 +11,7 @@
 #include "Texture.h"
 #include "Bounding.h"
 #include "Matrix.h"
+#include "GlobalValue.h"
 
 #include <vector>
 #include <string>
@@ -73,6 +74,9 @@ namespace RenderDog
 		ISamplerState*					m_pNormalTextureSampler;
 
 		AABB							m_AABB;
+
+		Matrix4x4						m_LocalToWorldMatrix;
+		Matrix4x4						m_BoneTransform[g_MaxBoneNum];
 	};
 
 }// namespace RenderDog

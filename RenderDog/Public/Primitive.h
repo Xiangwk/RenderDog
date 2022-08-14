@@ -37,6 +37,7 @@ namespace RenderDog
 
 		IShader*			pVS;
 		Matrix4x4*			pLocalToWorldMatrix;
+		Matrix4x4*			pBoneTransformMatrixs[g_MaxBoneNum];
 
 		PrimitiveRenderParam() :
 			pVB(nullptr),
@@ -47,7 +48,12 @@ namespace RenderDog
 			pNormalTextureSampler(nullptr),
 			pVS(nullptr),
 			pLocalToWorldMatrix(nullptr)
-		{}
+		{
+			for (int i = 0; i < g_MaxBoneNum; ++i)
+			{
+				pBoneTransformMatrixs[i] = nullptr;
+			}
+		}
 	};
 
 	class IPrimitiveRenderer
