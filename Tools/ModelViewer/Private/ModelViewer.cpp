@@ -316,7 +316,7 @@ bool ModelViewer::LoadFloor(uint32_t width, uint32_t depth, float unit)
 	RenderDog::GeometryGenerator::SimpleMeshData GridLineMeshData;
 	RenderDog::g_pGeometryGenerator->GenerateGridLine(width, depth, unit, RenderDog::Vector4(0.8f, 0.8f, 0.8f, 1.0f), GridLineMeshData);
 	m_pGridLine = new RenderDog::SimpleModel();
-	m_pGridLine->LoadFromSimpleData(GridLineMeshData.vertices, GridLineMeshData.indices, "Shaders/SimpleModelVertexShader.hlsl", "Shaders/SingleColorPixelShader.hlsl", "MainSceneGridLine");
+	m_pGridLine->LoadFromSimpleData(GridLineMeshData.vertices, GridLineMeshData.indices, "MainSceneGridLine");
 	m_pGridLine->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
 	
 

@@ -27,7 +27,6 @@ namespace RenderDog
 		SimpleModel& operator=(const SimpleModel&) = default;
 
 		void						LoadFromSimpleData(const std::vector<SimpleVertex>& vertices, const std::vector<uint32_t>& indices,
-													   const std::string& vsFile, const std::string& psFile,
 													   const std::string& name);
 
 		void						RegisterToScene(IScene* pScene);

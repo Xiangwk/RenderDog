@@ -17,14 +17,12 @@ namespace RenderDog
 		IConstantBuffer* pCB;
 
 		IShader* pVS;
-		IShader* pPS;
 
 		SimpleMeshRenderData() :
 			pVB(nullptr),
 			pIB(nullptr),
 			pCB(nullptr),
-			pVS(nullptr),
-			pPS(nullptr)
+			pVS(nullptr)
 		{}
 	};
 
@@ -95,7 +93,7 @@ namespace RenderDog
 		m_Name = name;
 	}
 
-	void SimpleMesh::InitRenderData(const std::string& vsFile, const std::string& psFile)
+	void SimpleMesh::InitRenderData()
 	{
 		m_pRenderData = new SimpleMeshRenderData();
 
@@ -122,11 +120,8 @@ namespace RenderDog
 		cbDesc.isDynamic = false;
 		m_pRenderData->pCB = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
 
-		ShaderCompileDesc vsDesc(vsFile, nullptr, "Main", "vs_5_0", 0);
+		ShaderCompileDesc vsDesc(g_SimpleModelVertexShadreFilePath, nullptr, "Main", "vs_5_0", 0);
 		m_pRenderData->pVS = g_pIShaderManager->GetModelVertexShader(VERTEX_TYPE::SIMPLE, vsDesc);
-
-		ShaderCompileDesc psDesc(psFile, nullptr, "Main", "ps_5_0", 0);
-		m_pRenderData->pPS = g_pIShaderManager->GetPixelShader(psDesc);
 	}
 
 	void SimpleMesh::ReleaseRenderData()
@@ -137,7 +132,6 @@ namespace RenderDog
 			m_pRenderData->pIB->Release();
 			m_pRenderData->pCB->Release();
 			m_pRenderData->pVS->Release();
-			m_pRenderData->pPS->Release();
 
 			delete m_pRenderData;
 			m_pRenderData = nullptr;
@@ -161,9 +155,8 @@ namespace RenderDog
 		if (mesh.m_pRenderData)
 		{
 			const std::string& vsFile = mesh.m_pRenderData->pVS->GetFileName();
-			const std::string& psFile = mesh.m_pRenderData->pPS->GetFileName();
 
-			InitRenderData(vsFile, psFile);
+			InitRenderData();
 		}
 	}
 }// namespace RenderDog

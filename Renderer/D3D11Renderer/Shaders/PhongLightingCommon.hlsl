@@ -7,7 +7,6 @@
 TextureCube		ComVar_Texture_SkyCubeTexture;
 SamplerState	ComVar_Texture_SkyCubeTextureSampler;
 
-//cbuffer ComVar_ConstantBuffer_LightingParam : register(b0)
 cbuffer ComVar_ConstantBuffer_LightingParam
 {
 	float4	ComVar_Vector_DirLightDirection;

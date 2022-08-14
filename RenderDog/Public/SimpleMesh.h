@@ -36,7 +36,7 @@ namespace RenderDog
 		virtual const AABB&				GetAABB() const override { return m_AABB; }
 
 		void							LoadFromSimpleData(const std::vector<SimpleVertex>& vertices, const std::vector<uint32_t>& indices, const std::string& name);
-		void							InitRenderData(const std::string& vsFile, const std::string& psFile);
+		void							InitRenderData();
 
 
 		void							SetPosGesture(const Vector3& pos, const Vector3& euler, const Vector3& scale);

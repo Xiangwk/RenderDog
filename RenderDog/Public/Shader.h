@@ -18,6 +18,7 @@ namespace RenderDog
 	class	IConstantBuffer;
 
 	//VertexShader
+	const std::string g_SimpleModelVertexShadreFilePath			= "Shaders/SimpleModelVertexShader.hlsl";
 	const std::string g_StaticModelVertexShaderFilePath			= "Shaders/StaticModelVertexShader.hlsl";
 	const std::string g_SkinModelVertexShaderFilePath			= "Shaders/SkinModelVertexShader.hlsl";
 	const std::string g_SkyVertexShaderFilePath					= "Shaders/SkyVertexShader.hlsl";

@@ -19,15 +19,12 @@ namespace RenderDog
 		m_Meshes.clear();
 	}
 
-	void SimpleModel::LoadFromSimpleData(const std::vector<SimpleVertex>& vertices,
-		const std::vector<uint32_t>& indices,
-		const std::string& vsFile,
-		const std::string& psFile,
+	void SimpleModel::LoadFromSimpleData(const std::vector<SimpleVertex>& vertices, const std::vector<uint32_t>& indices,
 		const std::string& name)
 	{
 		SimpleMesh mesh;
 		mesh.LoadFromSimpleData(vertices, indices, name);
-		mesh.InitRenderData(vsFile, psFile);
+		mesh.InitRenderData();
 
 		m_Meshes.push_back(mesh);
 	}
