@@ -32,21 +32,20 @@ namespace RenderDog
 	class D3D11MeshRenderer : public IPrimitiveRenderer
 	{
 	public:
-		D3D11MeshRenderer();
-		D3D11MeshRenderer(SceneView* pSceneView);
+		explicit D3D11MeshRenderer(SceneView* pSceneView);
 		virtual ~D3D11MeshRenderer();
 
 	protected:
+		SceneView*				m_pSceneView;
+
 		IShader*				m_pVertexShader;
 		IShader*				m_pPixelShader;
-
-		SceneView*				m_pSceneView;
 	};
 
-	D3D11MeshRenderer::D3D11MeshRenderer() :
+	D3D11MeshRenderer::D3D11MeshRenderer(SceneView* pSceneView) :
 		m_pVertexShader(nullptr),
 		m_pPixelShader(nullptr),
-		m_pSceneView(nullptr)
+		m_pSceneView(pSceneView)
 	{}
 
 	D3D11MeshRenderer::~D3D11MeshRenderer()
@@ -63,12 +62,6 @@ namespace RenderDog
 			m_pPixelShader = nullptr;
 		}
 	}
-
-	D3D11MeshRenderer::D3D11MeshRenderer(SceneView* pSceneView) :
-		m_pVertexShader(nullptr),
-		m_pPixelShader(nullptr),
-		m_pSceneView(pSceneView)
-	{}
 #pragma endregion MeshRenderer
 
 #pragma region LineMeshRenderer

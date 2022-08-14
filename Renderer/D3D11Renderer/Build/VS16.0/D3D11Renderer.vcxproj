@@ -121,7 +121,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\Public;..\..\..\Public;..\..\..\..\EngineSDK\3rdSDK\Public\DirectXTex;..\..\..\..\EngineSDK\RenderDog\Public\Math;..\..\..\..\EngineSDK\RenderDog\Public\RenderDog;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Public;..\..\..\Public;..\..\..\..\RenderDog\Math\Public;..\..\..\..\RenderDog\Public\;..\..\..\..\EngineSDK\3rdSDK\Public\DirectXTex;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -147,7 +147,7 @@ xcopy ..\..\Shaders\*.* ..\..\..\..\EngineSDK\Renderer\Shaders\ /i /s /y</Comman
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\Public;..\..\..\Public;..\..\..\..\EngineSDK\3rdSDK\Public\DirectXTex;..\..\..\..\EngineSDK\RenderDog\Public\Math;..\..\..\..\EngineSDK\RenderDog\Public\RenderDog;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Public;..\..\..\Public;..\..\..\..\RenderDog\Math\Public;..\..\..\..\RenderDog\Public\;..\..\..\..\EngineSDK\3rdSDK\Public\DirectXTex;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
