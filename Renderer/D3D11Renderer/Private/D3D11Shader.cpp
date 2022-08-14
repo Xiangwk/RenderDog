@@ -457,13 +457,15 @@ namespace RenderDog
 
 		if (m_BoneTransformsParam[0].GetType() == SHADER_PARAM_TYPE::MATRIX)
 		{
-			Matrix4x4 boneTransforms[g_MaxBoneNum];
+			Matrix4x4* pboneTransforms = new Matrix4x4[g_MaxBoneNum];
 			for (int i = 0; i < g_MaxBoneNum; ++i)
 			{
-				boneTransforms[i] = m_BoneTransformsParam[i].GetMatrix4x4();
+				pboneTransforms[i] = m_BoneTransformsParam[i].GetMatrix4x4();
 			}
 
-			pBoneTransformsConstantBuffer->Update(&boneTransforms[0], sizeof(boneTransforms));
+			pBoneTransformsConstantBuffer->Update(pboneTransforms, sizeof(Matrix4x4) * g_MaxBoneNum);
+
+			delete []pboneTransforms;
 		}
 
 		cbIter = m_ConstantBufferMap.find(pBoneTransformsConstantBuffer->GetName());
