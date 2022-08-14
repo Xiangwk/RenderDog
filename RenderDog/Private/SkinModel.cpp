@@ -10,6 +10,7 @@
 #include "Transform.h"
 #include "Skeleton.h"
 #include "Bone.h"
+#include "Shader.h"
 
 namespace RenderDog
 {
@@ -171,9 +172,7 @@ namespace RenderDog
 
 	void SkinModel::Tick(float deltaTime)
 	{
-		SkinMesh::SkinModelPerObjectTransform perModelTransform;
-
-		perModelTransform.LocalToWorldMatrix = GetTranslationMatrix(m_WorldPosition.x, m_WorldPosition.y, m_WorldPosition.z);
+		SkinModelPerObjectTransform perModelTransform;
 		
 		if (m_pSkeleton->GetBoneNum() > g_MaxBoneNum)
 		{

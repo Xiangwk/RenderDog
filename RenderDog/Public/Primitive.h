@@ -28,7 +28,6 @@ namespace RenderDog
 	{
 		IVertexBuffer*		pVB;
 		IIndexBuffer*		pIB;
-		IConstantBuffer*	pPerObjCB;
 
 		ITexture2D*			pDiffuseTexture;
 		ISamplerState*		pDiffuseTextureSampler;
@@ -37,16 +36,17 @@ namespace RenderDog
 		ISamplerState*		pNormalTextureSampler;
 
 		IShader*			pVS;
+		Matrix4x4*			pLocalToWorldMatrix;
 
 		PrimitiveRenderParam() :
 			pVB(nullptr),
 			pIB(nullptr),
-			pPerObjCB(nullptr),
 			pDiffuseTexture(nullptr),
 			pDiffuseTextureSampler(nullptr),
 			pNormalTexture(nullptr),
 			pNormalTextureSampler(nullptr),
-			pVS(nullptr)
+			pVS(nullptr),
+			pLocalToWorldMatrix(nullptr)
 		{}
 	};
 

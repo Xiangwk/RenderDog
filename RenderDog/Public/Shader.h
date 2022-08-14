@@ -17,6 +17,8 @@ namespace RenderDog
 	class	ISamplerState;
 	class	IConstantBuffer;
 
+	const uint32_t g_MaxBoneNum = 256;
+
 	//VertexShader
 	const std::string g_SimpleModelVertexShadreFilePath			= "Shaders/SimpleModelVertexShader.hlsl";
 	const std::string g_StaticModelVertexShaderFilePath			= "Shaders/StaticModelVertexShader.hlsl";
@@ -39,6 +41,19 @@ namespace RenderDog
 		MATRIX,
 		TEXTURE,
 		SAMPLER
+	};
+
+	struct SkinModelPerObjectTransform
+	{
+		Matrix4x4 BoneFinalTransformMatrix[g_MaxBoneNum];
+
+		SkinModelPerObjectTransform()
+		{
+			for (int i = 0; i < g_MaxBoneNum; ++i)
+			{
+				BoneFinalTransformMatrix[i].Identity();
+			}
+		}
 	};
 
 	struct GlobalConstantData

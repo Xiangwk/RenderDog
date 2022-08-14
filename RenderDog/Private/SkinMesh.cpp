@@ -151,7 +151,6 @@ namespace RenderDog
 		PrimitiveRenderParam renderParam = {};
 		renderParam.pVB						= m_pRenderData->pVB;
 		renderParam.pIB						= m_pRenderData->pIB;
-		renderParam.pPerObjCB				= m_pRenderData->pCB;
 		renderParam.pDiffuseTexture			= m_pDiffuseTexture;
 		renderParam.pDiffuseTextureSampler	= m_pDiffuseTextureSampler;
 		renderParam.pNormalTexture			= m_pNormalTexture;

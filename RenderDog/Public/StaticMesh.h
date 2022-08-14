@@ -72,6 +72,8 @@ namespace RenderDog
 		ISamplerState*					m_pNormalTextureSampler;
 
 		AABB							m_AABB;
+
+		Matrix4x4						m_LocalToWorldMatrix;
 	};
 
 }// namespace RenderDog

@@ -96,6 +96,8 @@ namespace RenderDog
 		virtual void				Apply() override;
 
 	protected:
+		ShaderParam					m_LocalToWorldMatrixParam;
+		ShaderParam					m_BoneTransformsParam[256];
 		ShaderParam					m_WorldToViewMatrixParam;
 		ShaderParam					m_ViewToClipMatrixParam;
 		ShaderParam					m_WorldEyePostionParam;
@@ -389,12 +391,14 @@ namespace RenderDog
 
 	D3D11ModelVertexShader::D3D11ModelVertexShader() :
 		D3D11VertexShader(),
+		m_LocalToWorldMatrixParam("ComVar_Matrix_LocalToWorld", SHADER_PARAM_TYPE::MATRIX),
 		m_WorldToViewMatrixParam("ComVar_Matrix_WorldToView", SHADER_PARAM_TYPE::MATRIX),
 		m_ViewToClipMatrixParam("ComVar_Matrix_ViewToClip", SHADER_PARAM_TYPE::MATRIX),
 		m_WorldEyePostionParam("ComVar_Vector_WorldEyePosition", SHADER_PARAM_TYPE::FLOAT_VECTOR),
 		m_ShadowWorldToViewMatrixParam("ComVar_Matrix_ShadowView", SHADER_PARAM_TYPE::MATRIX),
 		m_ShadowViewToClipMatrixParam("ComVar_Matrix_ShadowProjection", SHADER_PARAM_TYPE::MATRIX)
 	{
+		m_ShaderParamMap.insert({ "ComVar_Matrix_LocalToWorld", &m_LocalToWorldMatrixParam });
 		m_ShaderParamMap.insert({ "ComVar_Matrix_WorldToView", &m_WorldToViewMatrixParam });
 		m_ShaderParamMap.insert({ "ComVar_Matrix_ViewToClip", &m_ViewToClipMatrixParam });
 		m_ShaderParamMap.insert({ "ComVar_Vector_WorldEyePosition", &m_WorldEyePostionParam });
@@ -404,12 +408,14 @@ namespace RenderDog
 
 	D3D11ModelVertexShader::D3D11ModelVertexShader(VERTEX_TYPE vertexType) :
 		D3D11VertexShader(vertexType),
+		m_LocalToWorldMatrixParam("ComVar_Matrix_LocalToWorld", SHADER_PARAM_TYPE::MATRIX),
 		m_WorldToViewMatrixParam("ComVar_Matrix_WorldToView", SHADER_PARAM_TYPE::MATRIX),
 		m_ViewToClipMatrixParam("ComVar_Matrix_ViewToClip", SHADER_PARAM_TYPE::MATRIX),
 		m_WorldEyePostionParam("ComVar_Vector_WorldEyePosition", SHADER_PARAM_TYPE::FLOAT_VECTOR),
 		m_ShadowWorldToViewMatrixParam("ComVar_Matrix_ShadowView", SHADER_PARAM_TYPE::MATRIX),
 		m_ShadowViewToClipMatrixParam("ComVar_Matrix_ShadowProjection", SHADER_PARAM_TYPE::MATRIX)
 	{
+		m_ShaderParamMap.insert({ "ComVar_Matrix_LocalToWorld", &m_LocalToWorldMatrixParam });
 		m_ShaderParamMap.insert({ "ComVar_Matrix_WorldToView", &m_WorldToViewMatrixParam });
 		m_ShaderParamMap.insert({ "ComVar_Matrix_ViewToClip", &m_ViewToClipMatrixParam });
 		m_ShaderParamMap.insert({ "ComVar_Vector_WorldEyePosition", &m_WorldEyePostionParam });
@@ -434,6 +440,23 @@ namespace RenderDog
 	{
 		D3D11VertexShader::Apply();
 
+		IConstantBuffer* pPerObjectConstantBuffer = g_pIBufferManager->GetConstantBufferByName("ComVar_ConstantBuffer_PerObject");
+		if (!pPerObjectConstantBuffer)
+		{
+			return;
+		}
+
+		Matrix4x4 localToWorldMatrix = m_LocalToWorldMatrixParam.GetMatrix4x4();
+		pPerObjectConstantBuffer->Update(&localToWorldMatrix, sizeof(Matrix4x4));
+
+		auto cbIter = m_ConstantBufferMap.find(pPerObjectConstantBuffer->GetName());
+		if (cbIter != m_ConstantBufferMap.end())
+		{
+			uint32_t cbSlot = cbIter->second;
+			ID3D11Buffer* pCB = (ID3D11Buffer*)(pPerObjectConstantBuffer->GetResource());
+			g_pD3D11ImmediateContext->VSSetConstantBuffers(cbSlot, 1, (ID3D11Buffer**)&pCB);
+		}
+
 		IConstantBuffer* pGlobalConstantBuffer = g_pIBufferManager->GetConstantBufferByName("ComVar_ConstantBuffer_Global");
 		if (!pGlobalConstantBuffer)
 		{
@@ -447,7 +470,7 @@ namespace RenderDog
 
 		pGlobalConstantBuffer->Update(&globalCBData, sizeof(globalCBData));
 
-		auto cbIter = m_ConstantBufferMap.find(pGlobalConstantBuffer->GetName());
+		cbIter = m_ConstantBufferMap.find(pGlobalConstantBuffer->GetName());
 		if (cbIter != m_ConstantBufferMap.end())
 		{
 			uint32_t cbSlot = cbIter->second;

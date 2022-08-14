@@ -54,5 +54,7 @@ namespace RenderDog
 		SimpleMeshRenderData*			m_pRenderData;
 
 		AABB							m_AABB;
+
+		Matrix4x4						m_LocalToWorldMatrix;
 	};
 }// namespace RenderDog

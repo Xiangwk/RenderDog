@@ -13,8 +13,12 @@ cbuffer ComVar_ConstantBuffer_Global
 	float4				ComVar_Vector_WorldEyePosition;
 };
 
-cbuffer ComVar_ConstantBuffer_PerObject : register(b1)
+cbuffer ComVar_ConstantBuffer_PerObject
 {
 	row_major matrix	ComVar_Matrix_LocalToWorld;
+};
+
+cbuffer ComVar_ConstantBuffer_BoneTransforms
+{
 	row_major matrix	ComVar_Matrix_BoneTransforms[MAX_BONE_NUM];
 };
