@@ -36,8 +36,8 @@ namespace RenderDog
 		ISamplerState*		pNormalTextureSampler;
 
 		IShader*			pVS;
-		Matrix4x4*			pLocalToWorldMatrix;
-		Matrix4x4*			pBoneTransformMatrixs[g_MaxBoneNum];
+		IConstantBuffer*	pPerObjectCB;
+		IConstantBuffer*	pBoneTransformCB;
 
 		PrimitiveRenderParam() :
 			pVB(nullptr),
@@ -47,13 +47,9 @@ namespace RenderDog
 			pNormalTexture(nullptr),
 			pNormalTextureSampler(nullptr),
 			pVS(nullptr),
-			pLocalToWorldMatrix(nullptr)
-		{
-			for (int i = 0; i < g_MaxBoneNum; ++i)
-			{
-				pBoneTransformMatrixs[i] = nullptr;
-			}
-		}
+			pPerObjectCB(nullptr),
+			pBoneTransformCB(nullptr)
+		{}
 	};
 
 	class IPrimitiveRenderer

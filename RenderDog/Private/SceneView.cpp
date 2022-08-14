@@ -18,20 +18,35 @@ namespace RenderDog
 		m_WorldToViewMatrix(),
 		m_ViewToClipMatrix(),
 		m_ShadowWorldToViewMatrix(),
-		m_ShadowViewToClipMatrix()
+		m_ShadowViewToClipMatrix(),
+		m_pRenderData(nullptr)
 	{
 		m_WorldToViewMatrix.Identity();
 		m_ViewToClipMatrix.Identity();
 		m_ShadowWorldToViewMatrix.Identity();
 		m_ShadowViewToClipMatrix.Identity();
+
+		m_pRenderData = new SceneViewRenderData();
+
+		InitRenderData();
 	}
 
 	SceneView::SceneView(FPSCamera* pCamera) :
 		m_OpaquePris(0),
 		m_SimplePris(0),
 		m_Lights(0),
-		m_pCamera(pCamera)
-	{}
+		m_pCamera(pCamera),
+		m_pRenderData(nullptr)
+	{
+		m_WorldToViewMatrix.Identity();
+		m_ViewToClipMatrix.Identity();
+		m_ShadowWorldToViewMatrix.Identity();
+		m_ShadowViewToClipMatrix.Identity();
+
+		m_pRenderData = new SceneViewRenderData();
+
+		InitRenderData();
+	}
 
 	SceneView::~SceneView()
 	{
@@ -39,6 +54,14 @@ namespace RenderDog
 		m_SimplePris.clear();
 
 		m_Lights.clear();
+
+		ReleaseRenderData();
+
+		if (m_pRenderData)
+		{
+			delete m_pRenderData;
+			m_pRenderData = nullptr;
+		}
 	}
 
 	void SceneView::AddPrimitive(IPrimitive* pPri)
@@ -90,6 +113,56 @@ namespace RenderDog
 	void SceneView::ClearLights() 
 	{ 
 		m_Lights.clear();
+	}
+
+	void SceneView::UpdateRenderData()
+	{
+		ViewParamConstantData viewParamData = {};
+		viewParamData.worldToViewMatrix = m_pCamera->GetViewMatrix();
+		viewParamData.viewToClipMatrix = m_pCamera->GetPerspProjectionMatrix();
+		viewParamData.mainCameraWorldPos = Vector4(m_pCamera->GetPosition(), 1.0f);
+		m_pRenderData->pViewParamCB->Update(&viewParamData, sizeof(ViewParamConstantData));
+	}
+
+	void SceneView::InitRenderData()
+	{
+		if (!m_pRenderData)
+		{
+			return;
+		}
+
+		BufferDesc cbDesc = {};
+		cbDesc.name = "ComVar_ConstantBuffer_ViewParam";
+		cbDesc.byteWidth = sizeof(ViewParamConstantData);
+		cbDesc.pInitData = nullptr;
+		cbDesc.isDynamic = true;
+		m_pRenderData->pViewParamCB = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
+
+		cbDesc.name = "ComVar_ConstantBuffer_LightingParam";
+		cbDesc.byteWidth = sizeof(DirectionalLightData);
+		cbDesc.pInitData = nullptr;
+		cbDesc.isDynamic = true;
+		m_pRenderData->pDirLightParamCB = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
+	}
+
+	void SceneView::ReleaseRenderData()
+	{
+		if (!m_pRenderData)
+		{
+			return;
+		}
+
+		if (m_pRenderData->pViewParamCB)
+		{
+			m_pRenderData->pViewParamCB->Release();
+			m_pRenderData->pViewParamCB = nullptr;
+		}
+
+		if (m_pRenderData->pDirLightParamCB)
+		{
+			m_pRenderData->pDirLightParamCB->Release();
+			m_pRenderData->pDirLightParamCB = nullptr;
+		}
 	}
 
 }// namespace RenderDog

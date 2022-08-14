@@ -6,7 +6,7 @@
 
 #define MAX_BONE_NUM 256
 
-cbuffer ComVar_ConstantBuffer_Global
+cbuffer ComVar_ConstantBuffer_ViewParam
 {
 	row_major matrix	ComVar_Matrix_WorldToView;
 	row_major matrix	ComVar_Matrix_ViewToClip;

@@ -16,9 +16,9 @@ namespace RenderDog
 {
 	struct StaticMeshRenderData
 	{
-		IVertexBuffer* pVB;
-		IIndexBuffer* pIB;
-		IConstantBuffer* pCB;
+		IVertexBuffer*		pVB;
+		IIndexBuffer*		pIB;
+		IConstantBuffer*	pCB;
 
 		IShader* pVS;
 		IShader* pPS;
@@ -184,11 +184,6 @@ namespace RenderDog
 		renderParam.pNormalTexture			= m_pNormalTexture;
 		renderParam.pNormalTextureSampler	= m_pNormalTextureSampler;
 		renderParam.pVS						= m_pRenderData->pVS;
-		renderParam.pLocalToWorldMatrix		= &m_LocalToWorldMatrix;
-		for (int i = 0; i < g_MaxBoneNum; ++i)
-		{
-			renderParam.pBoneTransformMatrixs[i] = &(m_BoneTransform[i]);
-		}
 
 		pPrimitiveRenderer->Render(renderParam);
 	}

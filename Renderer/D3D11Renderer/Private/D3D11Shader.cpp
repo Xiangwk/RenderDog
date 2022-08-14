@@ -61,7 +61,8 @@ namespace RenderDog
 		virtual bool				Init() override;
 		virtual void				Release() override;
 
-		virtual void				Apply() override;
+		virtual void				Apply(IConstantBuffer* pPerObjectCB = nullptr, 
+										  IConstantBuffer* pViewParamCB = nullptr) override;
 
 	private:
 		ID3D11VertexShader*			m_pVS;
@@ -71,20 +72,6 @@ namespace RenderDog
 
 	class D3D11ModelVertexShader : public D3D11VertexShader
 	{
-	private:
-		struct GlobalConstantData
-		{
-			Matrix4x4	viewMatrix;
-			Matrix4x4	projMatrix;
-			Vector4		mainCameraWorldPos;
-		};
-
-		struct ShadowDepthConstantData
-		{
-			Matrix4x4	viewMatrix;
-			Matrix4x4	projMatrix;
-		};
-
 	public:
 		explicit D3D11ModelVertexShader(VERTEX_TYPE vertexType);
 		virtual ~D3D11ModelVertexShader();
@@ -92,15 +79,9 @@ namespace RenderDog
 		virtual bool				Init() override;
 		virtual void				Release() override;
 
-		virtual void				Apply() override;
+		virtual void				Apply(IConstantBuffer* pPerObjectCB = nullptr, IConstantBuffer* pViewParamCB = nullptr) override;
 
 	protected:
-		ShaderParam					m_LocalToWorldMatrixParam;
-		ShaderParam					m_BoneTransformsParam[256];
-		ShaderParam					m_WorldToViewMatrixParam;
-		ShaderParam					m_ViewToClipMatrixParam;
-		ShaderParam					m_WorldEyePostionParam;
-
 		ShaderParam					m_ShadowWorldToViewMatrixParam;
 		ShaderParam					m_ShadowViewToClipMatrixParam;
 	};
@@ -118,7 +99,8 @@ namespace RenderDog
 		virtual bool				Init() override;
 		virtual void				Release() override;
 
-		virtual void				Apply() override;
+		virtual void				Apply(IConstantBuffer* pPerObjectCB = nullptr, 
+										  IConstantBuffer* pViewParamCB = nullptr) override;
 
 	private:
 		ID3D11PixelShader*			m_pPS;
@@ -133,7 +115,8 @@ namespace RenderDog
 		virtual bool				Init() override;
 		virtual void				Release() override;
 
-		virtual void				Apply() override;
+		virtual void				Apply(IConstantBuffer* pPerObjectCB = nullptr, 
+										  IConstantBuffer* pViewParamCB = nullptr) override;
 
 	protected:
 		ShaderParam					m_SkyCubeTextureParam;
@@ -149,7 +132,8 @@ namespace RenderDog
 		virtual bool				Init() override;
 		virtual void				Release() override;
 
-		virtual void				Apply() override;
+		virtual void				Apply(IConstantBuffer* pPerObjectCB = nullptr, 
+									      IConstantBuffer* pViewParamCB = nullptr) override;
 
 	protected:
 		ShaderParam					m_MainLightDirectionParam;
@@ -381,7 +365,7 @@ namespace RenderDog
 		g_D3D11ShaderManager.ReleaseShader(this);
 	}
 
-	void D3D11VertexShader::Apply()
+	void D3D11VertexShader::Apply(IConstantBuffer* pPerObjectCB/*= nullptr*/, IConstantBuffer* pViewParamCB/*= nullptr*/)
 	{
 		m_pInputLayout->SetToContext();
 
@@ -390,29 +374,11 @@ namespace RenderDog
 
 	D3D11ModelVertexShader::D3D11ModelVertexShader(VERTEX_TYPE vertexType) :
 		D3D11VertexShader(vertexType),
-		m_LocalToWorldMatrixParam("ComVar_Matrix_LocalToWorld", SHADER_PARAM_TYPE::MATRIX),
-		m_WorldToViewMatrixParam("ComVar_Matrix_WorldToView", SHADER_PARAM_TYPE::MATRIX),
-		m_ViewToClipMatrixParam("ComVar_Matrix_ViewToClip", SHADER_PARAM_TYPE::MATRIX),
-		m_WorldEyePostionParam("ComVar_Vector_WorldEyePosition", SHADER_PARAM_TYPE::FLOAT_VECTOR),
 		m_ShadowWorldToViewMatrixParam("ComVar_Matrix_ShadowView", SHADER_PARAM_TYPE::MATRIX),
 		m_ShadowViewToClipMatrixParam("ComVar_Matrix_ShadowProjection", SHADER_PARAM_TYPE::MATRIX)
 	{
-		m_ShaderParamMap.insert({ "ComVar_Matrix_LocalToWorld", &m_LocalToWorldMatrixParam });
-		m_ShaderParamMap.insert({ "ComVar_Matrix_WorldToView", &m_WorldToViewMatrixParam });
-		m_ShaderParamMap.insert({ "ComVar_Matrix_ViewToClip", &m_ViewToClipMatrixParam });
-		m_ShaderParamMap.insert({ "ComVar_Vector_WorldEyePosition", &m_WorldEyePostionParam });
 		m_ShaderParamMap.insert({ "ComVar_Matrix_ShadowView", &m_ShadowWorldToViewMatrixParam });
 		m_ShaderParamMap.insert({ "ComVar_Matrix_ShadowProjection", &m_ShadowViewToClipMatrixParam });
-
-		if (vertexType == VERTEX_TYPE::SKIN)
-		{
-			for (int i = 0; i < g_MaxBoneNum; ++i)
-			{
-				std::string boneTransName = "ComVar_Matrix_BoneTransforms" + std::to_string(i);
-				m_BoneTransformsParam[i] = ShaderParam(boneTransName, SHADER_PARAM_TYPE::MATRIX);
-				m_ShaderParamMap.insert({ boneTransName, &m_BoneTransformsParam[i] });
-			}
-		}
 	}
 
 	D3D11ModelVertexShader::~D3D11ModelVertexShader()
@@ -428,84 +394,35 @@ namespace RenderDog
 		D3D11VertexShader::Release();
 	}
 
-	void D3D11ModelVertexShader::Apply()
+	void D3D11ModelVertexShader::Apply(IConstantBuffer* pPerObjectCB/*= nullptr*/, IConstantBuffer* pViewParamCB/*= nullptr*/)
 	{
-		D3D11VertexShader::Apply();
-
-		IConstantBuffer* pPerObjectConstantBuffer = g_pIBufferManager->GetConstantBufferByName("ComVar_ConstantBuffer_PerObject");
-		if (!pPerObjectConstantBuffer)
-		{
-			return;
-		}
-
-		Matrix4x4 localToWorldMatrix = m_LocalToWorldMatrixParam.GetMatrix4x4();
-		pPerObjectConstantBuffer->Update(&localToWorldMatrix, sizeof(Matrix4x4));
+		D3D11VertexShader::Apply(pPerObjectCB, pViewParamCB);
 
 		auto cbIter = m_ConstantBufferMap.find("ComVar_ConstantBuffer_PerObject");
-		if (cbIter != m_ConstantBufferMap.end())
+		if (cbIter != m_ConstantBufferMap.end() && pPerObjectCB != nullptr)
 		{
 			uint32_t cbSlot = cbIter->second;
-			ID3D11Buffer* pCB = (ID3D11Buffer*)(pPerObjectConstantBuffer->GetResource());
+			ID3D11Buffer* pCB = (ID3D11Buffer*)(pPerObjectCB->GetResource());
 			g_pD3D11ImmediateContext->VSSetConstantBuffers(cbSlot, 1, (ID3D11Buffer**)&pCB);
 		}
 
-		IConstantBuffer* pBoneTransformsConstantBuffer = g_pIBufferManager->GetConstantBufferByName("ComVar_ConstantBuffer_BoneTransforms");
-		if (!pBoneTransformsConstantBuffer)
-		{
-			return;
-		}
-
-		if (m_BoneTransformsParam[0].GetType() == SHADER_PARAM_TYPE::MATRIX)
-		{
-			Matrix4x4* pboneTransforms = new Matrix4x4[g_MaxBoneNum];
-			for (int i = 0; i < g_MaxBoneNum; ++i)
-			{
-				pboneTransforms[i] = m_BoneTransformsParam[i].GetMatrix4x4();
-			}
-
-			pBoneTransformsConstantBuffer->Update(pboneTransforms, sizeof(Matrix4x4) * g_MaxBoneNum);
-
-			delete []pboneTransforms;
-		}
-
-		cbIter = m_ConstantBufferMap.find("ComVar_ConstantBuffer_BoneTransforms");
-		if (cbIter != m_ConstantBufferMap.end())
+		cbIter = m_ConstantBufferMap.find("ComVar_ConstantBuffer_ViewParam");
+		if (cbIter != m_ConstantBufferMap.end() && pViewParamCB != nullptr)
 		{
 			uint32_t cbSlot = cbIter->second;
-			ID3D11Buffer* pCB = (ID3D11Buffer*)(pBoneTransformsConstantBuffer->GetResource());
+			ID3D11Buffer* pCB = (ID3D11Buffer*)(pViewParamCB->GetResource());
 			g_pD3D11ImmediateContext->VSSetConstantBuffers(cbSlot, 1, (ID3D11Buffer**)&pCB);
 		}
 
-		IConstantBuffer* pGlobalConstantBuffer = g_pIBufferManager->GetConstantBufferByName("ComVar_ConstantBuffer_Global");
-		if (!pGlobalConstantBuffer)
-		{
-			return;
-		}
-
-		GlobalConstantData globalCBData;
-		globalCBData.viewMatrix = m_WorldToViewMatrixParam.GetMatrix4x4();
-		globalCBData.projMatrix = m_ViewToClipMatrixParam.GetMatrix4x4();
-		globalCBData.mainCameraWorldPos = m_WorldEyePostionParam.GetVector4();
-
-		pGlobalConstantBuffer->Update(&globalCBData, sizeof(globalCBData));
-
-		cbIter = m_ConstantBufferMap.find(pGlobalConstantBuffer->GetName());
-		if (cbIter != m_ConstantBufferMap.end())
-		{
-			uint32_t cbSlot = cbIter->second;
-			ID3D11Buffer* pCB = (ID3D11Buffer*)(pGlobalConstantBuffer->GetResource());
-			g_pD3D11ImmediateContext->VSSetConstantBuffers(cbSlot, 1, (ID3D11Buffer**)&pCB);
-		}
-
-		IConstantBuffer* pShadowMatrixConstantBuffer = g_pIBufferManager->GetConstantBufferByName("ComVar_ConstantBuffer_ShadowMatrixs");
+		/*IConstantBuffer* pShadowMatrixConstantBuffer = g_pIBufferManager->GetConstantBufferByName("ComVar_ConstantBuffer_ShadowMatrixs");
 		if (!pShadowMatrixConstantBuffer)
 		{
 			return;
 		}
 
 		ShadowDepthConstantData shadowMatrixCBData;
-		shadowMatrixCBData.viewMatrix = m_ShadowWorldToViewMatrixParam.GetMatrix4x4();
-		shadowMatrixCBData.projMatrix = m_ShadowViewToClipMatrixParam.GetMatrix4x4();
+		shadowMatrixCBData.worldToViewMatrix = m_ShadowWorldToViewMatrixParam.GetMatrix4x4();
+		shadowMatrixCBData.viewToClipMatrix = m_ShadowViewToClipMatrixParam.GetMatrix4x4();
 		pShadowMatrixConstantBuffer->Update(&shadowMatrixCBData, sizeof(shadowMatrixCBData));
 
 		cbIter = m_ConstantBufferMap.find(pShadowMatrixConstantBuffer->GetName());
@@ -514,7 +431,7 @@ namespace RenderDog
 			uint32_t cbSlot = cbIter->second;
 			ID3D11Buffer* pCB = (ID3D11Buffer*)(pShadowMatrixConstantBuffer->GetResource());
 			g_pD3D11ImmediateContext->VSSetConstantBuffers(cbSlot, 1, (ID3D11Buffer**)&pCB);
-		}
+		}*/
 	}
 
 	D3D11PixelShader::D3D11PixelShader() :
@@ -557,7 +474,7 @@ namespace RenderDog
 		g_D3D11ShaderManager.ReleaseShader(this);
 	}
 
-	void D3D11PixelShader::Apply()
+	void D3D11PixelShader::Apply(IConstantBuffer* pPerObjectCB/*= nullptr*/, IConstantBuffer* pViewParamCB/*= nullptr*/)
 	{
 		g_pD3D11ImmediateContext->PSSetShader(m_pPS, nullptr, 0);
 	}
@@ -602,45 +519,45 @@ namespace RenderDog
 		D3D11PixelShader::Release();
 	}
 
-	void D3D11DirectionalLightingPixelShader::Apply()
+	void D3D11DirectionalLightingPixelShader::Apply(IConstantBuffer* pPerObjectCB/*= nullptr*/, IConstantBuffer* pViewParamCB/*= nullptr*/)
 	{
 		D3D11PixelShader::Apply();
 
-		//LightingParams
-		IConstantBuffer* pLightingParamsConstantBuffer = g_pIBufferManager->GetConstantBufferByName("ComVar_ConstantBuffer_LightingParam");
-		if (!pLightingParamsConstantBuffer)
-		{
-			return;
-		}
-		DirectionalLightData dirLightData = {};
-		dirLightData.direction = m_MainLightDirectionParam.GetVector4();
-		dirLightData.color = m_MainLightColorParam.GetVector4();
-		pLightingParamsConstantBuffer->Update(&dirLightData, sizeof(dirLightData));
+		////LightingParams
+		//IConstantBuffer* pLightingParamsConstantBuffer = g_pIBufferManager->GetConstantBufferByName("ComVar_ConstantBuffer_LightingParam");
+		//if (!pLightingParamsConstantBuffer)
+		//{
+		//	return;
+		//}
+		//DirectionalLightData dirLightData = {};
+		//dirLightData.direction = m_MainLightDirectionParam.GetVector4();
+		//dirLightData.color = m_MainLightColorParam.GetVector4();
+		//pLightingParamsConstantBuffer->Update(&dirLightData, sizeof(dirLightData));
 
-		auto cbIter = m_ConstantBufferMap.find(pLightingParamsConstantBuffer->GetName());
-		if (cbIter != m_ConstantBufferMap.end())
-		{
-			uint32_t cbSlot = cbIter->second;
-			ID3D11Buffer* pCB = (ID3D11Buffer*)(pLightingParamsConstantBuffer->GetResource());
-			g_pD3D11ImmediateContext->PSSetConstantBuffers(cbSlot, 1, (ID3D11Buffer**)&pCB);
-		}
+		//auto cbIter = m_ConstantBufferMap.find(pLightingParamsConstantBuffer->GetName());
+		//if (cbIter != m_ConstantBufferMap.end())
+		//{
+		//	uint32_t cbSlot = cbIter->second;
+		//	ID3D11Buffer* pCB = (ID3D11Buffer*)(pLightingParamsConstantBuffer->GetResource());
+		//	g_pD3D11ImmediateContext->PSSetConstantBuffers(cbSlot, 1, (ID3D11Buffer**)&pCB);
+		//}
 
-		//ShadowParams
-		IConstantBuffer* pShadowParamBuffer = g_pIBufferManager->GetConstantBufferByName("ComVar_ConstantBuffer_ShadowParam");
-		if (!pShadowParamBuffer)
-		{
-			return;
-		}
-		Vector4 shadowParam0 = m_ShadowParam0.GetVector4();
-		pShadowParamBuffer->Update(&shadowParam0, sizeof(shadowParam0));
+		////ShadowParams
+		//IConstantBuffer* pShadowParamBuffer = g_pIBufferManager->GetConstantBufferByName("ComVar_ConstantBuffer_ShadowParam");
+		//if (!pShadowParamBuffer)
+		//{
+		//	return;
+		//}
+		//Vector4 shadowParam0 = m_ShadowParam0.GetVector4();
+		//pShadowParamBuffer->Update(&shadowParam0, sizeof(shadowParam0));
 
-		cbIter = m_ConstantBufferMap.find(pShadowParamBuffer->GetName());
-		if (cbIter != m_ConstantBufferMap.end())
-		{
-			uint32_t cbSlot = cbIter->second;
-			ID3D11Buffer* pCB = (ID3D11Buffer*)(pShadowParamBuffer->GetResource());
-			g_pD3D11ImmediateContext->PSSetConstantBuffers(cbSlot, 1, (ID3D11Buffer**)&pCB);
-		}
+		//cbIter = m_ConstantBufferMap.find(pShadowParamBuffer->GetName());
+		//if (cbIter != m_ConstantBufferMap.end())
+		//{
+		//	uint32_t cbSlot = cbIter->second;
+		//	ID3D11Buffer* pCB = (ID3D11Buffer*)(pShadowParamBuffer->GetResource());
+		//	g_pD3D11ImmediateContext->PSSetConstantBuffers(cbSlot, 1, (ID3D11Buffer**)&pCB);
+		//}
 
 		//SkyTexture
 		auto srvIter = m_ShaderResourceViewMap.find(m_SkyCubeTextureParam.GetName());
@@ -732,7 +649,7 @@ namespace RenderDog
 		D3D11PixelShader::Release();
 	}
 
-	void D3D11SkyPixelShader::Apply()
+	void D3D11SkyPixelShader::Apply(IConstantBuffer* pPerObjectCB/*= nullptr*/, IConstantBuffer* pViewParamCB/*= nullptr*/)
 	{
 		D3D11PixelShader::Apply();
 

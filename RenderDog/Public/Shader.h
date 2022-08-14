@@ -55,10 +55,10 @@ namespace RenderDog
 		}
 	};
 
-	struct GlobalConstantData
+	struct ViewParamConstantData
 	{
-		Matrix4x4	viewMatrix;
-		Matrix4x4	projMatrix;
+		Matrix4x4	worldToViewMatrix;
+		Matrix4x4	viewToClipMatrix;
 		Vector4		mainCameraWorldPos;
 	};
 
@@ -70,8 +70,8 @@ namespace RenderDog
 
 	struct ShadowDepthConstantData
 	{
-		Matrix4x4	viewMatrix;
-		Matrix4x4	orthoMatrix;
+		Matrix4x4	worldToViewMatrix;
+		Matrix4x4	viewToClipMatrix;
 	};
 
 	struct ShadowParamConstantData
@@ -223,7 +223,7 @@ namespace RenderDog
 
 		virtual ShaderParam*		GetShaderParamPtrByName(const std::string& name) = 0;
 
-		virtual void				Apply() = 0;
+		virtual void				Apply(IConstantBuffer* pPerObjectCB = nullptr, IConstantBuffer* pViewParamCB = nullptr) = 0;
 	};
 
 	class IShaderManager

@@ -108,17 +108,6 @@ namespace RenderDog
 		uint32_t offset = renderParam.pVB->GetOffset();
 		g_pD3D11ImmediateContext->IASetVertexBuffers(0, 1, &pVB, &stride, &offset);
 		g_pD3D11ImmediateContext->IASetIndexBuffer(pIB, DXGI_FORMAT_R32_UINT, 0);
-		
-		ShaderParam* pLocalToWorldMatrix = renderParam.pVS->GetShaderParamPtrByName("ComVar_Matrix_LocalToWorld");
-		ShaderParam* pWorldToViewMatrix = renderParam.pVS->GetShaderParamPtrByName("ComVar_Matrix_WorldToView");
-		ShaderParam* pViewToClipMatrix = renderParam.pVS->GetShaderParamPtrByName("ComVar_Matrix_ViewToClip");
-		ShaderParam* pWorldEyePosition = renderParam.pVS->GetShaderParamPtrByName("ComVar_Vector_WorldEyePosition");
-
-		FPSCamera* pCamera = m_pSceneView->GetCamera();
-		pLocalToWorldMatrix->SetMatrix4x4(*(renderParam.pLocalToWorldMatrix));
-		pWorldToViewMatrix->SetMatrix4x4(pCamera->GetViewMatrix());
-		pViewToClipMatrix->SetMatrix4x4(pCamera->GetPerspProjectionMatrix());
-		pWorldEyePosition->SetVector4(Vector4(pCamera->GetPosition(), 1.0f));
 
 		renderParam.pVS->Apply();
 
@@ -175,13 +164,11 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->IASetVertexBuffers(0, 1, &pVB, &stride, &offset);
 		g_pD3D11ImmediateContext->IASetIndexBuffer(pIB, DXGI_FORMAT_R32_UINT, 0);
 
-		ShaderParam* pLocalToWorldMatrix = m_pVertexShader->GetShaderParamPtrByName("ComVar_Matrix_LocalToWorld");
 		ShaderParam* pWorldToViewMatrix = m_pVertexShader->GetShaderParamPtrByName("ComVar_Matrix_WorldToView");
 		ShaderParam* pViewToClipMatrix = m_pVertexShader->GetShaderParamPtrByName("ComVar_Matrix_ViewToClip");
 		ShaderParam* pWorldEyePosition = m_pVertexShader->GetShaderParamPtrByName("ComVar_Vector_WorldEyePosition");
 
 		FPSCamera* pCamera = m_pSceneView->GetCamera();
-		pLocalToWorldMatrix->SetMatrix4x4(*(renderParam.pLocalToWorldMatrix));
 		pWorldToViewMatrix->SetMatrix4x4(pCamera->GetViewMatrix());
 		pViewToClipMatrix->SetMatrix4x4(pCamera->GetPerspProjectionMatrix());
 		pWorldEyePosition->SetVector4(Vector4(pCamera->GetPosition(), 1.0f));
@@ -269,35 +256,17 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->IASetIndexBuffer(pIB, DXGI_FORMAT_R32_UINT, 0);
 
 		//VertexShader
-		ShaderParam* pLocalToWorldMatrix = renderParam.pVS->GetShaderParamPtrByName("ComVar_Matrix_LocalToWorld");
-		ShaderParam* pWorldToViewMatrix = renderParam.pVS->GetShaderParamPtrByName("ComVar_Matrix_WorldToView");
-		ShaderParam* pViewToClipMatrix = renderParam.pVS->GetShaderParamPtrByName("ComVar_Matrix_ViewToClip");
-		ShaderParam* pWorldEyePosition = renderParam.pVS->GetShaderParamPtrByName("ComVar_Vector_WorldEyePosition");
-		ShaderParam* pShadowWorldToViewMatrix = renderParam.pVS->GetShaderParamPtrByName("ComVar_Matrix_ShadowView");
+		/*ShaderParam* pShadowWorldToViewMatrix = renderParam.pVS->GetShaderParamPtrByName("ComVar_Matrix_ShadowView");
 		ShaderParam* pShadowViewToClipMatrix = renderParam.pVS->GetShaderParamPtrByName("ComVar_Matrix_ShadowProjection");
 
 		FPSCamera* pCamera = m_pSceneView->GetCamera();
-		pLocalToWorldMatrix->SetMatrix4x4(*(renderParam.pLocalToWorldMatrix));
-		pWorldToViewMatrix->SetMatrix4x4(pCamera->GetViewMatrix());
-		pViewToClipMatrix->SetMatrix4x4(pCamera->GetPerspProjectionMatrix());
-		pWorldEyePosition->SetVector4(Vector4(pCamera->GetPosition(), 1.0f));
 		pShadowWorldToViewMatrix->SetMatrix4x4(m_pSceneView->GetShadowWorldToViewMatrix());
-		pShadowViewToClipMatrix->SetMatrix4x4(m_pSceneView->GetShadowViewToClipMatrix());
+		pShadowViewToClipMatrix->SetMatrix4x4(m_pSceneView->GetShadowViewToClipMatrix());*/
 
-		if (renderParam.pBoneTransformMatrixs != nullptr)
-		{
-			for (int i = 0; i < g_MaxBoneNum; ++i)
-			{
-				std::string boneTransformName = "ComVar_Matrix_BoneTransforms" + std::to_string(i);
-				ShaderParam* pBoneTransform = renderParam.pVS->GetShaderParamPtrByName(boneTransformName);
-				pBoneTransform->SetMatrix4x4(*(renderParam.pBoneTransformMatrixs[i]));
-			}
-		}
-
-		renderParam.pVS->Apply();
+		renderParam.pVS->Apply(renderParam.pPerObjectCB, m_pSceneView->GetViewParamConstantBuffer());
 
 		//PixShader
-		ShaderParam* pMainLightDirectionParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Vector_DirLightDirection");
+		/*ShaderParam* pMainLightDirectionParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Vector_DirLightDirection");
 		ShaderParam* pMainLightColorParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Vector_DirLightColor");
 
 		ILight* pMainLight = m_pSceneView->GetLight(0);
@@ -306,7 +275,7 @@ namespace RenderDog
 
 		Vector4 shadowParams0(g_ShadowDepthOffset, (float)g_ShadowMapRTSize, 0.0f, 0.0f);
 		ShaderParam* pShadowParam0 = m_pPixelShader->GetShaderParamPtrByName("ComVar_Vector_ShadowParam0");
-		pShadowParam0->SetVector4(shadowParams0);
+		pShadowParam0->SetVector4(shadowParams0);*/
 		
 		ShaderParam* pSkyCubeTextureParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Texture_SkyCubeTexture");
 		pSkyCubeTextureParam->SetTexture(m_pEnvReflectionTexture);
@@ -387,26 +356,14 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->IASetVertexBuffers(0, 1, &pVB, &stride, &offset);
 		g_pD3D11ImmediateContext->IASetIndexBuffer(pIB, DXGI_FORMAT_R32_UINT, 0);
 
-		ShaderParam* pLocalToWorldMatrix = renderParam.pVS->GetShaderParamPtrByName("ComVar_Matrix_LocalToWorld");
 		ShaderParam* pWorldToViewMatrix = renderParam.pVS->GetShaderParamPtrByName("ComVar_Matrix_WorldToView");
 		ShaderParam* pViewToClipMatrix = renderParam.pVS->GetShaderParamPtrByName("ComVar_Matrix_ViewToClip");
 		ShaderParam* pWorldEyePosition = renderParam.pVS->GetShaderParamPtrByName("ComVar_Vector_WorldEyePosition");
 
-		pLocalToWorldMatrix->SetMatrix4x4(*(renderParam.pLocalToWorldMatrix));
 		pWorldToViewMatrix->SetMatrix4x4(m_pSceneView->GetShadowWorldToViewMatrix());
 		pViewToClipMatrix->SetMatrix4x4(m_pSceneView->GetShadowViewToClipMatrix());
 		FPSCamera* pCamera = m_pSceneView->GetCamera();
 		pWorldEyePosition->SetVector4(Vector4(pCamera->GetPosition(), 1.0f));
-
-		if (renderParam.pBoneTransformMatrixs[0] != nullptr)
-		{
-			for (int i = 0; i < g_MaxBoneNum; ++i)
-			{
-				std::string boneTransformName = "ComVar_Matrix_BoneTransforms" + std::to_string(i);
-				ShaderParam* pBoneTransform = renderParam.pVS->GetShaderParamPtrByName(boneTransformName);
-				pBoneTransform->SetMatrix4x4(*(renderParam.pBoneTransformMatrixs[i]));
-			}
-		}
 
 		renderParam.pVS->Apply();
 
@@ -465,8 +422,8 @@ namespace RenderDog
 		//NOTE!!! 这些变量暂时仅用作预创建资源，后续应该放入资源管理器中
 		IConstantBuffer*			m_pPerObjectConstantBuffer;
 		IConstantBuffer*			m_pBoneTransformsConstantBuffer;
-		IConstantBuffer*			m_pGlobalConstantBuffer;
-		IConstantBuffer*			m_pLightingConstantBuffer;
+		IConstantBuffer*			m_pViewParamConstantBuffer;
+		IConstantBuffer*			m_pDirectionalLightConstantBuffer;
 		IConstantBuffer*			m_pShadowMatrixConstantBuffer;
 		IConstantBuffer*			m_pShadowParamConstantBuffer;
 
@@ -506,8 +463,8 @@ namespace RenderDog
 		m_pSceneView(nullptr),
 		m_pPerObjectConstantBuffer(nullptr),
 		m_pBoneTransformsConstantBuffer(nullptr),
-		m_pGlobalConstantBuffer(nullptr),
-		m_pLightingConstantBuffer(nullptr),
+		m_pViewParamConstantBuffer(nullptr),
+		m_pDirectionalLightConstantBuffer(nullptr),
 		m_pShadowMatrixConstantBuffer(nullptr),
 		m_pShadowParamConstantBuffer(nullptr),
 		m_pShadowDepthTexture(nullptr),
@@ -604,31 +561,17 @@ namespace RenderDog
 		m_pSceneView = new SceneView(desc.pMainCamera);
 
 		BufferDesc cbDesc = {};
-		cbDesc.name = "ComVar_ConstantBuffer_PerObject";
-		cbDesc.byteWidth = sizeof(Matrix4x4);
-		cbDesc.pInitData = nullptr;
-		cbDesc.isDynamic = false;
-		m_pPerObjectConstantBuffer = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
-
-		cbDesc = {};
-		cbDesc.name = "ComVar_ConstantBuffer_BoneTransforms";
-		cbDesc.byteWidth = sizeof(SkinModelPerObjectTransform);
+		cbDesc.name = "ComVar_ConstantBuffer_ViewParam";
+		cbDesc.byteWidth = sizeof(ViewParamConstantData);
 		cbDesc.pInitData = nullptr;
 		cbDesc.isDynamic = true;
-		m_pBoneTransformsConstantBuffer = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
-
-		cbDesc = {};
-		cbDesc.name = "ComVar_ConstantBuffer_Global";
-		cbDesc.byteWidth = sizeof(GlobalConstantData);
-		cbDesc.pInitData = nullptr;
-		cbDesc.isDynamic = true;
-		m_pGlobalConstantBuffer = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
+		m_pViewParamConstantBuffer = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
 
 		cbDesc.name = "ComVar_ConstantBuffer_LightingParam";
 		cbDesc.byteWidth = sizeof(DirectionalLightData);
 		cbDesc.pInitData = nullptr;
 		cbDesc.isDynamic = true;
-		m_pLightingConstantBuffer = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
+		m_pDirectionalLightConstantBuffer = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
 
 		CreateInternalShaders();
 
@@ -694,16 +637,16 @@ namespace RenderDog
 			m_pBoneTransformsConstantBuffer = nullptr;
 		}
 
-		if (m_pGlobalConstantBuffer)
+		if (m_pViewParamConstantBuffer)
 		{
-			m_pGlobalConstantBuffer->Release();
-			m_pGlobalConstantBuffer = nullptr;
+			m_pViewParamConstantBuffer->Release();
+			m_pViewParamConstantBuffer = nullptr;
 		}
 
-		if (m_pLightingConstantBuffer)
+		if (m_pDirectionalLightConstantBuffer)
 		{
-			m_pLightingConstantBuffer->Release();
-			m_pLightingConstantBuffer = nullptr;
+			m_pDirectionalLightConstantBuffer->Release();
+			m_pDirectionalLightConstantBuffer = nullptr;
 		}
 
 		ReleaseInternalShaders();
@@ -770,6 +713,8 @@ namespace RenderDog
 
 	void D3D11Renderer::Update(IScene* pScene)
 	{
+		m_pSceneView->UpdateRenderData();
+
 		if (m_pSceneView->GetLightNum() > 0)
 		{
 			ILight* pMainLight = m_pSceneView->GetLight(0);
@@ -798,14 +743,14 @@ namespace RenderDog
 
 	void D3D11Renderer::Render(IScene* pScene)
 	{
-		ShadowDepthPass();
+		//ShadowDepthPass();
 
 		float clearColor[4] = { 0.85f, 0.92f, 0.99f, 1.0f };
 		ClearBackRenderTarget(clearColor);
 
 		RenderPrimitives(pScene);
 		
-		RenderSky(pScene);
+		//RenderSky(pScene);
 		
 		m_pSwapChain->Present(0, 0);
 	}

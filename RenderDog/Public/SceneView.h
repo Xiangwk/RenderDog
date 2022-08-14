@@ -15,9 +15,22 @@ namespace RenderDog
 	class IPrimitive;
 	class ILight;
 	class FPSCamera;
+	class IConstantBuffer;
 
 	class SceneView
 	{
+	private:
+		struct SceneViewRenderData
+		{
+			IConstantBuffer*		pViewParamCB;
+			IConstantBuffer*		pDirLightParamCB;
+
+			SceneViewRenderData() :
+				pViewParamCB(nullptr),
+				pDirLightParamCB(nullptr)
+			{}
+		};
+
 	public:
 		SceneView();
 		SceneView(FPSCamera* pCamera);
@@ -53,6 +66,14 @@ namespace RenderDog
 		void						ClearPrimitives();
 		void						ClearLights();
 
+		void						UpdateRenderData();
+
+		IConstantBuffer*			GetViewParamConstantBuffer() const { return m_pRenderData->pViewParamCB; }
+
+	private:
+		void						InitRenderData();
+		void						ReleaseRenderData();
+
 	private:
 		std::vector<IPrimitive*>	m_OpaquePris;
 		std::vector<IPrimitive*>	m_SimplePris;
@@ -64,6 +85,8 @@ namespace RenderDog
 
 		Matrix4x4					m_ShadowWorldToViewMatrix;
 		Matrix4x4					m_ShadowViewToClipMatrix;
+
+		SceneViewRenderData*		m_pRenderData;
 	};
 
 }// namespace RenderDog

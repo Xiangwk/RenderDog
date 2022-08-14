@@ -82,7 +82,6 @@ namespace RenderDog
 		renderParam.pDiffuseTexture			= nullptr;
 		renderParam.pDiffuseTextureSampler	= nullptr;
 		renderParam.pVS						= m_pRenderData->pVS;
-		renderParam.pLocalToWorldMatrix		= &m_LocalToWorldMatrix;
 
 		pPrimitiveRenderer->Render(renderParam);
 	}
