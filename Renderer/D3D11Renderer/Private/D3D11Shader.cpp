@@ -79,10 +79,6 @@ namespace RenderDog
 		virtual void				Release() override;
 
 		virtual void				Apply(IConstantBuffer* pPerObjectCB = nullptr) override;
-
-	protected:
-		ShaderParam					m_ShadowWorldToViewMatrixParam;
-		ShaderParam					m_ShadowViewToClipMatrixParam;
 	};
 
 
@@ -132,8 +128,6 @@ namespace RenderDog
 		virtual void				Apply(IConstantBuffer* pPerObjectCB = nullptr) override;
 
 	protected:
-		ShaderParam					m_ShadowParam0;						//x: shadow offset, y: shadowMap Size
-
 		ShaderParam					m_SkyCubeTextureParam;
 		ShaderParam					m_SkyCubeTextureSamplerParam;
 		ShaderParam					m_DiffuseTextureParam;
@@ -367,13 +361,8 @@ namespace RenderDog
 	}
 
 	D3D11ModelVertexShader::D3D11ModelVertexShader(VERTEX_TYPE vertexType) :
-		D3D11VertexShader(vertexType),
-		m_ShadowWorldToViewMatrixParam("ComVar_Matrix_ShadowView", SHADER_PARAM_TYPE::MATRIX),
-		m_ShadowViewToClipMatrixParam("ComVar_Matrix_ShadowProjection", SHADER_PARAM_TYPE::MATRIX)
-	{
-		m_ShaderParamMap.insert({ "ComVar_Matrix_ShadowView", &m_ShadowWorldToViewMatrixParam });
-		m_ShaderParamMap.insert({ "ComVar_Matrix_ShadowProjection", &m_ShadowViewToClipMatrixParam });
-	}
+		D3D11VertexShader(vertexType)
+	{}
 
 	D3D11ModelVertexShader::~D3D11ModelVertexShader()
 	{}
@@ -412,24 +401,17 @@ namespace RenderDog
 			}
 		}
 
-		/*IConstantBuffer* pShadowMatrixConstantBuffer = g_pIBufferManager->GetConstantBufferByName("ComVar_ConstantBuffer_ShadowMatrixs");
-		if (!pShadowMatrixConstantBuffer)
+		IConstantBuffer* pShadowMatrixConstantBuffer = g_pIBufferManager->GetConstantBufferByName("ComVar_ConstantBuffer_ShadowMatrixs");
+		if (pShadowMatrixConstantBuffer)
 		{
-			return;
-		}
-
-		ShadowDepthConstantData shadowMatrixCBData;
-		shadowMatrixCBData.worldToViewMatrix = m_ShadowWorldToViewMatrixParam.GetMatrix4x4();
-		shadowMatrixCBData.viewToClipMatrix = m_ShadowViewToClipMatrixParam.GetMatrix4x4();
-		pShadowMatrixConstantBuffer->Update(&shadowMatrixCBData, sizeof(shadowMatrixCBData));
-
-		cbIter = m_ConstantBufferMap.find(pShadowMatrixConstantBuffer->GetName());
-		if (cbIter != m_ConstantBufferMap.end())
-		{
-			uint32_t cbSlot = cbIter->second;
-			ID3D11Buffer* pCB = (ID3D11Buffer*)(pShadowMatrixConstantBuffer->GetResource());
-			g_pD3D11ImmediateContext->VSSetConstantBuffers(cbSlot, 1, (ID3D11Buffer**)&pCB);
-		}*/
+			cbIter = m_ConstantBufferMap.find(pShadowMatrixConstantBuffer->GetName());
+			if (cbIter != m_ConstantBufferMap.end())
+			{
+				uint32_t cbSlot = cbIter->second;
+				ID3D11Buffer* pCB = (ID3D11Buffer*)(pShadowMatrixConstantBuffer->GetResource());
+				g_pD3D11ImmediateContext->VSSetConstantBuffers(cbSlot, 1, (ID3D11Buffer**)&pCB);
+			}
+		}	
 	}
 
 	D3D11PixelShader::D3D11PixelShader() :
@@ -478,7 +460,6 @@ namespace RenderDog
 	}
 
 	D3D11DirectionalLightingPixelShader::D3D11DirectionalLightingPixelShader() :
-		m_ShadowParam0("ComVar_Vector_ShadowParam0", SHADER_PARAM_TYPE::FLOAT_VECTOR),
 		m_SkyCubeTextureParam("ComVar_Texture_SkyCubeTexture", SHADER_PARAM_TYPE::TEXTURE),
 		m_SkyCubeTextureSamplerParam("ComVar_Texture_SkyCubeTextureSampler", SHADER_PARAM_TYPE::SAMPLER),
 		m_DiffuseTextureParam("DiffuseTexture", SHADER_PARAM_TYPE::TEXTURE),
@@ -489,7 +470,6 @@ namespace RenderDog
 		m_ShadowDepthTextureSamplerParam("ComVar_Texture_ShadowDepthTextureSampler", SHADER_PARAM_TYPE::SAMPLER)
 		
 	{
-		m_ShaderParamMap.insert({ "ComVar_Vector_ShadowParam0", &m_ShadowParam0 });
 		m_ShaderParamMap.insert({ "ComVar_Texture_SkyCubeTexture", &m_SkyCubeTextureParam });
 		m_ShaderParamMap.insert({ "ComVar_Texture_SkyCubeTextureSampler", &m_SkyCubeTextureSamplerParam });
 		m_ShaderParamMap.insert({ "DiffuseTexture", &m_DiffuseTextureParam });
@@ -530,22 +510,18 @@ namespace RenderDog
 			}
 		}
 
-		////ShadowParams
-		//IConstantBuffer* pShadowParamBuffer = g_pIBufferManager->GetConstantBufferByName("ComVar_ConstantBuffer_ShadowParam");
-		//if (!pShadowParamBuffer)
-		//{
-		//	return;
-		//}
-		//Vector4 shadowParam0 = m_ShadowParam0.GetVector4();
-		//pShadowParamBuffer->Update(&shadowParam0, sizeof(shadowParam0));
-
-		//cbIter = m_ConstantBufferMap.find(pShadowParamBuffer->GetName());
-		//if (cbIter != m_ConstantBufferMap.end())
-		//{
-		//	uint32_t cbSlot = cbIter->second;
-		//	ID3D11Buffer* pCB = (ID3D11Buffer*)(pShadowParamBuffer->GetResource());
-		//	g_pD3D11ImmediateContext->PSSetConstantBuffers(cbSlot, 1, (ID3D11Buffer**)&pCB);
-		//}
+		//ShadowParams
+		IConstantBuffer* pShadowParamBuffer = g_pIBufferManager->GetConstantBufferByName("ComVar_ConstantBuffer_ShadowParam");
+		if (pShadowParamBuffer)
+		{
+			auto cbIter = m_ConstantBufferMap.find(pShadowParamBuffer->GetName());
+			if (cbIter != m_ConstantBufferMap.end())
+			{
+				uint32_t cbSlot = cbIter->second;
+				ID3D11Buffer* pCB = (ID3D11Buffer*)(pShadowParamBuffer->GetResource());
+				g_pD3D11ImmediateContext->PSSetConstantBuffers(cbSlot, 1, (ID3D11Buffer**)&pCB);
+			}
+		}
 
 		//SkyTexture
 		auto srvIter = m_ShaderResourceViewMap.find(m_SkyCubeTextureParam.GetName());

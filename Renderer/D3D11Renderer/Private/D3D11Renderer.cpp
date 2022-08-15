@@ -248,11 +248,6 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->IASetIndexBuffer(pIB, DXGI_FORMAT_R32_UINT, 0);
 
 		renderParam.pVS->Apply(renderParam.pPerObjectCB);
-
-		//PixShader
-		/*Vector4 shadowParams0(g_ShadowDepthOffset, (float)g_ShadowMapRTSize, 0.0f, 0.0f);
-		ShaderParam* pShadowParam0 = m_pPixelShader->GetShaderParamPtrByName("ComVar_Vector_ShadowParam0");
-		pShadowParam0->SetVector4(shadowParams0);*/
 		
 		ShaderParam* pSkyCubeTextureParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Texture_SkyCubeTexture");
 		pSkyCubeTextureParam->SetTexture(m_pEnvReflectionTexture);
@@ -333,16 +328,7 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->IASetVertexBuffers(0, 1, &pVB, &stride, &offset);
 		g_pD3D11ImmediateContext->IASetIndexBuffer(pIB, DXGI_FORMAT_R32_UINT, 0);
 
-		ShaderParam* pWorldToViewMatrix = renderParam.pVS->GetShaderParamPtrByName("ComVar_Matrix_WorldToView");
-		ShaderParam* pViewToClipMatrix = renderParam.pVS->GetShaderParamPtrByName("ComVar_Matrix_ViewToClip");
-		ShaderParam* pWorldEyePosition = renderParam.pVS->GetShaderParamPtrByName("ComVar_Vector_WorldEyePosition");
-
-		pWorldToViewMatrix->SetMatrix4x4(m_pSceneView->GetShadowWorldToViewMatrix());
-		pViewToClipMatrix->SetMatrix4x4(m_pSceneView->GetShadowViewToClipMatrix());
-		FPSCamera* pCamera = m_pSceneView->GetCamera();
-		pWorldEyePosition->SetVector4(Vector4(pCamera->GetPosition(), 1.0f));
-
-		renderParam.pVS->Apply();
+		renderParam.pVS->Apply(renderParam.pPerObjectCB);
 
 		m_pPixelShader->Apply();
 
@@ -378,6 +364,7 @@ namespace RenderDog
 
 		//Shadow
 		void						AddPrisToShadowView(IScene* pScene);
+		void						CalcShadowMatrix(IScene* pScene);
 		void						ShadowDepthPass();
 
 		void						ClearBackRenderTarget(float* clearColor);
@@ -547,7 +534,7 @@ namespace RenderDog
 
 		BufferDesc cbDesc = {};
 		cbDesc.name = "ComVar_ConstantBuffer_ViewParam";
-		cbDesc.byteWidth = sizeof(ViewParamConstantData);
+		cbDesc.byteWidth = sizeof(ViewParamData);
 		cbDesc.pInitData = nullptr;
 		cbDesc.isDynamic = true;
 		m_pViewParamConstantBuffer = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
@@ -698,37 +685,20 @@ namespace RenderDog
 
 	void D3D11Renderer::Update(IScene* pScene)
 	{
-		m_pSceneView->UpdateRenderData();
-
-		if (m_pSceneView->GetLightNum() > 0)
-		{
-			ILight* pMainLight = m_pSceneView->GetLight(0);
-			if (pMainLight->GetType() == LIGHT_TYPE::DIRECTIONAL)
-			{
-				BoundingSphere sceneBoundingSphere = pScene->GetBoundingSphere();
-				float lightFrustumSize = sceneBoundingSphere.radius;
-				Vector3 dirLightPos = -(pMainLight->GetDirection() * lightFrustumSize);
-				Matrix4x4 lightViewMatrix = GetLookAtMatrixLH(dirLightPos, Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f));
-				Matrix4x4 lightOrthoMatrix = GetOrthographicMatrixLH(-lightFrustumSize, lightFrustumSize,
-					-lightFrustumSize, lightFrustumSize,
-					0.0f, 2.0f * lightFrustumSize);
-
-				m_pSceneView->SetShadowWorldToViewMatrix(lightViewMatrix);
-				m_pSceneView->SetShadowViewToClipMatrix(lightOrthoMatrix);
-			}
-		}
-
 		m_pShadowSceneView->ClearPrimitives();
 		AddPrisToShadowView(pScene);
 
 		m_pSceneView->ClearPrimitives();
 		AddPrisAndLightsToSceneView(pScene);
+
+		CalcShadowMatrix(pScene);
+		m_pSceneView->UpdateRenderData();
 	}
 
 
 	void D3D11Renderer::Render(IScene* pScene)
 	{
-		//ShadowDepthPass();
+		ShadowDepthPass();
 
 		float clearColor[4] = { 0.85f, 0.92f, 0.99f, 1.0f };
 		ClearBackRenderTarget(clearColor);
@@ -935,19 +905,6 @@ namespace RenderDog
 
 	bool D3D11Renderer::CreateShadowResources(uint32_t width, uint32_t height)
 	{
-		BufferDesc cbDesc = {};
-		cbDesc.name = "ComVar_ConstantBuffer_ShadowMatrixs";
-		cbDesc.byteWidth = sizeof(ShadowDepthConstantData);
-		cbDesc.pInitData = nullptr;
-		cbDesc.isDynamic = true;
-		m_pShadowMatrixConstantBuffer = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
-
-		cbDesc.name = "ComVar_ConstantBuffer_ShadowParam";
-		cbDesc.byteWidth = sizeof(ShadowParamConstantData);
-		cbDesc.pInitData = nullptr;
-		cbDesc.isDynamic = false;
-		m_pShadowParamConstantBuffer = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
-
 		TextureDesc desc;
 		desc.name = L"ShadowDepthTexture";
 		desc.format = TEXTURE_FORMAT::R24G8_TYPELESS;
@@ -1018,8 +975,35 @@ namespace RenderDog
 		}
 	}
 
+	void D3D11Renderer::CalcShadowMatrix(IScene* pScene)
+	{
+		if (m_pSceneView->GetLightNum() > 0)
+		{
+			ILight* pMainLight = m_pSceneView->GetLight(0);
+			if (pMainLight->GetType() == LIGHT_TYPE::DIRECTIONAL)
+			{
+				BoundingSphere sceneBoundingSphere = pScene->GetBoundingSphere();
+				float lightFrustumSize = sceneBoundingSphere.radius;
+				Vector3 dirLightPos = -(pMainLight->GetDirection() * lightFrustumSize);
+				Matrix4x4 lightViewMatrix = GetLookAtMatrixLH(dirLightPos, Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f));
+				Matrix4x4 lightOrthoMatrix = GetOrthographicMatrixLH(-lightFrustumSize, lightFrustumSize,
+					-lightFrustumSize, lightFrustumSize,
+					0.0f, 2.0f * lightFrustumSize);
+
+				m_pSceneView->SetShadowWorldToViewMatrix(lightViewMatrix);
+				m_pSceneView->SetShadowViewToClipMatrix(lightOrthoMatrix);
+			}
+		}
+	}
+
 	void D3D11Renderer::ShadowDepthPass()
 	{
+		ViewParamData viewParamData = {};
+		viewParamData.worldToViewMatrix = m_pSceneView->GetShadowWorldToViewMatrix();
+		viewParamData.viewToClipMatrix = m_pSceneView->GetShadowViewToClipMatrix();
+		viewParamData.mainCameraWorldPos = Vector4(m_pSceneView->GetCamera()->GetPosition(), 1.0f);
+		m_pSceneView->GetViewParamConstantBuffer()->Update(&viewParamData, sizeof(ViewParamData));
+
 		g_pD3D11ImmediateContext->RSSetViewports(1, &m_ShadowViewport);
 
 		ID3D11DepthStencilView* pShadowDSV = (ID3D11DepthStencilView*)m_pShadowDepthTexture->GetDepthStencilView();
@@ -1028,7 +1012,6 @@ namespace RenderDog
 
 		D3D11MeshShadowRenderer staticModelShadowRenderer(m_pSceneView);
 		D3D11MeshShadowRenderer skinModelShadowRenderer(m_pSceneView);
-
 
 		uint32_t opaquePriNum = m_pSceneView->GetOpaquePrisNum();
 		for (uint32_t i = 0; i < opaquePriNum; ++i)
@@ -1078,6 +1061,12 @@ namespace RenderDog
 
 	void D3D11Renderer::RenderPrimitives(IScene* pScene)
 	{
+		ViewParamData viewParamData = {};
+		viewParamData.worldToViewMatrix = m_pSceneView->GetCamera()->GetViewMatrix();
+		viewParamData.viewToClipMatrix = m_pSceneView->GetCamera()->GetPerspProjectionMatrix();
+		viewParamData.mainCameraWorldPos = Vector4(m_pSceneView->GetCamera()->GetPosition(), 1.0f);
+		m_pSceneView->GetViewParamConstantBuffer()->Update(&viewParamData, sizeof(ViewParamData));
+
 		g_pD3D11ImmediateContext->RSSetViewports(1, &m_ScreenViewport);
 
 		D3D11LineMeshRenderer lineRender(m_pSceneView);

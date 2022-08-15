@@ -55,7 +55,7 @@ namespace RenderDog
 		}
 	};
 
-	struct ViewParamConstantData
+	struct ViewParamData
 	{
 		Matrix4x4	worldToViewMatrix;
 		Matrix4x4	viewToClipMatrix;
@@ -68,13 +68,13 @@ namespace RenderDog
 		Vector4		color;
 	};
 
-	struct ShadowDepthConstantData
+	struct ShadowDepthMatrixData
 	{
 		Matrix4x4	worldToViewMatrix;
 		Matrix4x4	viewToClipMatrix;
 	};
 
-	struct ShadowParamConstantData
+	struct ShadowParamData
 	{
 		Vector4		param0;			//x: shadowDepthOffset, y: shadowDistance
 	};

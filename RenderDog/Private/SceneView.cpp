@@ -118,12 +118,6 @@ namespace RenderDog
 
 	void SceneView::UpdateRenderData()
 	{
-		ViewParamConstantData viewParamData = {};
-		viewParamData.worldToViewMatrix = m_pCamera->GetViewMatrix();
-		viewParamData.viewToClipMatrix = m_pCamera->GetPerspProjectionMatrix();
-		viewParamData.mainCameraWorldPos = Vector4(m_pCamera->GetPosition(), 1.0f);
-		m_pRenderData->pViewParamCB->Update(&viewParamData, sizeof(ViewParamConstantData));
-
 		if (m_Lights.size() > 0)
 		{
 			ILight* pMainLight = m_Lights[0];
@@ -133,6 +127,15 @@ namespace RenderDog
 			dirLightData.color = Vector4(pMainLight->GetColor(), pMainLight->GetLuminance());
 			m_pRenderData->pDirLightParamCB->Update(&dirLightData, sizeof(DirectionalLightData));
 		}
+
+		ShadowDepthMatrixData shadowDepthData = {};
+		shadowDepthData.worldToViewMatrix = m_ShadowWorldToViewMatrix;
+		shadowDepthData.viewToClipMatrix = m_ShadowViewToClipMatrix;
+		m_pRenderData->pShadowMatrixCB->Update(&shadowDepthData, sizeof(ShadowDepthMatrixData));
+
+		ShadowParamData shadowParam = {};
+		shadowParam.param0 = Vector4(g_ShadowDepthOffset, (float)g_ShadowMapRTSize, 0.0f, 0.0f);
+		m_pRenderData->pShadowParamCB->Update(&shadowParam, sizeof(ShadowParamData));
 	}
 
 	void SceneView::InitRenderData()
@@ -144,7 +147,7 @@ namespace RenderDog
 
 		BufferDesc cbDesc = {};
 		cbDesc.name = "ComVar_ConstantBuffer_ViewParam";
-		cbDesc.byteWidth = sizeof(ViewParamConstantData);
+		cbDesc.byteWidth = sizeof(ViewParamData);
 		cbDesc.pInitData = nullptr;
 		cbDesc.isDynamic = true;
 		m_pRenderData->pViewParamCB = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
@@ -154,6 +157,18 @@ namespace RenderDog
 		cbDesc.pInitData = nullptr;
 		cbDesc.isDynamic = true;
 		m_pRenderData->pDirLightParamCB = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
+
+		cbDesc.name = "ComVar_ConstantBuffer_ShadowMatrixs";
+		cbDesc.byteWidth = sizeof(ShadowDepthMatrixData);
+		cbDesc.pInitData = nullptr;
+		cbDesc.isDynamic = true;
+		m_pRenderData->pShadowMatrixCB = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
+
+		cbDesc.name = "ComVar_ConstantBuffer_ShadowParam";
+		cbDesc.byteWidth = sizeof(ShadowParamData);
+		cbDesc.pInitData = nullptr;
+		cbDesc.isDynamic = false;
+		m_pRenderData->pShadowParamCB = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
 	}
 
 	void SceneView::ReleaseRenderData()
@@ -173,6 +188,18 @@ namespace RenderDog
 		{
 			m_pRenderData->pDirLightParamCB->Release();
 			m_pRenderData->pDirLightParamCB = nullptr;
+		}
+
+		if (m_pRenderData->pShadowMatrixCB)
+		{
+			m_pRenderData->pShadowMatrixCB->Release();
+			m_pRenderData->pShadowMatrixCB = nullptr;
+		}
+
+		if (m_pRenderData->pShadowParamCB)
+		{
+			m_pRenderData->pShadowParamCB->Release();
+			m_pRenderData->pShadowParamCB = nullptr;
 		}
 	}
 

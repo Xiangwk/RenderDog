@@ -24,10 +24,14 @@ namespace RenderDog
 		{
 			IConstantBuffer*		pViewParamCB;
 			IConstantBuffer*		pDirLightParamCB;
+			IConstantBuffer*		pShadowMatrixCB;
+			IConstantBuffer*		pShadowParamCB;
 
 			SceneViewRenderData() :
 				pViewParamCB(nullptr),
-				pDirLightParamCB(nullptr)
+				pDirLightParamCB(nullptr),
+				pShadowMatrixCB(nullptr),
+				pShadowParamCB(nullptr)
 			{}
 		};
 
@@ -67,6 +71,8 @@ namespace RenderDog
 		void						ClearLights();
 
 		void						UpdateRenderData();
+
+		IConstantBuffer*			GetViewParamConstantBuffer() const { return m_pRenderData->pViewParamCB; }
 
 	private:
 		void						InitRenderData();
