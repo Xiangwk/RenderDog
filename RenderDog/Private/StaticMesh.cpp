@@ -82,8 +82,7 @@ namespace RenderDog
 		m_pDiffuseTextureSampler(nullptr),
 		m_pNormalTexture(nullptr),
 		m_pNormalTextureSampler(nullptr),
-		m_AABB(mesh.m_AABB),
-		m_LocalToWorldMatrix(mesh.m_LocalToWorldMatrix)
+		m_AABB(mesh.m_AABB)
 	{
 		CloneRenderData(mesh);
 	}
@@ -97,11 +96,8 @@ namespace RenderDog
 		m_pDiffuseTextureSampler(nullptr),
 		m_pNormalTexture(nullptr),
 		m_pNormalTextureSampler(nullptr),
-		m_AABB(),
-		m_LocalToWorldMatrix()
-	{
-		m_LocalToWorldMatrix.Identity();
-	}
+		m_AABB()
+	{}
 
 	StaticMesh::~StaticMesh()
 	{
@@ -122,7 +118,6 @@ namespace RenderDog
 		m_Vertices				= mesh.m_Vertices;
 		m_Indices				= mesh.m_Indices;
 		m_AABB					= mesh.m_AABB;
-		m_LocalToWorldMatrix	= mesh.m_LocalToWorldMatrix;
 
 		ReleaseRenderData();
 
@@ -266,15 +261,15 @@ namespace RenderDog
 
 	void StaticMesh::SetPosGesture(const Vector3& pos, const Vector3& euler, const Vector3& scale)
 	{
-		Matrix4x4 transMat = GetTranslationMatrix(pos.x, pos.y, pos.z);
-		Matrix4x4 rotMat = GetRotationMatrix(euler.x, euler.y, euler.z);
-		Matrix4x4 scaleMat = GetScaleMatrix(scale.x, scale.y, scale.z);
+		Matrix4x4 transMatrix = GetTranslationMatrix(pos.x, pos.y, pos.z);
+		Matrix4x4 rotMatrix = GetRotationMatrix(euler.x, euler.y, euler.z);
+		Matrix4x4 scaleMatrix = GetScaleMatrix(scale.x, scale.y, scale.z);
 
-		m_LocalToWorldMatrix = scaleMat * rotMat * transMat;
+		Matrix4x4 localToWorldMatrix = scaleMatrix * rotMatrix * transMatrix;
 
-		UpdateAABB(m_LocalToWorldMatrix);
+		UpdateAABB(localToWorldMatrix);
 
-		m_pRenderData->pPerObjectCB->Update(&m_LocalToWorldMatrix, sizeof(Matrix4x4));
+		m_pRenderData->pPerObjectCB->Update(&localToWorldMatrix, sizeof(Matrix4x4));
 	}
 
 	void StaticMesh::CalcTangentsAndGenIndices(std::vector<StandardVertex>& rawVertices, const std::vector<uint32_t>& smoothGroup)

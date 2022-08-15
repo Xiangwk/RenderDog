@@ -16,11 +16,13 @@ namespace RenderDog
 		IIndexBuffer*		pIB;
 
 		IShader*			pVS;
+		IConstantBuffer*	pPerObjectCB;
 
 		SimpleMeshRenderData() :
 			pVB(nullptr),
 			pIB(nullptr),
-			pVS(nullptr)
+			pVS(nullptr),
+			pPerObjectCB(nullptr)
 		{}
 	};
 
@@ -29,19 +31,15 @@ namespace RenderDog
 		m_Vertices(0),
 		m_Indices(0),
 		m_pRenderData(nullptr),
-		m_AABB(),
-		m_LocalToWorldMatrix()
-	{
-		m_LocalToWorldMatrix.Identity();
-	}
+		m_AABB()
+	{}
 
 	SimpleMesh::SimpleMesh(const SimpleMesh& mesh) :
 		m_Name(mesh.m_Name),
 		m_Vertices(mesh.m_Vertices),
 		m_Indices(mesh.m_Indices),
 		m_pRenderData(nullptr),
-		m_AABB(mesh.m_AABB),
-		m_LocalToWorldMatrix(mesh.m_LocalToWorldMatrix)
+		m_AABB(mesh.m_AABB)
 	{
 		CloneRenderData(mesh);
 	}
@@ -65,8 +63,7 @@ namespace RenderDog
 		m_Vertices				= mesh.m_Vertices;
 		m_Indices				= mesh.m_Indices;
 		m_AABB					= mesh.m_AABB;
-		m_LocalToWorldMatrix	= mesh.m_LocalToWorldMatrix;
-
+		
 		ReleaseRenderData();
 
 		CloneRenderData(mesh);
@@ -82,6 +79,7 @@ namespace RenderDog
 		renderParam.pDiffuseTexture			= nullptr;
 		renderParam.pDiffuseTextureSampler	= nullptr;
 		renderParam.pVS						= m_pRenderData->pVS;
+		renderParam.pPerObjectCB			= m_pRenderData->pPerObjectCB;
 
 		pPrimitiveRenderer->Render(renderParam);
 	}
@@ -117,6 +115,12 @@ namespace RenderDog
 
 		ShaderCompileDesc vsDesc(g_SimpleModelVertexShadreFilePath, nullptr, "Main", "vs_5_0", 0);
 		m_pRenderData->pVS = g_pIShaderManager->GetModelVertexShader(VERTEX_TYPE::SIMPLE, vsDesc);
+
+		BufferDesc cbDesc = {};
+		cbDesc.name = m_Name + "_ComVar_ConstantBuffer_PerObject";
+		cbDesc.byteWidth = sizeof(Matrix4x4);
+		cbDesc.isDynamic = false;
+		m_pRenderData->pPerObjectCB = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
 	}
 
 	void SimpleMesh::ReleaseRenderData()
@@ -126,6 +130,7 @@ namespace RenderDog
 			m_pRenderData->pVB->Release();
 			m_pRenderData->pIB->Release();
 			m_pRenderData->pVS->Release();
+			m_pRenderData->pPerObjectCB->Release();
 
 			delete m_pRenderData;
 			m_pRenderData = nullptr;
@@ -134,11 +139,13 @@ namespace RenderDog
 
 	void SimpleMesh::SetPosGesture(const Vector3& pos, const Vector3& euler, const Vector3& scale)
 	{
-		Matrix4x4 transMat = GetTranslationMatrix(pos.x, pos.y, pos.z);
-		Matrix4x4 rotMat = GetRotationMatrix(euler.x, euler.y, euler.z);
-		Matrix4x4 scaleMat = GetScaleMatrix(scale.x, scale.y, scale.z);
+		Matrix4x4 transMatrix = GetTranslationMatrix(pos.x, pos.y, pos.z);
+		Matrix4x4 rotMatrix = GetRotationMatrix(euler.x, euler.y, euler.z);
+		Matrix4x4 scaleMatrix = GetScaleMatrix(scale.x, scale.y, scale.z);
 
-		m_LocalToWorldMatrix = scaleMat * rotMat * transMat;
+		Matrix4x4 localToWorldMatrix = scaleMatrix * rotMatrix * transMatrix;
+
+		m_pRenderData->pPerObjectCB->Update(&localToWorldMatrix, sizeof(Matrix4x4));
 	}
 
 	void SimpleMesh::CloneRenderData(const SimpleMesh& mesh)
