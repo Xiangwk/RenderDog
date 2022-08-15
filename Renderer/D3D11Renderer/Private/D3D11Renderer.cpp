@@ -109,7 +109,7 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->IASetVertexBuffers(0, 1, &pVB, &stride, &offset);
 		g_pD3D11ImmediateContext->IASetIndexBuffer(pIB, DXGI_FORMAT_R32_UINT, 0);
 
-		renderParam.pVS->Apply(renderParam.pPerObjectCB, m_pSceneView->GetViewParamConstantBuffer());
+		renderParam.pVS->Apply(renderParam.pPerObjectCB);
 
 		m_pPixelShader->Apply();
 
@@ -164,7 +164,7 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->IASetVertexBuffers(0, 1, &pVB, &stride, &offset);
 		g_pD3D11ImmediateContext->IASetIndexBuffer(pIB, DXGI_FORMAT_R32_UINT, 0);
 
-		m_pVertexShader->Apply(renderParam.pPerObjectCB, m_pSceneView->GetViewParamConstantBuffer());
+		m_pVertexShader->Apply(renderParam.pPerObjectCB);
 
 		ShaderParam* pSkyCubeTextureParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Texture_SkyCubeTexture");
 		pSkyCubeTextureParam->SetTexture(renderParam.pDiffuseTexture);
@@ -247,25 +247,10 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->IASetVertexBuffers(0, 1, &pVB, &stride, &offset);
 		g_pD3D11ImmediateContext->IASetIndexBuffer(pIB, DXGI_FORMAT_R32_UINT, 0);
 
-		//VertexShader
-		/*ShaderParam* pShadowWorldToViewMatrix = renderParam.pVS->GetShaderParamPtrByName("ComVar_Matrix_ShadowView");
-		ShaderParam* pShadowViewToClipMatrix = renderParam.pVS->GetShaderParamPtrByName("ComVar_Matrix_ShadowProjection");
-
-		FPSCamera* pCamera = m_pSceneView->GetCamera();
-		pShadowWorldToViewMatrix->SetMatrix4x4(m_pSceneView->GetShadowWorldToViewMatrix());
-		pShadowViewToClipMatrix->SetMatrix4x4(m_pSceneView->GetShadowViewToClipMatrix());*/
-
-		renderParam.pVS->Apply(renderParam.pPerObjectCB, m_pSceneView->GetViewParamConstantBuffer());
+		renderParam.pVS->Apply(renderParam.pPerObjectCB);
 
 		//PixShader
-		/*ShaderParam* pMainLightDirectionParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Vector_DirLightDirection");
-		ShaderParam* pMainLightColorParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Vector_DirLightColor");
-
-		ILight* pMainLight = m_pSceneView->GetLight(0);
-		pMainLightDirectionParam->SetVector4(Vector4(pMainLight->GetDirection(), 0.0f));
-		pMainLightColorParam->SetVector4(Vector4(pMainLight->GetColor(), pMainLight->GetLuminance()));
-
-		Vector4 shadowParams0(g_ShadowDepthOffset, (float)g_ShadowMapRTSize, 0.0f, 0.0f);
+		/*Vector4 shadowParams0(g_ShadowDepthOffset, (float)g_ShadowMapRTSize, 0.0f, 0.0f);
 		ShaderParam* pShadowParam0 = m_pPixelShader->GetShaderParamPtrByName("ComVar_Vector_ShadowParam0");
 		pShadowParam0->SetVector4(shadowParams0);*/
 		

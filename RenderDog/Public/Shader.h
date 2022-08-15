@@ -223,7 +223,7 @@ namespace RenderDog
 
 		virtual ShaderParam*		GetShaderParamPtrByName(const std::string& name) = 0;
 
-		virtual void				Apply(IConstantBuffer* pPerObjectCB = nullptr, IConstantBuffer* pViewParamCB = nullptr) = 0;
+		virtual void				Apply(IConstantBuffer* pPerObjectCB = nullptr) = 0;
 	};
 
 	class IShaderManager

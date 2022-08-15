@@ -7,6 +7,7 @@
 #include "SceneView.h"
 #include "Camera.h"
 #include "Primitive.h"
+#include "Light.h"
 
 namespace RenderDog
 {
@@ -122,6 +123,16 @@ namespace RenderDog
 		viewParamData.viewToClipMatrix = m_pCamera->GetPerspProjectionMatrix();
 		viewParamData.mainCameraWorldPos = Vector4(m_pCamera->GetPosition(), 1.0f);
 		m_pRenderData->pViewParamCB->Update(&viewParamData, sizeof(ViewParamConstantData));
+
+		if (m_Lights.size() > 0)
+		{
+			ILight* pMainLight = m_Lights[0];
+
+			DirectionalLightData dirLightData = {};
+			dirLightData.direction = Vector4(pMainLight->GetDirection(), 0.0f);
+			dirLightData.color = Vector4(pMainLight->GetColor(), pMainLight->GetLuminance());
+			m_pRenderData->pDirLightParamCB->Update(&dirLightData, sizeof(DirectionalLightData));
+		}
 	}
 
 	void SceneView::InitRenderData()

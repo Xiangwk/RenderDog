@@ -68,8 +68,6 @@ namespace RenderDog
 
 		void						UpdateRenderData();
 
-		IConstantBuffer*			GetViewParamConstantBuffer() const { return m_pRenderData->pViewParamCB; }
-
 	private:
 		void						InitRenderData();
 		void						ReleaseRenderData();
