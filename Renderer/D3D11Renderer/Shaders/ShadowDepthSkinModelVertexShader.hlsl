@@ -5,6 +5,7 @@
 ////////////////////////////////////////
 
 #include "Common.hlsl"
+#include "ShadowTestCommon.hlsl"
 
 struct VSInput
 {
@@ -40,8 +41,8 @@ VSOutput Main(VSInput VsInput)
 	}
 
 	VsOutput.PosH = mul(float4(PosL, 1.0f), ComVar_Matrix_LocalToWorld);
-	VsOutput.PosH = mul(VsOutput.PosH, ComVar_Matrix_WorldToView);
-	VsOutput.PosH = mul(VsOutput.PosH, ComVar_Matrix_ViewToClip);
+	VsOutput.PosH = mul(VsOutput.PosH, ComVar_Matrix_ShadowView);
+	VsOutput.PosH = mul(VsOutput.PosH, ComVar_Matrix_ShadowProjection);
 
 	return VsOutput;
 }

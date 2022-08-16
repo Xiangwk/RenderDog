@@ -18,7 +18,25 @@
 
 namespace RenderDog
 {
-	struct	SkinMeshRenderData;
+	struct SkinMeshRenderData
+	{
+		IVertexBuffer*		pVB;
+		IIndexBuffer*		pIB;
+
+		IShader*			pVS;
+		IShader*			pShadowVS;
+		IConstantBuffer*	pLocalToWorldCB;
+		IConstantBuffer*	pBoneTransformCB;
+
+		SkinMeshRenderData() :
+			pVB(nullptr),
+			pIB(nullptr),
+			pVS(nullptr),
+			pShadowVS(nullptr),
+			pLocalToWorldCB(nullptr),
+			pBoneTransformCB(nullptr)
+		{}
+	};
 
 	class SkinMesh : public IPrimitive
 	{
@@ -74,9 +92,6 @@ namespace RenderDog
 		ISamplerState*					m_pNormalTextureSampler;
 
 		AABB							m_AABB;
-
-		Matrix4x4						m_LocalToWorldMatrix;
-		Matrix4x4						m_BoneTransform[g_MaxBoneNum];
 	};
 
 }// namespace RenderDog

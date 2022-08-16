@@ -247,7 +247,7 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->IASetVertexBuffers(0, 1, &pVB, &stride, &offset);
 		g_pD3D11ImmediateContext->IASetIndexBuffer(pIB, DXGI_FORMAT_R32_UINT, 0);
 
-		renderParam.pVS->Apply(renderParam.pPerObjectCB);
+		renderParam.pVS->Apply(renderParam.pPerObjectCB, renderParam.pBoneTransformCB);
 		
 		ShaderParam* pSkyCubeTextureParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Texture_SkyCubeTexture");
 		pSkyCubeTextureParam->SetTexture(m_pEnvReflectionTexture);
@@ -328,7 +328,7 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->IASetVertexBuffers(0, 1, &pVB, &stride, &offset);
 		g_pD3D11ImmediateContext->IASetIndexBuffer(pIB, DXGI_FORMAT_R32_UINT, 0);
 
-		renderParam.pShadowVS->Apply(renderParam.pPerObjectCB);
+		renderParam.pShadowVS->Apply(renderParam.pPerObjectCB, renderParam.pBoneTransformCB);
 
 		m_pPixelShader->Apply();
 
@@ -819,7 +819,7 @@ namespace RenderDog
 		m_pShadowDepthStaticModelVS = g_pIShaderManager->GetModelVertexShader(VERTEX_TYPE::STANDARD, vsDesc);
 
 		vsDesc = ShaderCompileDesc(g_ShadowDepthSkinVertexShaderFilePath, nullptr, "Main", "vs_5_0", 0);
-		m_pShadowDepthSkinModelVS = g_pIShaderManager->GetVertexShader(VERTEX_TYPE::SKIN, vsDesc);
+		m_pShadowDepthSkinModelVS = g_pIShaderManager->GetModelVertexShader(VERTEX_TYPE::SKIN, vsDesc);
 
 		//PixeShader
 		ShaderCompileDesc psDesc(g_SingleColorPixelShader, nullptr, "Main", "ps_5_0", 0);
@@ -1004,8 +1004,7 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->ClearDepthStencilView(pShadowDSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
 		g_pD3D11ImmediateContext->OMSetRenderTargets(0, nullptr, pShadowDSV);
 
-		D3D11MeshShadowRenderer staticModelShadowRenderer(m_pSceneView);
-		D3D11MeshShadowRenderer skinModelShadowRenderer(m_pSceneView);
+		D3D11MeshShadowRenderer modelShadowRenderer(m_pSceneView);
 
 		uint32_t opaquePriNum = m_pSceneView->GetOpaquePrisNum();
 		for (uint32_t i = 0; i < opaquePriNum; ++i)
@@ -1013,11 +1012,11 @@ namespace RenderDog
 			IPrimitive* pPri = m_pSceneView->GetOpaquePri(i);
 			if (pPri->GetPriType() != PRIMITIVE_TYPE::SKIN_PRI)
 			{
-				pPri->Render(&staticModelShadowRenderer);
+				pPri->Render(&modelShadowRenderer);
 			}
 			else
 			{
-				pPri->Render(&skinModelShadowRenderer);
+				pPri->Render(&modelShadowRenderer);
 			}
 		}
 	}

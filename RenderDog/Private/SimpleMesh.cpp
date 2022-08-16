@@ -10,22 +10,6 @@
 
 namespace RenderDog
 {
-	struct SimpleMeshRenderData
-	{
-		IVertexBuffer*		pVB;
-		IIndexBuffer*		pIB;
-
-		IShader*			pVS;
-		IConstantBuffer*	pPerObjectCB;
-
-		SimpleMeshRenderData() :
-			pVB(nullptr),
-			pIB(nullptr),
-			pVS(nullptr),
-			pPerObjectCB(nullptr)
-		{}
-	};
-
 	SimpleMesh::SimpleMesh() :
 		m_Name(""),
 		m_Vertices(0),

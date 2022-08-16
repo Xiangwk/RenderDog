@@ -14,24 +14,6 @@
 
 namespace RenderDog
 {
-	struct StaticMeshRenderData
-	{
-		IVertexBuffer*		pVB;
-		IIndexBuffer*		pIB;
-		IConstantBuffer*	pCB;
-
-		IShader* pVS;
-		IShader* pPS;
-
-		StaticMeshRenderData() :
-			pVB(nullptr),
-			pIB(nullptr),
-			pCB(nullptr),
-			pVS(nullptr),
-			pPS(nullptr)
-		{}
-	};
-
 	struct VertexKey
 	{
 		Vector3		pos;
@@ -64,23 +46,6 @@ namespace std
 
 namespace RenderDog
 {
-	//FIXME!!! 如果后续发现RenderData可以和StaticMesh复用，则修改一下
-	struct SkinMeshRenderData
-	{
-		IVertexBuffer*		pVB;
-		IIndexBuffer*		pIB;
-
-		IShader*			pVS;
-		Matrix4x4*			pLocalToWorldMatrix;
-		Matrix4x4*			pBoneTransformMatrixs;
-
-		SkinMeshRenderData() :
-			pVB(nullptr),
-			pIB(nullptr),
-			pVS(nullptr)
-		{}
-	};
-
 	SkinMesh::SkinMesh():
 		m_Name(""),
 		m_Vertices(0),
@@ -90,16 +55,8 @@ namespace RenderDog
 		m_pDiffuseTextureSampler(nullptr),
 		m_pNormalTexture(nullptr),
 		m_pNormalTextureSampler(nullptr),
-		m_AABB(),
-		m_LocalToWorldMatrix()
-	{
-		m_LocalToWorldMatrix.Identity();
-
-		for (int i = 0; i < g_MaxBoneNum; ++i)
-		{
-			m_BoneTransform[i].Identity();
-		}
-	}
+		m_AABB()
+	{}
 
 	SkinMesh::SkinMesh(const SkinMesh& mesh) :
 		m_Name(mesh.m_Name),
@@ -110,14 +67,8 @@ namespace RenderDog
 		m_pDiffuseTextureSampler(nullptr),
 		m_pNormalTexture(nullptr),
 		m_pNormalTextureSampler(nullptr),
-		m_AABB(mesh.m_AABB),
-		m_LocalToWorldMatrix(mesh.m_LocalToWorldMatrix)
+		m_AABB(mesh.m_AABB)
 	{
-		for (int i = 0; i < g_MaxBoneNum; ++i)
-		{
-			m_BoneTransform[i] = mesh.m_BoneTransform[i];
-		}
-
 		CloneRenderData(mesh);
 	}
 
@@ -130,16 +81,8 @@ namespace RenderDog
 		m_pDiffuseTextureSampler(nullptr),
 		m_pNormalTexture(nullptr),
 		m_pNormalTextureSampler(nullptr),
-		m_AABB(),
-		m_LocalToWorldMatrix()
-	{
-		m_LocalToWorldMatrix.Identity();
-
-		for (int i = 0; i < g_MaxBoneNum; ++i)
-		{
-			m_BoneTransform[i].Identity();
-		}
-	}
+		m_AABB()
+	{}
 
 	SkinMesh::~SkinMesh()
 	{
@@ -160,12 +103,6 @@ namespace RenderDog
 		m_Vertices = mesh.m_Vertices;
 		m_Indices = mesh.m_Indices;
 		m_AABB = mesh.m_AABB;
-		m_LocalToWorldMatrix = mesh.m_LocalToWorldMatrix;
-
-		for (int i = 0; i < g_MaxBoneNum; ++i)
-		{
-			m_BoneTransform[i] = mesh.m_BoneTransform[i];
-		}
 
 		ReleaseRenderData();
 
@@ -184,6 +121,9 @@ namespace RenderDog
 		renderParam.pNormalTexture			= m_pNormalTexture;
 		renderParam.pNormalTextureSampler	= m_pNormalTextureSampler;
 		renderParam.pVS						= m_pRenderData->pVS;
+		renderParam.pShadowVS				= m_pRenderData->pShadowVS;
+		renderParam.pPerObjectCB			= m_pRenderData->pLocalToWorldCB;
+		renderParam.pBoneTransformCB		= m_pRenderData->pBoneTransformCB;
 
 		pPrimitiveRenderer->Render(renderParam);
 	}
@@ -260,6 +200,21 @@ namespace RenderDog
 
 		ShaderCompileDesc vsDesc(g_SkinModelVertexShaderFilePath, nullptr, "Main", "vs_5_0", 0);
 		m_pRenderData->pVS = g_pIShaderManager->GetModelVertexShader(VERTEX_TYPE::SKIN, vsDesc);
+
+		vsDesc = ShaderCompileDesc(g_ShadowDepthSkinVertexShaderFilePath, nullptr, "Main", "vs_5_0", 0);
+		m_pRenderData->pShadowVS = g_pIShaderManager->GetModelVertexShader(VERTEX_TYPE::SKIN, vsDesc);
+
+		BufferDesc cbDesc = {};
+		cbDesc.name = m_Name + "_ComVar_ConstantBuffer_PerObject";
+		cbDesc.byteWidth = sizeof(Matrix4x4);
+		cbDesc.isDynamic = true;
+		m_pRenderData->pLocalToWorldCB = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
+
+		cbDesc = {};
+		cbDesc.name = m_Name + "ComVar_ConstantBuffer_BoneTransforms";
+		cbDesc.byteWidth = sizeof(Matrix4x4) * g_MaxBoneNum;
+		cbDesc.isDynamic = true;
+		m_pRenderData->pBoneTransformCB = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
 	}
 
 	void SkinMesh::SetPosGesture(const Vector3& pos, const Vector3& euler, const Vector3& scale)
@@ -268,9 +223,11 @@ namespace RenderDog
 		Matrix4x4 rotMat = GetRotationMatrix(euler.x, euler.y, euler.z);
 		Matrix4x4 scaleMat = GetScaleMatrix(scale.x, scale.y, scale.z);
 
-		m_LocalToWorldMatrix = scaleMat * rotMat * transMat;
+		Matrix4x4 localToWorldMatrix = scaleMat * rotMat * transMat;
 
-		UpdateAABB(m_LocalToWorldMatrix);
+		UpdateAABB(localToWorldMatrix);
+
+		m_pRenderData->pLocalToWorldCB->Update(&localToWorldMatrix, sizeof(Matrix4x4));
 	}
 
 	void SkinMesh::CalcTangentsAndGenIndices(std::vector<SkinVertex>& rawVertices, const std::vector<uint32_t>& smoothGroup)
@@ -470,10 +427,7 @@ namespace RenderDog
 
 	void SkinMesh::Update(SkinModelPerObjectTransform& perModelTransform)
 	{
-		for (int i = 0; i < g_MaxBoneNum; ++i)
-		{
-			m_BoneTransform[i] = perModelTransform.BoneFinalTransformMatrix[i];
-		}
+		m_pRenderData->pBoneTransformCB->Update(&(perModelTransform.BoneFinalTransformMatrix[0]), sizeof(Matrix4x4) * g_MaxBoneNum);
 	}
 	
 
@@ -514,6 +468,9 @@ namespace RenderDog
 			m_pRenderData->pVB->Release();
 			m_pRenderData->pIB->Release();
 			m_pRenderData->pVS->Release();
+			m_pRenderData->pShadowVS->Release();
+			m_pRenderData->pLocalToWorldCB->Release();
+			m_pRenderData->pBoneTransformCB->Release();
 
 			delete m_pRenderData;
 			m_pRenderData = nullptr;
