@@ -328,7 +328,7 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->IASetVertexBuffers(0, 1, &pVB, &stride, &offset);
 		g_pD3D11ImmediateContext->IASetIndexBuffer(pIB, DXGI_FORMAT_R32_UINT, 0);
 
-		renderParam.pVS->Apply(renderParam.pPerObjectCB);
+		renderParam.pShadowVS->Apply(renderParam.pPerObjectCB);
 
 		m_pPixelShader->Apply();
 
@@ -998,12 +998,6 @@ namespace RenderDog
 
 	void D3D11Renderer::ShadowDepthPass()
 	{
-		ViewParamData viewParamData = {};
-		viewParamData.worldToViewMatrix = m_pSceneView->GetShadowWorldToViewMatrix();
-		viewParamData.viewToClipMatrix = m_pSceneView->GetShadowViewToClipMatrix();
-		viewParamData.mainCameraWorldPos = Vector4(m_pSceneView->GetCamera()->GetPosition(), 1.0f);
-		m_pSceneView->GetViewParamConstantBuffer()->Update(&viewParamData, sizeof(ViewParamData));
-
 		g_pD3D11ImmediateContext->RSSetViewports(1, &m_ShadowViewport);
 
 		ID3D11DepthStencilView* pShadowDSV = (ID3D11DepthStencilView*)m_pShadowDepthTexture->GetDepthStencilView();
@@ -1061,12 +1055,6 @@ namespace RenderDog
 
 	void D3D11Renderer::RenderPrimitives(IScene* pScene)
 	{
-		ViewParamData viewParamData = {};
-		viewParamData.worldToViewMatrix = m_pSceneView->GetCamera()->GetViewMatrix();
-		viewParamData.viewToClipMatrix = m_pSceneView->GetCamera()->GetPerspProjectionMatrix();
-		viewParamData.mainCameraWorldPos = Vector4(m_pSceneView->GetCamera()->GetPosition(), 1.0f);
-		m_pSceneView->GetViewParamConstantBuffer()->Update(&viewParamData, sizeof(ViewParamData));
-
 		g_pD3D11ImmediateContext->RSSetViewports(1, &m_ScreenViewport);
 
 		D3D11LineMeshRenderer lineRender(m_pSceneView);

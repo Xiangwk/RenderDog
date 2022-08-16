@@ -36,6 +36,7 @@ namespace RenderDog
 		ISamplerState*		pNormalTextureSampler;
 
 		IShader*			pVS;
+		IShader*			pShadowVS;
 		IConstantBuffer*	pPerObjectCB;
 		IConstantBuffer*	pBoneTransformCB;
 
@@ -47,6 +48,7 @@ namespace RenderDog
 			pNormalTexture(nullptr),
 			pNormalTextureSampler(nullptr),
 			pVS(nullptr),
+			pShadowVS(nullptr),
 			pPerObjectCB(nullptr),
 			pBoneTransformCB(nullptr)
 		{}

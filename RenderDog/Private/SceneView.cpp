@@ -118,6 +118,12 @@ namespace RenderDog
 
 	void SceneView::UpdateRenderData()
 	{
+		ViewParamData viewParamData = {};
+		viewParamData.worldToViewMatrix = m_pCamera->GetViewMatrix();
+		viewParamData.viewToClipMatrix = m_pCamera->GetPerspProjectionMatrix();
+		viewParamData.mainCameraWorldPos = Vector4(m_pCamera->GetPosition(), 1.0f);
+		m_pRenderData->pViewParamCB->Update(&viewParamData, sizeof(ViewParamData));
+
 		if (m_Lights.size() > 0)
 		{
 			ILight* pMainLight = m_Lights[0];

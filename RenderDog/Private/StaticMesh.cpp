@@ -19,12 +19,14 @@ namespace RenderDog
 		IIndexBuffer*		pIB;
 
 		IShader*			pVS;
+		IShader*			pShadowVS;
 		IConstantBuffer*	pPerObjectCB;
 
 		StaticMeshRenderData() :
 			pVB(nullptr),
 			pIB(nullptr),
 			pVS(nullptr),
+			pShadowVS(nullptr),
 			pPerObjectCB(nullptr)
 		{}
 	};
@@ -136,6 +138,7 @@ namespace RenderDog
 		renderParam.pNormalTexture			= m_pNormalTexture;
 		renderParam.pNormalTextureSampler	= m_pNormalTextureSampler;
 		renderParam.pVS						= m_pRenderData->pVS;
+		renderParam.pShadowVS				= m_pRenderData->pShadowVS;
 		renderParam.pPerObjectCB			= m_pRenderData->pPerObjectCB;
 
 		pPrimitiveRenderer->Render(renderParam);
@@ -214,6 +217,9 @@ namespace RenderDog
 		ShaderCompileDesc vsDesc(g_StaticModelVertexShaderFilePath, nullptr, "Main", "vs_5_0", 0);
 		m_pRenderData->pVS = g_pIShaderManager->GetModelVertexShader(VERTEX_TYPE::STANDARD, vsDesc);
 
+		vsDesc = ShaderCompileDesc(g_ShadowDepthStaticVertexShaderFilePath, nullptr, "Main", "vs_5_0", 0);
+		m_pRenderData->pShadowVS = g_pIShaderManager->GetModelVertexShader(VERTEX_TYPE::STANDARD, vsDesc);
+
 		BufferDesc cbDesc = {};
 		cbDesc.name = m_Name + "_ComVar_ConstantBuffer_PerObject";
 		cbDesc.byteWidth = sizeof(Matrix4x4);
@@ -228,6 +234,7 @@ namespace RenderDog
 			m_pRenderData->pVB->Release();
 			m_pRenderData->pIB->Release();
 			m_pRenderData->pVS->Release();
+			m_pRenderData->pShadowVS->Release();
 			m_pRenderData->pPerObjectCB->Release();
 
 			delete m_pRenderData;
