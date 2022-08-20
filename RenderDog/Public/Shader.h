@@ -210,6 +210,17 @@ namespace RenderDog
 		SHADER_PARAM_TYPE		m_Type;
 	};
 
+	struct ShaderPerObjParam
+	{
+		IConstantBuffer* pPerObjectCB;
+		IConstantBuffer* pBoneTransformCB;
+
+		ShaderPerObjParam() :
+			pPerObjectCB(nullptr),
+			pBoneTransformCB(nullptr)
+		{}
+	};
+
 	class IShader
 	{
 	protected:
@@ -223,7 +234,7 @@ namespace RenderDog
 
 		virtual ShaderParam*		GetShaderParamPtrByName(const std::string& name) = 0;
 
-		virtual void				Apply(IConstantBuffer* pPerObjectCB = nullptr, IConstantBuffer* pBoneTransformCB = nullptr) = 0;
+		virtual void				Apply(const ShaderPerObjParam* pPerObjParam = nullptr) = 0;
 	};
 
 	class IShaderManager

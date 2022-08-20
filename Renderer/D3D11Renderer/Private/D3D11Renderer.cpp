@@ -109,9 +109,9 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->IASetVertexBuffers(0, 1, &pVB, &stride, &offset);
 		g_pD3D11ImmediateContext->IASetIndexBuffer(pIB, DXGI_FORMAT_R32_UINT, 0);
 
-		renderParam.pVS->Apply(renderParam.pPerObjectCB);
+		renderParam.pVS->Apply(&renderParam.PerObjParam);
 
-		m_pPixelShader->Apply();
+		m_pPixelShader->Apply(nullptr);
 
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
 	}
@@ -164,14 +164,14 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->IASetVertexBuffers(0, 1, &pVB, &stride, &offset);
 		g_pD3D11ImmediateContext->IASetIndexBuffer(pIB, DXGI_FORMAT_R32_UINT, 0);
 
-		m_pVertexShader->Apply(renderParam.pPerObjectCB);
+		m_pVertexShader->Apply(&renderParam.PerObjParam);
 
 		ShaderParam* pSkyCubeTextureParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Texture_SkyCubeTexture");
 		pSkyCubeTextureParam->SetTexture(renderParam.pDiffuseTexture);
 
 		ShaderParam* pSkyCubeTextureSamplerParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Texture_SkyCubeTextureSampler");
 		pSkyCubeTextureSamplerParam->SetSampler(renderParam.pDiffuseTextureSampler);
-		m_pPixelShader->Apply();
+		m_pPixelShader->Apply(nullptr);
 
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
 	}
@@ -247,7 +247,7 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->IASetVertexBuffers(0, 1, &pVB, &stride, &offset);
 		g_pD3D11ImmediateContext->IASetIndexBuffer(pIB, DXGI_FORMAT_R32_UINT, 0);
 
-		renderParam.pVS->Apply(renderParam.pPerObjectCB, renderParam.pBoneTransformCB);
+		renderParam.pVS->Apply(&renderParam.PerObjParam);
 		
 		ShaderParam* pSkyCubeTextureParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Texture_SkyCubeTexture");
 		pSkyCubeTextureParam->SetTexture(m_pEnvReflectionTexture);
@@ -273,7 +273,7 @@ namespace RenderDog
 		ShaderParam* pShadowDepthTextureSamplerParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Texture_ShadowDepthTextureSampler");
 		pShadowDepthTextureSamplerParam->SetSampler(m_pShadowDepthTextureSampler);
 
-		m_pPixelShader->Apply();
+		m_pPixelShader->Apply(nullptr);
 		
 		uint32_t indexNum = renderParam.pIB->GetIndexNum();
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
@@ -328,9 +328,9 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->IASetVertexBuffers(0, 1, &pVB, &stride, &offset);
 		g_pD3D11ImmediateContext->IASetIndexBuffer(pIB, DXGI_FORMAT_R32_UINT, 0);
 
-		renderParam.pShadowVS->Apply(renderParam.pPerObjectCB, renderParam.pBoneTransformCB);
+		renderParam.pShadowVS->Apply(&renderParam.PerObjParam);
 
-		m_pPixelShader->Apply();
+		m_pPixelShader->Apply(nullptr);
 
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
 	}

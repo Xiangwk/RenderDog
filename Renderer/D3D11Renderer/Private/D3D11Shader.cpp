@@ -61,7 +61,7 @@ namespace RenderDog
 		virtual bool				Init() override;
 		virtual void				Release() override;
 
-		virtual void				Apply(IConstantBuffer* pPerObjectCB = nullptr, IConstantBuffer* pBoneTransformCB = nullptr) override;
+		virtual void				Apply(const ShaderPerObjParam* pPerObjParam = nullptr) override;
 
 	private:
 		ID3D11VertexShader*			m_pVS;
@@ -78,7 +78,7 @@ namespace RenderDog
 		virtual bool				Init() override;
 		virtual void				Release() override;
 
-		virtual void				Apply(IConstantBuffer* pPerObjectCB = nullptr, IConstantBuffer* pBoneTransformCB = nullptr) override;
+		virtual void				Apply(const ShaderPerObjParam* pPerObjParam = nullptr) override;
 	};
 
 
@@ -94,7 +94,7 @@ namespace RenderDog
 		virtual bool				Init() override;
 		virtual void				Release() override;
 
-		virtual void				Apply(IConstantBuffer* pPerObjectCB = nullptr, IConstantBuffer* pBoneTransformCB = nullptr) override;
+		virtual void				Apply(const ShaderPerObjParam* pPerObjParam = nullptr) override;
 
 	private:
 		ID3D11PixelShader*			m_pPS;
@@ -109,7 +109,7 @@ namespace RenderDog
 		virtual bool				Init() override;
 		virtual void				Release() override;
 
-		virtual void				Apply(IConstantBuffer* pPerObjectCB = nullptr, IConstantBuffer* pBoneTransformCB = nullptr) override;
+		virtual void				Apply(const ShaderPerObjParam* pPerObjParam = nullptr) override;
 
 	protected:
 		ShaderParam					m_SkyCubeTextureParam;
@@ -125,7 +125,7 @@ namespace RenderDog
 		virtual bool				Init() override;
 		virtual void				Release() override;
 
-		virtual void				Apply(IConstantBuffer* pPerObjectCB = nullptr, IConstantBuffer* pBoneTransformCB = nullptr) override;
+		virtual void				Apply(const ShaderPerObjParam* pPerObjParam = nullptr) override;
 
 	protected:
 		ShaderParam					m_SkyCubeTextureParam;
@@ -353,7 +353,7 @@ namespace RenderDog
 		g_D3D11ShaderManager.ReleaseShader(this);
 	}
 
-	void D3D11VertexShader::Apply(IConstantBuffer* pPerObjectCB/*= nullptr*/, IConstantBuffer* pBoneTransformCB/*= nullptr*/)
+	void D3D11VertexShader::Apply(const ShaderPerObjParam* pPerObjParam/* = nullptr*/)
 	{
 		m_pInputLayout->SetToContext();
 
@@ -377,23 +377,23 @@ namespace RenderDog
 		D3D11VertexShader::Release();
 	}
 
-	void D3D11ModelVertexShader::Apply(IConstantBuffer* pPerObjectCB/*= nullptr*/, IConstantBuffer* pBoneTransformCB/*= nullptr*/)
+	void D3D11ModelVertexShader::Apply(const ShaderPerObjParam* pPerObjParam/* = nullptr*/)
 	{
-		D3D11VertexShader::Apply(pPerObjectCB, pBoneTransformCB);
+		D3D11VertexShader::Apply(pPerObjParam);
 
 		auto cbIter = m_ConstantBufferMap.find("ComVar_ConstantBuffer_PerObject");
-		if (cbIter != m_ConstantBufferMap.end() && pPerObjectCB != nullptr)
+		if (cbIter != m_ConstantBufferMap.end() && pPerObjParam->pPerObjectCB != nullptr)
 		{
 			uint32_t cbSlot = cbIter->second;
-			ID3D11Buffer* pCB = (ID3D11Buffer*)(pPerObjectCB->GetResource());
+			ID3D11Buffer* pCB = (ID3D11Buffer*)(pPerObjParam->pPerObjectCB->GetResource());
 			g_pD3D11ImmediateContext->VSSetConstantBuffers(cbSlot, 1, (ID3D11Buffer**)&pCB);
 		}
 
 		cbIter = m_ConstantBufferMap.find("ComVar_ConstantBuffer_BoneTransforms");
-		if (cbIter != m_ConstantBufferMap.end() && pBoneTransformCB != nullptr)
+		if (cbIter != m_ConstantBufferMap.end() && pPerObjParam->pBoneTransformCB != nullptr)
 		{
 			uint32_t cbSlot = cbIter->second;
-			ID3D11Buffer* pCB = (ID3D11Buffer*)(pBoneTransformCB->GetResource());
+			ID3D11Buffer* pCB = (ID3D11Buffer*)(pPerObjParam->pBoneTransformCB->GetResource());
 			g_pD3D11ImmediateContext->VSSetConstantBuffers(cbSlot, 1, (ID3D11Buffer**)&pCB);
 		}
 
@@ -462,7 +462,7 @@ namespace RenderDog
 		g_D3D11ShaderManager.ReleaseShader(this);
 	}
 
-	void D3D11PixelShader::Apply(IConstantBuffer* pPerObjectCB/*= nullptr*/, IConstantBuffer* pBoneTransformCB/*= nullptr*/)
+	void D3D11PixelShader::Apply(const ShaderPerObjParam* pPerObjParam/* = nullptr*/)
 	{
 		g_pD3D11ImmediateContext->PSSetShader(m_pPS, nullptr, 0);
 	}
@@ -501,9 +501,9 @@ namespace RenderDog
 		D3D11PixelShader::Release();
 	}
 
-	void D3D11DirectionalLightingPixelShader::Apply(IConstantBuffer* pPerObjectCB/*= nullptr*/, IConstantBuffer* pBoneTransformCB/*= nullptr*/)
+	void D3D11DirectionalLightingPixelShader::Apply(const ShaderPerObjParam* pPerObjParam/* = nullptr*/)
 	{
-		D3D11PixelShader::Apply();
+		D3D11PixelShader::Apply(pPerObjParam);
 
 		//LightingParams
 		IConstantBuffer* pLightingParamsConstantBuffer = g_pIBufferManager->GetConstantBufferByName("ComVar_ConstantBuffer_LightingParam");
@@ -621,9 +621,9 @@ namespace RenderDog
 		D3D11PixelShader::Release();
 	}
 
-	void D3D11SkyPixelShader::Apply(IConstantBuffer* pPerObjectCB/*= nullptr*/, IConstantBuffer* pBoneTransformCB/*= nullptr*/)
+	void D3D11SkyPixelShader::Apply(const ShaderPerObjParam* pPerObjParam/* = nullptr*/)
 	{
-		D3D11PixelShader::Apply();
+		D3D11PixelShader::Apply(pPerObjParam);
 
 		//SkyTexture
 		auto srvIter = m_ShaderResourceViewMap.find(m_SkyCubeTextureParam.GetName());

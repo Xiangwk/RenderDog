@@ -20,13 +20,13 @@ namespace RenderDog
 		IIndexBuffer*		pIB;
 
 		IShader*			pVS;
-		IConstantBuffer*	pPerObjectCB;
+		IConstantBuffer*	pLocalToWorldCB;
 
 		SimpleMeshRenderData() :
 			pVB(nullptr),
 			pIB(nullptr),
 			pVS(nullptr),
-			pPerObjectCB(nullptr)
+			pLocalToWorldCB(nullptr)
 		{}
 	};
 

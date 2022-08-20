@@ -58,12 +58,12 @@ namespace RenderDog
 	void SimpleMesh::Render(IPrimitiveRenderer* pPrimitiveRenderer)
 	{
 		PrimitiveRenderParam renderParam = {};
-		renderParam.pVB						= m_pRenderData->pVB;
-		renderParam.pIB						= m_pRenderData->pIB;
-		renderParam.pDiffuseTexture			= nullptr;
-		renderParam.pDiffuseTextureSampler	= nullptr;
-		renderParam.pVS						= m_pRenderData->pVS;
-		renderParam.pPerObjectCB			= m_pRenderData->pPerObjectCB;
+		renderParam.pVB							= m_pRenderData->pVB;
+		renderParam.pIB							= m_pRenderData->pIB;
+		renderParam.pDiffuseTexture				= nullptr;
+		renderParam.pDiffuseTextureSampler		= nullptr;
+		renderParam.pVS							= m_pRenderData->pVS;
+		renderParam.PerObjParam.pPerObjectCB	= m_pRenderData->pLocalToWorldCB;
 
 		pPrimitiveRenderer->Render(renderParam);
 	}
@@ -104,7 +104,7 @@ namespace RenderDog
 		cbDesc.name = m_Name + "_ComVar_ConstantBuffer_PerObject";
 		cbDesc.byteWidth = sizeof(Matrix4x4);
 		cbDesc.isDynamic = false;
-		m_pRenderData->pPerObjectCB = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
+		m_pRenderData->pLocalToWorldCB = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
 	}
 
 	void SimpleMesh::ReleaseRenderData()
@@ -114,7 +114,7 @@ namespace RenderDog
 			m_pRenderData->pVB->Release();
 			m_pRenderData->pIB->Release();
 			m_pRenderData->pVS->Release();
-			m_pRenderData->pPerObjectCB->Release();
+			m_pRenderData->pLocalToWorldCB->Release();
 
 			delete m_pRenderData;
 			m_pRenderData = nullptr;
@@ -129,7 +129,7 @@ namespace RenderDog
 
 		Matrix4x4 localToWorldMatrix = scaleMatrix * rotMatrix * transMatrix;
 
-		m_pRenderData->pPerObjectCB->Update(&localToWorldMatrix, sizeof(Matrix4x4));
+		m_pRenderData->pLocalToWorldCB->Update(&localToWorldMatrix, sizeof(Matrix4x4));
 	}
 
 	void SimpleMesh::CloneRenderData(const SimpleMesh& mesh)

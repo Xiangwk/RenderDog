@@ -113,15 +113,15 @@ namespace RenderDog
 	void StaticMesh::Render(IPrimitiveRenderer* pPrimitiveRenderer)
 	{
 		PrimitiveRenderParam renderParam = {};
-		renderParam.pVB						= m_pRenderData->pVB;
-		renderParam.pIB						= m_pRenderData->pIB;
-		renderParam.pDiffuseTexture			= m_pDiffuseTexture;
-		renderParam.pDiffuseTextureSampler	= m_pDiffuseTextureSampler;
-		renderParam.pNormalTexture			= m_pNormalTexture;
-		renderParam.pNormalTextureSampler	= m_pNormalTextureSampler;
-		renderParam.pVS						= m_pRenderData->pVS;
-		renderParam.pShadowVS				= m_pRenderData->pShadowVS;
-		renderParam.pPerObjectCB			= m_pRenderData->pPerObjectCB;
+		renderParam.pVB							= m_pRenderData->pVB;
+		renderParam.pIB							= m_pRenderData->pIB;
+		renderParam.pDiffuseTexture				= m_pDiffuseTexture;
+		renderParam.pDiffuseTextureSampler		= m_pDiffuseTextureSampler;
+		renderParam.pNormalTexture				= m_pNormalTexture;
+		renderParam.pNormalTextureSampler		= m_pNormalTextureSampler;
+		renderParam.pVS							= m_pRenderData->pVS;
+		renderParam.pShadowVS					= m_pRenderData->pShadowVS;
+		renderParam.PerObjParam.pPerObjectCB	= m_pRenderData->pLocalToWorldCB;
 
 		pPrimitiveRenderer->Render(renderParam);
 	}
@@ -206,7 +206,7 @@ namespace RenderDog
 		cbDesc.name = m_Name + "_ComVar_ConstantBuffer_PerObject";
 		cbDesc.byteWidth = sizeof(Matrix4x4);
 		cbDesc.isDynamic = false;
-		m_pRenderData->pPerObjectCB = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
+		m_pRenderData->pLocalToWorldCB = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
 	}
 
 	void StaticMesh::ReleaseRenderData()
@@ -217,7 +217,7 @@ namespace RenderDog
 			m_pRenderData->pIB->Release();
 			m_pRenderData->pVS->Release();
 			m_pRenderData->pShadowVS->Release();
-			m_pRenderData->pPerObjectCB->Release();
+			m_pRenderData->pLocalToWorldCB->Release();
 
 			delete m_pRenderData;
 			m_pRenderData = nullptr;
@@ -258,7 +258,7 @@ namespace RenderDog
 
 		UpdateAABB(localToWorldMatrix);
 
-		m_pRenderData->pPerObjectCB->Update(&localToWorldMatrix, sizeof(Matrix4x4));
+		m_pRenderData->pLocalToWorldCB->Update(&localToWorldMatrix, sizeof(Matrix4x4));
 	}
 
 	void StaticMesh::CalcTangentsAndGenIndices(std::vector<StandardVertex>& rawVertices, const std::vector<uint32_t>& smoothGroup)

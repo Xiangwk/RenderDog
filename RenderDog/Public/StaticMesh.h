@@ -26,14 +26,14 @@ namespace RenderDog
 
 		IShader*			pVS;
 		IShader*			pShadowVS;
-		IConstantBuffer*	pPerObjectCB;
+		IConstantBuffer*	pLocalToWorldCB;
 
 		StaticMeshRenderData() :
 			pVB(nullptr),
 			pIB(nullptr),
 			pVS(nullptr),
 			pShadowVS(nullptr),
-			pPerObjectCB(nullptr)
+			pLocalToWorldCB(nullptr)
 		{}
 	};
 

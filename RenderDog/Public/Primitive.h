@@ -37,8 +37,7 @@ namespace RenderDog
 
 		IShader*			pVS;
 		IShader*			pShadowVS;
-		IConstantBuffer*	pPerObjectCB;
-		IConstantBuffer*	pBoneTransformCB;
+		ShaderPerObjParam	PerObjParam;
 
 		PrimitiveRenderParam() :
 			pVB(nullptr),
@@ -49,8 +48,7 @@ namespace RenderDog
 			pNormalTextureSampler(nullptr),
 			pVS(nullptr),
 			pShadowVS(nullptr),
-			pPerObjectCB(nullptr),
-			pBoneTransformCB(nullptr)
+			PerObjParam()
 		{}
 	};
 

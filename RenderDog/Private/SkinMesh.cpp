@@ -114,16 +114,16 @@ namespace RenderDog
 	void SkinMesh::Render(IPrimitiveRenderer* pPrimitiveRenderer)
 	{
 		PrimitiveRenderParam renderParam = {};
-		renderParam.pVB						= m_pRenderData->pVB;
-		renderParam.pIB						= m_pRenderData->pIB;
-		renderParam.pDiffuseTexture			= m_pDiffuseTexture;
-		renderParam.pDiffuseTextureSampler	= m_pDiffuseTextureSampler;
-		renderParam.pNormalTexture			= m_pNormalTexture;
-		renderParam.pNormalTextureSampler	= m_pNormalTextureSampler;
-		renderParam.pVS						= m_pRenderData->pVS;
-		renderParam.pShadowVS				= m_pRenderData->pShadowVS;
-		renderParam.pPerObjectCB			= m_pRenderData->pLocalToWorldCB;
-		renderParam.pBoneTransformCB		= m_pRenderData->pBoneTransformCB;
+		renderParam.pVB								= m_pRenderData->pVB;
+		renderParam.pIB								= m_pRenderData->pIB;
+		renderParam.pDiffuseTexture					= m_pDiffuseTexture;
+		renderParam.pDiffuseTextureSampler			= m_pDiffuseTextureSampler;
+		renderParam.pNormalTexture					= m_pNormalTexture;
+		renderParam.pNormalTextureSampler			= m_pNormalTextureSampler;
+		renderParam.pVS								= m_pRenderData->pVS;
+		renderParam.pShadowVS						= m_pRenderData->pShadowVS;
+		renderParam.PerObjParam.pPerObjectCB		= m_pRenderData->pLocalToWorldCB;
+		renderParam.PerObjParam.pBoneTransformCB	= m_pRenderData->pBoneTransformCB;
 
 		pPrimitiveRenderer->Render(renderParam);
 	}
