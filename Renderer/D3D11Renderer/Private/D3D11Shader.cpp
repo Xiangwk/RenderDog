@@ -26,7 +26,7 @@ namespace RenderDog
 	class D3D11Shader : public IShader, public RefCntObject
 	{
 	public:
-		D3D11Shader();
+		explicit D3D11Shader(const ShaderCompileDesc& desc);
 		virtual ~D3D11Shader();
 
 		virtual const std::string&						GetFileName() const override { return m_fileName; }
@@ -54,11 +54,9 @@ namespace RenderDog
 	class D3D11VertexShader : public D3D11Shader
 	{
 	public:
-		D3D11VertexShader();
-		explicit D3D11VertexShader(VERTEX_TYPE vertexType);
+		D3D11VertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc);
 		virtual ~D3D11VertexShader();
 
-		virtual bool				Init() override;
 		virtual void				Release() override;
 
 		virtual void				Apply(const ShaderPerObjParam* pPerObjParam = nullptr) override;
@@ -72,10 +70,9 @@ namespace RenderDog
 	class D3D11ModelVertexShader : public D3D11VertexShader
 	{
 	public:
-		explicit D3D11ModelVertexShader(VERTEX_TYPE vertexType);
+		D3D11ModelVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc);
 		virtual ~D3D11ModelVertexShader();
 
-		virtual bool				Init() override;
 		virtual void				Release() override;
 
 		virtual void				Apply(const ShaderPerObjParam* pPerObjParam = nullptr) override;
@@ -88,10 +85,9 @@ namespace RenderDog
 	class D3D11PixelShader : public D3D11Shader
 	{
 	public:
-		D3D11PixelShader();
+		explicit D3D11PixelShader(const ShaderCompileDesc& desc);
 		virtual ~D3D11PixelShader();
 
-		virtual bool				Init() override;
 		virtual void				Release() override;
 
 		virtual void				Apply(const ShaderPerObjParam* pPerObjParam = nullptr) override;
@@ -103,10 +99,9 @@ namespace RenderDog
 	class D3D11SkyPixelShader : public D3D11PixelShader
 	{
 	public:
-		D3D11SkyPixelShader();
+		explicit D3D11SkyPixelShader(const ShaderCompileDesc& desc);
 		virtual ~D3D11SkyPixelShader();
 
-		virtual bool				Init() override;
 		virtual void				Release() override;
 
 		virtual void				Apply(const ShaderPerObjParam* pPerObjParam = nullptr) override;
@@ -119,10 +114,9 @@ namespace RenderDog
 	class D3D11DirectionalLightingPixelShader : public D3D11PixelShader
 	{
 	public:
-		D3D11DirectionalLightingPixelShader();
+		explicit D3D11DirectionalLightingPixelShader(const ShaderCompileDesc& desc);
 		virtual ~D3D11DirectionalLightingPixelShader();
 
-		virtual bool				Init() override;
 		virtual void				Release() override;
 
 		virtual void				Apply(const ShaderPerObjParam* pPerObjParam = nullptr) override;
@@ -136,8 +130,6 @@ namespace RenderDog
 		ShaderParam					m_NormalTextureSamplerParam;
 		ShaderParam					m_ShadowDepthTextureParam;
 		ShaderParam					m_ShadowDepthTextureSamplerParam;
-
-		
 	};
 
 	//=========================================================================
@@ -172,11 +164,13 @@ namespace RenderDog
 	//=========================================================================
 	//    Function Implementation
 	//=========================================================================
-	D3D11Shader::D3D11Shader() :
+	D3D11Shader::D3D11Shader(const ShaderCompileDesc& desc) :
 		m_pCompiledCode(nullptr),
 		m_pShaderReflector(nullptr),
-		m_fileName("")
-	{}
+		m_fileName(desc.fileName)
+	{
+		CompileFromFile(desc);
+	}
 
 	D3D11Shader::~D3D11Shader()
 	{}
@@ -289,19 +283,17 @@ namespace RenderDog
 		}
 	}
 
-	D3D11VertexShader::D3D11VertexShader() :
-		D3D11Shader(),
-		m_pVS(nullptr),
-		m_pInputLayout(nullptr),
-		m_VertexType(VERTEX_TYPE::SIMPLE)
-	{}
-
-	D3D11VertexShader::D3D11VertexShader(VERTEX_TYPE vertexType):
-		D3D11Shader(),
+	D3D11VertexShader::D3D11VertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc) :
+		D3D11Shader(desc),
 		m_pVS(nullptr),
 		m_pInputLayout(nullptr),
 		m_VertexType(vertexType)
-	{}
+	{
+		g_pD3D11Device->CreateVertexShader(m_pCompiledCode->GetBufferPointer(), m_pCompiledCode->GetBufferSize(), nullptr, &m_pVS);
+
+		m_pInputLayout = new D3D11InputLayout();
+		m_pInputLayout->Init(m_VertexType, m_pCompiledCode->GetBufferPointer(), (uint32_t)m_pCompiledCode->GetBufferSize());
+	}
 
 	D3D11VertexShader::~D3D11VertexShader()
 	{
@@ -331,22 +323,6 @@ namespace RenderDog
 			m_pVS = nullptr;
 		}
 	}
-	
-	bool D3D11VertexShader::Init()
-	{
-		if (FAILED(g_pD3D11Device->CreateVertexShader(m_pCompiledCode->GetBufferPointer(), m_pCompiledCode->GetBufferSize(), nullptr, &m_pVS)))
-		{
-			return false;
-		}
-
-		m_pInputLayout = new D3D11InputLayout();
-		if (!m_pInputLayout->Init(m_VertexType, m_pCompiledCode->GetBufferPointer(), (uint32_t)m_pCompiledCode->GetBufferSize()))
-		{
-			return false;
-		}
-
-		return true;
-	}
 
 	void D3D11VertexShader::Release()
 	{
@@ -360,17 +336,12 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->VSSetShader(m_pVS, nullptr, 0);
 	}
 
-	D3D11ModelVertexShader::D3D11ModelVertexShader(VERTEX_TYPE vertexType) :
-		D3D11VertexShader(vertexType)
+	D3D11ModelVertexShader::D3D11ModelVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc) :
+		D3D11VertexShader(vertexType, desc)
 	{}
 
 	D3D11ModelVertexShader::~D3D11ModelVertexShader()
 	{}
-
-	bool D3D11ModelVertexShader::Init()
-	{
-		return D3D11VertexShader::Init();
-	}
 
 	void D3D11ModelVertexShader::Release()
 	{
@@ -422,9 +393,12 @@ namespace RenderDog
 		}	
 	}
 
-	D3D11PixelShader::D3D11PixelShader() :
+	D3D11PixelShader::D3D11PixelShader(const ShaderCompileDesc& desc) :
+		D3D11Shader(desc),
 		m_pPS(nullptr)
-	{}
+	{
+		g_pD3D11Device->CreatePixelShader(m_pCompiledCode->GetBufferPointer(), m_pCompiledCode->GetBufferSize(), nullptr, &m_pPS);
+	}
 
 	D3D11PixelShader::~D3D11PixelShader()
 	{
@@ -447,16 +421,6 @@ namespace RenderDog
 		}
 	}
 
-	bool D3D11PixelShader::Init()
-	{
-		if (FAILED(g_pD3D11Device->CreatePixelShader(m_pCompiledCode->GetBufferPointer(), m_pCompiledCode->GetBufferSize(), nullptr, &m_pPS)))
-		{
-			return false;
-		}
-
-		return true;
-	}
-
 	void D3D11PixelShader::Release()
 	{
 		g_D3D11ShaderManager.ReleaseShader(this);
@@ -467,7 +431,8 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->PSSetShader(m_pPS, nullptr, 0);
 	}
 
-	D3D11DirectionalLightingPixelShader::D3D11DirectionalLightingPixelShader() :
+	D3D11DirectionalLightingPixelShader::D3D11DirectionalLightingPixelShader(const ShaderCompileDesc& desc) :
+		D3D11PixelShader(desc),
 		m_SkyCubeTextureParam("ComVar_Texture_SkyCubeTexture", SHADER_PARAM_TYPE::TEXTURE),
 		m_SkyCubeTextureSamplerParam("ComVar_Texture_SkyCubeTextureSampler", SHADER_PARAM_TYPE::SAMPLER),
 		m_DiffuseTextureParam("DiffuseTexture", SHADER_PARAM_TYPE::TEXTURE),
@@ -490,11 +455,6 @@ namespace RenderDog
 
 	D3D11DirectionalLightingPixelShader::~D3D11DirectionalLightingPixelShader()
 	{}
-
-	bool D3D11DirectionalLightingPixelShader::Init()
-	{
-		return D3D11PixelShader::Init();
-	}
 
 	void D3D11DirectionalLightingPixelShader::Release()
 	{
@@ -600,7 +560,8 @@ namespace RenderDog
 		pShadowDepthSampler->SetToPixelShader(samplerIter->second);
 	}
 
-	D3D11SkyPixelShader::D3D11SkyPixelShader() :
+	D3D11SkyPixelShader::D3D11SkyPixelShader(const ShaderCompileDesc& desc) :
+		D3D11PixelShader(desc),
 		m_SkyCubeTextureParam("ComVar_Texture_SkyCubeTexture", SHADER_PARAM_TYPE::TEXTURE),
 		m_SkyCubeTextureSamplerParam("ComVar_Texture_SkyCubeTextureSampler", SHADER_PARAM_TYPE::SAMPLER)
 	{
@@ -610,11 +571,6 @@ namespace RenderDog
 
 	D3D11SkyPixelShader::~D3D11SkyPixelShader()
 	{}
-
-	bool D3D11SkyPixelShader::Init()
-	{
-		return D3D11PixelShader::Init();
-	}
 
 	void D3D11SkyPixelShader::Release()
 	{
@@ -655,10 +611,7 @@ namespace RenderDog
 		}
 		else
 		{
-			pVertexShader = new D3D11VertexShader(vertexType);
-			pVertexShader->CompileFromFile(desc);
-			pVertexShader->Init();
-
+			pVertexShader = new D3D11VertexShader(vertexType, desc);
 			m_ShaderMap.insert({ desc.fileName, pVertexShader });
 		}
 
@@ -677,10 +630,7 @@ namespace RenderDog
 		}
 		else
 		{
-			pPixelShader = new D3D11PixelShader();
-			pPixelShader->CompileFromFile(desc);
-			pPixelShader->Init();
-
+			pPixelShader = new D3D11PixelShader(desc);
 			m_ShaderMap.insert({ desc.fileName, pPixelShader });
 		}
 
@@ -699,10 +649,7 @@ namespace RenderDog
 		}
 		else
 		{
-			pVertexShader = new D3D11ModelVertexShader(vertexType);
-			pVertexShader->CompileFromFile(desc);
-			pVertexShader->Init();
-
+			pVertexShader = new D3D11ModelVertexShader(vertexType, desc);
 			m_ShaderMap.insert({ desc.fileName, pVertexShader });
 		}
 
@@ -721,10 +668,7 @@ namespace RenderDog
 		}
 		else
 		{
-			pPixelShader = new D3D11DirectionalLightingPixelShader();
-			pPixelShader->CompileFromFile(desc);
-			pPixelShader->Init();
-
+			pPixelShader = new D3D11DirectionalLightingPixelShader(desc);
 			m_ShaderMap.insert({ desc.fileName, pPixelShader });
 		}
 
@@ -743,10 +687,7 @@ namespace RenderDog
 		}
 		else
 		{
-			pPixelShader = new D3D11SkyPixelShader();
-			pPixelShader->CompileFromFile(desc);
-			pPixelShader->Init();
-
+			pPixelShader = new D3D11SkyPixelShader(desc);
 			m_ShaderMap.insert({ desc.fileName, pPixelShader });
 		}
 

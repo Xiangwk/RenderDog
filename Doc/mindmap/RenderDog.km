@@ -462,8 +462,8 @@
                             "created": 1642911929568,
                             "text": "增加一个资源管理器，用于统一创建渲染时需要的各种资源",
                             "layout_right_offset": {
-                                "x": 127,
-                                "y": -59
+                                "x": 129,
+                                "y": -44
                             }
                         },
                         "children": []
@@ -515,9 +515,22 @@
                             "created": 1653654606122,
                             "text": "增加一个延迟着色的渲染器",
                             "layout_right_offset": {
-                                "x": 136,
-                                "y": 39
+                                "x": 162,
+                                "y": -28
                             }
+                        },
+                        "children": []
+                    },
+                    {
+                        "data": {
+                            "id": "cmbqdo7uvcw0",
+                            "created": 1661087511621,
+                            "text": "Shader在构造函数中编译和创建，如何做错误处理？",
+                            "layout_right_offset": {
+                                "x": 136,
+                                "y": 23
+                            },
+                            "priority": 1
                         },
                         "children": []
                     }

@@ -227,7 +227,6 @@ namespace RenderDog
 		virtual	~IShader() = default;
 
 	public:
-		virtual bool				Init() = 0;
 		virtual void				Release() = 0;
 
 		virtual const std::string&	GetFileName() const = 0;
