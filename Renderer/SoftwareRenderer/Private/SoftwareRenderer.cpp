@@ -224,12 +224,10 @@ namespace RenderDog
 		ISRTexture2D*				m_pDepthStencilTexture;
 		ISRRenderTargetView*		m_pRenderTargetView;
 		ISRDepthStencilView*		m_pDepthStencilView;
-		SRViewport					m_ScreenViewport;
 
 		SceneView*					m_pSceneView;
 
-		IConstantBuffer*			m_pPerObjectConstantBuffer;
-		IConstantBuffer*			m_pGlobalConstantBuffer;
+		IConstantBuffer*			m_pViewParamConstantBuffer;
 		IConstantBuffer*			m_pLightingConstantBuffer;
 
 		IShader*					m_pModelVertexShader;
@@ -247,10 +245,11 @@ namespace RenderDog
 		m_pDepthStencilTexture(nullptr),
 		m_pRenderTargetView(nullptr),
 		m_pDepthStencilView(nullptr),
-		m_ScreenViewport(),
 		m_pSceneView(nullptr),
-		m_pGlobalConstantBuffer(nullptr),
-		m_pLightingConstantBuffer(nullptr)
+		m_pViewParamConstantBuffer(nullptr),
+		m_pLightingConstantBuffer(nullptr),
+		m_pModelVertexShader(nullptr),
+		m_pLightingPixelShader(nullptr)
 	{}
 
 	SoftwareRenderer::~SoftwareRenderer()
@@ -284,7 +283,7 @@ namespace RenderDog
 		cbDesc.byteWidth = sizeof(ViewParamData);
 		cbDesc.pInitData = nullptr;
 		cbDesc.isDynamic = true;
-		m_pGlobalConstantBuffer = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
+		m_pViewParamConstantBuffer = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
 
 		cbDesc.name = "ComVar_ConstantBuffer_LightingParam";
 		cbDesc.byteWidth = sizeof(DirectionalLightData);
@@ -301,10 +300,10 @@ namespace RenderDog
 			m_pSceneView = nullptr;
 		}
 
-		if (m_pGlobalConstantBuffer)
+		if (m_pViewParamConstantBuffer)
 		{
-			m_pGlobalConstantBuffer->Release();
-			m_pGlobalConstantBuffer = nullptr;
+			m_pViewParamConstantBuffer->Release();
+			m_pViewParamConstantBuffer = nullptr;
 		}
 
 		if (m_pLightingConstantBuffer)
@@ -347,11 +346,11 @@ namespace RenderDog
 	void SoftwareRenderer::Update(IScene* pScene)
 	{
 		FPSCamera* pCamera = m_pSceneView->GetCamera();
-		ViewParamData globalCBData = {};
-		globalCBData.viewMatrix = pCamera->GetViewMatrix();
-		globalCBData.projMatrix = pCamera->GetPerspProjectionMatrix();
+		ViewParamData ViewParamCBData = {};
+		ViewParamCBData.viewMatrix = pCamera->GetViewMatrix();
+		ViewParamCBData.projMatrix = pCamera->GetPerspProjectionMatrix();
 
-		m_pGlobalConstantBuffer->Update(&globalCBData, sizeof(globalCBData));
+		m_pViewParamConstantBuffer->Update(&ViewParamCBData, sizeof(ViewParamCBData));
 
 		if (m_pSceneView->GetLightNum() > 0)
 		{
@@ -515,8 +514,6 @@ namespace RenderDog
 
 	void SoftwareRenderer::RenderPrimitives()
 	{
-		g_pSRImmediateContext->RSSetViewport(&m_ScreenViewport);
-
 		SoftwareLineMeshRenderer lineMeshRenderer(m_pSceneView);
 
 		uint32_t simplePriNum = m_pSceneView->GetSimplePrisNum();
