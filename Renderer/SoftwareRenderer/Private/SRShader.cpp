@@ -9,6 +9,8 @@
 #include "RefCntObject.h"
 #include "SoftwareRender3D.h"
 #include "SoftwareRenderer.h"
+#include "Buffer.h"
+#include "Texture.h"
 
 #include <unordered_map>
 
@@ -17,13 +19,17 @@ namespace RenderDog
 	class SRShader : public IShader, public RefCntObject
 	{
 	public:
-		SRShader() = default;
+		explicit SRShader(const ShaderCompileDesc& desc);
 		virtual ~SRShader() = default;
 
-		virtual const std::string&	GetFileName() const { return m_fileName; }
+		virtual const std::string&						GetFileName() const { return m_fileName; }
+
+		virtual ShaderParam*							GetShaderParamPtrByName(const std::string& name) override;
 
 	protected:
-		std::string					m_fileName;
+		std::string										m_fileName;
+
+		std::unordered_map<std::string, ShaderParam*>	m_ShaderParamMap;
 	};
 
 	//=========================================================================
@@ -32,13 +38,12 @@ namespace RenderDog
 	class SRVertexShader : public SRShader
 	{
 	public:
-		SRVertexShader();
+		explicit SRVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc);
 		virtual ~SRVertexShader();
 
-		virtual bool				Init() override;
 		virtual void				Release() override;
 
-		virtual void				SetToContext() override;
+		virtual void				Apply(const ShaderPerObjParam* pPerObjParam = nullptr) override;
 
 	private:
 		ISRVertexShader*			m_pVS;
@@ -50,16 +55,18 @@ namespace RenderDog
 	class SRPixelShader : public SRShader
 	{
 	public:
-		SRPixelShader();
+		explicit SRPixelShader(const ShaderCompileDesc& desc);
 		virtual ~SRPixelShader();
 
-		virtual bool				Init() override;
 		virtual void				Release() override;
 
-		virtual void				SetToContext() override;
+		virtual void				Apply(const ShaderPerObjParam* pPerObjParam = nullptr) override;
 
 	private:
-		ISRPixelShader* m_pPS;
+		ISRPixelShader*				m_pPS;
+
+		ShaderParam					m_NormalTextureParam;
+		ShaderParam					m_NormalTextureSamplerParam;
 	};
 
 	//=========================================================================
@@ -77,6 +84,11 @@ namespace RenderDog
 		virtual IShader*			GetVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc) override;
 		virtual IShader*			GetPixelShader(const ShaderCompileDesc& desc) override;
 
+		virtual IShader*			GetModelVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc) override;
+
+		virtual IShader*			GetDirectionLightingPixelShader(const ShaderCompileDesc& desc) override;
+		virtual IShader*			GetSkyPixelShader(const ShaderCompileDesc& desc) override;
+
 		void						ReleaseShader(SRShader* pShader);
 
 	private:
@@ -90,24 +102,32 @@ namespace RenderDog
 	//=========================================================================
 	//		Function Implementation
 	//=========================================================================
-	SRVertexShader::SRVertexShader() :
-		m_pVS(nullptr)
+	SRShader::SRShader(const ShaderCompileDesc& desc) :
+		m_fileName(desc.fileName)
 	{}
 
-	SRVertexShader::~SRVertexShader()
-	{}
-
-	bool SRVertexShader::Init()
+	ShaderParam* SRShader::GetShaderParamPtrByName(const std::string& name)
 	{
-		if (!g_pSRDevice->CreateVertexShader(&m_pVS))
+		auto shaderParamIter = m_ShaderParamMap.find(name);
+		if (shaderParamIter != m_ShaderParamMap.end())
 		{
-			return false;
+			return shaderParamIter->second;
 		}
-
-		return true;
+		else
+		{
+			return nullptr;
+		}
 	}
 
-	void SRVertexShader::Release()
+
+	SRVertexShader::SRVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc) :
+		SRShader(desc),
+		m_pVS(nullptr)
+	{
+		g_pSRDevice->CreateVertexShader(&m_pVS);
+	}
+
+	SRVertexShader::~SRVertexShader()
 	{
 		if (m_pVS)
 		{
@@ -116,30 +136,40 @@ namespace RenderDog
 		}
 	}
 
-	void SRVertexShader::SetToContext()
+	void SRVertexShader::Release()
+	{
+		g_SRShaderManager.ReleaseShader(this);
+	}
+
+	void SRVertexShader::Apply(const ShaderPerObjParam* pPerObjParam /* = nullptr */)
 	{
 		g_pSRImmediateContext->VSSetShader(m_pVS);
-	}
 
-
-	SRPixelShader::SRPixelShader() :
-		m_pPS(nullptr)
-	{}
-
-	SRPixelShader::~SRPixelShader()
-	{}
-
-	bool SRPixelShader::Init()
-	{
-		if (!g_pSRDevice->CreatePixelShader(&m_pPS))
+		if (pPerObjParam->pPerObjectCB != nullptr)
 		{
-			return false;
+			ISRBuffer* pPerObjCB = (ISRBuffer*)(pPerObjParam->pPerObjectCB->GetResource());
+			g_pSRImmediateContext->VSSetConstantBuffer(1, &pPerObjCB);
 		}
 
-		return true;
+		IConstantBuffer* pViewParamCB = g_pIBufferManager->GetConstantBufferByName("ComVar_ConstantBuffer_ViewParam");
+		ISRBuffer* pGlobalCB = (ISRBuffer*)(pViewParamCB->GetResource());
+		g_pSRImmediateContext->VSSetConstantBuffer(0, &pGlobalCB);
 	}
 
-	void SRPixelShader::Release()
+
+	SRPixelShader::SRPixelShader(const ShaderCompileDesc& desc) :
+		SRShader(desc),
+		m_pPS(nullptr),
+		m_NormalTextureParam("NormalTexture", SHADER_PARAM_TYPE::TEXTURE),
+		m_NormalTextureSamplerParam("NormalTextureSampler", SHADER_PARAM_TYPE::SAMPLER)
+	{
+		g_pSRDevice->CreatePixelShader(&m_pPS);
+
+		m_ShaderParamMap.insert({ "NormalTexture", &m_NormalTextureParam });
+		m_ShaderParamMap.insert({ "NormalTextureSampler", &m_NormalTextureSamplerParam });
+	}
+
+	SRPixelShader::~SRPixelShader()
 	{
 		if (m_pPS)
 		{
@@ -148,9 +178,23 @@ namespace RenderDog
 		}
 	}
 
-	void SRPixelShader::SetToContext()
+	void SRPixelShader::Release()
+	{
+		g_SRShaderManager.ReleaseShader(this);
+	}
+
+	void SRPixelShader::Apply(const ShaderPerObjParam* pPerObjParam /* = nullptr */)
 	{
 		g_pSRImmediateContext->PSSetShader(m_pPS);
+
+		IConstantBuffer* pLightingParamsConstantBuffer = g_pIBufferManager->GetConstantBufferByName("ComVar_ConstantBuffer_LightingParam");
+		ISRBuffer* pLightingCB = (ISRBuffer*)(pLightingParamsConstantBuffer->GetResource());
+		g_pSRImmediateContext->PSSetConstantBuffer(0, &pLightingCB);
+
+		ISRShaderResourceView* pSRV = (ISRShaderResourceView*)(m_NormalTextureParam.GetTexture()->GetShaderResourceView());
+		g_pSRImmediateContext->PSSetShaderResource(&pSRV);
+
+		m_NormalTextureSamplerParam.GetSampler()->SetToPixelShader(0);
 	}
 	
 
@@ -166,9 +210,7 @@ namespace RenderDog
 		}
 		else
 		{
-			pVertexShader = new SRVertexShader();
-			pVertexShader->Init();
-
+			pVertexShader = new SRVertexShader(vertexType, desc);
 			m_ShaderMap.insert({ desc.fileName, pVertexShader });
 		}
 
@@ -187,13 +229,43 @@ namespace RenderDog
 		}
 		else
 		{
-			pPixelShader = new SRPixelShader();
-			pPixelShader->Init();
-
+			pPixelShader = new SRPixelShader(desc);
 			m_ShaderMap.insert({ desc.fileName, pPixelShader });
 		}
 
 		return pPixelShader;
+	}
+
+	IShader* SRShaderManager::GetModelVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc)
+	{
+		//TODO:
+		return GetVertexShader(vertexType, desc);
+	}
+
+	IShader* SRShaderManager::GetDirectionLightingPixelShader(const ShaderCompileDesc& desc)
+	{
+		//TODO:
+		return GetPixelShader(desc);
+	}
+
+	IShader* SRShaderManager::GetSkyPixelShader(const ShaderCompileDesc& desc)
+	{
+		//TODO:
+		return nullptr;
+	}
+
+	void SRShaderManager::ReleaseShader(SRShader* pShader)
+	{
+		if (pShader)
+		{
+			std::string shaderName = pShader->GetFileName();
+
+			int refCnt = pShader->SubRef();
+			if (refCnt == 0)
+			{
+				m_ShaderMap.erase(shaderName);
+			}
+		}
 	}
 
 }// namespace RenderDog

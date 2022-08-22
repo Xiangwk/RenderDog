@@ -105,6 +105,7 @@ namespace RenderDog
 		virtual IVertexBuffer*		GetVertexBuffer(const BufferDesc& desc) override;
 		virtual IIndexBuffer*		GetIndexBuffer(const BufferDesc& desc) override;
 		virtual IConstantBuffer*	GetConstantBuffer(const BufferDesc& desc) override;
+		virtual IConstantBuffer*	GetConstantBufferByName(const std::string& name) override;
 
 		void						ReleaseVertexBuffer(SRVertexBuffer* pBuffer);
 		void						ReleaseIndexBuffer(SRIndexBuffer* pBuffer);
@@ -278,6 +279,19 @@ namespace RenderDog
 		{
 			pBuffer = new SRConstantBuffer(desc);
 			m_BufferMap.insert({ desc.name, pBuffer });
+		}
+
+		return pBuffer;
+	}
+
+	IConstantBuffer* SRBufferManager::GetConstantBufferByName(const std::string& name)
+	{
+		SRConstantBuffer* pBuffer = nullptr;
+
+		auto buffer = m_BufferMap.find(name);
+		if (buffer != m_BufferMap.end())
+		{
+			pBuffer = (SRConstantBuffer*)(buffer->second);
 		}
 
 		return pBuffer;

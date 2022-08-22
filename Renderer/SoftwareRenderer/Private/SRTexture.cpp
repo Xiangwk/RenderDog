@@ -270,7 +270,8 @@ namespace RenderDog
 		virtual ~SRSamplerState();
 
 		virtual void			Release() override;
-
+		
+		virtual void			SetToVertexShader(uint32_t startSlot) override;
 		virtual void			SetToPixelShader(uint32_t startSlot) override;
 
 	private:
@@ -328,6 +329,11 @@ namespace RenderDog
 			m_pSamplerState->Release();
 			m_pSamplerState = nullptr;
 		}
+	}
+
+	void SRSamplerState::SetToVertexShader(uint32_t startSlot)
+	{
+		return;
 	}
 
 	void SRSamplerState::SetToPixelShader(uint32_t startSlot)

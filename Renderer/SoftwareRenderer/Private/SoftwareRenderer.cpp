@@ -28,45 +28,53 @@ namespace RenderDog
 	class SoftwareMeshRenderer : public IPrimitiveRenderer
 	{
 	public:
-		SoftwareMeshRenderer();
-		SoftwareMeshRenderer(IConstantBuffer* pGlobalCB);
+		explicit SoftwareMeshRenderer(SceneView* pSceneView);
 		virtual ~SoftwareMeshRenderer();
 
 	protected:
-		IConstantBuffer*			m_pGlobalCB;
+		SceneView*		m_pSceneView;
+
+		IShader*		m_pVertexShader;
+		IShader*		m_pPixelShader;
 	};
 
-	SoftwareMeshRenderer::SoftwareMeshRenderer() :
-		m_pGlobalCB(nullptr)
+	SoftwareMeshRenderer::SoftwareMeshRenderer(SceneView* pSceneView) :
+		m_pSceneView(pSceneView),
+		m_pVertexShader(nullptr),
+		m_pPixelShader(nullptr)
 	{}
 
 	SoftwareMeshRenderer::~SoftwareMeshRenderer()
-	{}
+	{
+		if (m_pVertexShader)
+		{
+			m_pVertexShader->Release();
+			m_pVertexShader = nullptr;
+		}
 
-	SoftwareMeshRenderer::SoftwareMeshRenderer(IConstantBuffer* pGlobalCB) :
-		m_pGlobalCB(pGlobalCB)
-	{}
+		if (m_pPixelShader)
+		{
+			m_pPixelShader->Release();
+			m_pPixelShader = nullptr;
+		}
+	}
 #pragma endregion MeshRenderer
 
 #pragma region LineMeshRenderer
 	class SoftwareLineMeshRenderer : public SoftwareMeshRenderer
 	{
 	public:
-		SoftwareLineMeshRenderer();
-		SoftwareLineMeshRenderer(IConstantBuffer* pGlobalCB);
+		explicit SoftwareLineMeshRenderer(SceneView* pSceneView);
 		virtual ~SoftwareLineMeshRenderer();
 
-		virtual void					Render(const PrimitiveRenderParam& renderParam) override;
+		virtual void	Render(const PrimitiveRenderParam& renderParam) override;
 	};
 
-	SoftwareLineMeshRenderer::SoftwareLineMeshRenderer()
+	SoftwareLineMeshRenderer::SoftwareLineMeshRenderer(SceneView* pSceneView) :
+		SoftwareMeshRenderer(pSceneView)
 	{}
 
 	SoftwareLineMeshRenderer::~SoftwareLineMeshRenderer()
-	{}
-
-	SoftwareLineMeshRenderer::SoftwareLineMeshRenderer(IConstantBuffer* pGlobalCB) :
-		SoftwareMeshRenderer(pGlobalCB)
 	{}
 
 	void SoftwareLineMeshRenderer::Render(const PrimitiveRenderParam& renderParam)
@@ -93,15 +101,9 @@ namespace RenderDog
 		g_pSRImmediateContext->IASetVertexBuffer(pVB);
 		g_pSRImmediateContext->IASetIndexBuffer(pIB);
 
-		renderParam.pVS->SetToContext();
+		renderParam.pVS->Apply();
 
-		ISRBuffer* pGlobalCB = (ISRBuffer*)(m_pGlobalCB->GetResource());
-		g_pSRImmediateContext->VSSetConstantBuffer(0, &pGlobalCB);
-
-		ISRBuffer* pPerObjCB = (ISRBuffer*)(renderParam.pPerObjCB->GetResource());
-		g_pSRImmediateContext->VSSetConstantBuffer(1, &pPerObjCB);
-
-		renderParam.pPS->SetToContext();
+		m_pPixelShader->Apply();
 
 		g_pSRImmediateContext->DrawIndex(indexNum);
 	}
@@ -110,32 +112,28 @@ namespace RenderDog
 #pragma region MeshLightingRenderer
 	struct MeshLightingGlobalData
 	{
-		IConstantBuffer* pGlobalCB;
-		IConstantBuffer* pLightingCB;
+		SceneView*	pSceneView;
+
+		MeshLightingGlobalData() :
+			pSceneView(nullptr)
+		{}
 	};
 
 	class SoftwareMeshLightingRenderer : public SoftwareMeshRenderer
 	{
 	public:
-		SoftwareMeshLightingRenderer();
-		SoftwareMeshLightingRenderer(const MeshLightingGlobalData& globalData);
+		explicit SoftwareMeshLightingRenderer(const MeshLightingGlobalData& globalData);
 		virtual ~SoftwareMeshLightingRenderer();
 
 		virtual void				Render(const PrimitiveRenderParam& renderParam) override;
-
-	protected:
-		IConstantBuffer*			m_LightingCB;
 	};
 
-	SoftwareMeshLightingRenderer::SoftwareMeshLightingRenderer() :
-		SoftwareMeshRenderer(),
-		m_LightingCB(nullptr)
-	{}
-
 	SoftwareMeshLightingRenderer::SoftwareMeshLightingRenderer(const MeshLightingGlobalData& globalData) :
-		SoftwareMeshRenderer(globalData.pGlobalCB),
-		m_LightingCB(globalData.pLightingCB)
-	{}
+		SoftwareMeshRenderer(globalData.pSceneView)
+	{
+		ShaderCompileDesc psDesc(g_DirectionalLightingPixelShaderFilePath, nullptr, "Main", "ps_5_0", 0);
+		m_pPixelShader = g_pIShaderManager->GetDirectionLightingPixelShader(psDesc);
+	}
 
 	SoftwareMeshLightingRenderer::~SoftwareMeshLightingRenderer()
 	{}
@@ -164,22 +162,15 @@ namespace RenderDog
 		g_pSRImmediateContext->IASetVertexBuffer(pVB);
 		g_pSRImmediateContext->IASetIndexBuffer(pIB);
 
-		renderParam.pVS->SetToContext();
+		renderParam.pVS->Apply(&renderParam.PerObjParam);
 
-		ISRBuffer* pGlobalCB = (ISRBuffer*)(m_pGlobalCB->GetResource());
-		g_pSRImmediateContext->VSSetConstantBuffer(0, &pGlobalCB);
+		ShaderParam* pNormalTextureParam = m_pPixelShader->GetShaderParamPtrByName("NormalTexture");
+		pNormalTextureParam->SetTexture(renderParam.pNormalTexture);
 
-		ISRBuffer* pPerObjCB = (ISRBuffer*)(renderParam.pPerObjCB->GetResource());
-		g_pSRImmediateContext->VSSetConstantBuffer(1, &pPerObjCB);
+		ShaderParam* pNormalTextureSamplerParam = m_pPixelShader->GetShaderParamPtrByName("NormalTextureSampler");
+		pNormalTextureSamplerParam->SetSampler(renderParam.pNormalTextureSampler);
 
-		renderParam.pPS->SetToContext();
-
-		ISRBuffer* pLightingCB = (ISRBuffer*)(m_LightingCB->GetResource());
-		g_pSRImmediateContext->PSSetConstantBuffer(0, &pLightingCB);
-
-		ISRShaderResourceView* pSRV = (ISRShaderResourceView*)(renderParam.pNormalTexture->GetShaderResourceView());
-		g_pSRImmediateContext->PSSetShaderResource(&pSRV);
-		renderParam.pNormalTextureSampler->SetToPixelShader(0);
+		m_pPixelShader->Apply();
 
 		g_pSRImmediateContext->DrawIndex(indexNum);
 	}
@@ -192,7 +183,7 @@ namespace RenderDog
 	class SoftwareRenderer : public IRenderer
 	{
 	private:
-		struct GlobalConstantData
+		struct ViewParamData
 		{
 			Matrix4x4	viewMatrix;
 			Matrix4x4	projMatrix;
@@ -218,6 +209,9 @@ namespace RenderDog
 		virtual bool				OnResize(uint32_t width, uint32_t height);
 
 	private:
+		bool						CreateInternalShaders();
+		void						ReleaseInternalShaders();
+
 		void						ClearBackRenderTarget(float* clearColor);
 
 		void						AddPrisAndLightsToSceneView(IScene* pScene);
@@ -234,8 +228,12 @@ namespace RenderDog
 
 		SceneView*					m_pSceneView;
 
+		IConstantBuffer*			m_pPerObjectConstantBuffer;
 		IConstantBuffer*			m_pGlobalConstantBuffer;
 		IConstantBuffer*			m_pLightingConstantBuffer;
+
+		IShader*					m_pModelVertexShader;
+		IShader*					m_pLightingPixelShader;
 	};
 
 	SoftwareRenderer	g_SoftwareRenderer;
@@ -283,12 +281,12 @@ namespace RenderDog
 
 		BufferDesc cbDesc = {};
 		cbDesc.name = "ComVar_ConstantBuffer_ViewParam";
-		cbDesc.byteWidth = sizeof(GlobalConstantData);
+		cbDesc.byteWidth = sizeof(ViewParamData);
 		cbDesc.pInitData = nullptr;
 		cbDesc.isDynamic = true;
 		m_pGlobalConstantBuffer = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
 
-		cbDesc.name = "MainLightConstantBuffer";
+		cbDesc.name = "ComVar_ConstantBuffer_LightingParam";
 		cbDesc.byteWidth = sizeof(DirectionalLightData);
 		m_pLightingConstantBuffer = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
 
@@ -349,7 +347,7 @@ namespace RenderDog
 	void SoftwareRenderer::Update(IScene* pScene)
 	{
 		FPSCamera* pCamera = m_pSceneView->GetCamera();
-		GlobalConstantData globalCBData = {};
+		ViewParamData globalCBData = {};
 		globalCBData.viewMatrix = pCamera->GetViewMatrix();
 		globalCBData.projMatrix = pCamera->GetPerspProjectionMatrix();
 
@@ -456,6 +454,34 @@ namespace RenderDog
 	//------------------------------------------------------------------------
 	//   Private Function
 	//------------------------------------------------------------------------
+	bool SoftwareRenderer::CreateInternalShaders()
+	{
+		//VertexShader
+		ShaderCompileDesc vsDesc(g_SimpleModelVertexShadreFilePath, nullptr, "Main", "vs_5_0", 0);
+		m_pModelVertexShader = g_pIShaderManager->GetModelVertexShader(VERTEX_TYPE::STANDARD, vsDesc);
+
+		//PixeShader
+		ShaderCompileDesc psDesc = ShaderCompileDesc(g_DirectionalLightingPixelShaderFilePath, nullptr, "Main", "ps_5_0", 0);
+		m_pLightingPixelShader = g_pIShaderManager->GetDirectionLightingPixelShader(psDesc);
+
+		return true;
+	}
+
+	void SoftwareRenderer::ReleaseInternalShaders()
+	{
+		if (m_pModelVertexShader)
+		{
+			m_pModelVertexShader->Release();
+			m_pModelVertexShader = nullptr;
+		}
+
+		if (m_pLightingPixelShader)
+		{
+			m_pLightingPixelShader->Release();
+			m_pLightingPixelShader = nullptr;
+		}
+	}
+
 	void SoftwareRenderer::ClearBackRenderTarget(float* clearColor)
 	{
 		g_pSRImmediateContext->ClearRenderTargetView(m_pRenderTargetView, clearColor);
@@ -489,7 +515,9 @@ namespace RenderDog
 
 	void SoftwareRenderer::RenderPrimitives()
 	{
-		SoftwareLineMeshRenderer lineMeshRenderer(m_pGlobalConstantBuffer);
+		g_pSRImmediateContext->RSSetViewport(&m_ScreenViewport);
+
+		SoftwareLineMeshRenderer lineMeshRenderer(m_pSceneView);
 
 		uint32_t simplePriNum = m_pSceneView->GetSimplePrisNum();
 		for (uint32_t i = 0; i < simplePriNum; ++i)
@@ -499,8 +527,7 @@ namespace RenderDog
 		}
 
 		MeshLightingGlobalData meshLightingData;
-		meshLightingData.pGlobalCB = m_pGlobalConstantBuffer;
-		meshLightingData.pLightingCB = m_pLightingConstantBuffer;
+		meshLightingData.pSceneView = m_pSceneView;
 		SoftwareMeshLightingRenderer meshRender(meshLightingData);
 
 		uint32_t opaquePriNum = m_pSceneView->GetOpaquePrisNum();

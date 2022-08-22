@@ -60,7 +60,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\Public;..\..\..\Public;..\..\..\..\EngineSDK\3rdSDK\Public;..\..\..\..\EngineSDK\RenderDog\Public\Math;..\..\..\..\EngineSDK\RenderDog\Public\RenderDog;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Public;..\..\..\Public;..\..\..\..\RenderDog\Math\Public;..\..\..\..\RenderDog\Public;..\..\..\..\EngineSDK\3rdSDK\Public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -83,7 +83,7 @@ xcopy ..\..\Public\*.* ..\..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i 
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\Public;..\..\..\Public;..\..\..\..\EngineSDK\3rdSDK\Public;..\..\..\..\EngineSDK\RenderDog\Public\Math;..\..\..\..\EngineSDK\RenderDog\Public\RenderDog;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Public;..\..\..\Public;..\..\..\..\RenderDog\Math\Public;..\..\..\..\RenderDog\Public;..\..\..\..\EngineSDK\3rdSDK\Public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

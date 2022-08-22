@@ -261,7 +261,7 @@ bool DemoApp::LoadModel(const std::string& fileName, LOAD_MODEL_TYPE modelType)
 	{
 		RenderDog::GeometryGenerator::StandardMeshData SphereMeshData;
 		RenderDog::g_pGeometryGenerator->GenerateSphere(50, 50, 50, SphereMeshData);
-		m_pModel->LoadFromStandardData(SphereMeshData.vertices, SphereMeshData.indices, "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl", "Sphere");
+		m_pModel->LoadFromStandardData(SphereMeshData.vertices, SphereMeshData.indices, "Sphere");
 		if (!m_pModel->LoadTextureFromFile(L"EngineAsset/Textures/ErrorTexture_diff.dds", L"EngineAsset/Textures/FlatNormal_norm.dds"))
 		{
 			MessageBox(nullptr, "Load Texture Failed!", "ERROR", MB_OK);
@@ -278,7 +278,7 @@ bool DemoApp::LoadModel(const std::string& fileName, LOAD_MODEL_TYPE modelType)
 			return false;
 		}
 
-		if (!m_pModel->LoadFromRawMeshData(RenderDog::g_pRDFbxImporter->GetRawMeshData(), "Shaders/StaticModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl", fileName))
+		if (!m_pModel->LoadFromRawMeshData(RenderDog::g_pRDFbxImporter->GetRawMeshData(), fileName))
 		{
 			MessageBox(nullptr, "Load Model Failed!", "ERROR", MB_OK);
 			return false;

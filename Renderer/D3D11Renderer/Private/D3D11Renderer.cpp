@@ -43,9 +43,9 @@ namespace RenderDog
 	};
 
 	D3D11MeshRenderer::D3D11MeshRenderer(SceneView* pSceneView) :
+		m_pSceneView(pSceneView),
 		m_pVertexShader(nullptr),
-		m_pPixelShader(nullptr),
-		m_pSceneView(pSceneView)
+		m_pPixelShader(nullptr)
 	{}
 
 	D3D11MeshRenderer::~D3D11MeshRenderer()
@@ -111,7 +111,7 @@ namespace RenderDog
 
 		renderParam.pVS->Apply(&renderParam.PerObjParam);
 
-		m_pPixelShader->Apply(nullptr);
+		m_pPixelShader->Apply();
 
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
 	}
@@ -383,13 +383,8 @@ namespace RenderDog
 
 		SceneView*					m_pSceneView;
 
-		//NOTE!!! 这些变量暂时仅用作预创建资源，后续应该放入资源管理器中
-		IConstantBuffer*			m_pPerObjectConstantBuffer;
-		IConstantBuffer*			m_pBoneTransformsConstantBuffer;
 		IConstantBuffer*			m_pViewParamConstantBuffer;
 		IConstantBuffer*			m_pDirectionalLightConstantBuffer;
-		IConstantBuffer*			m_pShadowMatrixConstantBuffer;
-		IConstantBuffer*			m_pShadowParamConstantBuffer;
 
 		//Shadow
 		SceneView*					m_pShadowSceneView;
@@ -429,12 +424,8 @@ namespace RenderDog
 		m_ShadowViewport(),
 		m_pShadowSceneView(nullptr),
 		m_pSceneView(nullptr),
-		m_pPerObjectConstantBuffer(nullptr),
-		m_pBoneTransformsConstantBuffer(nullptr),
 		m_pViewParamConstantBuffer(nullptr),
 		m_pDirectionalLightConstantBuffer(nullptr),
-		m_pShadowMatrixConstantBuffer(nullptr),
-		m_pShadowParamConstantBuffer(nullptr),
 		m_pShadowDepthTexture(nullptr),
 		m_pShadowDepthTextureSampler(nullptr),
 		m_pSimpleModelVertexShader(nullptr),
@@ -595,18 +586,6 @@ namespace RenderDog
 		{
 			delete m_pSceneView;
 			m_pSceneView = nullptr;
-		}
-
-		if (m_pPerObjectConstantBuffer)
-		{
-			m_pPerObjectConstantBuffer->Release();
-			m_pPerObjectConstantBuffer = nullptr;
-		}
-
-		if (m_pBoneTransformsConstantBuffer)
-		{
-			m_pBoneTransformsConstantBuffer->Release();
-			m_pBoneTransformsConstantBuffer = nullptr;
 		}
 
 		if (m_pViewParamConstantBuffer)
@@ -938,18 +917,6 @@ namespace RenderDog
 
 	void D3D11Renderer::ReleaseShadowResources()
 	{
-		if (m_pShadowMatrixConstantBuffer)
-		{
-			m_pShadowMatrixConstantBuffer->Release();
-			m_pShadowMatrixConstantBuffer = nullptr;
-		}
-
-		if (m_pShadowParamConstantBuffer)
-		{
-			m_pShadowParamConstantBuffer->Release();
-			m_pShadowParamConstantBuffer = nullptr;
-		}
-
 		if (m_pShadowDepthTexture)
 		{
 			m_pShadowDepthTexture->Release();

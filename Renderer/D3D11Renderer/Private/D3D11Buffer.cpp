@@ -101,10 +101,10 @@ namespace RenderDog
 		D3D11BufferManager() = default;
 		virtual ~D3D11BufferManager() = default;
 
-		virtual IVertexBuffer* GetVertexBuffer(const BufferDesc& desc) override;
-		virtual IIndexBuffer* GetIndexBuffer(const BufferDesc& desc) override;
-		virtual IConstantBuffer* GetConstantBuffer(const BufferDesc& desc) override;
-		virtual IConstantBuffer* GetConstantBufferByName(const std::string& name) override;
+		virtual IVertexBuffer*		GetVertexBuffer(const BufferDesc& desc) override;
+		virtual IIndexBuffer*		GetIndexBuffer(const BufferDesc& desc) override;
+		virtual IConstantBuffer*	GetConstantBuffer(const BufferDesc& desc) override;
+		virtual IConstantBuffer*	GetConstantBufferByName(const std::string& name) override;
 
 		void						ReleaseVertexBuffer(D3D11VertexBuffer* pBuffer);
 		void						ReleaseIndexBuffer(D3D11IndexBuffer* pBuffer);
