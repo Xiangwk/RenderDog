@@ -123,6 +123,8 @@ namespace RenderDog
 	//       Function Implementation
 	//================================================================
 	SRVertexBuffer::SRVertexBuffer(const BufferDesc& desc) :
+		RefCntObject(),
+		m_Name(desc.name),
 		m_pVB(nullptr),
 		m_Stride(desc.stride),
 		m_Offset(desc.offset)
@@ -160,6 +162,8 @@ namespace RenderDog
 	
 
 	SRIndexBuffer::SRIndexBuffer(const BufferDesc& desc) :
+		RefCntObject(),
+		m_Name(desc.name),
 		m_pIB(nullptr),
 		m_indexNum(desc.byteWidth / sizeof(uint32_t))
 	{
@@ -194,6 +198,8 @@ namespace RenderDog
 	
 
 	SRConstantBuffer::SRConstantBuffer(const BufferDesc& desc) :
+		RefCntObject(),
+		m_Name(desc.name),
 		m_pCB(nullptr),
 		m_IsDynamic(desc.isDynamic)
 	{
