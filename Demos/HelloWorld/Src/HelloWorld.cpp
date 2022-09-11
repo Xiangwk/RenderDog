@@ -284,7 +284,7 @@ bool DemoApp::LoadModel(const std::string& fileName, LOAD_MODEL_TYPE modelType)
 			return false;
 		}
 
-		if (!m_pModel->LoadTextureFromFile(L"EngineAsset/Textures/White_diff.dds", L"Models/generator/Textures/PolybumpTangent_DDN.tga"))
+		if (!m_pModel->LoadTextureFromFile(L"EngineAsset/Textures/White_diff.dds", L"Models/Generator/Textures/PolybumpTangent_norm.tga"))
 		{
 			MessageBox(nullptr, "Load Texture Failed!", "ERROR", MB_OK);
 			return false;
