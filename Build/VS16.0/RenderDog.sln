@@ -47,7 +47,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Public", "Public", "{3CD18E
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectXTex", "..\..\3rdSDK\DirectXTex\Build\VS16.0\DirectXTex_Desktop_2019_Win10.vcxproj", "{371B9FA9-4C90-4AC6-A123-ACED756D6C77}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FbxSDK", "..\..\3rdSDK\FbxSDK\Build\VS16.0\x64\FbxSDK.vcxproj", "{D9BDFFDD-AF9B-4D57-9BCE-5B1A811995D8}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FbxSDK", "..\..\3rdSDK\FbxSDK\Build\VS16.0\FbxSDK.vcxproj", "{D9BDFFDD-AF9B-4D57-9BCE-5B1A811995D8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
