@@ -16,11 +16,12 @@ namespace RenderDog
 	struct VertexKey
 	{
 		Vector3		pos;
+		Vector2		tex;
 		uint32_t	smooth;
 
 		bool operator==(const VertexKey& rhs) const
 		{
-			return (pos == rhs.pos && smooth == rhs.smooth);
+			return (pos == rhs.pos && tex == rhs.tex && smooth == rhs.smooth);
 		}
 	};
 }// namespace RenderDog
@@ -352,7 +353,7 @@ namespace RenderDog
 			m_Vertices.push_back(rawVertices[i]);
 			m_Indices.push_back(i);
 
-			vertMap.insert({ {m_Vertices[i].position, smoothGroup[i]}, {&m_Vertices[i], i} });
+			vertMap.insert({ {m_Vertices[i].position, m_Vertices[i].texcoord, smoothGroup[i]}, {&m_Vertices[i], i} });
 		}
 
 		for (uint32_t i = 3; i < rawVertices.size(); ++i)
@@ -362,8 +363,8 @@ namespace RenderDog
 
 			Vector3 weightedAverNormal = rawVert.normal;
 
-			size_t sameVertsNum = vertMap.count({ rawVert.position, rawSmooth });
-			auto findedVert = vertMap.find({ rawVert.position, rawSmooth });
+			size_t sameVertsNum = vertMap.count({ rawVert.position, rawVert.texcoord, rawSmooth });
+			auto findedVert = vertMap.find({ rawVert.position, rawVert.texcoord, rawSmooth });
 			if (sameVertsNum == 1)
 			{
 				//HashMap中只找到一个相同点，则有可能手相性不同，若相同则合并，否则加入到新的顶点数组以及HashMap中
@@ -390,7 +391,7 @@ namespace RenderDog
 					m_Vertices.push_back(rawVert);
 
 					StandardVertex* pNewVert = &m_Vertices[newIndex];
-					vertMap.insert({ { pNewVert->position, rawSmooth }, { pNewVert, newIndex} });
+					vertMap.insert({ { pNewVert->position, pNewVert->texcoord, rawSmooth }, { pNewVert, newIndex} });
 				}
 			}
 			else if (sameVertsNum > 1)
@@ -424,7 +425,7 @@ namespace RenderDog
 				m_Vertices.push_back(rawVert);
 
 				StandardVertex* pNewVert = &m_Vertices[newIndex];
-				vertMap.insert({ { pNewVert->position, rawSmooth }, { pNewVert, newIndex} });
+				vertMap.insert({ { pNewVert->position, pNewVert->texcoord, rawSmooth }, { pNewVert, newIndex} });
 			}
 		}
 
