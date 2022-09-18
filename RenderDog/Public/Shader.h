@@ -234,6 +234,8 @@ namespace RenderDog
 		virtual ShaderParam*		GetShaderParamPtrByName(const std::string& name) = 0;
 
 		virtual void				Apply(const ShaderPerObjParam* pPerObjParam = nullptr) = 0;
+
+		virtual void				AddMaterialParam(const ShaderParam& param) = 0;
 	};
 
 	class IShaderManager

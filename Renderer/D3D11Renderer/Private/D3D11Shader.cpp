@@ -33,6 +33,8 @@ namespace RenderDog
 
 		virtual ShaderParam*							GetShaderParamPtrByName(const std::string& name) override;
 
+		virtual void									AddMaterialParam(const ShaderParam& param) override {}
+
 		bool											CompileFromFile(const ShaderCompileDesc& desc);
 
 	protected:
@@ -131,6 +133,8 @@ namespace RenderDog
 		ShaderParam					m_ShadowDepthTextureParam;
 		ShaderParam					m_ShadowDepthTextureSamplerParam;
 	};
+
+
 
 	//=========================================================================
 	//    D3D11ShaderManager
