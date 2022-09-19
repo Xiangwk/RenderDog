@@ -6,6 +6,7 @@
 
 #include "Material.h"
 #include "RefCntObject.h"
+#include "Shader.h"
 
 #include <vector>
 #include <unordered_map>
@@ -22,29 +23,30 @@ namespace RenderDog
 		friend class MaterialInstance;
 
 	public:
-		Material() :
+		Material(const std::string& name) :
 			RefCntObject(),
 			m_Name(""),
 			m_Params(0),
 			m_MtlInsId(0)
 		{}
 
-		virtual ~Material() = default;
+		virtual ~Material()
+		{}
 
-		virtual void				Release() override;
-		virtual const std::string&	GetName() const override { return m_Name; }
+		virtual void					Release() override;
+		virtual const std::string&		GetName() const override { return m_Name; }
 
-		virtual MaterialParam		GetParamByName(const std::string& name) override;
-		virtual MaterialParam		GetParamByIndex(uint32_t index) override;
-		virtual uint32_t			GetParamNum() const override;
+		virtual MaterialParam			GetParamByName(const std::string& name) override;
+		virtual MaterialParam			GetParamByIndex(uint32_t index) override;
+		virtual uint32_t				GetParamNum() const override;
 
-		bool						AddParam(const MaterialParam& param);
+		bool							AddParam(const MaterialParam& param);
 
 	private:
-		std::string					m_Name;
-		std::vector<MaterialParam>	m_Params;
+		std::string						m_Name;
+		std::vector<MaterialParam>		m_Params;
 
-		int							m_MtlInsId;
+		int								m_MtlInsId;
 	};
 
 	//================================================================
@@ -63,14 +65,19 @@ namespace RenderDog
 
 		virtual ~MaterialInstance() = default;
 
-		virtual void				Release() override;
+		virtual void					Release() override;
 
-		virtual const std::string&	GetName() const override { return m_Name; }
+		virtual const std::string&		GetName() const override { return m_Name; }
+
+		virtual const IMaterial*		GetMaterial() const { return m_pMaterial; }
+
+		virtual const MaterialParam&	GetMaterialParamByIndex(uint32_t index) const { return m_Params[index]; }
+		virtual uint32_t				GetMaterialParamNum() const { return (uint32_t)(m_Params.size()); }
 
 	private:
-		std::string					m_Name;
-		std::vector<MaterialParam>	m_Params;
-		IMaterial*					m_pMaterial;
+		std::string						m_Name;
+		std::vector<MaterialParam>		m_Params;
+		IMaterial*						m_pMaterial;
 	};
 
 	//================================================================
@@ -182,7 +189,7 @@ namespace RenderDog
 		auto materialIter = m_MaterialMap.find(filePath);
 		if (materialIter == m_MaterialMap.end())
 		{
-			pMaterial = new Material();
+			pMaterial = new Material(filePath);
 			m_MaterialMap.insert({ filePath, pMaterial });
 		}
 		else

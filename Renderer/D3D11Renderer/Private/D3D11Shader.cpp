@@ -134,7 +134,21 @@ namespace RenderDog
 		ShaderParam					m_ShadowDepthTextureSamplerParam;
 	};
 
+	class D3D11MaterialShader : public D3D11PixelShader
+	{
+	public:
+		explicit D3D11MaterialShader(const ShaderCompileDesc& desc);
+		virtual ~D3D11MaterialShader();
 
+		virtual void				Release() override;
+
+		virtual void				Apply(const ShaderPerObjParam* pPerObjParam = nullptr) override;
+
+		virtual void				AddMaterialParam(const ShaderParam& param) override;
+
+	protected:
+		std::vector<ShaderParam>	m_MaterialParams;
+	};
 
 	//=========================================================================
 	//    D3D11ShaderManager
@@ -154,6 +168,8 @@ namespace RenderDog
 
 		virtual IShader*			GetDirectionLightingPixelShader(const ShaderCompileDesc& desc) override;
 		virtual IShader*			GetSkyPixelShader(const ShaderCompileDesc& desc) override;
+
+		virtual IShader*			GetMaterialShader(const std::string& materialName) override;
 
 		void						ReleaseShader(D3D11Shader* pShader);
 
@@ -603,6 +619,82 @@ namespace RenderDog
 		pSkySampler->SetToPixelShader(samplerIter->second);
 	}
 
+	D3D11MaterialShader::D3D11MaterialShader(const ShaderCompileDesc& desc) :
+		D3D11PixelShader(desc)
+	{}
+
+	D3D11MaterialShader::~D3D11MaterialShader()
+	{}
+
+	void D3D11MaterialShader::Release()
+	{
+		D3D11PixelShader::Release();
+	}
+
+	void D3D11MaterialShader::Apply(const ShaderPerObjParam* pPerObjParam/* = nullptr*/)
+	{
+		D3D11PixelShader::Apply(pPerObjParam);
+
+		for (size_t i = 0; i < m_MaterialParams.size(); ++i)
+		{
+			ShaderParam& param = m_MaterialParams[i];
+
+			SHADER_PARAM_TYPE paramType = param.GetType();
+			switch (paramType)
+			{
+			case SHADER_PARAM_TYPE::UNKNOWN:
+				break;
+			case SHADER_PARAM_TYPE::FLOAT_SCALAR:
+			{
+				break;
+			}
+			case SHADER_PARAM_TYPE::FLOAT_VECTOR:
+			{
+				break;
+			}
+			case SHADER_PARAM_TYPE::MATRIX:
+			{
+				break;
+			}
+			case SHADER_PARAM_TYPE::TEXTURE:
+			{
+				auto srvIter = m_ShaderResourceViewMap.find(param.GetName());
+				if (srvIter == m_ShaderResourceViewMap.end())
+				{
+					return;
+				}
+				ID3D11ShaderResourceView* pSRV = (ID3D11ShaderResourceView*)(param.GetTexture()->GetShaderResourceView());
+				g_pD3D11ImmediateContext->PSSetShaderResources(srvIter->second, 1, &pSRV);
+
+				break;
+			}
+			case SHADER_PARAM_TYPE::SAMPLER:
+			{
+				auto samplerIter = m_SamplerStateMap.find(param.GetName());
+				ISamplerState* pSampler = param.GetSampler();
+				if (samplerIter == m_SamplerStateMap.end())
+				{
+					return;
+				}
+				pSampler->SetToPixelShader(samplerIter->second);
+
+				break;
+			}
+			default:
+				break;
+			}
+		}
+	}
+
+	void D3D11MaterialShader::AddMaterialParam(const ShaderParam& param)
+	{
+		m_MaterialParams.push_back(param);
+
+		const std::string& paramName = param.GetName();
+		ShaderParam& paramRef = m_MaterialParams[m_MaterialParams.size() - 1];
+		m_ShaderParamMap.insert({paramName, &paramRef});
+	}
+
 	IShader* D3D11ShaderManager::GetVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc)
 	{
 		D3D11Shader* pVertexShader = nullptr;
@@ -692,6 +784,28 @@ namespace RenderDog
 		else
 		{
 			pPixelShader = new D3D11SkyPixelShader(desc);
+			m_ShaderMap.insert({ desc.fileName, pPixelShader });
+		}
+
+		return pPixelShader;
+	}
+
+	IShader* D3D11ShaderManager::GetMaterialShader(const std::string& materialName)
+	{
+		D3D11Shader* pPixelShader = nullptr;
+		std::string materialShaderName = materialName + ".hlsl";
+
+		auto shader = m_ShaderMap.find(materialShaderName);
+		if (shader != m_ShaderMap.end())
+		{
+			pPixelShader = shader->second;
+			pPixelShader->AddRef();
+		}
+		else
+		{
+			
+			ShaderCompileDesc desc(materialShaderName, nullptr, "Main", "ps_5_0", 0);
+			pPixelShader = new D3D11MaterialShader(desc);
 			m_ShaderMap.insert({ desc.fileName, pPixelShader });
 		}
 

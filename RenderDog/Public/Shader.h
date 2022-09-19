@@ -120,21 +120,21 @@ namespace RenderDog
 		{
 			switch (m_Type)
 			{
-			case RenderDog::SHADER_PARAM_TYPE::UNKNOWN:
+			case SHADER_PARAM_TYPE::UNKNOWN:
 				break;
-			case RenderDog::SHADER_PARAM_TYPE::FLOAT_SCALAR:
+			case SHADER_PARAM_TYPE::FLOAT_SCALAR:
 				m_Float = param.m_Float;
 				break;
-			case RenderDog::SHADER_PARAM_TYPE::FLOAT_VECTOR:
+			case SHADER_PARAM_TYPE::FLOAT_VECTOR:
 				m_Vector = param.m_Vector;
 				break;
-			case RenderDog::SHADER_PARAM_TYPE::MATRIX:
+			case SHADER_PARAM_TYPE::MATRIX:
 				m_Matrix = param.m_Matrix;
 				break;
-			case RenderDog::SHADER_PARAM_TYPE::TEXTURE:
+			case SHADER_PARAM_TYPE::TEXTURE:
 				m_pTexture = param.m_pTexture;
 				break;
-			case RenderDog::SHADER_PARAM_TYPE::SAMPLER:
+			case SHADER_PARAM_TYPE::SAMPLER:
 				m_pSampler = param.m_pSampler;
 				break;
 			default:
@@ -250,6 +250,8 @@ namespace RenderDog
 
 		virtual IShader*			GetDirectionLightingPixelShader(const ShaderCompileDesc& desc) = 0;
 		virtual IShader*			GetSkyPixelShader(const ShaderCompileDesc& desc) = 0;
+
+		virtual IShader*			GetMaterialShader(const std::string& materialName) = 0;
 	};
 
 	extern IShaderManager* g_pIShaderManager;
