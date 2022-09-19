@@ -274,6 +274,62 @@ namespace RenderDog
 		pShadowDepthTextureSamplerParam->SetSampler(m_pShadowDepthTextureSampler);
 
 		m_pPixelShader->Apply(nullptr);
+
+		//TODO!!! 参考这段代码添加设置材质参数的代码
+		//void D3D11MaterialShader::Apply(const ShaderPerObjParam* pPerObjParam/* = nullptr*/)
+		//{
+		//	D3D11PixelShader::Apply(pPerObjParam);
+
+		//	for (size_t i = 0; i < m_MaterialParams.size(); ++i)
+		//	{
+		//		ShaderParam& param = m_MaterialParams[i];
+
+		//		SHADER_PARAM_TYPE paramType = param.GetType();
+		//		switch (paramType)
+		//		{
+		//		case SHADER_PARAM_TYPE::UNKNOWN:
+		//			break;
+		//		case SHADER_PARAM_TYPE::FLOAT_SCALAR:
+		//		{
+		//			break;
+		//		}
+		//		case SHADER_PARAM_TYPE::FLOAT_VECTOR:
+		//		{
+		//			break;
+		//		}
+		//		case SHADER_PARAM_TYPE::MATRIX:
+		//		{
+		//			break;
+		//		}
+		//		case SHADER_PARAM_TYPE::TEXTURE:
+		//		{
+		//			auto srvIter = m_ShaderResourceViewMap.find(param.GetName());
+		//			if (srvIter == m_ShaderResourceViewMap.end())
+		//			{
+		//				return;
+		//			}
+		//			ID3D11ShaderResourceView* pSRV = (ID3D11ShaderResourceView*)(param.GetTexture()->GetShaderResourceView());
+		//			g_pD3D11ImmediateContext->PSSetShaderResources(srvIter->second, 1, &pSRV);
+
+		//			break;
+		//		}
+		//		case SHADER_PARAM_TYPE::SAMPLER:
+		//		{
+		//			auto samplerIter = m_SamplerStateMap.find(param.GetName());
+		//			ISamplerState* pSampler = param.GetSampler();
+		//			if (samplerIter == m_SamplerStateMap.end())
+		//			{
+		//				return;
+		//			}
+		//			pSampler->SetToPixelShader(samplerIter->second);
+
+		//			break;
+		//		}
+		//		default:
+		//			break;
+		//		}
+		//	}
+		//}
 		
 		uint32_t indexNum = renderParam.pIB->GetIndexNum();
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);

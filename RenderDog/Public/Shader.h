@@ -234,8 +234,6 @@ namespace RenderDog
 		virtual ShaderParam*		GetShaderParamPtrByName(const std::string& name) = 0;
 
 		virtual void				Apply(const ShaderPerObjParam* pPerObjParam = nullptr) = 0;
-
-		virtual void				AddMaterialParam(const ShaderParam& param) = 0;
 	};
 
 	class IShaderManager
@@ -250,8 +248,6 @@ namespace RenderDog
 
 		virtual IShader*			GetDirectionLightingPixelShader(const ShaderCompileDesc& desc) = 0;
 		virtual IShader*			GetSkyPixelShader(const ShaderCompileDesc& desc) = 0;
-
-		virtual IShader*			GetMaterialShader(const std::string& materialName) = 0;
 	};
 
 	extern IShaderManager* g_pIShaderManager;

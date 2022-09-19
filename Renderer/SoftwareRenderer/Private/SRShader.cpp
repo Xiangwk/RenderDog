@@ -26,8 +26,6 @@ namespace RenderDog
 
 		virtual ShaderParam*							GetShaderParamPtrByName(const std::string& name) override;
 
-		virtual void									AddMaterialParam(const ShaderParam& param) override {}
-
 	protected:
 		std::string										m_fileName;
 
