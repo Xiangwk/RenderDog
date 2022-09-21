@@ -25,6 +25,8 @@ namespace RenderDog
 		virtual const std::string&						GetFileName() const { return m_fileName; }
 
 		virtual ShaderParam*							GetShaderParamPtrByName(const std::string& name) override;
+		virtual int										GetShaderResourceViewSlotByName(const std::string& name) override { return -1; }
+		virtual int										GetSamplerStateSlotByName(const std::string& name) override { return -1; }
 
 	protected:
 		std::string										m_fileName;

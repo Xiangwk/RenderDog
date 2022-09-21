@@ -19,18 +19,18 @@ namespace RenderDog
 	class	IConstantBuffer;
 
 	//VertexShader
-	const std::string g_SimpleModelVertexShadreFilePath			= "Shaders/SimpleModelVertexShader.hlsl";
-	const std::string g_StaticModelVertexShaderFilePath			= "Shaders/StaticModelVertexShader.hlsl";
-	const std::string g_SkinModelVertexShaderFilePath			= "Shaders/SkinModelVertexShader.hlsl";
-	const std::string g_SkyVertexShaderFilePath					= "Shaders/SkyVertexShader.hlsl";
-	const std::string g_ShadowDepthStaticVertexShaderFilePath	= "Shaders/ShadowDepthStaticModelVertexShader.hlsl";
-	const std::string g_ShadowDepthSkinVertexShaderFilePath		= "Shaders/ShadowDepthSkinModelVertexShader.hlsl";
-	
+	const std::string g_SimpleModelVertexShadreFilePath = "Shaders/SimpleModelVertexShader.hlsl";
+	const std::string g_StaticModelVertexShaderFilePath = "Shaders/StaticModelVertexShader.hlsl";
+	const std::string g_SkinModelVertexShaderFilePath = "Shaders/SkinModelVertexShader.hlsl";
+	const std::string g_SkyVertexShaderFilePath = "Shaders/SkyVertexShader.hlsl";
+	const std::string g_ShadowDepthStaticVertexShaderFilePath = "Shaders/ShadowDepthStaticModelVertexShader.hlsl";
+	const std::string g_ShadowDepthSkinVertexShaderFilePath = "Shaders/ShadowDepthSkinModelVertexShader.hlsl";
+
 	//PixelShader
-	const std::string g_SingleColorPixelShader					= "Shaders/SingleColorPixelShader.hlsl";
-	const std::string g_DirectionalLightingPixelShaderFilePath	= "Shaders/PhongLightingPixelShader.hlsl";
-	const std::string g_SkyPixelShaderFilePath					= "Shaders/SkyPixelShader.hlsl";
-	const std::string g_ShadowDepthPixelShaderFilePath			= "Shaders/ShadowDepthPixelShader.hlsl";
+	const std::string g_SingleColorPixelShader = "Shaders/SingleColorPixelShader.hlsl";
+	const std::string g_DirectionalLightingPixelShaderFilePath = "Shaders/PhongLightingPixelShader.hlsl";
+	const std::string g_SkyPixelShaderFilePath = "Shaders/SkyPixelShader.hlsl";
+	const std::string g_ShadowDepthPixelShaderFilePath = "Shaders/ShadowDepthPixelShader.hlsl";
 
 	enum class SHADER_PARAM_TYPE
 	{
@@ -57,41 +57,41 @@ namespace RenderDog
 
 	struct ViewParamData
 	{
-		Matrix4x4	worldToViewMatrix;
-		Matrix4x4	viewToClipMatrix;
-		Vector4		mainCameraWorldPos;
+		Matrix4x4			worldToViewMatrix;
+		Matrix4x4			viewToClipMatrix;
+		Vector4				mainCameraWorldPos;
 	};
 
 	struct DirectionalLightData
 	{
-		Vector4		direction;
-		Vector4		color;
+		Vector4				direction;
+		Vector4				color;
 	};
 
 	struct ShadowDepthMatrixData
 	{
-		Matrix4x4	worldToViewMatrix;
-		Matrix4x4	viewToClipMatrix;
+		Matrix4x4			worldToViewMatrix;
+		Matrix4x4			viewToClipMatrix;
 	};
 
 	struct ShadowParamData
 	{
-		Vector4		param0;			//x: shadowDepthOffset, y: shadowDistance
+		Vector4				param0;			//x: shadowDepthOffset, y: shadowDistance
 	};
 
 	struct ShaderMacro
 	{
-		std::string	name;
-		std::string	definition;
+		std::string			name;
+		std::string			definition;
 	};
 
 	struct ShaderCompileDesc
 	{
-		std::string		fileName;
-		ShaderMacro*	shaderMacros;
-		std::string		entryPoint;
-		std::string		target;
-		unsigned int	compileFlag;
+		std::string			fileName;
+		ShaderMacro*		shaderMacros;
+		std::string			entryPoint;
+		std::string			target;
+		unsigned int		compileFlag;
 
 		ShaderCompileDesc(const std::string& file,
 			ShaderMacro* macros,
@@ -181,20 +181,20 @@ namespace RenderDog
 			return *this;
 		}
 
-		const std::string&		GetName() const							{ return m_Name; }
-		SHADER_PARAM_TYPE		GetType() const							{ return m_Type; }
+		const std::string&		GetName() const { return m_Name; }
+		SHADER_PARAM_TYPE		GetType() const { return m_Type; }
 
-		void					SetFloat(float value)					{ m_Float = value; }
-		void					SetVector4(const Vector4& value)		{ m_Vector = value; }
-		void					SetMatrix4x4(const Matrix4x4& value)	{ m_Matrix = value; }
-		void					SetTexture(ITexture* pValue)			{ m_pTexture = pValue; }
-		void					SetSampler(ISamplerState* pValue)		{ m_pSampler = pValue; }
+		void					SetFloat(float value) { m_Float = value; }
+		void					SetVector4(const Vector4& value) { m_Vector = value; }
+		void					SetMatrix4x4(const Matrix4x4& value) { m_Matrix = value; }
+		void					SetTexture(ITexture* pValue) { m_pTexture = pValue; }
+		void					SetSampler(ISamplerState* pValue) { m_pSampler = pValue; }
 
-		float					GetFloat() const						{ return m_Float; }
-		Vector4					GetVector4() const						{ return m_Vector; }
-		Matrix4x4				GetMatrix4x4() const					{ return m_Matrix; }
-		ITexture*				GetTexture() const						{ return m_pTexture; }
-		ISamplerState*			GetSampler() const						{ return m_pSampler; }
+		float					GetFloat() const { return m_Float; }
+		Vector4					GetVector4() const { return m_Vector; }
+		Matrix4x4				GetMatrix4x4() const { return m_Matrix; }
+		ITexture*				GetTexture() const { return m_pTexture; }
+		ISamplerState*			GetSampler() const { return m_pSampler; }
 
 	private:
 		union
@@ -232,6 +232,8 @@ namespace RenderDog
 		virtual const std::string&	GetFileName() const = 0;
 
 		virtual ShaderParam*		GetShaderParamPtrByName(const std::string& name) = 0;
+		virtual int					GetShaderResourceViewSlotByName(const std::string& name) = 0;
+		virtual int					GetSamplerStateSlotByName(const std::string& name) = 0;
 
 		virtual void				Apply(const ShaderPerObjParam* pPerObjParam = nullptr) = 0;
 	};

@@ -83,7 +83,7 @@ namespace RenderDog
 
 		virtual const IMaterial*		GetMaterial() const = 0;
 
-		virtual const MaterialParam&	GetMaterialParamByIndex(uint32_t index) const = 0;
+		virtual MaterialParam&			GetMaterialParamByIndex(uint32_t index) = 0;
 		virtual uint32_t				GetMaterialParamNum() const = 0;
 	};
 

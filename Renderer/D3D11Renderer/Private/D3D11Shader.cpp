@@ -32,6 +32,8 @@ namespace RenderDog
 		virtual const std::string&						GetFileName() const override { return m_fileName; }
 
 		virtual ShaderParam*							GetShaderParamPtrByName(const std::string& name) override;
+		virtual int										GetShaderResourceViewSlotByName(const std::string& name) override;
+		virtual int										GetSamplerStateSlotByName(const std::string& name) override;
 
 		bool											CompileFromFile(const ShaderCompileDesc& desc);
 
@@ -280,6 +282,32 @@ namespace RenderDog
 		else
 		{
 			return nullptr;
+		}
+	}
+
+	int D3D11Shader::GetShaderResourceViewSlotByName(const std::string& name)
+	{
+		auto srvIter = m_ShaderResourceViewMap.find(name);
+		if (srvIter != m_ShaderResourceViewMap.end())
+		{
+			return srvIter->second;
+		}
+		else
+		{
+			return -1;
+		}
+	}
+
+	int D3D11Shader::GetSamplerStateSlotByName(const std::string& name)
+	{
+		auto iter = m_SamplerStateMap.find(name);
+		if (iter != m_ShaderResourceViewMap.end())
+		{
+			return iter->second;
+		}
+		else
+		{
+			return -1;
 		}
 	}
 

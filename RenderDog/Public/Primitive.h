@@ -14,6 +14,7 @@ namespace RenderDog
 {
 	class	ITexture2D;
 	class	ISamplerState;
+	class   IMaterialInstance;
 	struct	BoundingSphere;
 	struct	AABB;
 
@@ -39,6 +40,8 @@ namespace RenderDog
 		IShader*			pShadowVS;
 		ShaderPerObjParam	PerObjParam;
 
+		IMaterialInstance*	pMtlIns;
+
 		PrimitiveRenderParam() :
 			pVB(nullptr),
 			pIB(nullptr),
@@ -48,7 +51,8 @@ namespace RenderDog
 			pNormalTextureSampler(nullptr),
 			pVS(nullptr),
 			pShadowVS(nullptr),
-			PerObjParam()
+			PerObjParam(),
+			pMtlIns(nullptr)
 		{}
 	};
 

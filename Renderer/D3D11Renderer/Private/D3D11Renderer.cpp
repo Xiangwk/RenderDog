@@ -19,6 +19,7 @@
 #include "Transform.h"
 #include "Shader.h"
 #include "GlobalValue.h"
+#include "Material.h"
 
 namespace RenderDog
 {
@@ -34,6 +35,9 @@ namespace RenderDog
 	public:
 		explicit D3D11MeshRenderer(SceneView* pSceneView);
 		virtual ~D3D11MeshRenderer();
+
+	protected:
+		void					ApplyMaterialParams(IMaterialInstance* pMtlIns, IShader* pShader);
 
 	protected:
 		SceneView*				m_pSceneView;
@@ -60,6 +64,60 @@ namespace RenderDog
 		{
 			m_pPixelShader->Release();
 			m_pPixelShader = nullptr;
+		}
+	}
+
+	void D3D11MeshRenderer::ApplyMaterialParams(IMaterialInstance* pMtlIns, IShader* pShader)
+	{
+		if (!pMtlIns || !pShader)
+		{
+			return;
+		}
+
+		uint32_t mtlParamNum = pMtlIns->GetMaterialParamNum();
+		for (uint32_t i = 0; i < mtlParamNum; ++i)
+		{
+			MaterialParam& param = pMtlIns->GetMaterialParamByIndex(i);
+			MATERIAL_PARAM_TYPE paramType = param.GetType();
+			switch (paramType)
+			{
+			case MATERIAL_PARAM_TYPE::UNKNOWN:
+				break;
+			case MATERIAL_PARAM_TYPE::SCALAR:
+			{
+				break;
+			}
+			case MATERIAL_PARAM_TYPE::VECTOR4:
+			{
+				break;
+			}
+			case MATERIAL_PARAM_TYPE::TEXTURE2D:
+			{
+				int slot = pShader->GetShaderResourceViewSlotByName(param.GetName());
+				if (slot == -1)
+				{
+					return;
+				}
+				ID3D11ShaderResourceView* pSRV = (ID3D11ShaderResourceView*)(param.GetTexture2D()->GetShaderResourceView());
+				g_pD3D11ImmediateContext->PSSetShaderResources((uint32_t)slot, 1, &pSRV);
+
+				break;
+			}
+			case MATERIAL_PARAM_TYPE::SAMPLER:
+			{
+				int slot = pShader->GetSamplerStateSlotByName(param.GetName());
+				if (slot == -1)
+				{
+					return;
+				}
+				ISamplerState* pSampler = param.GetSamplerState();
+				pSampler->SetToPixelShader((uint32_t)slot);
+
+				break;
+			}
+			default:
+				break;
+			}
 		}
 	}
 #pragma endregion MeshRenderer
@@ -275,61 +333,7 @@ namespace RenderDog
 
 		m_pPixelShader->Apply(nullptr);
 
-		//TODO!!! 参考这段代码添加设置材质参数的代码
-		//void D3D11MaterialShader::Apply(const ShaderPerObjParam* pPerObjParam/* = nullptr*/)
-		//{
-		//	D3D11PixelShader::Apply(pPerObjParam);
-
-		//	for (size_t i = 0; i < m_MaterialParams.size(); ++i)
-		//	{
-		//		ShaderParam& param = m_MaterialParams[i];
-
-		//		SHADER_PARAM_TYPE paramType = param.GetType();
-		//		switch (paramType)
-		//		{
-		//		case SHADER_PARAM_TYPE::UNKNOWN:
-		//			break;
-		//		case SHADER_PARAM_TYPE::FLOAT_SCALAR:
-		//		{
-		//			break;
-		//		}
-		//		case SHADER_PARAM_TYPE::FLOAT_VECTOR:
-		//		{
-		//			break;
-		//		}
-		//		case SHADER_PARAM_TYPE::MATRIX:
-		//		{
-		//			break;
-		//		}
-		//		case SHADER_PARAM_TYPE::TEXTURE:
-		//		{
-		//			auto srvIter = m_ShaderResourceViewMap.find(param.GetName());
-		//			if (srvIter == m_ShaderResourceViewMap.end())
-		//			{
-		//				return;
-		//			}
-		//			ID3D11ShaderResourceView* pSRV = (ID3D11ShaderResourceView*)(param.GetTexture()->GetShaderResourceView());
-		//			g_pD3D11ImmediateContext->PSSetShaderResources(srvIter->second, 1, &pSRV);
-
-		//			break;
-		//		}
-		//		case SHADER_PARAM_TYPE::SAMPLER:
-		//		{
-		//			auto samplerIter = m_SamplerStateMap.find(param.GetName());
-		//			ISamplerState* pSampler = param.GetSampler();
-		//			if (samplerIter == m_SamplerStateMap.end())
-		//			{
-		//				return;
-		//			}
-		//			pSampler->SetToPixelShader(samplerIter->second);
-
-		//			break;
-		//		}
-		//		default:
-		//			break;
-		//		}
-		//	}
-		//}
+		ApplyMaterialParams(renderParam.pMtlIns, m_pPixelShader);
 		
 		uint32_t indexNum = renderParam.pIB->GetIndexNum();
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
