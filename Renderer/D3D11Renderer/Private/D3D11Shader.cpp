@@ -301,7 +301,7 @@ namespace RenderDog
 	int D3D11Shader::GetSamplerStateSlotByName(const std::string& name)
 	{
 		auto iter = m_SamplerStateMap.find(name);
-		if (iter != m_ShaderResourceViewMap.end())
+		if (iter != m_SamplerStateMap.end())
 		{
 			return iter->second;
 		}
@@ -542,16 +542,22 @@ namespace RenderDog
 		{
 			return;
 		}
-		ID3D11ShaderResourceView* pDiffSRV = (ID3D11ShaderResourceView*)(m_DiffuseTextureParam.GetTexture()->GetShaderResourceView());
-		g_pD3D11ImmediateContext->PSSetShaderResources(srvIter->second, 1, &pDiffSRV);
-
+		if (m_DiffuseTextureParam.GetTexture())
+		{
+			ID3D11ShaderResourceView* pDiffSRV = (ID3D11ShaderResourceView*)(m_DiffuseTextureParam.GetTexture()->GetShaderResourceView());
+			g_pD3D11ImmediateContext->PSSetShaderResources(srvIter->second, 1, &pDiffSRV);
+		}
+		
 		samplerIter = m_SamplerStateMap.find(m_DiffuseTextureSamplerParam.GetName());
-		ISamplerState* pDiffSampler = m_DiffuseTextureSamplerParam.GetSampler();
 		if (samplerIter == m_SamplerStateMap.end())
 		{
 			return;
 		}
-		pDiffSampler->SetToPixelShader(samplerIter->second);
+		ISamplerState* pDiffSampler = m_DiffuseTextureSamplerParam.GetSampler();
+		if (pDiffSampler)
+		{
+			pDiffSampler->SetToPixelShader(samplerIter->second);
+		}
 
 		//NormalTexture
 		srvIter = m_ShaderResourceViewMap.find(m_NormalTextureParam.GetName());
@@ -559,16 +565,22 @@ namespace RenderDog
 		{
 			return;
 		}
-		ID3D11ShaderResourceView* pNormSRV = (ID3D11ShaderResourceView*)(m_NormalTextureParam.GetTexture()->GetShaderResourceView());
-		g_pD3D11ImmediateContext->PSSetShaderResources(srvIter->second, 1, &pNormSRV);
-
+		if (m_NormalTextureParam.GetTexture())
+		{
+			ID3D11ShaderResourceView* pNormSRV = (ID3D11ShaderResourceView*)(m_NormalTextureParam.GetTexture()->GetShaderResourceView());
+			g_pD3D11ImmediateContext->PSSetShaderResources(srvIter->second, 1, &pNormSRV);
+		}
+		
 		samplerIter = m_SamplerStateMap.find(m_NormalTextureSamplerParam.GetName());
-		ISamplerState* pNormSampler = m_NormalTextureSamplerParam.GetSampler();
 		if (samplerIter == m_SamplerStateMap.end())
 		{
 			return;
 		}
-		pNormSampler->SetToPixelShader(samplerIter->second);
+		ISamplerState* pNormSampler = m_NormalTextureSamplerParam.GetSampler();
+		if (pNormSampler)
+		{
+			pNormSampler->SetToPixelShader(samplerIter->second);
+		}
 
 		//ShadowTexture
 		srvIter = m_ShaderResourceViewMap.find(m_ShadowDepthTextureParam.GetName());

@@ -32,12 +32,22 @@ namespace RenderDog
 			m_ParamType(MATERIAL_PARAM_TYPE::UNKNOWN)
 		{}
 
+		MaterialParam(const std::string& name, MATERIAL_PARAM_TYPE type) :
+			m_Name(name),
+			m_ParamType(type)
+		{}
+
 		~MaterialParam() = default;
 
 		float*							GetScalar() { return pfloatValue; }
 		Vector4*						GetVector4() { return pVector4Value; }
 		ITexture2D*						GetTexture2D() { return pTexture2DValue; }
 		ISamplerState*					GetSamplerState() { return pSamplerState; }
+
+		void							SetScalar(float* pValue) { pfloatValue = pValue; }
+		void							SetVector4(Vector4* pValue) { pVector4Value = pValue; }
+		void							SetTexture2D(ITexture2D* pValue) { pTexture2DValue = pValue; }
+		void							SetSamplerState(ISamplerState* pValue) { pSamplerState = pValue; }
 
 		const std::string&				GetName() const { return m_Name; }
 		MATERIAL_PARAM_TYPE				GetType() const { return m_ParamType; }
@@ -55,6 +65,8 @@ namespace RenderDog
 		MATERIAL_PARAM_TYPE				m_ParamType;
 	};
 
+	extern MaterialParam INVALID_MATERIAL_PARAM;
+
 	class IMaterial
 	{
 	protected:
@@ -65,8 +77,10 @@ namespace RenderDog
 
 		virtual const std::string&		GetName() const = 0;
 
-		virtual MaterialParam			GetParamByName(const std::string& name) = 0;
-		virtual MaterialParam			GetParamByIndex(uint32_t index) = 0;
+		virtual void					AddParam(const MaterialParam& param) = 0;
+
+		virtual MaterialParam&			GetParamByName(const std::string& name) = 0;
+		virtual MaterialParam&			GetParamByIndex(uint32_t index) = 0;
 		virtual uint32_t				GetParamNum() const = 0;
 	};
 

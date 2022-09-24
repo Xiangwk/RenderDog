@@ -9,6 +9,7 @@
 #include "Shader.h"
 #include "Transform.h"
 #include "Utility.h"
+#include "Material.h"
 
 #include <unordered_map>
 
@@ -52,10 +53,11 @@ namespace RenderDog
 		m_Vertices(0),
 		m_Indices(0),
 		m_pRenderData(nullptr),
-		m_pDiffuseTexture(nullptr),
+		m_pMtlIns(nullptr),
+		/*m_pDiffuseTexture(nullptr),
 		m_pDiffuseTextureSampler(nullptr),
 		m_pNormalTexture(nullptr),
-		m_pNormalTextureSampler(nullptr),
+		m_pNormalTextureSampler(nullptr),*/
 		m_AABB()
 	{}
 
@@ -64,10 +66,11 @@ namespace RenderDog
 		m_Vertices(mesh.m_Vertices),
 		m_Indices(mesh.m_Indices),
 		m_pRenderData(nullptr),
-		m_pDiffuseTexture(nullptr),
+		m_pMtlIns(nullptr),
+		/*m_pDiffuseTexture(nullptr),
 		m_pDiffuseTextureSampler(nullptr),
 		m_pNormalTexture(nullptr),
-		m_pNormalTextureSampler(nullptr),
+		m_pNormalTextureSampler(nullptr),*/
 		m_AABB(mesh.m_AABB)
 	{
 		CloneRenderData(mesh);
@@ -78,10 +81,11 @@ namespace RenderDog
 		m_Vertices(0),
 		m_Indices(0),
 		m_pRenderData(nullptr),
-		m_pDiffuseTexture(nullptr),
+		m_pMtlIns(nullptr),
+		/*m_pDiffuseTexture(nullptr),
 		m_pDiffuseTextureSampler(nullptr),
 		m_pNormalTexture(nullptr),
-		m_pNormalTextureSampler(nullptr),
+		m_pNormalTextureSampler(nullptr),*/
 		m_AABB()
 	{}
 
@@ -117,10 +121,11 @@ namespace RenderDog
 		PrimitiveRenderParam renderParam = {};
 		renderParam.pVB								= m_pRenderData->pVB;
 		renderParam.pIB								= m_pRenderData->pIB;
-		renderParam.pDiffuseTexture					= m_pDiffuseTexture;
+		renderParam.pMtlIns							= m_pMtlIns;
+		/*renderParam.pDiffuseTexture					= m_pDiffuseTexture;
 		renderParam.pDiffuseTextureSampler			= m_pDiffuseTextureSampler;
 		renderParam.pNormalTexture					= m_pNormalTexture;
-		renderParam.pNormalTextureSampler			= m_pNormalTextureSampler;
+		renderParam.pNormalTextureSampler			= m_pNormalTextureSampler;*/
 		renderParam.pVS								= m_pRenderData->pVS;
 		renderParam.pShadowVS						= m_pRenderData->pShadowVS;
 		renderParam.PerObjParam.pPerObjectCB		= m_pRenderData->pLocalToWorldCB;
@@ -138,43 +143,62 @@ namespace RenderDog
 		m_Name = name;
 	}
 
-	bool SkinMesh::LoadTextureFromFile(const std::wstring& diffuseTexturePath, const std::wstring& normalTexturePath)
+	bool SkinMesh::LoadMaterialInsFromFile(const std::wstring& diffuseTexturePath, const std::wstring& normalTexturePath)
 	{
+		IMaterial* pMtl = g_pMaterialManager->GetMaterial("Basic.mtl");
+
 		if (!diffuseTexturePath.empty())
 		{
-			m_pDiffuseTexture = g_pITextureManager->CreateTexture2D(diffuseTexturePath);
-			if (!m_pDiffuseTexture)
+			ITexture2D* pDiffuseTexture = g_pITextureManager->CreateTexture2D(diffuseTexturePath);
+			if (!pDiffuseTexture)
 			{
 				return false;
 			}
+			MaterialParam DiffuseTextureParam("DiffuseTexture", MATERIAL_PARAM_TYPE::TEXTURE2D);
+			DiffuseTextureParam.SetTexture2D(pDiffuseTexture);
+			pMtl->AddParam(DiffuseTextureParam);
+
 
 			SamplerDesc samplerDesc = {};
 			samplerDesc.filterMode = SAMPLER_FILTER::LINEAR;
 			samplerDesc.addressMode = SAMPLER_ADDRESS::WRAP;
-			m_pDiffuseTextureSampler = g_pISamplerStateManager->CreateSamplerState(samplerDesc);
-			if (!m_pDiffuseTextureSampler)
+			ISamplerState* pDiffuseTextureSampler = g_pISamplerStateManager->CreateSamplerState(samplerDesc);
+			if (!pDiffuseTextureSampler)
 			{
 				return false;
 			}
+			MaterialParam DiffuseTextureSamplerParam("DiffuseTextureSampler", MATERIAL_PARAM_TYPE::SAMPLER);
+			DiffuseTextureSamplerParam.SetSamplerState(pDiffuseTextureSampler);
+			pMtl->AddParam(DiffuseTextureSamplerParam);
 		}
 
 		if (!normalTexturePath.empty())
 		{
-			m_pNormalTexture = g_pITextureManager->CreateTexture2D(normalTexturePath);
-			if (!m_pNormalTexture)
+			ITexture2D* pNormalTexture = g_pITextureManager->CreateTexture2D(normalTexturePath);
+			if (!pNormalTexture)
 			{
 				return false;
 			}
+			MaterialParam NormalTextureParam("NormalTexture", MATERIAL_PARAM_TYPE::TEXTURE2D);
+			NormalTextureParam.SetTexture2D(pNormalTexture);
+			pMtl->AddParam(NormalTextureParam);
 
 			SamplerDesc samplerDesc = {};
 			samplerDesc.filterMode = SAMPLER_FILTER::LINEAR;
 			samplerDesc.addressMode = SAMPLER_ADDRESS::WRAP;
-			m_pNormalTextureSampler = g_pISamplerStateManager->CreateSamplerState(samplerDesc);
-			if (!m_pNormalTextureSampler)
+			ISamplerState* pNormalTextureSampler = g_pISamplerStateManager->CreateSamplerState(samplerDesc);
+			if (!pNormalTextureSampler)
 			{
 				return false;
 			}
+			MaterialParam NormalTextureSamplerParam("NormalTextureSampler", MATERIAL_PARAM_TYPE::SAMPLER);
+			NormalTextureSamplerParam.SetSamplerState(pNormalTextureSampler);
+			pMtl->AddParam(NormalTextureSamplerParam);
 		}
+
+		m_pMtlIns = g_pMaterialManager->GetMaterialInstance(pMtl);
+
+		pMtl->Release();
 
 		return true;
 	}
@@ -439,7 +463,7 @@ namespace RenderDog
 			InitRenderData();
 		}
 
-		if (mesh.m_pDiffuseTexture)
+		/*if (mesh.m_pDiffuseTexture)
 		{
 			const std::wstring& diffTexName = mesh.m_pDiffuseTexture->GetName();
 			m_pDiffuseTexture = g_pITextureManager->CreateTexture2D(diffTexName);
@@ -459,7 +483,7 @@ namespace RenderDog
 			samplerDesc.filterMode = SAMPLER_FILTER::LINEAR;
 			samplerDesc.addressMode = SAMPLER_ADDRESS::WRAP;
 			m_pNormalTextureSampler = g_pISamplerStateManager->CreateSamplerState(samplerDesc);
-		}
+		}*/
 	}
 
 	void SkinMesh::ReleaseRenderData()
@@ -477,7 +501,13 @@ namespace RenderDog
 			m_pRenderData = nullptr;
 		}
 
-		if (m_pDiffuseTexture)
+		if (m_pMtlIns)
+		{
+			m_pMtlIns->Release();
+			m_pMtlIns = nullptr;
+		}
+
+		/*if (m_pDiffuseTexture)
 		{
 			m_pDiffuseTexture->Release();
 			m_pDiffuseTexture = nullptr;
@@ -499,7 +529,7 @@ namespace RenderDog
 		{
 			m_pNormalTextureSampler->Release();
 			m_pNormalTextureSampler = nullptr;
-		}
+		}*/
 	}
 
 	void SkinMesh::UpdateAABB(const Matrix4x4& absTransMatrix)

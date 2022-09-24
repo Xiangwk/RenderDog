@@ -54,8 +54,8 @@ namespace RenderDog
 		virtual const AABB&				GetAABB() const override { return m_AABB; }
 
 		void							LoadFromSkinData(const std::vector<SkinVertex>& vertices, const std::vector<uint32_t>& indices, const std::string& name);
-		
-		bool							LoadTextureFromFile(const std::wstring& diffuseTexturePath, const std::wstring& normalTexturePath);
+								
+		bool							LoadMaterialInsFromFile(const std::wstring& diffuseTexturePath, const std::wstring& normalTexturePath);
 
 		void							InitRenderData();
 
@@ -65,8 +65,8 @@ namespace RenderDog
 		void							CalcTangentsAndGenIndices(std::vector<SkinVertex>& rawVertices, const std::vector<uint32_t>& smoothGroup);
 		void							CalculateAABB();
 
-		ITexture2D*						GetDiffuseTexture() { return m_pDiffuseTexture; }
-		ISamplerState*					GetDiffuseSampler() { return m_pDiffuseTextureSampler; }
+		/*ITexture2D*						GetDiffuseTexture() { return m_pDiffuseTexture; }
+		ISamplerState*					GetDiffuseSampler() { return m_pDiffuseTextureSampler; }*/
 
 		void							Update(SkinModelPerObjectTransform& perModelTransform);
 
@@ -85,11 +85,13 @@ namespace RenderDog
 
 		SkinMeshRenderData*				m_pRenderData;
 
-		ITexture2D*						m_pDiffuseTexture;
+		IMaterialInstance*				m_pMtlIns;
+
+		/*ITexture2D*						m_pDiffuseTexture;
 		ISamplerState*					m_pDiffuseTextureSampler;
 
 		ITexture2D*						m_pNormalTexture;
-		ISamplerState*					m_pNormalTextureSampler;
+		ISamplerState*					m_pNormalTextureSampler;*/
 
 		AABB							m_AABB;
 	};

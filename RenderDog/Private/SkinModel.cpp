@@ -132,7 +132,7 @@ namespace RenderDog
 		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
 		{
 			SkinMesh& mesh = m_Meshes[i];
-			if (!mesh.LoadTextureFromFile(diffuseTexturePath, normalTexturePath))
+			if (!mesh.LoadMaterialInsFromFile(diffuseTexturePath, normalTexturePath))
 			{
 				return false;
 			}

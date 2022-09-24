@@ -7,12 +7,14 @@
 #include "Material.h"
 #include "RefCntObject.h"
 #include "Shader.h"
+#include "Texture.h"
 
 #include <vector>
 #include <unordered_map>
 
 namespace RenderDog
 {
+	MaterialParam INVALID_MATERIAL_PARAM = MaterialParam("InvalidParam", MATERIAL_PARAM_TYPE::UNKNOWN);
 	//================================================================
 	//						Material
 	//================================================================
@@ -25,7 +27,7 @@ namespace RenderDog
 	public:
 		Material(const std::string& name) :
 			RefCntObject(),
-			m_Name(""),
+			m_Name(name),
 			m_Params(0),
 			m_MtlInsId(0)
 		{}
@@ -34,13 +36,13 @@ namespace RenderDog
 		{}
 
 		virtual void					Release() override;
-		virtual const std::string&		GetName() const override { return m_Name; }
+		virtual const std::string& GetName() const override { return m_Name; }
 
-		virtual MaterialParam			GetParamByName(const std::string& name) override;
-		virtual MaterialParam			GetParamByIndex(uint32_t index) override;
+		virtual void					AddParam(const MaterialParam& param) override;
+
+		virtual MaterialParam& GetParamByName(const std::string& name) override;
+		virtual MaterialParam& GetParamByIndex(uint32_t index) override;
 		virtual uint32_t				GetParamNum() const override;
-
-		bool							AddParam(const MaterialParam& param);
 
 	private:
 		std::string						m_Name;
@@ -63,7 +65,7 @@ namespace RenderDog
 
 		MaterialInstance(IMaterial* pMtl);
 
-		virtual ~MaterialInstance() = default;
+		virtual ~MaterialInstance();
 
 		virtual void					Release() override;
 
@@ -115,7 +117,7 @@ namespace RenderDog
 		g_MaterialManager.ReleaseMaterial(this);
 	}
 
-	MaterialParam Material::GetParamByName(const std::string& name)
+	MaterialParam& Material::GetParamByName(const std::string& name)
 	{
 		for (size_t i = 0; i < m_Params.size(); ++i)
 		{
@@ -126,10 +128,10 @@ namespace RenderDog
 			}
 		}
 
-		return MaterialParam();
+		return INVALID_MATERIAL_PARAM;
 	}
 
-	MaterialParam Material::GetParamByIndex(uint32_t index)
+	MaterialParam& Material::GetParamByIndex(uint32_t index)
 	{
 		if (index < m_Params.size())
 		{
@@ -137,7 +139,7 @@ namespace RenderDog
 		}
 		else
 		{
-			return MaterialParam();
+			return INVALID_MATERIAL_PARAM;
 		}
 	}
 
@@ -146,16 +148,11 @@ namespace RenderDog
 		return (uint32_t)(m_Params.size());
 	}
 
-	bool Material::AddParam(const MaterialParam& param)
+	void Material::AddParam(const MaterialParam& param)
 	{
 		if (param.GetType() != MATERIAL_PARAM_TYPE::UNKNOWN)
 		{
 			m_Params.push_back(param);
-			return true;
-		}
-		else
-		{
-			return false;
 		}
 	}
 
@@ -174,6 +171,24 @@ namespace RenderDog
 		{
 			const MaterialParam& mtlParam = pMtl->GetParamByIndex(i);
 			m_Params.push_back(mtlParam);
+		}
+	}
+
+	MaterialInstance::~MaterialInstance()
+	{
+		for (size_t i = 0; i < m_Params.size(); ++i)
+		{
+			MaterialParam& param = m_Params[i];
+			if (param.GetType() == MATERIAL_PARAM_TYPE::TEXTURE2D)
+			{
+				ITexture2D* pTexture = param.GetTexture2D();
+				pTexture->Release();
+			}
+			if (param.GetType() == MATERIAL_PARAM_TYPE::SAMPLER)
+			{
+				ISamplerState* pSampler = param.GetSamplerState();
+				pSampler->Release();
+			}
 		}
 	}
 
@@ -212,7 +227,7 @@ namespace RenderDog
 
 	void MaterialManager::ReleaseMaterial(Material* pMaterial)
 	{
-		const std::string& matName = pMaterial->GetName();
+		std::string matName = pMaterial->GetName();
 		if (pMaterial->SubRef() == 0)
 		{
 			m_MaterialMap.erase(matName);
@@ -221,7 +236,7 @@ namespace RenderDog
 
 	void MaterialManager::ReleaseMaterialInstance(MaterialInstance* pMaterialIns)
 	{
-		const std::string& matName = pMaterialIns->GetName();
+		std::string matName = pMaterialIns->GetName();
 		if (pMaterialIns->SubRef() == 0)
 		{
 			m_MaterialInsMap.erase(matName);
