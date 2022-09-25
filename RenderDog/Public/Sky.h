@@ -16,12 +16,13 @@ namespace RenderDog
 	class IPrimitive;
 	class ITexture2D;
 	class ISamplerState;
+	class IMaterial;
 	class StaticMesh;
 
 	class SkyBox
 	{
 	public:
-		SkyBox(const std::wstring& texFilePath);
+		SkyBox(IMaterial* pMtl);
 		~SkyBox();
 
 		SkyBox(const SkyBox&) = delete;
@@ -31,11 +32,14 @@ namespace RenderDog
 
 		IPrimitive*			GetPrimitive() { return (IPrimitive*)m_pSkyMesh; }
 
-		ITexture2D*			GetCubeTexture() { return m_pSkyMesh->GetDiffuseTexture(); }
-		ISamplerState*		GetCubeTextureSampler() { return m_pSkyMesh->GetDiffuseSampler(); }
+		ITexture2D*			GetCubeTexture();
+		ISamplerState*		GetCubeTextureSampler();
 
 	private:
 		StaticMesh*			m_pSkyMesh;
+
+		ITexture2D*			m_pCubeTexture;
+		ISamplerState*		m_pSamplerState;
 	};
 
 }// namespace RenderDog

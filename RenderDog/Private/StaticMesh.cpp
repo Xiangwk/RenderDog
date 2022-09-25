@@ -8,6 +8,7 @@
 #include "Matrix.h"
 #include "Transform.h"
 #include "Utility.h"
+#include "Material.h"
 
 #include <unordered_map>
 
@@ -51,10 +52,7 @@ namespace RenderDog
 		m_Vertices(0),
 		m_Indices(0),
 		m_pRenderData(nullptr),
-		m_pDiffuseTexture(nullptr),
-		m_pDiffuseTextureSampler(nullptr),
-		m_pNormalTexture(nullptr),
-		m_pNormalTextureSampler(nullptr),
+		m_pMtlIns(nullptr),
 		m_AABB()
 	{}
 
@@ -63,10 +61,7 @@ namespace RenderDog
 		m_Vertices(mesh.m_Vertices),
 		m_Indices(mesh.m_Indices),
 		m_pRenderData(nullptr),
-		m_pDiffuseTexture(nullptr),
-		m_pDiffuseTextureSampler(nullptr),
-		m_pNormalTexture(nullptr),
-		m_pNormalTextureSampler(nullptr),
+		m_pMtlIns(nullptr),
 		m_AABB(mesh.m_AABB)
 	{
 		CloneRenderData(mesh);
@@ -77,10 +72,7 @@ namespace RenderDog
 		m_Vertices(0),
 		m_Indices(0),
 		m_pRenderData(nullptr),
-		m_pDiffuseTexture(nullptr),
-		m_pDiffuseTextureSampler(nullptr),
-		m_pNormalTexture(nullptr),
-		m_pNormalTextureSampler(nullptr),
+		m_pMtlIns(nullptr),
 		m_AABB()
 	{}
 
@@ -116,10 +108,7 @@ namespace RenderDog
 		PrimitiveRenderParam renderParam = {};
 		renderParam.pVB							= m_pRenderData->pVB;
 		renderParam.pIB							= m_pRenderData->pIB;
-		renderParam.pDiffuseTexture				= m_pDiffuseTexture;
-		renderParam.pDiffuseTextureSampler		= m_pDiffuseTextureSampler;
-		renderParam.pNormalTexture				= m_pNormalTexture;
-		renderParam.pNormalTextureSampler		= m_pNormalTextureSampler;
+		renderParam.pMtlIns						= m_pMtlIns;
 		renderParam.pVS							= m_pRenderData->pVS;
 		renderParam.pShadowVS					= m_pRenderData->pShadowVS;
 		renderParam.PerObjParam.pPerObjectCB	= m_pRenderData->pLocalToWorldCB;
@@ -136,43 +125,9 @@ namespace RenderDog
 		m_Name = name;
 	}
 
-	bool StaticMesh::LoadTextureFromFile(const std::wstring& diffuseTexturePath, const std::wstring& normalTexturePath)
+	bool StaticMesh::CreateMaterialInstance(IMaterial* pMtl)
 	{
-		if (!diffuseTexturePath.empty())
-		{
-			m_pDiffuseTexture = g_pITextureManager->CreateTexture2D(diffuseTexturePath);
-			if (!m_pDiffuseTexture)
-			{
-				return false;
-			}
-
-			SamplerDesc samplerDesc = {};
-			samplerDesc.filterMode = SAMPLER_FILTER::LINEAR;
-			samplerDesc.addressMode = SAMPLER_ADDRESS::WRAP;
-			m_pDiffuseTextureSampler = g_pISamplerStateManager->CreateSamplerState(samplerDesc);
-			if (!m_pDiffuseTextureSampler)
-			{
-				return false;
-			}
-		}
-
-		if (!normalTexturePath.empty())
-		{
-			m_pNormalTexture = g_pITextureManager->CreateTexture2D(normalTexturePath);
-			if (!m_pNormalTexture)
-			{
-				return false;
-			}
-
-			SamplerDesc samplerDesc = {};
-			samplerDesc.filterMode = SAMPLER_FILTER::LINEAR;
-			samplerDesc.addressMode = SAMPLER_ADDRESS::WRAP;
-			m_pNormalTextureSampler = g_pISamplerStateManager->CreateSamplerState(samplerDesc);
-			if (!m_pNormalTextureSampler)
-			{
-				return false;
-			}
-		}
+		m_pMtlIns = g_pMaterialManager->GetMaterialInstance(pMtl);
 
 		return true;
 	}
@@ -224,28 +179,10 @@ namespace RenderDog
 			m_pRenderData = nullptr;
 		}
 
-		if (m_pDiffuseTexture)
+		if (m_pMtlIns)
 		{
-			m_pDiffuseTexture->Release();
-			m_pDiffuseTexture = nullptr;
-		}
-
-		if (m_pDiffuseTextureSampler)
-		{
-			m_pDiffuseTextureSampler->Release();
-			m_pDiffuseTextureSampler = nullptr;
-		}
-
-		if (m_pNormalTexture)
-		{
-			m_pNormalTexture->Release();
-			m_pNormalTexture = nullptr;
-		}
-
-		if (m_pNormalTextureSampler)
-		{
-			m_pNormalTextureSampler->Release();
-			m_pNormalTextureSampler = nullptr;
+			m_pMtlIns->Release();
+			m_pMtlIns = nullptr;
 		}
 	}
 
@@ -463,26 +400,10 @@ namespace RenderDog
 			InitRenderData();
 		}
 
-		if (mesh.m_pDiffuseTexture)
+		if (mesh.m_pMtlIns)
 		{
-			const std::wstring& diffTexName = mesh.m_pDiffuseTexture->GetName();
-			m_pDiffuseTexture = g_pITextureManager->CreateTexture2D(diffTexName);
-
-			SamplerDesc samplerDesc = {};
-			samplerDesc.filterMode = SAMPLER_FILTER::LINEAR;
-			samplerDesc.addressMode = SAMPLER_ADDRESS::WRAP;
-			m_pDiffuseTextureSampler = g_pISamplerStateManager->CreateSamplerState(samplerDesc);
-		}
-
-		if (mesh.m_pNormalTexture)
-		{
-			const std::wstring& normTexName = mesh.m_pNormalTexture->GetName();
-			m_pNormalTexture = g_pITextureManager->CreateTexture2D(normTexName);
-
-			SamplerDesc samplerDesc = {};
-			samplerDesc.filterMode = SAMPLER_FILTER::LINEAR;
-			samplerDesc.addressMode = SAMPLER_ADDRESS::WRAP;
-			m_pNormalTextureSampler = g_pISamplerStateManager->CreateSamplerState(samplerDesc);
+			IMaterial* pMtl = mesh.m_pMtlIns->GetMaterial();
+			m_pMtlIns = g_pMaterialManager->GetMaterialInstance(pMtl);
 		}
 	}
 

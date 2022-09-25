@@ -37,9 +37,6 @@ namespace RenderDog
 		virtual ~D3D11MeshRenderer();
 
 	protected:
-		void					ApplyMaterialParams(IMaterialInstance* pMtlIns, IShader* pShader);
-
-	protected:
 		SceneView*				m_pSceneView;
 
 		IShader*				m_pVertexShader;
@@ -64,60 +61,6 @@ namespace RenderDog
 		{
 			m_pPixelShader->Release();
 			m_pPixelShader = nullptr;
-		}
-	}
-
-	void D3D11MeshRenderer::ApplyMaterialParams(IMaterialInstance* pMtlIns, IShader* pShader)
-	{
-		if (!pMtlIns || !pShader)
-		{
-			return;
-		}
-
-		uint32_t mtlParamNum = pMtlIns->GetMaterialParamNum();
-		for (uint32_t i = 0; i < mtlParamNum; ++i)
-		{
-			MaterialParam& param = pMtlIns->GetMaterialParamByIndex(i);
-			MATERIAL_PARAM_TYPE paramType = param.GetType();
-			switch (paramType)
-			{
-			case MATERIAL_PARAM_TYPE::UNKNOWN:
-				break;
-			case MATERIAL_PARAM_TYPE::SCALAR:
-			{
-				break;
-			}
-			case MATERIAL_PARAM_TYPE::VECTOR4:
-			{
-				break;
-			}
-			case MATERIAL_PARAM_TYPE::TEXTURE2D:
-			{
-				int slot = pShader->GetShaderResourceViewSlotByName(param.GetName());
-				if (slot == -1)
-				{
-					return;
-				}
-				ID3D11ShaderResourceView* pSRV = (ID3D11ShaderResourceView*)(param.GetTexture2D()->GetShaderResourceView());
-				g_pD3D11ImmediateContext->PSSetShaderResources((uint32_t)slot, 1, &pSRV);
-
-				break;
-			}
-			case MATERIAL_PARAM_TYPE::SAMPLER:
-			{
-				int slot = pShader->GetSamplerStateSlotByName(param.GetName());
-				if (slot == -1)
-				{
-					return;
-				}
-				ISamplerState* pSampler = param.GetSamplerState();
-				pSampler->SetToPixelShader((uint32_t)slot);
-
-				break;
-			}
-			default:
-				break;
-			}
 		}
 	}
 #pragma endregion MeshRenderer
@@ -183,6 +126,9 @@ namespace RenderDog
 		virtual ~D3D11SkyRenderer();
 
 		virtual void					Render(const PrimitiveRenderParam& renderParam) override;
+
+	protected:
+		void							ApplyMaterialParams(IMaterialInstance* pMtlIns);
 	};
 
 	D3D11SkyRenderer::D3D11SkyRenderer(SceneView* pSceneView) :
@@ -224,14 +170,29 @@ namespace RenderDog
 
 		m_pVertexShader->Apply(&renderParam.PerObjParam);
 
-		ShaderParam* pSkyCubeTextureParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Texture_SkyCubeTexture");
-		pSkyCubeTextureParam->SetTexture(renderParam.pDiffuseTexture);
+		ApplyMaterialParams(renderParam.pMtlIns);
 
-		ShaderParam* pSkyCubeTextureSamplerParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Texture_SkyCubeTextureSampler");
-		pSkyCubeTextureSamplerParam->SetSampler(renderParam.pDiffuseTextureSampler);
 		m_pPixelShader->Apply(nullptr);
 
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
+	}
+
+	void D3D11SkyRenderer::ApplyMaterialParams(IMaterialInstance* pMtlIns)
+	{
+		for (uint32_t i = 0; i < pMtlIns->GetMaterialParamNum(); ++i)
+		{
+			MaterialParam& param = pMtlIns->GetMaterialParamByIndex(i);
+			if (param.GetType() == MATERIAL_PARAM_TYPE::TEXTURE2D)
+			{
+				ShaderParam* pSkyCubeTextureParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Texture_SkyCubeTexture");
+				pSkyCubeTextureParam->SetTexture(param.GetTexture2D());
+			}
+			else if (param.GetType() == MATERIAL_PARAM_TYPE::SAMPLER)
+			{
+				ShaderParam* pSkyCubeTextureSamplerParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Texture_SkyCubeTextureSampler");
+				pSkyCubeTextureSamplerParam->SetSampler(param.GetSamplerState());
+			}
+		}
 	}
 
 #pragma endregion SkyMeshRenderer
@@ -261,6 +222,9 @@ namespace RenderDog
 		virtual ~D3D11MeshLightingRenderer();
 
 		virtual void					Render(const PrimitiveRenderParam& renderParam) override;
+
+	protected:
+		void							ApplyMaterialParams(IMaterialInstance* pMtlIns, IShader* pShader);
 
 	protected:
 		ITexture2D*						m_pShadowDepthTexture;
@@ -313,27 +277,15 @@ namespace RenderDog
 		ShaderParam* pSkyCubeTextureSamplerParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Texture_SkyCubeTextureSampler");
 		pSkyCubeTextureSamplerParam->SetSampler(m_pEnvReflectionTextureSampler);
 
-		ShaderParam* pDiffuseTextureParam = m_pPixelShader->GetShaderParamPtrByName("DiffuseTexture");
-		pDiffuseTextureParam->SetTexture(renderParam.pDiffuseTexture);
-
-		ShaderParam* pDiffuseTextureSamplerParam = m_pPixelShader->GetShaderParamPtrByName("DiffuseTextureSampler");
-		pDiffuseTextureSamplerParam->SetSampler(renderParam.pDiffuseTextureSampler);
-
-		ShaderParam* pNormalTextureParam = m_pPixelShader->GetShaderParamPtrByName("NormalTexture");
-		pNormalTextureParam->SetTexture(renderParam.pNormalTexture);
-
-		ShaderParam* pNormalTextureSamplerParam = m_pPixelShader->GetShaderParamPtrByName("NormalTextureSampler");
-		pNormalTextureSamplerParam->SetSampler(renderParam.pNormalTextureSampler);
-
 		ShaderParam* pShadowDepthTextureParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Texture_ShadowDepthTexture");
 		pShadowDepthTextureParam->SetTexture(m_pShadowDepthTexture);
 
 		ShaderParam* pShadowDepthTextureSamplerParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Texture_ShadowDepthTextureSampler");
 		pShadowDepthTextureSamplerParam->SetSampler(m_pShadowDepthTextureSampler);
 
-		m_pPixelShader->Apply(nullptr);
-
 		ApplyMaterialParams(renderParam.pMtlIns, m_pPixelShader);
+
+		m_pPixelShader->Apply(nullptr);
 		
 		uint32_t indexNum = renderParam.pIB->GetIndexNum();
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
@@ -341,6 +293,51 @@ namespace RenderDog
 		//Unbind ShadowDepthSRV
 		ID3D11ShaderResourceView* nullRes[] = { nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr };
 		g_pD3D11ImmediateContext->PSSetShaderResources(1, 8, nullRes);
+	}
+
+	void D3D11MeshLightingRenderer::ApplyMaterialParams(IMaterialInstance* pMtlIns, IShader* pShader)
+	{
+		if (!pMtlIns || !pShader)
+		{
+			return;
+		}
+
+		uint32_t mtlParamNum = pMtlIns->GetMaterialParamNum();
+		for (uint32_t i = 0; i < mtlParamNum; ++i)
+		{
+			MaterialParam& param = pMtlIns->GetMaterialParamByIndex(i);
+			MATERIAL_PARAM_TYPE paramType = param.GetType();
+			const std::string& paramName = param.GetName();
+			switch (paramType)
+			{
+			case MATERIAL_PARAM_TYPE::UNKNOWN:
+				break;
+			case MATERIAL_PARAM_TYPE::SCALAR:
+			{
+				break;
+			}
+			case MATERIAL_PARAM_TYPE::VECTOR4:
+			{
+				break;
+			}
+			case MATERIAL_PARAM_TYPE::TEXTURE2D:
+			{
+				ShaderParam* pTextureParam = m_pPixelShader->GetShaderParamPtrByName(paramName);
+				pTextureParam->SetTexture(param.GetTexture2D());
+
+				break;
+			}
+			case MATERIAL_PARAM_TYPE::SAMPLER:
+			{
+				ShaderParam* pSamplerParam = m_pPixelShader->GetShaderParamPtrByName(paramName);
+				pSamplerParam->SetSampler(param.GetSamplerState());
+
+				break;
+			}
+			default:
+				break;
+			}
+		}
 	}
 #pragma endregion MeshLightingRenderer
 

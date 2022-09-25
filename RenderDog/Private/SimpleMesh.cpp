@@ -60,8 +60,7 @@ namespace RenderDog
 		PrimitiveRenderParam renderParam = {};
 		renderParam.pVB							= m_pRenderData->pVB;
 		renderParam.pIB							= m_pRenderData->pIB;
-		renderParam.pDiffuseTexture				= nullptr;
-		renderParam.pDiffuseTextureSampler		= nullptr;
+		renderParam.pMtlIns						= nullptr;
 		renderParam.pVS							= m_pRenderData->pVS;
 		renderParam.PerObjParam.pPerObjectCB	= m_pRenderData->pLocalToWorldCB;
 

@@ -18,6 +18,7 @@
 namespace RenderDog
 {
 	class	Matrix4x4;
+	class   IMaterial;
 
 	struct StaticMeshRenderData
 	{
@@ -55,7 +56,7 @@ namespace RenderDog
 		virtual const AABB&				GetAABB() const override { return m_AABB; }
 
 		void							LoadFromStandardData(const std::vector<StandardVertex>& vertices, const std::vector<uint32_t>& indices, const std::string& name);
-		bool							LoadTextureFromFile(const std::wstring& diffuseTexturePath, const std::wstring& normalTexturePath);
+		bool							CreateMaterialInstance(IMaterial* pMtl);
 
 		void							InitRenderData();
 
@@ -65,8 +66,7 @@ namespace RenderDog
 		void							CalcTangentsAndGenIndices(std::vector<StandardVertex>& rawVertices, const std::vector<uint32_t>& smoothGroup);
 		void							CalculateAABB();
 
-		ITexture2D*						GetDiffuseTexture() { return m_pDiffuseTexture; }
-		ISamplerState*					GetDiffuseSampler() { return m_pDiffuseTextureSampler; }
+		IMaterialInstance*				GetMaterialInstance() const { return m_pMtlIns; }
 
 	private:
 		void							CloneRenderData(const StaticMesh& mesh);
@@ -82,11 +82,7 @@ namespace RenderDog
 
 		StaticMeshRenderData*			m_pRenderData;
 
-		ITexture2D*						m_pDiffuseTexture;
-		ISamplerState*					m_pDiffuseTextureSampler;
-
-		ITexture2D*						m_pNormalTexture;
-		ISamplerState*					m_pNormalTextureSampler;
+		IMaterialInstance*				m_pMtlIns;
 
 		AABB							m_AABB;
 	};

@@ -36,7 +36,8 @@ ModelViewer::ModelViewer() :
 	m_LastMousePosY(0),
 	m_bShowUnitGrid(true),
 	m_bModelMoved(false),
-	m_pBasicMaterial(nullptr)
+	m_pBasicMaterial(nullptr),
+	m_pSkyMaterial(nullptr)
 {
 	memset(m_Keys, 0, sizeof(int) * 512);
 }
@@ -87,19 +88,20 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 		return false;
 	}
 
+	m_pBasicMaterial = CreateBasicMaterial("Basic.mtl");
+	m_pSkyMaterial = CreateSkyMaterial("Sky.mtl");
+
 	if (!LoadFloor(10, 10, 100.0f))
 	{
 		MessageBox(nullptr, "Load Floor Failed!", "ERROR", MB_OK);
 		return false;
 	}
 
-	if (!LoadSkyBox(L"EngineAsset/Textures/Snowcube1024.dds"))
+	if (!LoadSkyBox())
 	{
 		MessageBox(nullptr, "Load Sky Failed!", "ERROR", MB_OK);
 		return false;
 	}
-
-	m_pBasicMaterial = CreateMaterial("Basic.mtl");
 
 #if MODEL_VIEWER_LOAD_STATIC_MODEL
 	if (!LoadFbxModel("Models/Crunch/Crunch_Crash_Site.FBX", LOAD_MODEL_TYPE::CUSTOM_STATIC, m_pBasicMaterial))
@@ -162,6 +164,12 @@ void ModelViewer::Release()
 	{
 		m_pBasicMaterial->Release();
 		m_pBasicMaterial = nullptr;
+	}
+
+	if (m_pSkyMaterial)
+	{
+		m_pSkyMaterial->Release();
+		m_pSkyMaterial = nullptr;
 	}
 
 	if (m_pStaticModel)
@@ -333,7 +341,7 @@ bool ModelViewer::LoadFloor(uint32_t width, uint32_t depth, float unit)
 	RenderDog::g_pGeometryGenerator->GenerateGrid(width, depth, unit, GridMeshData);
 	m_pFloor = new RenderDog::StaticModel();
 	m_pFloor->LoadFromStandardData(GridMeshData.vertices, GridMeshData.indices, "MainSceneFloor");
-	if (!m_pFloor->LoadTextureFromFile(L"EngineAsset/Textures/White_diff.dds", L"EngineAsset/Textures/FlatNormal_norm.dds"))
+	if (!m_pFloor->CreateMaterialInstance(m_pBasicMaterial))
 	{
 		MessageBox(nullptr, "Load Texture Failed!", "ERROR", MB_OK);
 		return false;
@@ -344,9 +352,9 @@ bool ModelViewer::LoadFloor(uint32_t width, uint32_t depth, float unit)
 	return true;
 }
 
-bool ModelViewer::LoadSkyBox(const std::wstring& texFileName)
+bool ModelViewer::LoadSkyBox()
 {
-	m_pSkyBox = new RenderDog::SkyBox(texFileName);
+	m_pSkyBox = new RenderDog::SkyBox(m_pSkyMaterial);
 
 	return true;
 }
@@ -360,7 +368,7 @@ bool ModelViewer::LoadFbxModel(const std::string& fileName, LOAD_MODEL_TYPE mode
 		RenderDog::GeometryGenerator::StandardMeshData SphereMeshData;
 		RenderDog::g_pGeometryGenerator->GenerateSphere(50, 50, 50, SphereMeshData);
 		m_pStaticModel->LoadFromStandardData(SphereMeshData.vertices, SphereMeshData.indices, "Sphere");
-		if (!m_pStaticModel->LoadTextureFromFile(L"EngineAsset/Textures/ErrorTexture_diff.dds", L"EngineAsset/Textures/FlatNormal_norm.dds"))
+		if (!m_pStaticModel->CreateMaterialInstance(m_pBasicMaterial))
 		{
 			MessageBox(nullptr, "Load Texture Failed!", "ERROR", MB_OK);
 			return false;
@@ -386,7 +394,7 @@ bool ModelViewer::LoadFbxModel(const std::string& fileName, LOAD_MODEL_TYPE mode
 			return false;
 		}
 
-		if (!m_pStaticModel->LoadTextureFromFile(L"EngineAsset/Textures/White_diff.dds", L"EngineAsset/Textures/FlatNormal_norm.dds"))
+		if (!m_pStaticModel->CreateMaterialInstance(m_pBasicMaterial))
 		{
 			MessageBox(nullptr, "Load Texture Failed!", "ERROR", MB_OK);
 			return false;
@@ -456,7 +464,7 @@ bool ModelViewer::LoadFbxAnimation(const std::string& fileName, RenderDog::SkinM
 	return true;
 }
 
-RenderDog::IMaterial* ModelViewer::CreateMaterial(const std::string& mtlName)
+RenderDog::IMaterial* ModelViewer::CreateBasicMaterial(const std::string& mtlName)
 {
 	RenderDog::IMaterial* pMtl = RenderDog::g_pMaterialManager->GetMaterial(mtlName);
 
@@ -484,6 +492,65 @@ RenderDog::IMaterial* ModelViewer::CreateMaterial(const std::string& mtlName)
 			return nullptr;
 		}
 		RenderDog::MaterialParam DiffuseTextureSamplerParam("DiffuseTextureSampler", RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
+		DiffuseTextureSamplerParam.SetSamplerState(pDiffuseTextureSampler);
+		pMtl->AddParam(DiffuseTextureSamplerParam);
+	}
+
+	if (!normalTexturePath.empty())
+	{
+		RenderDog::ITexture2D* pNormalTexture = RenderDog::g_pITextureManager->CreateTexture2D(normalTexturePath);
+		if (!pNormalTexture)
+		{
+			return nullptr;
+		}
+		RenderDog::MaterialParam NormalTextureParam("NormalTexture", RenderDog::MATERIAL_PARAM_TYPE::TEXTURE2D);
+		NormalTextureParam.SetTexture2D(pNormalTexture);
+		pMtl->AddParam(NormalTextureParam);
+
+		RenderDog::SamplerDesc samplerDesc = {};
+		samplerDesc.filterMode = RenderDog::SAMPLER_FILTER::LINEAR;
+		samplerDesc.addressMode = RenderDog::SAMPLER_ADDRESS::WRAP;
+		RenderDog::ISamplerState* pNormalTextureSampler = RenderDog::g_pISamplerStateManager->CreateSamplerState(samplerDesc);
+		if (!pNormalTextureSampler)
+		{
+			return nullptr;
+		}
+		RenderDog::MaterialParam NormalTextureSamplerParam("NormalTextureSampler", RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
+		NormalTextureSamplerParam.SetSamplerState(pNormalTextureSampler);
+		pMtl->AddParam(NormalTextureSamplerParam);
+	}
+
+	return pMtl;
+}
+
+RenderDog::IMaterial* ModelViewer::CreateSkyMaterial(const std::string& mtlName)
+{
+	RenderDog::IMaterial* pMtl = RenderDog::g_pMaterialManager->GetMaterial(mtlName);
+
+	std::wstring diffuseTexturePath = L"EngineAsset/Textures/Snowcube1024.dds";
+	std::wstring normalTexturePath = L"";
+
+	if (!diffuseTexturePath.empty())
+	{
+		RenderDog::ITexture2D* pDiffuseTexture = RenderDog::g_pITextureManager->CreateTexture2D(diffuseTexturePath);
+		if (!pDiffuseTexture)
+		{
+			return nullptr;
+		}
+		RenderDog::MaterialParam DiffuseTextureParam("ComVar_Texture_SkyCubeTexture", RenderDog::MATERIAL_PARAM_TYPE::TEXTURE2D);
+		DiffuseTextureParam.SetTexture2D(pDiffuseTexture);
+		pMtl->AddParam(DiffuseTextureParam);
+
+
+		RenderDog::SamplerDesc samplerDesc = {};
+		samplerDesc.filterMode = RenderDog::SAMPLER_FILTER::LINEAR;
+		samplerDesc.addressMode = RenderDog::SAMPLER_ADDRESS::WRAP;
+		RenderDog::ISamplerState* pDiffuseTextureSampler = RenderDog::g_pISamplerStateManager->CreateSamplerState(samplerDesc);
+		if (!pDiffuseTextureSampler)
+		{
+			return nullptr;
+		}
+		RenderDog::MaterialParam DiffuseTextureSamplerParam("ComVar_Texture_SkyCubeTextureSampler", RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
 		DiffuseTextureSamplerParam.SetSamplerState(pDiffuseTextureSampler);
 		pMtl->AddParam(DiffuseTextureSamplerParam);
 	}

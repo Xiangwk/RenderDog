@@ -30,12 +30,6 @@ namespace RenderDog
 		IVertexBuffer*		pVB;
 		IIndexBuffer*		pIB;
 
-		ITexture2D*			pDiffuseTexture;
-		ISamplerState*		pDiffuseTextureSampler;
-
-		ITexture2D*			pNormalTexture;
-		ISamplerState*		pNormalTextureSampler;
-
 		IShader*			pVS;
 		IShader*			pShadowVS;
 		ShaderPerObjParam	PerObjParam;
@@ -45,10 +39,6 @@ namespace RenderDog
 		PrimitiveRenderParam() :
 			pVB(nullptr),
 			pIB(nullptr),
-			pDiffuseTexture(nullptr),
-			pDiffuseTextureSampler(nullptr),
-			pNormalTexture(nullptr),
-			pNormalTextureSampler(nullptr),
 			pVS(nullptr),
 			pShadowVS(nullptr),
 			PerObjParam(),

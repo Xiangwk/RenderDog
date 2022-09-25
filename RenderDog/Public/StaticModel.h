@@ -14,6 +14,7 @@
 namespace RenderDog
 {
 	class IScene;
+	class IMaterial;
 
 	class StaticModel
 	{
@@ -31,7 +32,7 @@ namespace RenderDog
 		bool						LoadFromRawMeshData(const std::vector<RDFbxImporter::RawMeshData>& rawMeshDatas,
 														const std::string& fileName);
 
-		bool						LoadTextureFromFile(const std::wstring& diffuseTexturePath, const std::wstring& normalTexturePath);
+		bool						CreateMaterialInstance(IMaterial* pMtl);
 		
 		void						RegisterToScene(IScene* pScene);
 
