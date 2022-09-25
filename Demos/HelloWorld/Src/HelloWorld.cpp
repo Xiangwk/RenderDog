@@ -28,7 +28,9 @@ DemoApp::DemoApp():
 	m_pMainLight(nullptr),
 	m_pGameTimer(nullptr),
 	m_LastMousePosX(0),
-	m_LastMousePosY(0)
+	m_LastMousePosY(0),
+	m_pBasicMaterial(nullptr),
+	m_pGeneratorMaterial(nullptr)
 {
 	memset(m_Keys, 0, sizeof(int) * 512);
 }
@@ -79,6 +81,9 @@ bool DemoApp::Init(const DemoInitDesc& desc)
 		return false;
 	}
 
+	m_pBasicMaterial = CreateBasicMaterial("Basic.mtl");
+	m_pGeneratorMaterial = CreateGeneratorMaterial("Generator.mtl");
+
 	if (!LoadModel("Models/generator/Generator.FBX", LOAD_MODEL_TYPE::CUSTOM_STATIC))
 	{
 		MessageBox(nullptr, "Load Model Failed!", "ERROR", MB_OK);
@@ -111,6 +116,18 @@ void DemoApp::Release()
 	{
 		delete m_pGridLine;
 		m_pGridLine = nullptr;
+	}
+
+	if (m_pBasicMaterial)
+	{
+		m_pBasicMaterial->Release();
+		m_pBasicMaterial = nullptr;
+	}
+
+	if (m_pGeneratorMaterial)
+	{
+		m_pGeneratorMaterial->Release();
+		m_pGeneratorMaterial = nullptr;
 	}
 
 	if (m_pModel)
@@ -262,7 +279,7 @@ bool DemoApp::LoadModel(const std::string& fileName, LOAD_MODEL_TYPE modelType)
 		RenderDog::GeometryGenerator::StandardMeshData SphereMeshData;
 		RenderDog::g_pGeometryGenerator->GenerateSphere(50, 50, 50, SphereMeshData);
 		m_pModel->LoadFromStandardData(SphereMeshData.vertices, SphereMeshData.indices, "Sphere");
-		if (!m_pModel->LoadTextureFromFile(L"EngineAsset/Textures/ErrorTexture_diff.dds", L"EngineAsset/Textures/FlatNormal_norm.dds"))
+		if (!m_pModel->CreateMaterialInstance(m_pBasicMaterial))
 		{
 			MessageBox(nullptr, "Load Texture Failed!", "ERROR", MB_OK);
 			return false;
@@ -284,7 +301,7 @@ bool DemoApp::LoadModel(const std::string& fileName, LOAD_MODEL_TYPE modelType)
 			return false;
 		}
 
-		if (!m_pModel->LoadTextureFromFile(L"EngineAsset/Textures/White_diff.dds", L"Models/Generator/Textures/PolybumpTangent_norm.tga"))
+		if (!m_pModel->CreateMaterialInstance(m_pGeneratorMaterial))
 		{
 			MessageBox(nullptr, "Load Texture Failed!", "ERROR", MB_OK);
 			return false;
@@ -299,6 +316,124 @@ bool DemoApp::LoadModel(const std::string& fileName, LOAD_MODEL_TYPE modelType)
 	m_pModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
 
 	return true;
+}
+
+RenderDog::IMaterial* DemoApp::CreateBasicMaterial(const std::string& mtlName)
+{
+	RenderDog::IMaterial* pMtl = RenderDog::g_pMaterialManager->GetMaterial(mtlName);
+
+	std::wstring diffuseTexturePath = L"EngineAsset/Textures/ErrorTexture_diff.dds";
+	std::wstring normalTexturePath = L"EngineAsset/Textures/FlatNormal_norm.dds";
+
+	if (!diffuseTexturePath.empty())
+	{
+		RenderDog::ITexture2D* pDiffuseTexture = RenderDog::g_pITextureManager->CreateTexture2D(diffuseTexturePath);
+		if (!pDiffuseTexture)
+		{
+			return nullptr;
+		}
+		RenderDog::MaterialParam DiffuseTextureParam("DiffuseTexture", RenderDog::MATERIAL_PARAM_TYPE::TEXTURE2D);
+		DiffuseTextureParam.SetTexture2D(pDiffuseTexture);
+		pMtl->AddParam(DiffuseTextureParam);
+
+
+		RenderDog::SamplerDesc samplerDesc = {};
+		samplerDesc.filterMode = RenderDog::SAMPLER_FILTER::LINEAR;
+		samplerDesc.addressMode = RenderDog::SAMPLER_ADDRESS::WRAP;
+		RenderDog::ISamplerState* pDiffuseTextureSampler = RenderDog::g_pISamplerStateManager->CreateSamplerState(samplerDesc);
+		if (!pDiffuseTextureSampler)
+		{
+			return nullptr;
+		}
+		RenderDog::MaterialParam DiffuseTextureSamplerParam("DiffuseTextureSampler", RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
+		DiffuseTextureSamplerParam.SetSamplerState(pDiffuseTextureSampler);
+		pMtl->AddParam(DiffuseTextureSamplerParam);
+	}
+
+	if (!normalTexturePath.empty())
+	{
+		RenderDog::ITexture2D* pNormalTexture = RenderDog::g_pITextureManager->CreateTexture2D(normalTexturePath);
+		if (!pNormalTexture)
+		{
+			return nullptr;
+		}
+		RenderDog::MaterialParam NormalTextureParam("NormalTexture", RenderDog::MATERIAL_PARAM_TYPE::TEXTURE2D);
+		NormalTextureParam.SetTexture2D(pNormalTexture);
+		pMtl->AddParam(NormalTextureParam);
+
+		RenderDog::SamplerDesc samplerDesc = {};
+		samplerDesc.filterMode = RenderDog::SAMPLER_FILTER::LINEAR;
+		samplerDesc.addressMode = RenderDog::SAMPLER_ADDRESS::WRAP;
+		RenderDog::ISamplerState* pNormalTextureSampler = RenderDog::g_pISamplerStateManager->CreateSamplerState(samplerDesc);
+		if (!pNormalTextureSampler)
+		{
+			return nullptr;
+		}
+		RenderDog::MaterialParam NormalTextureSamplerParam("NormalTextureSampler", RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
+		NormalTextureSamplerParam.SetSamplerState(pNormalTextureSampler);
+		pMtl->AddParam(NormalTextureSamplerParam);
+	}
+
+	return pMtl;
+}
+
+RenderDog::IMaterial* DemoApp::CreateGeneratorMaterial(const std::string& mtlName)
+{
+	RenderDog::IMaterial* pMtl = RenderDog::g_pMaterialManager->GetMaterial(mtlName);
+
+	std::wstring diffuseTexturePath = L"EngineAsset/Textures/White_diff.dds";
+	std::wstring normalTexturePath = L"Models/Generator/Textures/PolybumpTangent_norm.tga";
+
+	if (!diffuseTexturePath.empty())
+	{
+		RenderDog::ITexture2D* pDiffuseTexture = RenderDog::g_pITextureManager->CreateTexture2D(diffuseTexturePath);
+		if (!pDiffuseTexture)
+		{
+			return nullptr;
+		}
+		RenderDog::MaterialParam DiffuseTextureParam("DiffuseTexture", RenderDog::MATERIAL_PARAM_TYPE::TEXTURE2D);
+		DiffuseTextureParam.SetTexture2D(pDiffuseTexture);
+		pMtl->AddParam(DiffuseTextureParam);
+
+
+		RenderDog::SamplerDesc samplerDesc = {};
+		samplerDesc.filterMode = RenderDog::SAMPLER_FILTER::LINEAR;
+		samplerDesc.addressMode = RenderDog::SAMPLER_ADDRESS::WRAP;
+		RenderDog::ISamplerState* pDiffuseTextureSampler = RenderDog::g_pISamplerStateManager->CreateSamplerState(samplerDesc);
+		if (!pDiffuseTextureSampler)
+		{
+			return nullptr;
+		}
+		RenderDog::MaterialParam DiffuseTextureSamplerParam("DiffuseTextureSampler", RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
+		DiffuseTextureSamplerParam.SetSamplerState(pDiffuseTextureSampler);
+		pMtl->AddParam(DiffuseTextureSamplerParam);
+	}
+
+	if (!normalTexturePath.empty())
+	{
+		RenderDog::ITexture2D* pNormalTexture = RenderDog::g_pITextureManager->CreateTexture2D(normalTexturePath);
+		if (!pNormalTexture)
+		{
+			return nullptr;
+		}
+		RenderDog::MaterialParam NormalTextureParam("NormalTexture", RenderDog::MATERIAL_PARAM_TYPE::TEXTURE2D);
+		NormalTextureParam.SetTexture2D(pNormalTexture);
+		pMtl->AddParam(NormalTextureParam);
+
+		RenderDog::SamplerDesc samplerDesc = {};
+		samplerDesc.filterMode = RenderDog::SAMPLER_FILTER::LINEAR;
+		samplerDesc.addressMode = RenderDog::SAMPLER_ADDRESS::WRAP;
+		RenderDog::ISamplerState* pNormalTextureSampler = RenderDog::g_pISamplerStateManager->CreateSamplerState(samplerDesc);
+		if (!pNormalTextureSampler)
+		{
+			return nullptr;
+		}
+		RenderDog::MaterialParam NormalTextureSamplerParam("NormalTextureSampler", RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
+		NormalTextureSamplerParam.SetSamplerState(pNormalTextureSampler);
+		pMtl->AddParam(NormalTextureSamplerParam);
+	}
+
+	return pMtl;
 }
 
 void DemoApp::Update()

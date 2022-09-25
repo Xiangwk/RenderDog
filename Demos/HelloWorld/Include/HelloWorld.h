@@ -14,6 +14,7 @@
 #include "SimpleModel.h"
 #include "StaticModel.h"
 #include "GameTimer.h"
+#include "Material.h"
 
 struct DemoInitDesc
 {
@@ -44,6 +45,9 @@ public:
 private:
 	bool						LoadModel(const std::string& fileName, LOAD_MODEL_TYPE modelType);
 
+	RenderDog::IMaterial*		CreateBasicMaterial(const std::string& mtlName);
+	RenderDog::IMaterial*		CreateGeneratorMaterial(const std::string& mtlName);
+
 	void						Update();
 
 	void						CalculateFrameStats();
@@ -70,6 +74,9 @@ private:
 
 	int							m_LastMousePosX;
 	int							m_LastMousePosY;
+
+	RenderDog::IMaterial*		m_pBasicMaterial;
+	RenderDog::IMaterial*		m_pGeneratorMaterial;
 };
 
 extern DemoApp* g_pHelloWorldDemo;

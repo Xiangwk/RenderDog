@@ -270,12 +270,16 @@ namespace RenderDog
 		virtual ~SRSamplerState();
 
 		virtual void			Release() override;
+
+		virtual SamplerDesc		GetDesc() const override { return m_Desc; }
 		
 		virtual void			SetToVertexShader(uint32_t startSlot) override;
 		virtual void			SetToPixelShader(uint32_t startSlot) override;
 
 	private:
 		ISRSamplerState*		m_pSamplerState;
+
+		SamplerDesc				m_Desc;
 	};
 
 	//==================================================
@@ -300,11 +304,13 @@ namespace RenderDog
 	//		Function Implementation
 	//==================================================
 	SRSamplerState::SRSamplerState() :
-		m_pSamplerState(nullptr)
+		m_pSamplerState(nullptr),
+		m_Desc()
 	{}
 
 	SRSamplerState::SRSamplerState(const SamplerDesc& desc):
-		m_pSamplerState(nullptr)
+		m_pSamplerState(nullptr),
+		m_Desc(desc)
 	{
 		SRSamplerDesc samplerDesc = {};
 		if (desc.filterMode == SAMPLER_FILTER::POINT)

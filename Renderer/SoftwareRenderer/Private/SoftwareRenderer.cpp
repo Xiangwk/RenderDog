@@ -15,6 +15,7 @@
 #include "Primitive.h"
 #include "Texture.h"
 #include "Scene.h"
+#include "Material.h"
 
 namespace RenderDog
 {
@@ -126,6 +127,9 @@ namespace RenderDog
 		virtual ~SoftwareMeshLightingRenderer();
 
 		virtual void				Render(const PrimitiveRenderParam& renderParam) override;
+
+	protected:
+		void						ApplyMaterialParam(IMaterialInstance* pMtlIns);
 	};
 
 	SoftwareMeshLightingRenderer::SoftwareMeshLightingRenderer(const MeshLightingGlobalData& globalData) :
@@ -164,15 +168,62 @@ namespace RenderDog
 
 		renderParam.pVS->Apply(&renderParam.PerObjParam);
 
-		ShaderParam* pNormalTextureParam = m_pPixelShader->GetShaderParamPtrByName("NormalTexture");
-		pNormalTextureParam->SetTexture(renderParam.pNormalTexture);
-
-		ShaderParam* pNormalTextureSamplerParam = m_pPixelShader->GetShaderParamPtrByName("NormalTextureSampler");
-		pNormalTextureSamplerParam->SetSampler(renderParam.pNormalTextureSampler);
+		ApplyMaterialParam(renderParam.pMtlIns);
 
 		m_pPixelShader->Apply();
 
 		g_pSRImmediateContext->DrawIndex(indexNum);
+	}
+
+	void SoftwareMeshLightingRenderer::ApplyMaterialParam(IMaterialInstance* pMtlIns)
+	{
+		if (!pMtlIns)
+		{
+			return;
+		}
+
+		uint32_t mtlParamNum = pMtlIns->GetMaterialParamNum();
+		for (uint32_t i = 0; i < mtlParamNum; ++i)
+		{
+			MaterialParam& param = pMtlIns->GetMaterialParamByIndex(i);
+			MATERIAL_PARAM_TYPE paramType = param.GetType();
+			const std::string& paramName = param.GetName();
+			switch (paramType)
+			{
+			case MATERIAL_PARAM_TYPE::UNKNOWN:
+				break;
+			case MATERIAL_PARAM_TYPE::SCALAR:
+			{
+				break;
+			}
+			case MATERIAL_PARAM_TYPE::VECTOR4:
+			{
+				break;
+			}
+			case MATERIAL_PARAM_TYPE::TEXTURE2D:
+			{
+				ShaderParam* pTextureParam = m_pPixelShader->GetShaderParamPtrByName(paramName);
+				pTextureParam->SetTexture(param.GetTexture2D());
+
+				break;
+			}
+			case MATERIAL_PARAM_TYPE::SAMPLER:
+			{
+				ShaderParam* pSamplerParam = m_pPixelShader->GetShaderParamPtrByName(paramName);
+				pSamplerParam->SetSampler(param.GetSamplerState());
+
+				break;
+			}
+			default:
+				break;
+			}
+		}
+
+		/*ShaderParam* pNormalTextureParam = m_pPixelShader->GetShaderParamPtrByName("NormalTexture");
+		pNormalTextureParam->SetTexture(renderParam.pNormalTexture);
+
+		ShaderParam* pNormalTextureSamplerParam = m_pPixelShader->GetShaderParamPtrByName("NormalTextureSampler");
+		pNormalTextureSamplerParam->SetSampler(renderParam.pNormalTextureSampler);*/
 	}
 
 	//===========================================================

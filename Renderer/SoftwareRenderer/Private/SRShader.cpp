@@ -67,6 +67,8 @@ namespace RenderDog
 	private:
 		ISRPixelShader*				m_pPS;
 
+		ShaderParam					m_DiffuseTextureParam;
+		ShaderParam					m_DiffuseTextureSamplerParam;
 		ShaderParam					m_NormalTextureParam;
 		ShaderParam					m_NormalTextureSamplerParam;
 	};
@@ -162,11 +164,15 @@ namespace RenderDog
 	SRPixelShader::SRPixelShader(const ShaderCompileDesc& desc) :
 		SRShader(desc),
 		m_pPS(nullptr),
+		m_DiffuseTextureParam("DiffuseTexture", SHADER_PARAM_TYPE::TEXTURE),
+		m_DiffuseTextureSamplerParam("DiffuseTextureSampler", SHADER_PARAM_TYPE::SAMPLER),
 		m_NormalTextureParam("NormalTexture", SHADER_PARAM_TYPE::TEXTURE),
 		m_NormalTextureSamplerParam("NormalTextureSampler", SHADER_PARAM_TYPE::SAMPLER)
 	{
 		g_pSRDevice->CreatePixelShader(&m_pPS);
 
+		m_ShaderParamMap.insert({ "DiffuseTexture", &m_DiffuseTextureParam });
+		m_ShaderParamMap.insert({ "DiffuseTextureSampler", &m_DiffuseTextureSamplerParam });
 		m_ShaderParamMap.insert({ "NormalTexture", &m_NormalTextureParam });
 		m_ShaderParamMap.insert({ "NormalTextureSampler", &m_NormalTextureSamplerParam });
 	}
