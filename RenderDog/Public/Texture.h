@@ -114,6 +114,16 @@ namespace RenderDog
 			borderColor[2] = 0.0f;
 			borderColor[3] = 0.0f;
 		}
+
+		SamplerDesc(const SamplerDesc& desc) :
+			filterMode(desc.filterMode),
+			addressMode(desc.addressMode)
+		{
+			for (int i = 0; i < 4; ++i)
+			{
+				borderColor[i] = desc.borderColor[i];
+			}
+		}
 	};
 
 	class ISamplerState
@@ -123,6 +133,8 @@ namespace RenderDog
 
 	public:
 		virtual void			Release() = 0;
+
+		virtual SamplerDesc		GetDesc() const = 0;
 
 		virtual void			SetToVertexShader(uint32_t startSlot) = 0;
 		virtual void			SetToPixelShader(uint32_t startSlot) = 0;

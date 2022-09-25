@@ -18,6 +18,8 @@
 
 namespace RenderDog
 {
+	class IMaterial;
+
 	struct SkinMeshRenderData
 	{
 		IVertexBuffer*		pVB;
@@ -55,7 +57,7 @@ namespace RenderDog
 
 		void							LoadFromSkinData(const std::vector<SkinVertex>& vertices, const std::vector<uint32_t>& indices, const std::string& name);
 								
-		bool							LoadMaterialInsFromFile(const std::wstring& diffuseTexturePath, const std::wstring& normalTexturePath);
+		bool							CreateMaterialInstance(IMaterial* pMtl);
 
 		void							InitRenderData();
 
@@ -64,9 +66,6 @@ namespace RenderDog
 										//传入该函数的顶点数组必须保证其顶点为拆散的顶点，即顶点数为三角形数乘以3
 		void							CalcTangentsAndGenIndices(std::vector<SkinVertex>& rawVertices, const std::vector<uint32_t>& smoothGroup);
 		void							CalculateAABB();
-
-		/*ITexture2D*						GetDiffuseTexture() { return m_pDiffuseTexture; }
-		ISamplerState*					GetDiffuseSampler() { return m_pDiffuseTextureSampler; }*/
 
 		void							Update(SkinModelPerObjectTransform& perModelTransform);
 
@@ -86,12 +85,6 @@ namespace RenderDog
 		SkinMeshRenderData*				m_pRenderData;
 
 		IMaterialInstance*				m_pMtlIns;
-
-		/*ITexture2D*						m_pDiffuseTexture;
-		ISamplerState*					m_pDiffuseTextureSampler;
-
-		ITexture2D*						m_pNormalTexture;
-		ISamplerState*					m_pNormalTextureSampler;*/
 
 		AABB							m_AABB;
 	};

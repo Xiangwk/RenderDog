@@ -15,6 +15,7 @@
 #include "SkinModel.h"
 #include "Sky.h"
 #include "GameTimer.h"
+#include "Material.h"
 
 struct ModelViewerInitDesc
 {
@@ -45,8 +46,11 @@ public:
 private:
 	bool						LoadFloor(uint32_t width, uint32_t depth, float unit);
 	bool						LoadSkyBox(const std::wstring& texFileName);
-	bool						LoadFbxModel(const std::string& fileName, LOAD_MODEL_TYPE modelType);
+	bool						LoadFbxModel(const std::string& fileName, LOAD_MODEL_TYPE modelType, RenderDog::IMaterial* pMtl);
 	bool						LoadFbxAnimation(const std::string& fileName, RenderDog::SkinModel* pSkinModel);
+
+	//FIXME!!! 这里只是临时添加此函数，后续应将此函数转移到Model相关的类中
+	RenderDog::IMaterial*		CreateMaterial(const std::string& mtlName);
 
 	void						Update();
 	void						RegisterObjectToScene();
@@ -80,6 +84,8 @@ private:
 
 	bool						m_bShowUnitGrid;
 	bool						m_bModelMoved;
+
+	RenderDog::IMaterial*		m_pBasicMaterial;
 };
 
 extern ModelViewer* g_pModelViewer;

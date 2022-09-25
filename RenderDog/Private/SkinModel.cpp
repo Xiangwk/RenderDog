@@ -11,6 +11,7 @@
 #include "Skeleton.h"
 #include "Bone.h"
 #include "Shader.h"
+#include "Material.h"
 
 namespace RenderDog
 {
@@ -127,12 +128,12 @@ namespace RenderDog
 		return true;
 	}
 
-	bool SkinModel::LoadTextureFromFile(const std::wstring& diffuseTexturePath, const std::wstring& normalTexturePath)
+	bool SkinModel::CreateMaterialInstance(IMaterial* pMtl)
 	{
 		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
 		{
 			SkinMesh& mesh = m_Meshes[i];
-			if (!mesh.LoadMaterialInsFromFile(diffuseTexturePath, normalTexturePath))
+			if (!mesh.CreateMaterialInstance(pMtl))
 			{
 				return false;
 			}

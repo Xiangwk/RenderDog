@@ -35,7 +35,8 @@ ModelViewer::ModelViewer() :
 	m_LastMousePosX(0),
 	m_LastMousePosY(0),
 	m_bShowUnitGrid(true),
-	m_bModelMoved(false)
+	m_bModelMoved(false),
+	m_pBasicMaterial(nullptr)
 {
 	memset(m_Keys, 0, sizeof(int) * 512);
 }
@@ -98,8 +99,10 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 		return false;
 	}
 
+	m_pBasicMaterial = CreateMaterial("Basic.mtl");
+
 #if MODEL_VIEWER_LOAD_STATIC_MODEL
-	if (!LoadFbxModel("Models/Crunch/Crunch_Crash_Site.FBX", LOAD_MODEL_TYPE::CUSTOM_STATIC))
+	if (!LoadFbxModel("Models/Crunch/Crunch_Crash_Site.FBX", LOAD_MODEL_TYPE::CUSTOM_STATIC, m_pBasicMaterial))
 	{
 		MessageBox(nullptr, "Load Static Model Failed!", "ERROR", MB_OK);
 		return false;
@@ -108,7 +111,7 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 #endif //MODEL_VIEWER_LOAD_STATIC_MODEL
 
 #if MODEL_VIEWER_LOAD_SKIN_MODEL
-	if (!LoadFbxModel("Models/Crunch/Crunch_Crash_Site.FBX", LOAD_MODEL_TYPE::CUSTOM_SKIN))
+	if (!LoadFbxModel("Models/Crunch/Crunch_Crash_Site.FBX", LOAD_MODEL_TYPE::CUSTOM_SKIN, m_pBasicMaterial))
 	{
 		MessageBox(nullptr, "Load Skin Model Failed!", "ERROR", MB_OK);
 		return false;
@@ -153,6 +156,12 @@ void ModelViewer::Release()
 	{
 		delete m_pFloor;
 		m_pFloor = nullptr;
+	}
+
+	if (m_pBasicMaterial)
+	{
+		m_pBasicMaterial->Release();
+		m_pBasicMaterial = nullptr;
 	}
 
 	if (m_pStaticModel)
@@ -342,7 +351,7 @@ bool ModelViewer::LoadSkyBox(const std::wstring& texFileName)
 	return true;
 }
 
-bool ModelViewer::LoadFbxModel(const std::string& fileName, LOAD_MODEL_TYPE modelType)
+bool ModelViewer::LoadFbxModel(const std::string& fileName, LOAD_MODEL_TYPE modelType, RenderDog::IMaterial* pMtl)
 {
 	if (modelType == LOAD_MODEL_TYPE::STANDARD)
 	{
@@ -405,7 +414,7 @@ bool ModelViewer::LoadFbxModel(const std::string& fileName, LOAD_MODEL_TYPE mode
 			return false;
 		}
 
-		if (!m_pSkinModel->LoadTextureFromFile(L"EngineAsset/Textures/White_diff.dds", L"EngineAsset/Textures/FlatNormal_norm.dds"))
+		if (!m_pSkinModel->CreateMaterialInstance(m_pBasicMaterial))
 		{
 			MessageBox(nullptr, "Load Texture Failed!", "ERROR", MB_OK);
 			return false;
@@ -445,6 +454,65 @@ bool ModelViewer::LoadFbxAnimation(const std::string& fileName, RenderDog::SkinM
 	}
 
 	return true;
+}
+
+RenderDog::IMaterial* ModelViewer::CreateMaterial(const std::string& mtlName)
+{
+	RenderDog::IMaterial* pMtl = RenderDog::g_pMaterialManager->GetMaterial(mtlName);
+
+	std::wstring diffuseTexturePath = L"EngineAsset/Textures/White_diff.dds";
+	std::wstring normalTexturePath = L"EngineAsset/Textures/FlatNormal_norm.dds";
+
+	if (!diffuseTexturePath.empty())
+	{
+		RenderDog::ITexture2D* pDiffuseTexture = RenderDog::g_pITextureManager->CreateTexture2D(diffuseTexturePath);
+		if (!pDiffuseTexture)
+		{
+			return nullptr;
+		}
+		RenderDog::MaterialParam DiffuseTextureParam("DiffuseTexture", RenderDog::MATERIAL_PARAM_TYPE::TEXTURE2D);
+		DiffuseTextureParam.SetTexture2D(pDiffuseTexture);
+		pMtl->AddParam(DiffuseTextureParam);
+
+
+		RenderDog::SamplerDesc samplerDesc = {};
+		samplerDesc.filterMode = RenderDog::SAMPLER_FILTER::LINEAR;
+		samplerDesc.addressMode = RenderDog::SAMPLER_ADDRESS::WRAP;
+		RenderDog::ISamplerState* pDiffuseTextureSampler = RenderDog::g_pISamplerStateManager->CreateSamplerState(samplerDesc);
+		if (!pDiffuseTextureSampler)
+		{
+			return nullptr;
+		}
+		RenderDog::MaterialParam DiffuseTextureSamplerParam("DiffuseTextureSampler", RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
+		DiffuseTextureSamplerParam.SetSamplerState(pDiffuseTextureSampler);
+		pMtl->AddParam(DiffuseTextureSamplerParam);
+	}
+
+	if (!normalTexturePath.empty())
+	{
+		RenderDog::ITexture2D* pNormalTexture = RenderDog::g_pITextureManager->CreateTexture2D(normalTexturePath);
+		if (!pNormalTexture)
+		{
+			return nullptr;
+		}
+		RenderDog::MaterialParam NormalTextureParam("NormalTexture", RenderDog::MATERIAL_PARAM_TYPE::TEXTURE2D);
+		NormalTextureParam.SetTexture2D(pNormalTexture);
+		pMtl->AddParam(NormalTextureParam);
+
+		RenderDog::SamplerDesc samplerDesc = {};
+		samplerDesc.filterMode = RenderDog::SAMPLER_FILTER::LINEAR;
+		samplerDesc.addressMode = RenderDog::SAMPLER_ADDRESS::WRAP;
+		RenderDog::ISamplerState* pNormalTextureSampler = RenderDog::g_pISamplerStateManager->CreateSamplerState(samplerDesc);
+		if (!pNormalTextureSampler)
+		{
+			return nullptr;
+		}
+		RenderDog::MaterialParam NormalTextureSamplerParam("NormalTextureSampler", RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
+		NormalTextureSamplerParam.SetSamplerState(pNormalTextureSampler);
+		pMtl->AddParam(NormalTextureSamplerParam);
+	}
+
+	return pMtl;
 }
 
 void ModelViewer::Update()

@@ -295,11 +295,14 @@ namespace RenderDog
 
 		virtual void			Release() override;
 
+		virtual SamplerDesc		GetDesc() const override;
+
 		virtual void			SetToVertexShader(uint32_t startSlot) override;
 		virtual void			SetToPixelShader(uint32_t startSlot) override;
 
 	private:
 		ID3D11SamplerState*		m_pSamplerState;
+		SamplerDesc				m_Desc;
 	};
 
 	//==================================================
@@ -324,11 +327,13 @@ namespace RenderDog
 	//		Function Implementation
 	//==================================================
 	D3D11SamplerState::D3D11SamplerState():
-		m_pSamplerState(nullptr)
+		m_pSamplerState(nullptr),
+		m_Desc()
 	{}
 
 	D3D11SamplerState::D3D11SamplerState(const SamplerDesc& desc):
-		m_pSamplerState(nullptr)
+		m_pSamplerState(nullptr),
+		m_Desc(desc)
 	{
 		D3D11_SAMPLER_DESC samplerDesc = {};
 		if (desc.filterMode == SAMPLER_FILTER::POINT)
@@ -389,6 +394,11 @@ namespace RenderDog
 	void D3D11SamplerState::Release()
 	{
 		g_D3D11SamplerStateManager.ReleaseSamplerState(this);
+	}
+
+	SamplerDesc	D3D11SamplerState::GetDesc() const
+	{
+		return m_Desc;
 	}
 
 	void D3D11SamplerState::SetToVertexShader(uint32_t startSlot)

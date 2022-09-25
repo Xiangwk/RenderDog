@@ -33,15 +33,30 @@ namespace RenderDog
 		{}
 
 		virtual ~Material()
-		{}
+		{
+			for (size_t i = 0; i < m_Params.size(); ++i)
+			{
+				MaterialParam& param = m_Params[i];
+				if (param.GetType() == MATERIAL_PARAM_TYPE::TEXTURE2D)
+				{
+					ITexture2D* pTexture = param.GetTexture2D();
+					pTexture->Release();
+				}
+				if (param.GetType() == MATERIAL_PARAM_TYPE::SAMPLER)
+				{
+					ISamplerState* pSampler = param.GetSamplerState();
+					pSampler->Release();
+				}
+			}
+		}
 
 		virtual void					Release() override;
-		virtual const std::string& GetName() const override { return m_Name; }
+		virtual const std::string&		GetName() const override { return m_Name; }
 
 		virtual void					AddParam(const MaterialParam& param) override;
 
-		virtual MaterialParam& GetParamByName(const std::string& name) override;
-		virtual MaterialParam& GetParamByIndex(uint32_t index) override;
+		virtual MaterialParam&			GetParamByName(const std::string& name) override;
+		virtual MaterialParam&			GetParamByIndex(uint32_t index) override;
 		virtual uint32_t				GetParamNum() const override;
 
 	private:
@@ -71,7 +86,7 @@ namespace RenderDog
 
 		virtual const std::string&		GetName() const override { return m_Name; }
 
-		virtual const IMaterial*		GetMaterial() const { return m_pMaterial; }
+		virtual IMaterial*				GetMaterial() const { return m_pMaterial; }
 
 		virtual MaterialParam&			GetMaterialParamByIndex(uint32_t index) { return m_Params[index]; }
 		virtual uint32_t				GetMaterialParamNum() const { return (uint32_t)(m_Params.size()); }
@@ -163,14 +178,46 @@ namespace RenderDog
 	{
 		Material* pRealMtl = (Material*)pMtl;
 		int mtlInsId = pRealMtl->m_MtlInsId;
+		pRealMtl->m_MtlInsId++;
 
 		std::string mtlInsName = pMtl->GetName() + "_" + std::to_string(mtlInsId);
 		m_Name = mtlInsName;
 
 		for (uint32_t i = 0; i < pMtl->GetParamNum(); ++i)
 		{
-			const MaterialParam& mtlParam = pMtl->GetParamByIndex(i);
-			m_Params.push_back(mtlParam);
+			MaterialParam& mtlParam = pMtl->GetParamByIndex(i);
+
+			switch (mtlParam.GetType())
+			{
+			case MATERIAL_PARAM_TYPE::TEXTURE2D:
+			{
+				ITexture2D* pTexture = mtlParam.GetTexture2D();
+				const std::wstring& textureFileName = pTexture->GetName();
+
+				ITexture2D* pNewTexture = RenderDog::g_pITextureManager->CreateTexture2D(textureFileName);
+				RenderDog::MaterialParam newTextureParam(mtlParam.GetName(), RenderDog::MATERIAL_PARAM_TYPE::TEXTURE2D);
+				newTextureParam.SetTexture2D(pNewTexture);
+
+				m_Params.push_back(newTextureParam);
+
+				break;
+			}
+			case MATERIAL_PARAM_TYPE::SAMPLER:
+			{
+				ISamplerState* pSampler = mtlParam.GetSamplerState();
+				SamplerDesc desc = pSampler->GetDesc();
+
+				RenderDog::ISamplerState* pNewSampler = RenderDog::g_pISamplerStateManager->CreateSamplerState(desc);
+				RenderDog::MaterialParam newSamplerParam(mtlParam.GetName(), RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
+				newSamplerParam.SetSamplerState(pNewSampler);
+
+				m_Params.push_back(newSamplerParam);
+
+				break;
+			}
+			default:
+				break;
+			}
 		}
 	}
 

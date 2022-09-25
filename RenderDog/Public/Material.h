@@ -95,7 +95,7 @@ namespace RenderDog
 
 		virtual const std::string&		GetName() const = 0;
 
-		virtual const IMaterial*		GetMaterial() const = 0;
+		virtual IMaterial*				GetMaterial() const = 0;
 
 		virtual MaterialParam&			GetMaterialParamByIndex(uint32_t index) = 0;
 		virtual uint32_t				GetMaterialParamNum() const = 0;

@@ -15,6 +15,7 @@
 namespace RenderDog
 {
 	class Skeleton;
+	class IMaterial;
 
 	class SkinModel
 	{
@@ -33,7 +34,7 @@ namespace RenderDog
 		bool							LoadBoneAnimation(const RDFbxImporter::RawAnimation& rawAnimation);
 
 
-		bool							LoadTextureFromFile(const std::wstring& diffuseTexturePath, const std::wstring& normalTexturePath);
+		bool							CreateMaterialInstance(IMaterial* pMtl);
 
 		void							RegisterToScene(IScene* pScene);
 
