@@ -224,9 +224,6 @@ namespace RenderDog
 		virtual void					Render(const PrimitiveRenderParam& renderParam) override;
 
 	protected:
-		void							ApplyMaterialParams(IMaterialInstance* pMtlIns, IShader* pShader);
-
-	protected:
 		ITexture2D*						m_pShadowDepthTexture;
 		ISamplerState*					m_pShadowDepthTextureSampler;
 		ITexture2D*						m_pEnvReflectionTexture;
@@ -283,9 +280,8 @@ namespace RenderDog
 		ShaderParam* pShadowDepthTextureSamplerParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Texture_ShadowDepthTextureSampler");
 		pShadowDepthTextureSamplerParam->SetSampler(m_pShadowDepthTextureSampler);
 
-		ApplyMaterialParams(renderParam.pMtlIns, m_pPixelShader);
-
 		m_pPixelShader->Apply(nullptr);
+		m_pPixelShader->ApplyMaterialParams(renderParam.pMtlIns);
 		
 		uint32_t indexNum = renderParam.pIB->GetIndexNum();
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
@@ -293,51 +289,6 @@ namespace RenderDog
 		//Unbind ShadowDepthSRV
 		ID3D11ShaderResourceView* nullRes[] = { nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr };
 		g_pD3D11ImmediateContext->PSSetShaderResources(1, 8, nullRes);
-	}
-
-	void D3D11MeshLightingRenderer::ApplyMaterialParams(IMaterialInstance* pMtlIns, IShader* pShader)
-	{
-		if (!pMtlIns || !pShader)
-		{
-			return;
-		}
-
-		uint32_t mtlParamNum = pMtlIns->GetMaterialParamNum();
-		for (uint32_t i = 0; i < mtlParamNum; ++i)
-		{
-			MaterialParam& param = pMtlIns->GetMaterialParamByIndex(i);
-			MATERIAL_PARAM_TYPE paramType = param.GetType();
-			const std::string& paramName = param.GetName();
-			switch (paramType)
-			{
-			case MATERIAL_PARAM_TYPE::UNKNOWN:
-				break;
-			case MATERIAL_PARAM_TYPE::SCALAR:
-			{
-				break;
-			}
-			case MATERIAL_PARAM_TYPE::VECTOR4:
-			{
-				break;
-			}
-			case MATERIAL_PARAM_TYPE::TEXTURE2D:
-			{
-				ShaderParam* pTextureParam = m_pPixelShader->GetShaderParamPtrByName(paramName);
-				pTextureParam->SetTexture(param.GetTexture2D());
-
-				break;
-			}
-			case MATERIAL_PARAM_TYPE::SAMPLER:
-			{
-				ShaderParam* pSamplerParam = m_pPixelShader->GetShaderParamPtrByName(paramName);
-				pSamplerParam->SetSampler(param.GetSamplerState());
-
-				break;
-			}
-			default:
-				break;
-			}
-		}
 	}
 #pragma endregion MeshLightingRenderer
 

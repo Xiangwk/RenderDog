@@ -12,6 +12,7 @@
 #include "Texture.h"
 #include "Matrix.h"
 #include "GlobalValue.h"
+#include "Material.h"
 
 #include <fstream>
 #include <d3d11.h>
@@ -63,6 +64,8 @@ namespace RenderDog
 
 		virtual void				Apply(const ShaderPerObjParam* pPerObjParam = nullptr) override;
 
+		virtual void				ApplyMaterialParams(IMaterialInstance* pMtlIns) override {};
+
 	private:
 		ID3D11VertexShader*			m_pVS;
 		D3D11InputLayout*			m_pInputLayout;
@@ -93,6 +96,8 @@ namespace RenderDog
 		virtual void				Release() override;
 
 		virtual void				Apply(const ShaderPerObjParam* pPerObjParam = nullptr) override;
+
+		virtual void				ApplyMaterialParams(IMaterialInstance* pMtlIns) override;
 
 	private:
 		ID3D11PixelShader*			m_pPS;
@@ -126,10 +131,6 @@ namespace RenderDog
 	protected:
 		ShaderParam					m_SkyCubeTextureParam;
 		ShaderParam					m_SkyCubeTextureSamplerParam;
-		ShaderParam					m_DiffuseTextureParam;
-		ShaderParam					m_DiffuseTextureSamplerParam;
-		ShaderParam					m_NormalTextureParam;
-		ShaderParam					m_NormalTextureSamplerParam;
 		ShaderParam					m_ShadowDepthTextureParam;
 		ShaderParam					m_ShadowDepthTextureSamplerParam;
 	};
@@ -459,24 +460,77 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->PSSetShader(m_pPS, nullptr, 0);
 	}
 
+	void D3D11PixelShader::ApplyMaterialParams(IMaterialInstance* pMtlIns)
+	{
+		if (!pMtlIns)
+		{
+			return;
+		}
+
+		uint32_t mtlParamNum = pMtlIns->GetMaterialParamNum();
+		for (uint32_t i = 0; i < mtlParamNum; ++i)
+		{
+			MaterialParam& param = pMtlIns->GetMaterialParamByIndex(i);
+			MATERIAL_PARAM_TYPE paramType = param.GetType();
+			const std::string& paramName = param.GetName();
+			switch (paramType)
+			{
+			case MATERIAL_PARAM_TYPE::UNKNOWN:
+				break;
+			case MATERIAL_PARAM_TYPE::SCALAR:
+			{
+				break;
+			}
+			case MATERIAL_PARAM_TYPE::VECTOR4:
+			{
+				break;
+			}
+			case MATERIAL_PARAM_TYPE::TEXTURE2D:
+			{
+				auto srvIter = m_ShaderResourceViewMap.find(paramName);
+				if (srvIter == m_ShaderResourceViewMap.end())
+				{
+					return;
+				}
+				if (param.GetTexture2D())
+				{
+					ID3D11ShaderResourceView* pSRV = (ID3D11ShaderResourceView*)(param.GetTexture2D()->GetShaderResourceView());
+					g_pD3D11ImmediateContext->PSSetShaderResources(srvIter->second, 1, &pSRV);
+				}
+
+				break;
+			}
+			case MATERIAL_PARAM_TYPE::SAMPLER:
+			{
+				auto samplerIter = m_SamplerStateMap.find(paramName);
+				if (samplerIter == m_SamplerStateMap.end())
+				{
+					return;
+				}
+				ISamplerState* pSampler = param.GetSamplerState();
+				if (pSampler)
+				{
+					pSampler->SetToPixelShader(samplerIter->second);
+				}
+
+				break;
+			}
+			default:
+				break;
+			}
+		}
+	}
+
 	D3D11DirectionalLightingPixelShader::D3D11DirectionalLightingPixelShader(const ShaderCompileDesc& desc) :
 		D3D11PixelShader(desc),
 		m_SkyCubeTextureParam("ComVar_Texture_SkyCubeTexture", SHADER_PARAM_TYPE::TEXTURE),
 		m_SkyCubeTextureSamplerParam("ComVar_Texture_SkyCubeTextureSampler", SHADER_PARAM_TYPE::SAMPLER),
-		m_DiffuseTextureParam("DiffuseTexture", SHADER_PARAM_TYPE::TEXTURE),
-		m_DiffuseTextureSamplerParam("DiffuseTextureSampler", SHADER_PARAM_TYPE::SAMPLER),
-		m_NormalTextureParam("NormalTexture", SHADER_PARAM_TYPE::TEXTURE),
-		m_NormalTextureSamplerParam("NormalTextureSampler", SHADER_PARAM_TYPE::SAMPLER),
 		m_ShadowDepthTextureParam("ComVar_Texture_ShadowDepthTexture", SHADER_PARAM_TYPE::TEXTURE),
 		m_ShadowDepthTextureSamplerParam("ComVar_Texture_ShadowDepthTextureSampler", SHADER_PARAM_TYPE::SAMPLER)
 		
 	{
 		m_ShaderParamMap.insert({ "ComVar_Texture_SkyCubeTexture", &m_SkyCubeTextureParam });
 		m_ShaderParamMap.insert({ "ComVar_Texture_SkyCubeTextureSampler", &m_SkyCubeTextureSamplerParam });
-		m_ShaderParamMap.insert({ "DiffuseTexture", &m_DiffuseTextureParam });
-		m_ShaderParamMap.insert({ "DiffuseTextureSampler", &m_DiffuseTextureSamplerParam });
-		m_ShaderParamMap.insert({ "NormalTexture", &m_NormalTextureParam });
-		m_ShaderParamMap.insert({ "NormalTextureSampler", &m_NormalTextureSamplerParam });
 		m_ShaderParamMap.insert({ "ComVar_Texture_ShadowDepthTexture", &m_ShadowDepthTextureParam });
 		m_ShaderParamMap.insert({ "ComVar_Texture_ShadowDepthTextureSampler", &m_ShadowDepthTextureSamplerParam });
 	}
@@ -535,52 +589,6 @@ namespace RenderDog
 			return;
 		}
 		pSkySampler->SetToPixelShader(samplerIter->second);
-
-		//DiffuseTexture
-		srvIter = m_ShaderResourceViewMap.find(m_DiffuseTextureParam.GetName());
-		if (srvIter == m_ShaderResourceViewMap.end())
-		{
-			return;
-		}
-		if (m_DiffuseTextureParam.GetTexture())
-		{
-			ID3D11ShaderResourceView* pDiffSRV = (ID3D11ShaderResourceView*)(m_DiffuseTextureParam.GetTexture()->GetShaderResourceView());
-			g_pD3D11ImmediateContext->PSSetShaderResources(srvIter->second, 1, &pDiffSRV);
-		}
-		
-		samplerIter = m_SamplerStateMap.find(m_DiffuseTextureSamplerParam.GetName());
-		if (samplerIter == m_SamplerStateMap.end())
-		{
-			return;
-		}
-		ISamplerState* pDiffSampler = m_DiffuseTextureSamplerParam.GetSampler();
-		if (pDiffSampler)
-		{
-			pDiffSampler->SetToPixelShader(samplerIter->second);
-		}
-
-		//NormalTexture
-		srvIter = m_ShaderResourceViewMap.find(m_NormalTextureParam.GetName());
-		if (srvIter == m_ShaderResourceViewMap.end())
-		{
-			return;
-		}
-		if (m_NormalTextureParam.GetTexture())
-		{
-			ID3D11ShaderResourceView* pNormSRV = (ID3D11ShaderResourceView*)(m_NormalTextureParam.GetTexture()->GetShaderResourceView());
-			g_pD3D11ImmediateContext->PSSetShaderResources(srvIter->second, 1, &pNormSRV);
-		}
-		
-		samplerIter = m_SamplerStateMap.find(m_NormalTextureSamplerParam.GetName());
-		if (samplerIter == m_SamplerStateMap.end())
-		{
-			return;
-		}
-		ISamplerState* pNormSampler = m_NormalTextureSamplerParam.GetSampler();
-		if (pNormSampler)
-		{
-			pNormSampler->SetToPixelShader(samplerIter->second);
-		}
 
 		//ShadowTexture
 		srvIter = m_ShaderResourceViewMap.find(m_ShadowDepthTextureParam.GetName());

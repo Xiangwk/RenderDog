@@ -17,6 +17,7 @@ namespace RenderDog
 	class	ITexture;
 	class	ISamplerState;
 	class	IConstantBuffer;
+	class   IMaterialInstance;
 
 	//VertexShader
 	const std::string g_SimpleModelVertexShadreFilePath = "Shaders/SimpleModelVertexShader.hlsl";
@@ -236,6 +237,7 @@ namespace RenderDog
 		virtual int					GetSamplerStateSlotByName(const std::string& name) = 0;
 
 		virtual void				Apply(const ShaderPerObjParam* pPerObjParam = nullptr) = 0;
+		virtual void				ApplyMaterialParams(IMaterialInstance* pMtlIns) = 0;
 	};
 
 	class IShaderManager
