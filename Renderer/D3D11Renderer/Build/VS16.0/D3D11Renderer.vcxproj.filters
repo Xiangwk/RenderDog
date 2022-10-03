@@ -19,6 +19,9 @@
     <Filter Include="Shaders\PixelShader">
       <UniqueIdentifier>{19ea13df-2764-4f95-a693-27ee00ef2faa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\MaterialShaders">
+      <UniqueIdentifier>{332fc025-8e84-45ef-8569-135289bb8471}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Private\D3D11Renderer.cpp">

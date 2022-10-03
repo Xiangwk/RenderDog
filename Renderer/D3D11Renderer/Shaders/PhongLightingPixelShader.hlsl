@@ -6,13 +6,7 @@
 
 #include "PhongLightingCommon.hlsl"
 #include "ShadowTestCommon.hlsl"
-
-Texture2D		DiffuseTexture;
-SamplerState	DiffuseTextureSampler;
-
-Texture2D		NormalTexture;
-SamplerState	NormalTextureSampler;
-
+#include "MaterialShaders/Material.hlsl"
 
 struct VSOutput
 {
@@ -29,16 +23,11 @@ struct VSOutput
 
 float4 Main(VSOutput VsOutput) : SV_Target
 {
-	float3 BaseColor = DiffuseTexture.Sample(DiffuseTextureSampler, VsOutput.TexCoord).rgb;
+	float3 BaseColor = ComFunc_Material_GetBaseColorRaw(VsOutput.TexCoord);
 	BaseColor *= VsOutput.Color.rgb;
 
-	float2 TangentNormalXY = NormalTexture.Sample(NormalTextureSampler, VsOutput.TexCoord).xy;
-	TangentNormalXY = TangentNormalXY * 2.0f - 1.0f;
-	float TangentNormalZ = sqrt(1.0f - TangentNormalXY.x * TangentNormalXY.x - TangentNormalXY.y * TangentNormalXY.y);
-	float3 TangentNormal = normalize(float3(TangentNormalXY, TangentNormalZ));
-
+	float3 TangentNormal = ComFunc_Material_GetNormalRaw(VsOutput.TexCoord);
 	float3x3 TBN = float3x3(VsOutput.Tangent, VsOutput.BiTangent, VsOutput.Normal);
-
 	float3 WorldNormal = normalize(mul(TangentNormal, TBN));
 	
 	float LightLuminance = ComVar_Vector_DirLightColor.a;

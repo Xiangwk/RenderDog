@@ -13,8 +13,8 @@
 #include <windowsx.h>
 #include <sstream>
 
-#define MODEL_VIEWER_LOAD_STATIC_MODEL	0
-#define MODEL_VIEWER_LOAD_SKIN_MODEL	1
+#define MODEL_VIEWER_LOAD_STATIC_MODEL	1
+#define MODEL_VIEWER_LOAD_SKIN_MODEL	0
 
 ModelViewer g_ModelViewer;
 ModelViewer* g_pModelViewer = &g_ModelViewer;
