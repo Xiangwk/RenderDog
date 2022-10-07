@@ -15,6 +15,51 @@
 namespace RenderDog
 {
 	MaterialParam INVALID_MATERIAL_PARAM = MaterialParam("InvalidParam", MATERIAL_PARAM_TYPE::UNKNOWN);
+
+	MaterialParam::MaterialParam(const MaterialParam& param):
+		m_Name(param.m_Name),
+		m_ParamType(param.m_ParamType)
+	{
+		CloneParamValue(param);
+	}
+
+	MaterialParam& MaterialParam::operator=(const MaterialParam& param)
+	{
+		m_Name = param.m_Name;
+		m_ParamType = param.m_ParamType;
+
+		CloneParamValue(param);
+	}
+
+	void MaterialParam::CloneParamValue(const MaterialParam& param)
+	{
+		switch (param.m_ParamType)
+		{
+		case MATERIAL_PARAM_TYPE::SCALAR:
+		{
+			m_FloatValue = param.m_FloatValue;
+			break;
+		}
+		case MATERIAL_PARAM_TYPE::VECTOR4:
+		{
+			m_Vector4Value = param.m_Vector4Value;
+			break;
+		}
+		case MATERIAL_PARAM_TYPE::TEXTURE2D:
+		{
+			m_pTexture2DValue = param.m_pTexture2DValue;
+			break;
+		}
+		case MATERIAL_PARAM_TYPE::SAMPLER:
+		{
+			pSamplerValue = param.pSamplerValue;
+			break;
+		}
+		default:
+			break;
+		}
+	}
+
 	//================================================================
 	//						Material
 	//================================================================

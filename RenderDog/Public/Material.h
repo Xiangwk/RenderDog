@@ -7,11 +7,12 @@
 
 #pragma once
 
+#include "Vector.h"
+
 #include <string>
 
 namespace RenderDog
 {
-	struct	Vector4;
 	class	ITexture2D;
 	class   ISamplerState;
 
@@ -37,28 +38,35 @@ namespace RenderDog
 			m_ParamType(type)
 		{}
 
+		MaterialParam(const MaterialParam& param);
+
 		~MaterialParam() = default;
 
-		float*							GetScalar() { return pfloatValue; }
-		Vector4*						GetVector4() { return pVector4Value; }
-		ITexture2D*						GetTexture2D() { return pTexture2DValue; }
-		ISamplerState*					GetSamplerState() { return pSamplerState; }
+		MaterialParam& operator=(const MaterialParam& param);
 
-		void							SetScalar(float* pValue) { pfloatValue = pValue; }
-		void							SetVector4(Vector4* pValue) { pVector4Value = pValue; }
-		void							SetTexture2D(ITexture2D* pValue) { pTexture2DValue = pValue; }
-		void							SetSamplerState(ISamplerState* pValue) { pSamplerState = pValue; }
+		float							GetScalar() { return m_FloatValue; }
+		Vector4							GetVector4() { return m_Vector4Value; }
+		ITexture2D*						GetTexture2D() { return m_pTexture2DValue; }
+		ISamplerState*					GetSamplerState() { return pSamplerValue; }
+
+		void							SetScalar(float value) { m_FloatValue = value; }
+		void							SetVector4(const Vector4& value) { m_Vector4Value = value; }
+		void							SetTexture2D(ITexture2D* pValue) { m_pTexture2DValue = pValue; }
+		void							SetSamplerState(ISamplerState* pValue) { pSamplerValue = pValue; }
 
 		const std::string&				GetName() const { return m_Name; }
 		MATERIAL_PARAM_TYPE				GetType() const { return m_ParamType; }
 
 	private:
+		void							CloneParamValue(const MaterialParam& param);
+
+	private:
 		union
 		{
-			float*						pfloatValue;
-			Vector4*					pVector4Value;
-			ITexture2D*					pTexture2DValue;
-			ISamplerState*				pSamplerState;
+			float						m_FloatValue;
+			Vector4						m_Vector4Value;
+			ITexture2D*					m_pTexture2DValue;
+			ISamplerState*				pSamplerValue;
 		};
 
 		std::string						m_Name;
