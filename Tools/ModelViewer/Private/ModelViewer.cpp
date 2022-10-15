@@ -13,8 +13,9 @@
 #include <windowsx.h>
 #include <sstream>
 
-#define MODEL_VIEWER_LOAD_STATIC_MODEL	0
-#define MODEL_VIEWER_LOAD_SKIN_MODEL	1
+#define MODEL_VIEWER_LOAD_STANDARD_MODEL	1
+#define MODEL_VIEWER_LOAD_STATIC_MODEL		0
+#define MODEL_VIEWER_LOAD_SKIN_MODEL		0
 
 ModelViewer g_ModelViewer;
 ModelViewer* g_pModelViewer = &g_ModelViewer;
@@ -102,6 +103,15 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 		MessageBox(nullptr, "Load Sky Failed!", "ERROR", MB_OK);
 		return false;
 	}
+
+#if	MODEL_VIEWER_LOAD_STANDARD_MODEL
+	if (!LoadFbxModel("", LOAD_MODEL_TYPE::STANDARD, m_pBasicMaterial))
+	{
+		MessageBox(nullptr, "Load Static Model Failed!", "ERROR", MB_OK);
+		return false;
+	}
+	m_pStaticModel->SetPosGesture(RenderDog::Vector3(0.0f, 100.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
+#endif //MODEL_VIEWER_LOAD_STANDARD_MODEL
 
 #if MODEL_VIEWER_LOAD_STATIC_MODEL
 	if (!LoadFbxModel("Models/Crunch/Crunch_Crash_Site.FBX", LOAD_MODEL_TYPE::CUSTOM_STATIC, m_pBasicMaterial))

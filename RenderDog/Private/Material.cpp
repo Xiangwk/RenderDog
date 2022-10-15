@@ -29,6 +29,8 @@ namespace RenderDog
 		m_ParamType = param.m_ParamType;
 
 		CloneParamValue(param);
+
+		return *this;
 	}
 
 	void MaterialParam::CloneParamValue(const MaterialParam& param)

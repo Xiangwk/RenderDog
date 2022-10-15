@@ -575,37 +575,33 @@ namespace RenderDog
 
 		//SkyTexture
 		auto srvIter = m_ShaderResourceViewMap.find(m_SkyCubeTextureParam.GetName());
-		if (srvIter == m_ShaderResourceViewMap.end())
+		if (srvIter != m_ShaderResourceViewMap.end())
 		{
-			return;
+			ID3D11ShaderResourceView* pSkySRV = (ID3D11ShaderResourceView*)(m_SkyCubeTextureParam.GetTexture()->GetShaderResourceView());
+			g_pD3D11ImmediateContext->PSSetShaderResources(srvIter->second, 1, &pSkySRV);
 		}
-		ID3D11ShaderResourceView* pSkySRV = (ID3D11ShaderResourceView*)(m_SkyCubeTextureParam.GetTexture()->GetShaderResourceView());
-		g_pD3D11ImmediateContext->PSSetShaderResources(srvIter->second, 1, &pSkySRV);
 
 		auto samplerIter = m_SamplerStateMap.find(m_SkyCubeTextureSamplerParam.GetName());
 		ISamplerState* pSkySampler = m_SkyCubeTextureSamplerParam.GetSampler();
-		if (samplerIter == m_SamplerStateMap.end())
+		if (samplerIter != m_SamplerStateMap.end())
 		{
-			return;
+			pSkySampler->SetToPixelShader(samplerIter->second);
 		}
-		pSkySampler->SetToPixelShader(samplerIter->second);
 
 		//ShadowTexture
 		srvIter = m_ShaderResourceViewMap.find(m_ShadowDepthTextureParam.GetName());
-		if (srvIter == m_ShaderResourceViewMap.end())
+		if (srvIter != m_ShaderResourceViewMap.end())
 		{
-			return;
+			ID3D11ShaderResourceView* pShadowDepthSRV = (ID3D11ShaderResourceView*)(m_ShadowDepthTextureParam.GetTexture()->GetShaderResourceView());
+			g_pD3D11ImmediateContext->PSSetShaderResources(srvIter->second, 1, &pShadowDepthSRV);
 		}
-		ID3D11ShaderResourceView* pShadowDepthSRV = (ID3D11ShaderResourceView*)(m_ShadowDepthTextureParam.GetTexture()->GetShaderResourceView());
-		g_pD3D11ImmediateContext->PSSetShaderResources(srvIter->second, 1, &pShadowDepthSRV);
 
 		samplerIter = m_SamplerStateMap.find(m_ShadowDepthTextureSamplerParam.GetName());
 		ISamplerState* pShadowDepthSampler = m_ShadowDepthTextureSamplerParam.GetSampler();
-		if (samplerIter == m_SamplerStateMap.end())
+		if (samplerIter != m_SamplerStateMap.end())
 		{
-			return;
+			pShadowDepthSampler->SetToPixelShader(samplerIter->second);
 		}
-		pShadowDepthSampler->SetToPixelShader(samplerIter->second);
 	}
 
 	D3D11SkyPixelShader::D3D11SkyPixelShader(const ShaderCompileDesc& desc) :
@@ -631,20 +627,18 @@ namespace RenderDog
 
 		//SkyTexture
 		auto srvIter = m_ShaderResourceViewMap.find(m_SkyCubeTextureParam.GetName());
-		if (srvIter == m_ShaderResourceViewMap.end())
+		if (srvIter != m_ShaderResourceViewMap.end())
 		{
-			return;
+			ID3D11ShaderResourceView* pSkySRV = (ID3D11ShaderResourceView*)(m_SkyCubeTextureParam.GetTexture()->GetShaderResourceView());
+			g_pD3D11ImmediateContext->PSSetShaderResources(srvIter->second, 1, &pSkySRV);
 		}
-		ID3D11ShaderResourceView* pSkySRV = (ID3D11ShaderResourceView*)(m_SkyCubeTextureParam.GetTexture()->GetShaderResourceView());
-		g_pD3D11ImmediateContext->PSSetShaderResources(srvIter->second, 1, &pSkySRV);
 
 		auto samplerIter = m_SamplerStateMap.find(m_SkyCubeTextureSamplerParam.GetName());
 		ISamplerState* pSkySampler = m_SkyCubeTextureSamplerParam.GetSampler();
-		if (samplerIter == m_SamplerStateMap.end())
+		if (samplerIter != m_SamplerStateMap.end())
 		{
-			return;
+			pSkySampler->SetToPixelShader(samplerIter->second);
 		}
-		pSkySampler->SetToPixelShader(samplerIter->second);
 	}
 
 	IShader* D3D11ShaderManager::GetVertexShader(VERTEX_TYPE vertexType, const ShaderCompileDesc& desc)
