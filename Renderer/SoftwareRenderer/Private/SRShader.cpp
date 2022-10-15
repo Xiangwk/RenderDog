@@ -47,6 +47,8 @@ namespace RenderDog
 
 		virtual void				Apply(const ShaderPerObjParam* pPerObjParam = nullptr) override;
 
+		virtual void				ApplyMaterialParams(IMaterialInstance* pMtlIns) override {};
+
 	private:
 		ISRVertexShader*			m_pVS;
 	};
@@ -63,6 +65,8 @@ namespace RenderDog
 		virtual void				Release() override;
 
 		virtual void				Apply(const ShaderPerObjParam* pPerObjParam = nullptr) override;
+
+		virtual void				ApplyMaterialParams(IMaterialInstance* pMtlIns) override {};
 
 	private:
 		ISRPixelShader*				m_pPS;
