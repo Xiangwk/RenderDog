@@ -88,5 +88,11 @@
     <None Include="..\..\Shaders\SkyPixelShader.hlsl">
       <Filter>Shaders\PixelShader</Filter>
     </None>
+    <None Include="..\..\Shaders\LightingCommon.hlsl">
+      <Filter>Shaders\Common</Filter>
+    </None>
+    <None Include="..\..\Shaders\MaterialShaders\Material.hlsl">
+      <Filter>Shaders\MaterialShaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

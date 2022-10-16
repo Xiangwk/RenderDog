@@ -4,6 +4,9 @@
 //Written by Xiang Weikang
 ////////////////////////////////////////
 
+//float Metallic = 0.5f;
+//float Roughness = 0.5f;
+
 Texture2D		DiffuseTexture;
 SamplerState	DiffuseTextureSampler;
 

@@ -4,7 +4,8 @@
 //Written by Xiang Weikang
 ////////////////////////////////////////
 
-#include "PhongLightingCommon.hlsl"
+#include "LightingCommon.hlsl"
+//#include "PhongLightingCommon.hlsl"
 #include "ShadowTestCommon.hlsl"
 #include "MaterialShaders/Material.hlsl"
 
@@ -32,19 +33,24 @@ float4 Main(VSOutput VsOutput) : SV_Target
 	
 	float LightLuminance = ComVar_Vector_DirLightColor.a;
 	float NoL = saturate(dot(WorldNormal, -ComVar_Vector_DirLightDirection.xyz));
-	float3 Diffuse = ComFunc_Phong_Diffuse(ComVar_Vector_DirLightColor.rgb, LightLuminance, BaseColor, NoL);
 
 	float3 EyeDir = normalize(VsOutput.EyePosW.xyz - VsOutput.PosW.xyz);
-	float3 ReflectionColor = ComFunc_Phong_Specular(EyeDir, WorldNormal);
+	float NoV = saturate(dot(WorldNormal, EyeDir));
 
-	float3 LightResult = Diffuse;
+	float3 H = normalize(-ComVar_Vector_DirLightDirection.xyz + WorldNormal);
+	float NoH = saturate(dot(WorldNormal, H));
+
+	float Metallic = 0.0f;
+	float Roughness = 0.3f;
+
+	float3 LightResult = ComFunc_Lighting_DirectionalLighting(NoH, NoV, NoL, BaseColor, Metallic, Roughness);
 	//Shadow
 	float3 ShadowPos = VsOutput.ShadowPos.xyz / VsOutput.ShadowPos.w;
 	float ShadowFactor = ComFunc_ShadowDepth_GetShadowFactor(ShadowPos);
 	LightResult *= ShadowFactor;
 
 	//float3 Ambient = ReflectionColor * 0.4f;
-	float3 Ambient = ReflectionColor * 0.0f;
+	float3 Ambient = 0.2f;
 
 	float3 FinalColor = saturate(LightResult + Ambient);
 
