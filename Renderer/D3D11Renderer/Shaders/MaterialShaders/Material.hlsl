@@ -15,7 +15,8 @@ SamplerState	NormalTextureSampler;
 
 float3 ComFunc_Material_GetBaseColorRaw(float2 inTexCoord)
 {
-	float3 BaseColor = DiffuseTexture.Sample(DiffuseTextureSampler, inTexCoord).rgb;
+	float3 BaseColor = abs(DiffuseTexture.Sample(DiffuseTextureSampler, inTexCoord).rgb);
+	BaseColor = pow(BaseColor, 2.2f);
 
 	return BaseColor;
 }

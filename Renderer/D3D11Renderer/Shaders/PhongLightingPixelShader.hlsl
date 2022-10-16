@@ -40,10 +40,12 @@ float4 Main(VSOutput VsOutput) : SV_Target
 	float3 H = normalize(-ComVar_Vector_DirLightDirection.xyz + WorldNormal);
 	float NoH = saturate(dot(WorldNormal, H));
 
+	float HoV = saturate(dot(H, EyeDir));
+
 	float Metallic = 0.0f;
 	float Roughness = 0.3f;
 
-	float3 LightResult = ComFunc_Lighting_DirectionalLighting(NoH, NoV, NoL, BaseColor, Metallic, Roughness);
+	float3 LightResult = ComFunc_Lighting_DirectionalLighting(NoH, NoV, NoL, HoV, BaseColor, Metallic, Roughness);
 	//Shadow
 	float3 ShadowPos = VsOutput.ShadowPos.xyz / VsOutput.ShadowPos.w;
 	float ShadowFactor = ComFunc_ShadowDepth_GetShadowFactor(ShadowPos);
@@ -52,7 +54,11 @@ float4 Main(VSOutput VsOutput) : SV_Target
 	//float3 Ambient = ReflectionColor * 0.4f;
 	float3 Ambient = 0.2f;
 
-	float3 FinalColor = saturate(LightResult + Ambient);
+	float3 FinalColor = LightResult + Ambient;
+
+	//ColorTone
+	FinalColor = abs(FinalColor / (FinalColor + 1.0f));
+	FinalColor = pow(FinalColor, 1.0f / 2.2f);
 
 	return float4(FinalColor, 1.0f);
 }

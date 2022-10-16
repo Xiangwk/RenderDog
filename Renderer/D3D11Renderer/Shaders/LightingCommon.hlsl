@@ -68,15 +68,15 @@ float3 LocFunc_Lighting_Specular(float NoH, float NoV, float NoL, float3 BaseCol
 	return Nom / DeNom;
 }
 
-float3 ComFunc_Lighting_DirectionalLighting(float NoH, float NoV, float NoL, float3 BaseColor, float Metallic, float Roughness)
+float3 ComFunc_Lighting_DirectionalLighting(float NoH, float NoV, float NoL, float HoV, float3 BaseColor, float Metallic, float Roughness)
 {
-	float3 Ks = LocFunc_Lighting_FresnelSchlick(NoV, BaseColor, Metallic);
+	float3 Ks = LocFunc_Lighting_FresnelSchlick(HoV, BaseColor, Metallic);
 
 	float3 Kd = float3(1.0f, 1.0f, 1.0f) - Ks;
 
 	Kd *= (1.0f - Metallic);
 
-	float3 Radiance = ComVar_Vector_DirLightColor.rgb;
+	float3 Radiance = ComVar_Vector_DirLightColor.rgb * ComVar_Vector_DirLightColor.a;
 
 	float3 Specular = LocFunc_Lighting_Specular(NoH, NoV, NoL, BaseColor, Roughness, Ks);
 
