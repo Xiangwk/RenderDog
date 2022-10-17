@@ -17,10 +17,20 @@ static const float PI = 3.1415927f;
 
 float3 LocFunc_Lighting_FresnelSchlick(float HoV, float3 BaseColor, float Metallic)
 {
-	float3 F0 = float3(0.04f, 0.04f, 0.04f);
+	float3 F0 = 0.04f;
 	F0 = lerp(F0, BaseColor, Metallic);
 
 	float3 Ks = F0 + (1.0f - F0) * pow(1.0f - HoV, 5.0f);
+
+	return Ks;
+}
+
+float3 LocFunc_Lighting_FresnelSchlickRoughness(float HoV, float3 BaseColor, float Metallic, float Roughness)
+{
+	float3 F0 = 0.04f;
+	F0 = lerp(F0, BaseColor, Metallic);
+
+	float3 Ks = F0 + (max(1.0f - Roughness, F0) - F0) * pow(1.0f - HoV, 5.0f);
 
 	return Ks;
 }
@@ -97,11 +107,12 @@ float3 ComFunc_Lighting_DirectionalLighting(float NoH, float NoV, float NoL, flo
 	return (Kd * BaseColor / PI + Specular) * Radiance * NoL;
 }
 
-float3 ComFunc_Lighting_EnvReflection(float NoV, float3 N, float3 BaseColor, float Metallic)
+float3 ComFunc_Lighting_EnvReflection(float NoV, float3 N, float3 BaseColor, float Metallic, float Roughness)
 {
-	float3 Ks = LocFunc_Lighting_FresnelSchlick(NoV, BaseColor, Metallic);
+	float3 Ks = LocFunc_Lighting_FresnelSchlickRoughness(NoV, BaseColor, Metallic, Roughness);
 
 	float3 Kd = 1.0f - Ks;
+	Kd *= 1.0f - Metallic;
 	float3 AmbientDiffuse = LocFunc_Lighting_EnvReflectDiffuse(BaseColor, N, Kd);
 
 	return AmbientDiffuse;
