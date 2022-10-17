@@ -68,11 +68,25 @@ float3 LocFunc_Lighting_Specular(float NoH, float NoV, float NoL, float3 BaseCol
 	return Nom / DeNom;
 }
 
+float3 LocFunc_Lighting_EnvReflectDiffuse(float3 BaseColor, float3 N, float3 Kd)
+{
+	float3 Irradiance = ComVar_Texture_SkyCubeTexture.SampleLevel(ComVar_Texture_SkyCubeTextureSampler, N, 10).rgb;
+
+	float3 Diffuse = Irradiance * BaseColor;
+
+	return Kd * Diffuse;
+}
+
+float3 LocFunc_Lighting_EnvReflectSpecular()
+{
+	return 0.0f;
+}
+
 float3 ComFunc_Lighting_DirectionalLighting(float NoH, float NoV, float NoL, float HoV, float3 BaseColor, float Metallic, float Roughness)
 {
 	float3 Ks = LocFunc_Lighting_FresnelSchlick(HoV, BaseColor, Metallic);
 
-	float3 Kd = float3(1.0f, 1.0f, 1.0f) - Ks;
+	float3 Kd = 1.0f - Ks;
 
 	Kd *= (1.0f - Metallic);
 
@@ -81,4 +95,14 @@ float3 ComFunc_Lighting_DirectionalLighting(float NoH, float NoV, float NoL, flo
 	float3 Specular = LocFunc_Lighting_Specular(NoH, NoV, NoL, BaseColor, Roughness, Ks);
 
 	return (Kd * BaseColor / PI + Specular) * Radiance * NoL;
+}
+
+float3 ComFunc_Lighting_EnvReflection(float NoV, float3 N, float3 BaseColor, float Metallic)
+{
+	float3 Ks = LocFunc_Lighting_FresnelSchlick(NoV, BaseColor, Metallic);
+
+	float3 Kd = 1.0f - Ks;
+	float3 AmbientDiffuse = LocFunc_Lighting_EnvReflectDiffuse(BaseColor, N, Kd);
+
+	return AmbientDiffuse;
 }

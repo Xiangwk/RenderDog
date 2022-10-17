@@ -14,5 +14,5 @@ struct VSOutput
 
 float4 Main(VSOutput VsOutput) : SV_Target
 {
-	return ComVar_Texture_SkyCubeTexture.Sample(ComVar_Texture_SkyCubeTextureSampler, VsOutput.PosL);
+	return ComVar_Texture_SkyCubeTexture.SampleLevel(ComVar_Texture_SkyCubeTextureSampler, VsOutput.PosL, 0);
 }

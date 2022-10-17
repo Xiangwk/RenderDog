@@ -51,10 +51,9 @@ float4 Main(VSOutput VsOutput) : SV_Target
 	float ShadowFactor = ComFunc_ShadowDepth_GetShadowFactor(ShadowPos);
 	LightResult *= ShadowFactor;
 
-	//float3 Ambient = ReflectionColor * 0.4f;
-	float3 Ambient = 0.2f;
+	float3 Ambient = ComFunc_Lighting_EnvReflection(NoV, WorldNormal, BaseColor, Metallic);
 
-	float3 FinalColor = LightResult + Ambient;
+	float3 FinalColor = LightResult + Ambient * 0.5f;
 
 	//ColorTone
 	FinalColor = abs(FinalColor / (FinalColor + 1.0f));

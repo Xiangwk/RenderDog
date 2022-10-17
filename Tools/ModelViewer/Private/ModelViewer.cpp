@@ -537,7 +537,7 @@ RenderDog::IMaterial* ModelViewer::CreateSkyMaterial(const std::string& mtlName)
 {
 	RenderDog::IMaterial* pMtl = RenderDog::g_pMaterialManager->GetMaterial(mtlName);
 
-	std::wstring diffuseTexturePath = L"EngineAsset/Textures/Snowcube1024.dds";
+	std::wstring diffuseTexturePath = L"EngineAsset/Textures/SnowcubeMap.dds";
 	std::wstring normalTexturePath = L"";
 
 	if (!diffuseTexturePath.empty())
