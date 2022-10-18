@@ -26,6 +26,8 @@ namespace RenderDog
 	ID3D11Device*			g_pD3D11Device = nullptr;
 	ID3D11DeviceContext*	g_pD3D11ImmediateContext = nullptr;
 
+	const std::wstring IblBrdfLutTextureFilePath = L"EngineAsset/Textures/IBL_BRDF_LUT.dds";
+
 	//===========================================================
 	//    Mesh Renderer
 	//===========================================================
@@ -205,13 +207,17 @@ namespace RenderDog
 		ISamplerState*				pShadowDepthTextureSampler;
 		ITexture2D*					pEnvReflectionTexture;
 		ISamplerState*				pEnvReflectionTextureSampler;
+		ITexture2D*					pIblBrdfLutTexture;
+		ISamplerState*				pIblBrdfLutTextureSampler;
 
 		MeshLightingGlobalData() :
 			pSceneView(nullptr),
 			pShadowDepthTexture(nullptr),
 			pShadowDepthTextureSampler(nullptr),
 			pEnvReflectionTexture(nullptr),
-			pEnvReflectionTextureSampler(nullptr)
+			pEnvReflectionTextureSampler(nullptr),
+			pIblBrdfLutTexture(nullptr),
+			pIblBrdfLutTextureSampler(nullptr)
 		{}
 	};
 
@@ -228,6 +234,8 @@ namespace RenderDog
 		ISamplerState*					m_pShadowDepthTextureSampler;
 		ITexture2D*						m_pEnvReflectionTexture;
 		ISamplerState*					m_pEnvReflectionTextureSampler;
+		ITexture2D*						m_pIblBrdfLutTexture;
+		ISamplerState*					m_pIblBrdfLutTextureSampler;
 	};
 
 	D3D11MeshLightingRenderer::D3D11MeshLightingRenderer(const MeshLightingGlobalData& globalData):
@@ -235,7 +243,9 @@ namespace RenderDog
 		m_pShadowDepthTexture(globalData.pShadowDepthTexture),
 		m_pShadowDepthTextureSampler(globalData.pShadowDepthTextureSampler),
 		m_pEnvReflectionTexture(globalData.pEnvReflectionTexture),
-		m_pEnvReflectionTextureSampler(globalData.pEnvReflectionTextureSampler)
+		m_pEnvReflectionTextureSampler(globalData.pEnvReflectionTextureSampler),
+		m_pIblBrdfLutTexture(globalData.pIblBrdfLutTexture),
+		m_pIblBrdfLutTextureSampler(globalData.pIblBrdfLutTextureSampler)
 	{
 		ShaderCompileDesc psDesc(g_DirectionalLightingPixelShaderFilePath, nullptr, "Main", "ps_5_0", 0);
 		m_pPixelShader = g_pIShaderManager->GetDirectionLightingPixelShader(psDesc);
@@ -279,6 +289,12 @@ namespace RenderDog
 
 		ShaderParam* pShadowDepthTextureSamplerParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Texture_ShadowDepthTextureSampler");
 		pShadowDepthTextureSamplerParam->SetSampler(m_pShadowDepthTextureSampler);
+
+		ShaderParam* pIblBrdfLutTextureParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Texture_IblBrdfLutTexture");
+		pIblBrdfLutTextureParam->SetTexture(m_pIblBrdfLutTexture);
+
+		ShaderParam* pIblBrdfLutTextureSamplerParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Texture_IblBrdfLutTextureSampler");
+		pIblBrdfLutTextureSamplerParam->SetSampler(m_pIblBrdfLutTextureSampler);
 
 		m_pPixelShader->Apply(nullptr);
 		m_pPixelShader->ApplyMaterialParams(renderParam.pMtlIns);
@@ -367,6 +383,9 @@ namespace RenderDog
 		bool						CreateInternalShaders();
 		void						ReleaseInternalShaders();
 
+		bool						CreateInternalTextures();
+		void						ReleaseInternalTextures();
+
 		bool						CreateShadowResources(uint32_t width, uint32_t height);
 		void						ReleaseShadowResources();
 
@@ -398,6 +417,9 @@ namespace RenderDog
 		SceneView*					m_pShadowSceneView;
 
 		D3D11_VIEWPORT				m_ShadowViewport;
+
+		ITexture2D*					m_pIblBrdfLutTexture;
+		ISamplerState*				m_pIblBrdfLutTextureSampler;
 
 		ITexture2D*					m_pShadowDepthTexture;
 		ISamplerState*				m_pShadowDepthTextureSampler;
@@ -434,6 +456,8 @@ namespace RenderDog
 		m_pSceneView(nullptr),
 		m_pViewParamConstantBuffer(nullptr),
 		m_pDirectionalLightConstantBuffer(nullptr),
+		m_pIblBrdfLutTexture(nullptr),
+		m_pIblBrdfLutTextureSampler(nullptr),
 		m_pShadowDepthTexture(nullptr),
 		m_pShadowDepthTextureSampler(nullptr),
 		m_pSimpleModelVertexShader(nullptr),
@@ -544,10 +568,21 @@ namespace RenderDog
 		cbDesc.isDynamic = true;
 		m_pDirectionalLightConstantBuffer = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
 
-		CreateInternalShaders();
+		if (!CreateInternalShaders())
+		{
+			return false;
+		}
+
+		if (!CreateInternalTextures())
+		{
+			return false;
+		}
 
 		int ShadowMapSize = g_ShadowMapRTSize;
-		CreateShadowResources(ShadowMapSize, ShadowMapSize);
+		if (!CreateShadowResources(ShadowMapSize, ShadowMapSize))
+		{
+			return false;
+		}
 
 		D3D11_RASTERIZER_DESC skyRasterDesc = 
 		{
@@ -609,6 +644,8 @@ namespace RenderDog
 		}
 
 		ReleaseInternalShaders();
+
+		ReleaseInternalTextures();
 
 		ReleaseShadowResources();
 
@@ -887,6 +924,40 @@ namespace RenderDog
 		}
 	}
 
+	bool D3D11Renderer::CreateInternalTextures()
+	{
+		m_pIblBrdfLutTexture = g_pITextureManager->CreateTexture2D(IblBrdfLutTextureFilePath);
+		if (!m_pIblBrdfLutTexture)
+		{
+			return false;
+		}
+
+		SamplerDesc samplerDesc = {};
+		samplerDesc.filterMode = SAMPLER_FILTER::LINEAR;
+		samplerDesc.addressMode = SAMPLER_ADDRESS::WRAP;
+		m_pIblBrdfLutTextureSampler = g_pISamplerStateManager->CreateSamplerState(samplerDesc);
+		if (!m_pIblBrdfLutTextureSampler)
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	void D3D11Renderer::ReleaseInternalTextures()
+	{
+		if (m_pIblBrdfLutTexture)
+		{
+			m_pIblBrdfLutTexture->Release();
+			m_pIblBrdfLutTexture = nullptr;
+		}
+
+		if (m_pIblBrdfLutTextureSampler)
+		{
+			m_pIblBrdfLutTextureSampler->Release();
+			m_pIblBrdfLutTextureSampler = nullptr;
+		}
+	}
 
 	bool D3D11Renderer::CreateShadowResources(uint32_t width, uint32_t height)
 	{
@@ -1048,6 +1119,8 @@ namespace RenderDog
 		meshLightingData.pShadowDepthTextureSampler = m_pShadowDepthTextureSampler;
 		meshLightingData.pEnvReflectionTexture = pEnvReflectionTexture;
 		meshLightingData.pEnvReflectionTextureSampler = pEnvReflectionTextureSampler;
+		meshLightingData.pIblBrdfLutTexture = m_pIblBrdfLutTexture;
+		meshLightingData.pIblBrdfLutTextureSampler = m_pIblBrdfLutTextureSampler;
 		D3D11MeshLightingRenderer meshRender(meshLightingData);
 
 		uint32_t opaquePriNum = m_pSceneView->GetOpaquePrisNum();

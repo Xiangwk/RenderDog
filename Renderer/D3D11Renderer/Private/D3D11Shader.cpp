@@ -133,6 +133,8 @@ namespace RenderDog
 		ShaderParam					m_SkyCubeTextureSamplerParam;
 		ShaderParam					m_ShadowDepthTextureParam;
 		ShaderParam					m_ShadowDepthTextureSamplerParam;
+		ShaderParam					m_IblBrdfLutTextureParam;
+		ShaderParam					m_IblBrdfLutTextureSamplerParam;
 	};
 
 	//=========================================================================
@@ -526,13 +528,17 @@ namespace RenderDog
 		m_SkyCubeTextureParam("ComVar_Texture_SkyCubeTexture", SHADER_PARAM_TYPE::TEXTURE),
 		m_SkyCubeTextureSamplerParam("ComVar_Texture_SkyCubeTextureSampler", SHADER_PARAM_TYPE::SAMPLER),
 		m_ShadowDepthTextureParam("ComVar_Texture_ShadowDepthTexture", SHADER_PARAM_TYPE::TEXTURE),
-		m_ShadowDepthTextureSamplerParam("ComVar_Texture_ShadowDepthTextureSampler", SHADER_PARAM_TYPE::SAMPLER)
+		m_ShadowDepthTextureSamplerParam("ComVar_Texture_ShadowDepthTextureSampler", SHADER_PARAM_TYPE::SAMPLER),
+		m_IblBrdfLutTextureParam("ComVar_Texture_IblBrdfLutTexture", SHADER_PARAM_TYPE::TEXTURE),
+		m_IblBrdfLutTextureSamplerParam("ComVar_Texture_IblBrdfLutTextureSampler", SHADER_PARAM_TYPE::SAMPLER)
 		
 	{
 		m_ShaderParamMap.insert({ "ComVar_Texture_SkyCubeTexture", &m_SkyCubeTextureParam });
 		m_ShaderParamMap.insert({ "ComVar_Texture_SkyCubeTextureSampler", &m_SkyCubeTextureSamplerParam });
 		m_ShaderParamMap.insert({ "ComVar_Texture_ShadowDepthTexture", &m_ShadowDepthTextureParam });
 		m_ShaderParamMap.insert({ "ComVar_Texture_ShadowDepthTextureSampler", &m_ShadowDepthTextureSamplerParam });
+		m_ShaderParamMap.insert({ "ComVar_Texture_IblBrdfLutTexture", &m_IblBrdfLutTextureParam });
+		m_ShaderParamMap.insert({ "ComVar_Texture_IblBrdfLutTextureSampler", &m_IblBrdfLutTextureSamplerParam });
 	}
 
 	D3D11DirectionalLightingPixelShader::~D3D11DirectionalLightingPixelShader()
@@ -601,6 +607,21 @@ namespace RenderDog
 		if (samplerIter != m_SamplerStateMap.end())
 		{
 			pShadowDepthSampler->SetToPixelShader(samplerIter->second);
+		}
+
+		//IBL
+		srvIter = m_ShaderResourceViewMap.find(m_IblBrdfLutTextureParam.GetName());
+		if (srvIter != m_ShaderResourceViewMap.end())
+		{
+			ID3D11ShaderResourceView* pIBLSRV = (ID3D11ShaderResourceView*)(m_IblBrdfLutTextureParam.GetTexture()->GetShaderResourceView());
+			g_pD3D11ImmediateContext->PSSetShaderResources(srvIter->second, 1, &pIBLSRV);
+		}
+
+		samplerIter = m_SamplerStateMap.find(m_IblBrdfLutTextureSamplerParam.GetName());
+		ISamplerState* pIBLSampler = m_IblBrdfLutTextureSamplerParam.GetSampler();
+		if (samplerIter != m_SamplerStateMap.end())
+		{
+			pIBLSampler->SetToPixelShader(samplerIter->second);
 		}
 	}
 

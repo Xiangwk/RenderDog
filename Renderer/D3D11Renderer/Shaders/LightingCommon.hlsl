@@ -7,6 +7,9 @@
 TextureCube		ComVar_Texture_SkyCubeTexture;
 SamplerState	ComVar_Texture_SkyCubeTextureSampler;
 
+Texture2D		ComVar_Texture_IblBrdfLutTexture;
+SamplerState	ComVar_Texture_IblBrdfLutTextureSampler;
+
 cbuffer ComVar_ConstantBuffer_LightingParam
 {
 	float4	ComVar_Vector_DirLightDirection;

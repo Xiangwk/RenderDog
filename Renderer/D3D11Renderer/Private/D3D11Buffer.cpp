@@ -27,8 +27,8 @@ namespace RenderDog
 
 		virtual void				Update(void* srcData, uint32_t srcSize) override;
 
-		virtual const std::string& GetName() const { return m_Name; }
-		virtual void* GetResource() override { return (void*)m_pVB; }
+		virtual const std::string&	GetName() const { return m_Name; }
+		virtual void*				GetResource() override { return (void*)m_pVB; }
 
 		virtual uint32_t			GetStride() const override { return m_Stride; }
 		virtual uint32_t			GetOffset() const override { return m_Offset; }
@@ -54,8 +54,8 @@ namespace RenderDog
 
 		virtual void				Update(void* srcData, uint32_t srcSize) override;
 
-		virtual const std::string& GetName() const { return m_Name; }
-		virtual void* GetResource() override { return (void*)m_pIB; }
+		virtual const std::string&	GetName() const { return m_Name; }
+		virtual void*				GetResource() override { return (void*)m_pIB; }
 
 		virtual uint32_t			GetIndexNum() const override { return m_indexNum; }
 
@@ -79,8 +79,8 @@ namespace RenderDog
 
 		virtual void				Update(void* srcData, uint32_t srcSize) override;
 
-		virtual const std::string& GetName() const { return m_Name; }
-		virtual void* GetResource() override { return (void*)m_pCB; }
+		virtual const std::string&	GetName() const { return m_Name; }
+		virtual void*				GetResource() override { return (void*)m_pCB; }
 
 	private:
 		std::string					m_Name;
