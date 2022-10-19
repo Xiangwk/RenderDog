@@ -27,6 +27,8 @@ float4 Main(VSOutput VsOutput) : SV_Target
 	float3 BaseColor = ComFunc_Material_GetBaseColorRaw(VsOutput.TexCoord);
 	BaseColor *= VsOutput.Color.rgb;
 
+	BaseColor *= float3(1.0f, 0.0f, 0.0f);
+
 	float3 TangentNormal = ComFunc_Material_GetNormalRaw(VsOutput.TexCoord);
 	float3x3 TBN = float3x3(VsOutput.Tangent, VsOutput.BiTangent, VsOutput.Normal);
 	float3 WorldNormal = normalize(mul(TangentNormal, TBN));
@@ -42,8 +44,8 @@ float4 Main(VSOutput VsOutput) : SV_Target
 
 	float HoV = saturate(dot(H, EyeDir));
 
-	float Metallic = 0.0f;
-	float Roughness = 0.25f;
+	float Metallic = 1.0f;
+	float Roughness = 0.2f;
 
 	float3 LightResult = ComFunc_Lighting_DirectionalLighting(NoH, NoV, NoL, HoV, BaseColor, Metallic, Roughness);
 	//Shadow
@@ -51,9 +53,9 @@ float4 Main(VSOutput VsOutput) : SV_Target
 	float ShadowFactor = ComFunc_ShadowDepth_GetShadowFactor(ShadowPos);
 	LightResult *= ShadowFactor;
 
-	float3 Ambient = ComFunc_Lighting_EnvReflection(NoV, WorldNormal, BaseColor, Metallic, Roughness);
+	float3 Ambient = ComFunc_Lighting_EnvReflection(NoV, WorldNormal, EyeDir, BaseColor, Metallic, Roughness);
 
-	float3 FinalColor = LightResult + Ambient * 0.3f;
+	float3 FinalColor = LightResult + Ambient;
 
 	//ColorTone
 	FinalColor = abs(FinalColor / (FinalColor + 1.0f));

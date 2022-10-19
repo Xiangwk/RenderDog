@@ -934,7 +934,7 @@ namespace RenderDog
 
 		SamplerDesc samplerDesc = {};
 		samplerDesc.filterMode = SAMPLER_FILTER::LINEAR;
-		samplerDesc.addressMode = SAMPLER_ADDRESS::WRAP;
+		samplerDesc.addressMode = SAMPLER_ADDRESS::CLAMP;
 		m_pIblBrdfLutTextureSampler = g_pISamplerStateManager->CreateSamplerState(samplerDesc);
 		if (!m_pIblBrdfLutTextureSampler)
 		{
