@@ -122,7 +122,7 @@ float3 ComFunc_Lighting_EnvReflection(float NoV, float3 N, float3 V, float3 Base
 	float3 Ks = LocFunc_Lighting_FresnelSchlickRoughness(NoV, BaseColor, Metallic, Roughness);
 
 	float3 Kd = 1.0f - Ks;
-	Kd *= 1.0f - Metallic;
+	Kd *= (1.0f - Metallic);
 	float3 AmbientDiffuse = LocFunc_Lighting_EnvReflectDiffuse(BaseColor, N, Kd);
 
 	float3 R = reflect(-V, N);

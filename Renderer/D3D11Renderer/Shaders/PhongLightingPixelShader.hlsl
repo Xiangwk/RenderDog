@@ -44,7 +44,7 @@ float4 Main(VSOutput VsOutput) : SV_Target
 
 	float HoV = saturate(dot(H, EyeDir));
 
-	float Metallic = 1.0f;
+	float Metallic = 0.0f;
 	float Roughness = 0.2f;
 
 	float3 LightResult = ComFunc_Lighting_DirectionalLighting(NoH, NoV, NoL, HoV, BaseColor, Metallic, Roughness);
@@ -55,7 +55,7 @@ float4 Main(VSOutput VsOutput) : SV_Target
 
 	float3 Ambient = ComFunc_Lighting_EnvReflection(NoV, WorldNormal, EyeDir, BaseColor, Metallic, Roughness);
 
-	float3 FinalColor = LightResult + Ambient;
+	float3 FinalColor = LightResult + Ambient * 0.3f;
 
 	//ColorTone
 	FinalColor = abs(FinalColor / (FinalColor + 1.0f));

@@ -1,0 +1,7 @@
+1. win+S打开搜索，输入Regedit，使用管理员权限打开注册表；
+
+2. 找到HKEY_CURRENT_USER/Software/Whole Tomato/Visual Assist X/VANetXX(XX对应VS版本)中的ExtSource变量；
+
+3. 编辑ExtSource变量，在其中添加Shader文件的扩展名，关闭注册表；
+
+4. 重启VS即可；
