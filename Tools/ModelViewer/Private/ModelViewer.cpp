@@ -13,8 +13,8 @@
 #include <windowsx.h>
 #include <sstream>
 
-#define MODEL_VIEWER_LOAD_STANDARD_MODEL	1
-#define MODEL_VIEWER_LOAD_STATIC_MODEL		0
+#define MODEL_VIEWER_LOAD_STANDARD_MODEL	0
+#define MODEL_VIEWER_LOAD_STATIC_MODEL		1
 #define MODEL_VIEWER_LOAD_SKIN_MODEL		0
 
 ModelViewer g_ModelViewer;
@@ -114,12 +114,12 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 #endif //MODEL_VIEWER_LOAD_STANDARD_MODEL
 
 #if MODEL_VIEWER_LOAD_STATIC_MODEL
-	if (!LoadFbxModel("Models/Crunch/Crunch_Crash_Site.FBX", LOAD_MODEL_TYPE::CUSTOM_STATIC, m_pBasicMaterial))
+	if (!LoadFbxModel("Models/Cerberus/Cerberus_LP.FBX", LOAD_MODEL_TYPE::CUSTOM_STATIC, m_pBasicMaterial))
 	{
 		MessageBox(nullptr, "Load Static Model Failed!", "ERROR", MB_OK);
 		return false;
 	}
-	m_pStaticModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
+	m_pStaticModel->SetPosGesture(RenderDog::Vector3(0.0f, 100.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
 #endif //MODEL_VIEWER_LOAD_STATIC_MODEL
 
 #if MODEL_VIEWER_LOAD_SKIN_MODEL
@@ -391,7 +391,7 @@ bool ModelViewer::LoadFbxModel(const std::string& fileName, LOAD_MODEL_TYPE mode
 		m_pStaticModel = new RenderDog::StaticModel();
 
 		RenderDog::RDFbxImporter::FbxLoadParam fbxLoadParam;
-		fbxLoadParam.bIsFlipTexcoordV = false;
+		fbxLoadParam.bIsFlipTexcoordV = true;
 		if (!RenderDog::g_pRDFbxImporter->LoadFbxFile(fileName, RenderDog::RDFbxImporter::FBX_LOAD_TYPE::STATIC_MODEL, fbxLoadParam))
 		{
 			MessageBox(nullptr, "Import FBX File Failed!", "ERROR", MB_OK);
@@ -478,8 +478,12 @@ RenderDog::IMaterial* ModelViewer::CreateBasicMaterial(const std::string& mtlNam
 {
 	RenderDog::IMaterial* pMtl = RenderDog::g_pMaterialManager->GetMaterial(mtlName);
 
-	std::wstring diffuseTexturePath = L"EngineAsset/Textures/White_diff.dds";
-	std::wstring normalTexturePath = L"EngineAsset/Textures/FlatNormal_norm.dds";
+	//std::wstring diffuseTexturePath = L"EngineAsset/Textures/White_diff.dds";
+	//std::wstring normalTexturePath = L"EngineAsset/Textures/FlatNormal_norm.dds";
+
+	std::wstring diffuseTexturePath = L"Models/Cerberus/Textures/Cerberus_A.tga";
+	std::wstring normalTexturePath = L"Models/Cerberus/Textures/Cerberus_N.tga";
+	std::wstring metallicRoughnessTexturePath = L"Models/Cerberus/Textures/Cerberus_MR.tga";
 
 	if (!diffuseTexturePath.empty())
 	{
@@ -528,6 +532,31 @@ RenderDog::IMaterial* ModelViewer::CreateBasicMaterial(const std::string& mtlNam
 		RenderDog::MaterialParam NormalTextureSamplerParam("NormalTextureSampler", RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
 		NormalTextureSamplerParam.SetSamplerState(pNormalTextureSampler);
 		pMtl->AddParam(NormalTextureSamplerParam);
+	}
+
+	if (!metallicRoughnessTexturePath.empty())
+	{
+		RenderDog::ITexture2D* pMRTexture = RenderDog::g_pITextureManager->CreateTexture2D(metallicRoughnessTexturePath);
+		if (!pMRTexture)
+		{
+			return nullptr;
+		}
+		RenderDog::MaterialParam MRTextureParam("MetallicRoughnessTexture", RenderDog::MATERIAL_PARAM_TYPE::TEXTURE2D);
+		MRTextureParam.SetTexture2D(pMRTexture);
+		pMtl->AddParam(MRTextureParam);
+
+
+		RenderDog::SamplerDesc samplerDesc = {};
+		samplerDesc.filterMode = RenderDog::SAMPLER_FILTER::LINEAR;
+		samplerDesc.addressMode = RenderDog::SAMPLER_ADDRESS::WRAP;
+		RenderDog::ISamplerState* pMRTextureSampler = RenderDog::g_pISamplerStateManager->CreateSamplerState(samplerDesc);
+		if (!pMRTextureSampler)
+		{
+			return nullptr;
+		}
+		RenderDog::MaterialParam MRTextureSamplerParam("MetallicRoughnessTextureSampler", RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
+		MRTextureSamplerParam.SetSamplerState(pMRTextureSampler);
+		pMtl->AddParam(MRTextureSamplerParam);
 	}
 
 	return pMtl;
@@ -647,7 +676,7 @@ void ModelViewer::RegisterObjectToScene()
 		m_pGridLine->RegisterToScene(m_pScene);
 	}
 
-	m_pFloor->RegisterToScene(m_pScene);
+	//m_pFloor->RegisterToScene(m_pScene);
 
 	m_pSkyBox->RegisterToScene(m_pScene);
 

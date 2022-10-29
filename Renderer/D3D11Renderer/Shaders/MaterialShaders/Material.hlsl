@@ -10,6 +10,9 @@ SamplerState	DiffuseTextureSampler;
 Texture2D		NormalTexture;
 SamplerState	NormalTextureSampler;
 
+Texture2D		MetallicRoughnessTexture;
+SamplerState	MetallicRoughnessTextureSampler;
+
 float3 ComFunc_Material_GetBaseColorRaw(float2 inTexCoord)
 {
 	float3 BaseColor = abs(DiffuseTexture.Sample(DiffuseTextureSampler, inTexCoord).rgb);
@@ -26,4 +29,18 @@ float3 ComFunc_Material_GetNormalRaw(float2 inTexCoord)
 	float3 TangentNormal = normalize(float3(TangentNormalXY, TangentNormalZ));
 
 	return TangentNormal;
+}
+
+float ComFunc_Material_GetMetallicRaw(float2 inTexCoord)
+{
+	float Metallic = MetallicRoughnessTexture.Sample(MetallicRoughnessTextureSampler, inTexCoord).r;
+
+	return Metallic;
+}
+
+float ComFunc_Material_GetRoughnessRaw(float2 inTexCoord)
+{
+	float Roughness = MetallicRoughnessTexture.Sample(MetallicRoughnessTextureSampler, inTexCoord).g;
+
+	return Roughness;
 }
