@@ -269,17 +269,17 @@ namespace RenderDog
 		SRSamplerState(const SamplerDesc& desc);
 		virtual ~SRSamplerState();
 
-		virtual void			Release() override;
+		virtual void					Release() override;
 
-		virtual SamplerDesc		GetDesc() const override { return m_Desc; }
+		virtual const SamplerDesc&		GetDesc() const override { return m_Desc; }
 		
-		virtual void			SetToVertexShader(uint32_t startSlot) override;
-		virtual void			SetToPixelShader(uint32_t startSlot) override;
+		virtual void					SetToVertexShader(uint32_t startSlot) override;
+		virtual void					SetToPixelShader(uint32_t startSlot) override;
 
 	private:
-		ISRSamplerState*		m_pSamplerState;
+		ISRSamplerState*				m_pSamplerState;
 
-		SamplerDesc				m_Desc;
+		SamplerDesc						m_Desc;
 	};
 
 	//==================================================
