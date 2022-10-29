@@ -101,11 +101,13 @@ namespace RenderDog
 
 	struct SamplerDesc
 	{
+		std::string				name;
 		SAMPLER_FILTER			filterMode;
 		SAMPLER_ADDRESS			addressMode;
 		float					borderColor[4];
 
 		SamplerDesc() :
+			name(""),
 			filterMode(SAMPLER_FILTER::POINT),
 			addressMode(SAMPLER_ADDRESS::WRAP)
 		{
@@ -132,12 +134,12 @@ namespace RenderDog
 		virtual ~ISamplerState() = default;
 
 	public:
-		virtual void			Release() = 0;
+		virtual void					Release() = 0;
 
-		virtual SamplerDesc		GetDesc() const = 0;
+		virtual const SamplerDesc&		GetDesc() const = 0;
 
-		virtual void			SetToVertexShader(uint32_t startSlot) = 0;
-		virtual void			SetToPixelShader(uint32_t startSlot) = 0;
+		virtual void					SetToVertexShader(uint32_t startSlot) = 0;
+		virtual void					SetToPixelShader(uint32_t startSlot) = 0;
 	};
 
 	//==================================================

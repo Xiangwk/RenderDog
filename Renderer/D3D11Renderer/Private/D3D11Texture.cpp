@@ -286,23 +286,23 @@ namespace RenderDog
 	//==================================================
 	//		SamplerState
 	//==================================================
-	class D3D11SamplerState : public ISamplerState
+	class D3D11SamplerState : public ISamplerState, public RefCntObject
 	{
 	public:
 		D3D11SamplerState();
 		D3D11SamplerState(const SamplerDesc& desc);
 		virtual ~D3D11SamplerState();
 
-		virtual void			Release() override;
+		virtual void					Release() override;
 
-		virtual SamplerDesc		GetDesc() const override;
+		virtual const SamplerDesc&		GetDesc() const override;
 
-		virtual void			SetToVertexShader(uint32_t startSlot) override;
-		virtual void			SetToPixelShader(uint32_t startSlot) override;
+		virtual void					SetToVertexShader(uint32_t startSlot) override;
+		virtual void					SetToPixelShader(uint32_t startSlot) override;
 
 	private:
-		ID3D11SamplerState*		m_pSamplerState;
-		SamplerDesc				m_Desc;
+		ID3D11SamplerState*				m_pSamplerState;
+		SamplerDesc						m_Desc;
 	};
 
 	//==================================================
@@ -310,6 +310,9 @@ namespace RenderDog
 	//==================================================
 	class D3D11SamplerStateManager : public ISamplerStateManager
 	{
+	private:
+		typedef std::unordered_map<std::string, ISamplerState*> SamplerMap;
+
 	public:
 		D3D11SamplerStateManager() = default;
 		virtual ~D3D11SamplerStateManager() = default;
@@ -317,6 +320,9 @@ namespace RenderDog
 		virtual ISamplerState*	CreateSamplerState(const SamplerDesc& desc) override;
 
 		void					ReleaseSamplerState(D3D11SamplerState* pSampler);
+
+	private:
+		SamplerMap				m_SamplerMap;
 	};
 
 	D3D11SamplerStateManager	g_D3D11SamplerStateManager;
@@ -396,7 +402,7 @@ namespace RenderDog
 		g_D3D11SamplerStateManager.ReleaseSamplerState(this);
 	}
 
-	SamplerDesc	D3D11SamplerState::GetDesc() const
+	const SamplerDesc& D3D11SamplerState::GetDesc() const
 	{
 		return m_Desc;
 	}
@@ -413,8 +419,19 @@ namespace RenderDog
 
 	ISamplerState* D3D11SamplerStateManager::CreateSamplerState(const SamplerDesc& desc)
 	{
-		ISamplerState* pSampler = new D3D11SamplerState(desc);
+		D3D11SamplerState* pSampler = nullptr;
 
+		auto iter = m_SamplerMap.find(desc.name);
+		if (iter != m_SamplerMap.end())
+		{
+			pSampler = (D3D11SamplerState*)(iter->second);
+			pSampler->AddRef();
+		}
+		else
+		{
+			pSampler = new D3D11SamplerState(desc);
+		}
+		
 		return pSampler;
 	}
 
@@ -422,8 +439,11 @@ namespace RenderDog
 	{
 		if (pSampler)
 		{
-			delete pSampler;
-			pSampler = nullptr;
+			std::string samplerName = pSampler->GetDesc().name;
+			if (pSampler->SubRef() == 0)
+			{
+				m_SamplerMap.erase(samplerName);
+			}
 		}
 	}
 	

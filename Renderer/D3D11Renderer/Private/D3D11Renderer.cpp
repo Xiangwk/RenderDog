@@ -27,6 +27,7 @@ namespace RenderDog
 	ID3D11DeviceContext*	g_pD3D11ImmediateContext = nullptr;
 
 	const std::wstring IblBrdfLutTextureFilePath = L"EngineAsset/Textures/IBL_BRDF_LUT.dds";
+	const std::string IblBrdfLutTextureSamplerName = "IblBrdfLutTextureSampler";
 
 	//===========================================================
 	//    Mesh Renderer
@@ -933,6 +934,7 @@ namespace RenderDog
 		}
 
 		SamplerDesc samplerDesc = {};
+		samplerDesc.name = IblBrdfLutTextureSamplerName;
 		samplerDesc.filterMode = SAMPLER_FILTER::LINEAR;
 		samplerDesc.addressMode = SAMPLER_ADDRESS::CLAMP;
 		m_pIblBrdfLutTextureSampler = g_pISamplerStateManager->CreateSamplerState(samplerDesc);
