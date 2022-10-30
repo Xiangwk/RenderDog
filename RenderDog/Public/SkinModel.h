@@ -34,7 +34,7 @@ namespace RenderDog
 		bool							LoadBoneAnimation(const RDFbxImporter::RawAnimation& rawAnimation);
 
 
-		bool							CreateMaterialInstance(IMaterial* pMtl);
+		bool							CreateMaterialInstance(IMaterial* pMtl, const std::vector<MaterialParam>* pMtlParams = nullptr);
 
 		void							RegisterToScene(IScene* pScene);
 

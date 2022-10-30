@@ -46,12 +46,15 @@ public:
 private:
 	bool						LoadFloor(uint32_t width, uint32_t depth, float unit);
 	bool						LoadSkyBox();
-	bool						LoadFbxModel(const std::string& fileName, LOAD_MODEL_TYPE modelType, RenderDog::IMaterial* pMtl);
+	bool						LoadFbxModel(const std::string& fileName, LOAD_MODEL_TYPE modelType, const std::vector<RenderDog::MaterialParam>* pMtlParams = nullptr);
 	bool						LoadFbxAnimation(const std::string& fileName, RenderDog::SkinModel* pSkinModel);
 
 	//FIXME!!! 这里只是临时添加此函数，后续应将此函数转移到Model相关的类中
 	RenderDog::IMaterial*		CreateBasicMaterial(const std::string& mtlName);
 	RenderDog::IMaterial*		CreateSkyMaterial(const std::string& mtlName);
+
+	bool						LoadStaticModelMaterialParams(std::vector<RenderDog::MaterialParam>& params);
+	bool						LoadSkinModelMaterialParams(std::vector<RenderDog::MaterialParam>& params);
 
 	void						Update();
 	void						RegisterObjectToScene();

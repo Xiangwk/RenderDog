@@ -125,9 +125,9 @@ namespace RenderDog
 		m_Name = name;
 	}
 
-	bool StaticMesh::CreateMaterialInstance(IMaterial* pMtl)
+	bool StaticMesh::CreateMaterialInstance(IMaterial* pMtl, const std::vector<MaterialParam>* pMtlParams)
 	{
-		m_pMtlIns = g_pMaterialManager->GetMaterialInstance(pMtl);
+		m_pMtlIns = g_pMaterialManager->GetMaterialInstance(pMtl, pMtlParams);
 
 		return true;
 	}
@@ -402,8 +402,20 @@ namespace RenderDog
 
 		if (mesh.m_pMtlIns)
 		{
+			std::vector<MaterialParam> mtlParams;
+			for (uint32_t i = 0; i < m_pMtlIns->GetMaterialParamNum(); ++i)
+			{
+				mtlParams.push_back(m_pMtlIns->GetMaterialParamByIndex(i));
+			}
+
 			IMaterial* pMtl = mesh.m_pMtlIns->GetMaterial();
 			m_pMtlIns = g_pMaterialManager->GetMaterialInstance(pMtl);
+
+			for (uint32_t i = 0; i < m_pMtlIns->GetMaterialParamNum(); ++i)
+			{
+				MaterialParam& param = m_pMtlIns->GetMaterialParamByIndex(i);
+				param = mtlParams[i];
+			}
 		}
 	}
 

@@ -127,9 +127,9 @@ namespace RenderDog
 		m_Name = name;
 	}
 
-	bool SkinMesh::CreateMaterialInstance(IMaterial* pMtl)
+	bool SkinMesh::CreateMaterialInstance(IMaterial* pMtl, const std::vector<MaterialParam>* pMtlParams /*= nullptr*/)
 	{
-		m_pMtlIns = g_pMaterialManager->GetMaterialInstance(pMtl);
+		m_pMtlIns = g_pMaterialManager->GetMaterialInstance(pMtl, pMtlParams);
 
 		return true;
 	}

@@ -12,14 +12,13 @@
 #include "Bounding.h"
 #include "Matrix.h"
 #include "GlobalValue.h"
+#include "Material.h"
 
 #include <vector>
 #include <string>
 
 namespace RenderDog
 {
-	class IMaterial;
-
 	struct SkinMeshRenderData
 	{
 		IVertexBuffer*		pVB;
@@ -57,7 +56,7 @@ namespace RenderDog
 
 		void							LoadFromSkinData(const std::vector<SkinVertex>& vertices, const std::vector<uint32_t>& indices, const std::string& name);
 								
-		bool							CreateMaterialInstance(IMaterial* pMtl);
+		bool							CreateMaterialInstance(IMaterial* pMtl, const std::vector<MaterialParam>* pMtlParams = nullptr);
 
 		void							InitRenderData();
 

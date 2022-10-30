@@ -8,13 +8,13 @@
 
 #include "StaticMesh.h"
 #include "FbxImporter.h"
+#include "Material.h"
 
 #include <string>
 
 namespace RenderDog
 {
 	class IScene;
-	class IMaterial;
 
 	class StaticModel
 	{
@@ -32,7 +32,7 @@ namespace RenderDog
 		bool						LoadFromRawMeshData(const std::vector<RDFbxImporter::RawMeshData>& rawMeshDatas,
 														const std::string& fileName);
 
-		bool						CreateMaterialInstance(IMaterial* pMtl);
+		bool						CreateMaterialInstance(IMaterial* pMtl, const std::vector<MaterialParam>* pMtlParams = nullptr);
 		
 		void						RegisterToScene(IScene* pScene);
 

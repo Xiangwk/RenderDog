@@ -10,6 +10,7 @@
 #include "Vector.h"
 
 #include <string>
+#include <vector>
 
 namespace RenderDog
 {
@@ -117,7 +118,7 @@ namespace RenderDog
 
 	public:
 		virtual IMaterial*				GetMaterial(const std::string& filePath) = 0;
-		virtual IMaterialInstance*		GetMaterialInstance(IMaterial* pMaterial) = 0;
+		virtual IMaterialInstance*		GetMaterialInstance(IMaterial* pMaterial, const std::vector<MaterialParam>* pMtlParams = nullptr) = 0;
 	};
 
 	extern IMaterialManager* g_pMaterialManager;

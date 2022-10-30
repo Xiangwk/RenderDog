@@ -128,12 +128,12 @@ namespace RenderDog
 		return true;
 	}
 
-	bool SkinModel::CreateMaterialInstance(IMaterial* pMtl)
+	bool SkinModel::CreateMaterialInstance(IMaterial* pMtl, const std::vector<MaterialParam>* pMtlParams /*= nullptr*/)
 	{
 		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
 		{
 			SkinMesh& mesh = m_Meshes[i];
-			if (!mesh.CreateMaterialInstance(pMtl))
+			if (!mesh.CreateMaterialInstance(pMtl, pMtlParams))
 			{
 				return false;
 			}

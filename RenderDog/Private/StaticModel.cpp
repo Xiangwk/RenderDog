@@ -34,12 +34,12 @@ namespace RenderDog
 		m_Meshes.push_back(mesh);
 	}
 
-	bool StaticModel::CreateMaterialInstance(IMaterial* pMtl)
+	bool StaticModel::CreateMaterialInstance(IMaterial* pMtl, const std::vector<MaterialParam>* pMtlParams /*= nullptr*/)
 	{
 		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
 		{
 			StaticMesh& mesh = m_Meshes[i];
-			if (!mesh.CreateMaterialInstance(pMtl))
+			if (!mesh.CreateMaterialInstance(pMtl, pMtlParams))
 			{
 				return false;
 			}

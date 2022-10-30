@@ -126,6 +126,7 @@ namespace RenderDog
 		{}
 
 		MaterialInstance(IMaterial* pMtl);
+		MaterialInstance(IMaterial* pMtl, const std::vector<MaterialParam>* pMtlParams);
 
 		virtual ~MaterialInstance();
 
@@ -157,7 +158,7 @@ namespace RenderDog
 		virtual ~MaterialManager() = default;
 
 		virtual IMaterial*				GetMaterial(const std::string& filePath) override;
-		virtual IMaterialInstance*		GetMaterialInstance(IMaterial* pMaterial) override;
+		virtual IMaterialInstance*		GetMaterialInstance(IMaterial* pMaterial, const std::vector<MaterialParam>* pMtlParams = nullptr) override;
 
 		void							ReleaseMaterial(Material* pMaterial);
 		void							ReleaseMaterialInstance(MaterialInstance* pMaterialIns);
@@ -268,6 +269,24 @@ namespace RenderDog
 		}
 	}
 
+	MaterialInstance::MaterialInstance(IMaterial* pMtl, const std::vector<MaterialParam>* pMtlParams):
+		m_Name(""),
+		m_Params(pMtlParams->size()),
+		m_pMaterial(pMtl)
+	{
+		Material* pRealMtl = (Material*)pMtl;
+		int mtlInsId = pRealMtl->m_MtlInsId;
+		pRealMtl->m_MtlInsId++;
+
+		std::string mtlInsName = pMtl->GetName() + "_" + std::to_string(mtlInsId);
+		m_Name = mtlInsName;
+
+		for (uint32_t i = 0; i < pMtlParams->size(); ++i)
+		{
+			m_Params.push_back((*pMtlParams)[i]);
+		}
+	}
+
 	MaterialInstance::~MaterialInstance()
 	{
 		for (size_t i = 0; i < m_Params.size(); ++i)
@@ -310,9 +329,17 @@ namespace RenderDog
 		return pMaterial;
 	}
 
-	IMaterialInstance* MaterialManager::GetMaterialInstance(IMaterial* pMaterial)
+	IMaterialInstance* MaterialManager::GetMaterialInstance(IMaterial* pMaterial, const std::vector<MaterialParam>* pMtlParams /*= nullptr*/)
 	{
-		MaterialInstance* pMtlIns = new MaterialInstance(pMaterial);
+		MaterialInstance* pMtlIns = nullptr;
+		if (pMtlParams)
+		{
+			pMtlIns = new MaterialInstance(pMaterial, pMtlParams);
+		}
+		else
+		{
+			pMtlIns = new MaterialInstance(pMaterial);
+		}
 
 		m_MaterialInsMap.insert({ pMtlIns->GetName(), pMtlIns });
 

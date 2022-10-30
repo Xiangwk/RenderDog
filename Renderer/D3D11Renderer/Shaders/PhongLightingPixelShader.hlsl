@@ -53,7 +53,7 @@ float4 Main(VSOutput VsOutput) : SV_Target
 
 	float3 Ambient = ComFunc_Lighting_EnvReflection(NoV, WorldNormal, EyeDir, BaseColor, Metallic, Roughness);
 
-	float3 FinalColor = LightResult + Ambient;
+	float3 FinalColor = LightResult + Ambient * 0.5f;
 
 	//ColorTone
 	FinalColor = abs(FinalColor / (FinalColor + 1.0f));
