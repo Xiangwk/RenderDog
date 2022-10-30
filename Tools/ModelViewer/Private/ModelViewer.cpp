@@ -478,8 +478,9 @@ RenderDog::IMaterial* ModelViewer::CreateBasicMaterial(const std::string& mtlNam
 {
 	RenderDog::IMaterial* pMtl = RenderDog::g_pMaterialManager->GetMaterial(mtlName);
 
-	//std::wstring diffuseTexturePath = L"EngineAsset/Textures/White_diff.dds";
-	//std::wstring normalTexturePath = L"EngineAsset/Textures/FlatNormal_norm.dds";
+	/*std::wstring diffuseTexturePath = L"EngineAsset/Textures/Red_diff.dds";
+	std::wstring normalTexturePath = L"EngineAsset/Textures/FlatNormal_norm.dds";
+	std::wstring metallicRoughnessTexturePath = L"EngineAsset/Textures/Red_diff.dds";*/
 
 	std::wstring diffuseTexturePath = L"Models/Cerberus/Textures/Cerberus_A.tga";
 	std::wstring normalTexturePath = L"Models/Cerberus/Textures/Cerberus_N.tga";
@@ -566,7 +567,7 @@ RenderDog::IMaterial* ModelViewer::CreateSkyMaterial(const std::string& mtlName)
 {
 	RenderDog::IMaterial* pMtl = RenderDog::g_pMaterialManager->GetMaterial(mtlName);
 
-	std::wstring diffuseTexturePath = L"EngineAsset/Textures/SnowcubeMap.dds";
+	std::wstring diffuseTexturePath = L"EngineAsset/Textures/HouseCubeMap_d.dds";
 	std::wstring normalTexturePath = L"";
 
 	if (!diffuseTexturePath.empty())

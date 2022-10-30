@@ -33,14 +33,14 @@ float3 ComFunc_Material_GetNormalRaw(float2 inTexCoord)
 
 float ComFunc_Material_GetMetallicRaw(float2 inTexCoord)
 {
-	float Metallic = MetallicRoughnessTexture.Sample(MetallicRoughnessTextureSampler, inTexCoord).r;
+	float Metallic = MetallicRoughnessTexture.SampleLevel(MetallicRoughnessTextureSampler, inTexCoord, 0).r;
 
-	return Metallic;
+	return saturate(Metallic);
 }
 
 float ComFunc_Material_GetRoughnessRaw(float2 inTexCoord)
 {
-	float Roughness = MetallicRoughnessTexture.Sample(MetallicRoughnessTextureSampler, inTexCoord).g;
+	float Roughness = MetallicRoughnessTexture.SampleLevel(MetallicRoughnessTextureSampler, inTexCoord, 0).g;
 
-	return Roughness;
+	return saturate(Roughness);
 }
