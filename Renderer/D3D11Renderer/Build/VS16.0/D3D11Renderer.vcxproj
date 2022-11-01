@@ -237,7 +237,7 @@ xcopy ..\..\Shaders\*.* ..\..\..\..\EngineSDK\Renderer\Shaders\ /i /s /y</Comman
     <None Include="..\..\Shaders\LightingCommon.hlsl">
       <FileType>Document</FileType>
     </None>
-    <None Include="..\..\Shaders\MaterialShaders\Material.hlsl">
+    <None Include="..\..\Shaders\MaterialShaders\BasicMaterial.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>
