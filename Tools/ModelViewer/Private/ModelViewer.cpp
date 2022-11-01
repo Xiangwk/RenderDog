@@ -660,7 +660,7 @@ bool ModelViewer::LoadFbxAnimation(const std::string& fileName, RenderDog::SkinM
 
 RenderDog::IMaterial* ModelViewer::CreateBasicMaterial(const std::string& mtlName)
 {
-	RenderDog::IMaterial* pMtl = RenderDog::g_pMaterialManager->GetMaterial(mtlName);
+	RenderDog::IMaterial* pMtl = RenderDog::g_pMaterialManager->GetMaterial(mtlName, true);
 
 	std::wstring diffuseTexturePath = L"EngineAsset/Textures/Grey_diff.dds";
 	std::wstring normalTexturePath = L"EngineAsset/Textures/FlatNormal_norm.dds";
@@ -748,7 +748,7 @@ RenderDog::IMaterial* ModelViewer::CreateBasicMaterial(const std::string& mtlNam
 
 RenderDog::IMaterial* ModelViewer::CreateSkyMaterial(const std::string& mtlName)
 {
-	RenderDog::IMaterial* pMtl = RenderDog::g_pMaterialManager->GetMaterial(mtlName);
+	RenderDog::IMaterial* pMtl = RenderDog::g_pMaterialManager->GetMaterial(mtlName, false);
 
 	std::wstring diffuseTexturePath = L"EngineAsset/Textures/AlpsFieldCubeMap_d.dds";
 	std::wstring normalTexturePath = L"";

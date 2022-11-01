@@ -169,7 +169,7 @@ namespace RenderDog
 		MaterialManager() = default;
 		virtual ~MaterialManager() = default;
 
-		virtual IMaterial*				GetMaterial(const std::string& filePath) override;
+		virtual IMaterial*				GetMaterial(const std::string& filePath, bool bIsUserMtl) override;
 		virtual IMaterialInstance*		GetMaterialInstance(IMaterial* pMaterial, const std::vector<MaterialParam>* pMtlParams = nullptr) override;
 
 		void							ReleaseMaterial(Material* pMaterial);
@@ -226,6 +226,7 @@ namespace RenderDog
 	bool Material::CreateMaterialShader(const std::string& mtlName)
 	{
 		ShaderCompileDesc desc = ShaderCompileDesc(g_DirectionalLightingPixelShaderFilePath, nullptr, "Main", "ps_5_0", 0);
+		desc.mtlShaderName = mtlName.substr(0, mtlName.rfind(".")) + ".hlsl";
 		m_pShader = g_pIShaderManager->GetMaterialShader(desc, m_Name);
 		if (!m_pShader)
 		{
@@ -334,7 +335,7 @@ namespace RenderDog
 		g_MaterialManager.ReleaseMaterialInstance(this);
 	}
 
-	IMaterial* MaterialManager::GetMaterial(const std::string& filePath)
+	IMaterial* MaterialManager::GetMaterial(const std::string& filePath, bool bIsUserMtl)
 	{
 		Material* pMaterial = nullptr;
 
@@ -343,8 +344,11 @@ namespace RenderDog
 		{
 			pMaterial = new Material(filePath);
 			m_MaterialMap.insert({ filePath, pMaterial });
-
-			pMaterial->CreateMaterialShader(filePath);
+			
+			if (bIsUserMtl)
+			{
+				pMaterial->CreateMaterialShader(filePath);
+			}
 		}
 		else
 		{

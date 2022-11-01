@@ -91,7 +91,7 @@
     <None Include="..\..\Shaders\LightingCommon.hlsl">
       <Filter>Shaders\Common</Filter>
     </None>
-    <None Include="..\..\Shaders\MaterialShaders\BasicMaterial.hlsl">
+    <None Include="..\..\Shaders\MaterialShaders\Basic.hlsl">
       <Filter>Shaders\MaterialShaders</Filter>
     </None>
   </ItemGroup>

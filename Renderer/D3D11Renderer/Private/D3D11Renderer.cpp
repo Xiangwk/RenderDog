@@ -431,7 +431,6 @@ namespace RenderDog
 		IShader*					m_pShadowDepthStaticModelVS;
 		IShader*					m_pShadowDepthSkinModelVS;
 		IShader*					m_pSingleColorPixelShader;
-		IShader*					m_pDirectionalLightingPixelShader;
 		IShader*					m_pSkyPixelShader;
 		IShader*					m_pShadowDepthPS;
 
@@ -464,7 +463,6 @@ namespace RenderDog
 		m_pStaticModelVertexShader(nullptr),
 		m_pSkinModelVertexShader(nullptr),
 		m_pSingleColorPixelShader(nullptr),
-		m_pDirectionalLightingPixelShader(nullptr),
 		m_pSkyVertexShader(nullptr),
 		m_pSkyPixelShader(nullptr),
 		m_pShadowDepthStaticModelVS(nullptr),
@@ -848,9 +846,6 @@ namespace RenderDog
 		//PixeShader
 		ShaderCompileDesc psDesc(g_SingleColorPixelShader, nullptr, "Main", "ps_5_0", 0);
 		m_pSingleColorPixelShader = g_pIShaderManager->GetPixelShader(psDesc);
-
-		psDesc = ShaderCompileDesc(g_DirectionalLightingPixelShaderFilePath, nullptr, "Main", "ps_5_0", 0);
-		m_pDirectionalLightingPixelShader = g_pIShaderManager->GetDirectionLightingPixelShader(psDesc);
 		
 		psDesc = ShaderCompileDesc(g_SkyPixelShaderFilePath, nullptr, "Main", "ps_5_0", 0);
 		m_pSkyPixelShader = g_pIShaderManager->GetSkyPixelShader(psDesc);
@@ -885,12 +880,6 @@ namespace RenderDog
 		{
 			m_pSingleColorPixelShader->Release();
 			m_pSingleColorPixelShader = nullptr;
-		}
-
-		if (m_pDirectionalLightingPixelShader)
-		{
-			m_pDirectionalLightingPixelShader->Release();
-			m_pDirectionalLightingPixelShader = nullptr;
 		}
 
 		if (m_pSkyVertexShader)

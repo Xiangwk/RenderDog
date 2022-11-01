@@ -121,7 +121,7 @@ namespace RenderDog
 		virtual ~IMaterialManager() = default;
 
 	public:
-		virtual IMaterial*				GetMaterial(const std::string& filePath) = 0;
+		virtual IMaterial*				GetMaterial(const std::string& filePath, bool bIsUserMtl) = 0;
 		virtual IMaterialInstance*		GetMaterialInstance(IMaterial* pMaterial, const std::vector<MaterialParam>* pMtlParams = nullptr) = 0;
 	};
 

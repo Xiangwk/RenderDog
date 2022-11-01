@@ -92,6 +92,7 @@ namespace RenderDog
 		ShaderMacro*		shaderMacros;
 		std::string			entryPoint;
 		std::string			target;
+		std::string			mtlShaderName;
 		unsigned int		compileFlag;
 
 		ShaderCompileDesc(const std::string& file,
@@ -103,6 +104,7 @@ namespace RenderDog
 			shaderMacros(macros),
 			entryPoint(entry),
 			target(target),
+			mtlShaderName(""),
 			compileFlag(flag)
 		{}
 	};

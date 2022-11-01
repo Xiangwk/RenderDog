@@ -199,7 +199,7 @@ namespace RenderDog
 			if (line == "#include \"MaterialShaders/Material.hlsl\"")
 			{
 				//FIXME!!! 这里需要修改为根据用户提供的MaterialShader文件来替换
-				line = "#include \"MaterialShaders/BasicMaterial.hlsl\"";
+				line = "#include \"MaterialShaders/" + desc.mtlShaderName + "\"";
 			}
 			sourceCode += (line + "\n");
 		}
