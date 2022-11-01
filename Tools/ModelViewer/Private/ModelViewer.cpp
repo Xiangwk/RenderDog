@@ -751,7 +751,6 @@ RenderDog::IMaterial* ModelViewer::CreateSkyMaterial(const std::string& mtlName)
 	RenderDog::IMaterial* pMtl = RenderDog::g_pMaterialManager->GetMaterial(mtlName, false);
 
 	std::wstring diffuseTexturePath = L"EngineAsset/Textures/AlpsFieldCubeMap_d.dds";
-	std::wstring normalTexturePath = L"";
 
 	if (!diffuseTexturePath.empty())
 	{
@@ -777,31 +776,6 @@ RenderDog::IMaterial* ModelViewer::CreateSkyMaterial(const std::string& mtlName)
 		RenderDog::MaterialParam DiffuseTextureSamplerParam("ComVar_Texture_SkyCubeTextureSampler", RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
 		DiffuseTextureSamplerParam.SetSamplerState(pDiffuseTextureSampler);
 		pMtl->AddParam(DiffuseTextureSamplerParam);
-	}
-
-	if (!normalTexturePath.empty())
-	{
-		RenderDog::ITexture2D* pNormalTexture = RenderDog::g_pITextureManager->CreateTexture2D(normalTexturePath);
-		if (!pNormalTexture)
-		{
-			return nullptr;
-		}
-		RenderDog::MaterialParam NormalTextureParam("NormalTexture", RenderDog::MATERIAL_PARAM_TYPE::TEXTURE2D);
-		NormalTextureParam.SetTexture2D(pNormalTexture);
-		pMtl->AddParam(NormalTextureParam);
-
-		RenderDog::SamplerDesc samplerDesc = {};
-		samplerDesc.name = "NormalTextureTextureSampler";
-		samplerDesc.filterMode = RenderDog::SAMPLER_FILTER::LINEAR;
-		samplerDesc.addressMode = RenderDog::SAMPLER_ADDRESS::WRAP;
-		RenderDog::ISamplerState* pNormalTextureSampler = RenderDog::g_pISamplerStateManager->CreateSamplerState(samplerDesc);
-		if (!pNormalTextureSampler)
-		{
-			return nullptr;
-		}
-		RenderDog::MaterialParam NormalTextureSamplerParam("NormalTextureSampler", RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
-		NormalTextureSamplerParam.SetSamplerState(pNormalTextureSampler);
-		pMtl->AddParam(NormalTextureSamplerParam);
 	}
 
 	return pMtl;
