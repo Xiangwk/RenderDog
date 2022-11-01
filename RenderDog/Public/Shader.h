@@ -252,6 +252,8 @@ namespace RenderDog
 
 		virtual IShader*			GetDirectionLightingPixelShader(const ShaderCompileDesc& desc) = 0;
 		virtual IShader*			GetSkyPixelShader(const ShaderCompileDesc& desc) = 0;
+
+		virtual IShader*			GetMaterialShader(const ShaderCompileDesc& desc, const std::string& mtlName) = 0;
 	};
 
 	extern IShaderManager* g_pIShaderManager;

@@ -16,6 +16,7 @@ namespace RenderDog
 {
 	class	ITexture2D;
 	class   ISamplerState;
+	class   IShader;
 
 	enum class MATERIAL_PARAM_TYPE
 	{
@@ -91,6 +92,9 @@ namespace RenderDog
 		virtual MaterialParam&			GetParamByName(const std::string& name) = 0;
 		virtual MaterialParam&			GetParamByIndex(uint32_t index) = 0;
 		virtual uint32_t				GetParamNum() const = 0;
+
+		virtual bool					CreateMaterialShader(const std::string& mtlName) = 0;
+		virtual IShader*				GetMaterialShader() = 0;
 	};
 
 

@@ -156,6 +156,8 @@ namespace RenderDog
 		virtual IShader*			GetDirectionLightingPixelShader(const ShaderCompileDesc& desc) override;
 		virtual IShader*			GetSkyPixelShader(const ShaderCompileDesc& desc) override;
 
+		virtual IShader*			GetMaterialShader(const ShaderCompileDesc& desc, const std::string& mtlName) override;
+
 		void						ReleaseShader(D3D11Shader* pShader);
 
 	private:
@@ -757,6 +759,26 @@ namespace RenderDog
 		{
 			pPixelShader = new D3D11SkyPixelShader(desc);
 			m_ShaderMap.insert({ desc.fileName, pPixelShader });
+		}
+
+		return pPixelShader;
+	}
+
+	IShader* D3D11ShaderManager::GetMaterialShader(const ShaderCompileDesc& desc, const std::string& mtlName)
+	{
+		D3D11Shader* pPixelShader = nullptr;
+
+		std::string mtlShaderName = desc.fileName + "_" + mtlName;
+		auto shader = m_ShaderMap.find(mtlShaderName);
+		if (shader != m_ShaderMap.end())
+		{
+			pPixelShader = shader->second;
+			pPixelShader->AddRef();
+		}
+		else
+		{
+			pPixelShader = new D3D11DirectionalLightingPixelShader(desc);
+			m_ShaderMap.insert({ mtlShaderName, pPixelShader });
 		}
 
 		return pPixelShader;

@@ -26,8 +26,8 @@ namespace RenderDog
 	ID3D11Device*			g_pD3D11Device = nullptr;
 	ID3D11DeviceContext*	g_pD3D11ImmediateContext = nullptr;
 
-	const std::wstring IblBrdfLutTextureFilePath = L"EngineAsset/Textures/IBL_BRDF_LUT.dds";
-	const std::string IblBrdfLutTextureSamplerName = "IblBrdfLutTextureSampler";
+	const std::wstring	IblBrdfLutTextureFilePath = L"EngineAsset/Textures/IBL_BRDF_LUT.dds";
+	const std::string	IblBrdfLutTextureSamplerName = "IblBrdfLutTextureSampler";
 
 	//===========================================================
 	//    Mesh Renderer
@@ -247,10 +247,7 @@ namespace RenderDog
 		m_pEnvReflectionTextureSampler(globalData.pEnvReflectionTextureSampler),
 		m_pIblBrdfLutTexture(globalData.pIblBrdfLutTexture),
 		m_pIblBrdfLutTextureSampler(globalData.pIblBrdfLutTextureSampler)
-	{
-		ShaderCompileDesc psDesc(g_DirectionalLightingPixelShaderFilePath, nullptr, "Main", "ps_5_0", 0);
-		m_pPixelShader = g_pIShaderManager->GetDirectionLightingPixelShader(psDesc);
-	}
+	{}
 
 	D3D11MeshLightingRenderer::~D3D11MeshLightingRenderer()
 	{}
@@ -278,27 +275,29 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->IASetIndexBuffer(pIB, DXGI_FORMAT_R32_UINT, 0);
 
 		renderParam.pVS->Apply(&renderParam.PerObjParam);
+
+		IShader* pMtlShader = renderParam.pMtlIns->GetMaterial()->GetMaterialShader();
 		
-		ShaderParam* pSkyCubeTextureParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Texture_SkyCubeTexture");
+		ShaderParam* pSkyCubeTextureParam = pMtlShader->GetShaderParamPtrByName("ComVar_Texture_SkyCubeTexture");
 		pSkyCubeTextureParam->SetTexture(m_pEnvReflectionTexture);
 
-		ShaderParam* pSkyCubeTextureSamplerParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Texture_SkyCubeTextureSampler");
+		ShaderParam* pSkyCubeTextureSamplerParam = pMtlShader->GetShaderParamPtrByName("ComVar_Texture_SkyCubeTextureSampler");
 		pSkyCubeTextureSamplerParam->SetSampler(m_pEnvReflectionTextureSampler);
 
-		ShaderParam* pShadowDepthTextureParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Texture_ShadowDepthTexture");
+		ShaderParam* pShadowDepthTextureParam = pMtlShader->GetShaderParamPtrByName("ComVar_Texture_ShadowDepthTexture");
 		pShadowDepthTextureParam->SetTexture(m_pShadowDepthTexture);
 
-		ShaderParam* pShadowDepthTextureSamplerParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Texture_ShadowDepthTextureSampler");
+		ShaderParam* pShadowDepthTextureSamplerParam = pMtlShader->GetShaderParamPtrByName("ComVar_Texture_ShadowDepthTextureSampler");
 		pShadowDepthTextureSamplerParam->SetSampler(m_pShadowDepthTextureSampler);
 
-		ShaderParam* pIblBrdfLutTextureParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Texture_IblBrdfLutTexture");
+		ShaderParam* pIblBrdfLutTextureParam = pMtlShader->GetShaderParamPtrByName("ComVar_Texture_IblBrdfLutTexture");
 		pIblBrdfLutTextureParam->SetTexture(m_pIblBrdfLutTexture);
 
-		ShaderParam* pIblBrdfLutTextureSamplerParam = m_pPixelShader->GetShaderParamPtrByName("ComVar_Texture_IblBrdfLutTextureSampler");
+		ShaderParam* pIblBrdfLutTextureSamplerParam = pMtlShader->GetShaderParamPtrByName("ComVar_Texture_IblBrdfLutTextureSampler");
 		pIblBrdfLutTextureSamplerParam->SetSampler(m_pIblBrdfLutTextureSampler);
 
-		m_pPixelShader->Apply(nullptr);
-		m_pPixelShader->ApplyMaterialParams(renderParam.pMtlIns);
+		pMtlShader->Apply(nullptr);
+		pMtlShader->ApplyMaterialParams(renderParam.pMtlIns);
 		
 		uint32_t indexNum = renderParam.pIB->GetIndexNum();
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);

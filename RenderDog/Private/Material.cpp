@@ -76,7 +76,8 @@ namespace RenderDog
 			RefCntObject(),
 			m_Name(name),
 			m_Params(0),
-			m_MtlInsId(0)
+			m_MtlInsId(0),
+			m_pShader(nullptr)
 		{}
 
 		virtual ~Material()
@@ -95,6 +96,12 @@ namespace RenderDog
 					pSampler->Release();
 				}
 			}
+
+			if (m_pShader)
+			{
+				m_pShader->Release();
+				m_pShader = nullptr;
+			}
 		}
 
 		virtual void					Release() override;
@@ -106,11 +113,16 @@ namespace RenderDog
 		virtual MaterialParam&			GetParamByIndex(uint32_t index) override;
 		virtual uint32_t				GetParamNum() const override;
 
+		virtual bool					CreateMaterialShader(const std::string& mtlName) override;
+		virtual IShader*				GetMaterialShader() override { return m_pShader; }
+
 	private:
 		std::string						m_Name;
 		std::vector<MaterialParam>		m_Params;
 
 		int								m_MtlInsId;
+
+		IShader*						m_pShader;
 	};
 
 	//================================================================
@@ -209,6 +221,18 @@ namespace RenderDog
 	uint32_t Material::GetParamNum() const
 	{
 		return (uint32_t)(m_Params.size());
+	}
+
+	bool Material::CreateMaterialShader(const std::string& mtlName)
+	{
+		ShaderCompileDesc desc = ShaderCompileDesc(g_DirectionalLightingPixelShaderFilePath, nullptr, "Main", "ps_5_0", 0);
+		m_pShader = g_pIShaderManager->GetMaterialShader(desc, m_Name);
+		if (!m_pShader)
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 	void Material::AddParam(const MaterialParam& param)
@@ -319,6 +343,8 @@ namespace RenderDog
 		{
 			pMaterial = new Material(filePath);
 			m_MaterialMap.insert({ filePath, pMaterial });
+
+			pMaterial->CreateMaterialShader(filePath);
 		}
 		else
 		{
