@@ -11,6 +11,11 @@
 
 #include <vector>
 #include <unordered_map>
+#include <fstream>
+#include <sstream>
+#include <iostream>
+#include <locale>
+#include <codecvt>
 
 namespace RenderDog
 {
@@ -75,10 +80,13 @@ namespace RenderDog
 		Material(const std::string& name) :
 			RefCntObject(),
 			m_Name(name),
+			m_ShaderName(),
 			m_Params(0),
 			m_MtlInsId(0),
 			m_pShader(nullptr)
-		{}
+		{
+			m_ShaderName = m_Name.substr(0, m_Name.rfind(".")) + ".hlsl";
+		}
 
 		virtual ~Material()
 		{
@@ -113,11 +121,14 @@ namespace RenderDog
 		virtual MaterialParam&			GetParamByIndex(uint32_t index) override;
 		virtual uint32_t				GetParamNum() const override;
 
-		virtual bool					CreateMaterialShader(const std::string& mtlName) override;
+		virtual bool					CreateMaterialShader() override;
 		virtual IShader*				GetMaterialShader() override { return m_pShader; }
+
+		bool							GetParamsFromFile(const std::string& fileName);
 
 	private:
 		std::string						m_Name;
+		std::string						m_ShaderName;
 		std::vector<MaterialParam>		m_Params;
 
 		int								m_MtlInsId;
@@ -223,10 +234,10 @@ namespace RenderDog
 		return (uint32_t)(m_Params.size());
 	}
 
-	bool Material::CreateMaterialShader(const std::string& mtlName)
+	bool Material::CreateMaterialShader()
 	{
 		ShaderCompileDesc desc = ShaderCompileDesc(g_DirectionalLightingPixelShaderFilePath, nullptr, "Main", "ps_5_0", 0);
-		desc.mtlShaderName = mtlName.substr(0, mtlName.rfind(".")) + ".hlsl";
+		desc.mtlShaderName = m_ShaderName;
 		m_pShader = g_pIShaderManager->GetMaterialShader(desc, m_Name);
 		if (!m_pShader)
 		{
@@ -243,6 +254,57 @@ namespace RenderDog
 			m_Params.push_back(param);
 		}
 	}
+
+	bool Material::GetParamsFromFile(const std::string& fileName)
+	{
+		std::ifstream fin(fileName);
+		if (fin.is_open())
+		{
+			std::string line;
+			while (std::getline(fin, line))
+			{
+				if (line == "MaterialPropertys")
+				{
+					std::string mtlProp;
+					do
+					{
+						std::getline(fin, mtlProp);
+						if (mtlProp.find("ShaderFile"))
+						{
+							m_ShaderName = mtlProp.substr(mtlProp.find("\""), mtlProp.rfind("\""));
+						}
+					} while (mtlProp == "}");
+				}
+				else if(line == "MaterialParameters")
+				{
+					std::string mtlParam;
+					do
+					{
+						std::getline(fin, mtlParam);
+						if (mtlParam.find("Texture2D"))
+						{
+							std::string mtlParamName = mtlParam.substr(mtlParam.find("Texture2D"), mtlParam.find("="));
+							std::string textureFileName = mtlParam.substr(mtlParam.find("\""), mtlParam.rfind("\""));
+							std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+							RenderDog::ITexture2D* pTexture = RenderDog::g_pITextureManager->CreateTexture2D(converter.from_bytes(textureFileName));
+							if (!pTexture)
+							{
+								return false;
+							}
+							RenderDog::MaterialParam textureParam(mtlParamName, RenderDog::MATERIAL_PARAM_TYPE::TEXTURE2D);
+							textureParam.SetTexture2D(pTexture);
+							AddParam(textureParam);
+						}
+					} while (mtlParam == "}");
+				}
+				else if (line == "MaterialFunctions")
+				{
+
+				}
+			}
+		}
+	}
+
 
 	MaterialInstance::MaterialInstance(IMaterial* pMtl) :
 		m_Name(""),
@@ -347,7 +409,7 @@ namespace RenderDog
 			
 			if (bIsUserMtl)
 			{
-				pMaterial->CreateMaterialShader(filePath);
+				pMaterial->CreateMaterialShader();
 			}
 		}
 		else

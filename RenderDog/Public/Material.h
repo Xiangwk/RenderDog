@@ -93,7 +93,7 @@ namespace RenderDog
 		virtual MaterialParam&			GetParamByIndex(uint32_t index) = 0;
 		virtual uint32_t				GetParamNum() const = 0;
 
-		virtual bool					CreateMaterialShader(const std::string& mtlName) = 0;
+		virtual bool					CreateMaterialShader() = 0;
 		virtual IShader*				GetMaterialShader() = 0;
 	};
 
