@@ -285,6 +285,7 @@ namespace RenderDog
 						{
 							std::string mtlParamName = mtlParam.substr(mtlParam.find("Texture2D"), mtlParam.find("="));
 							std::string textureFileName = mtlParam.substr(mtlParam.find("\""), mtlParam.rfind("\""));
+
 							std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
 							RenderDog::ITexture2D* pTexture = RenderDog::g_pITextureManager->CreateTexture2D(converter.from_bytes(textureFileName));
 							if (!pTexture)
@@ -303,6 +304,12 @@ namespace RenderDog
 				}
 			}
 		}
+		else
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 
@@ -406,6 +413,11 @@ namespace RenderDog
 		{
 			pMaterial = new Material(filePath);
 			m_MaterialMap.insert({ filePath, pMaterial });
+
+			/*if (!pMaterial->GetParamsFromFile(filePath))
+			{
+				return nullptr;
+			}*/
 			
 			if (bIsUserMtl)
 			{
