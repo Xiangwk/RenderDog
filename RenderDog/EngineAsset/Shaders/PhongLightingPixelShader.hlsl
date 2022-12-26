@@ -7,7 +7,7 @@
 #include "LightingCommon.hlsl"
 //#include "PhongLightingCommon.hlsl"
 #include "ShadowTestCommon.hlsl"
-#include "MaterialShaders/Material.hlsl"
+#include "Material.hlsl"
 
 struct VSOutput
 {

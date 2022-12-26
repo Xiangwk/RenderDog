@@ -34,7 +34,6 @@ namespace RenderDog
 	}
 
 	bool SkinModel::LoadFromRawMeshData(const std::vector<RDFbxImporter::RawMeshData>& rawMeshDatas, const RDFbxImporter::RawSkeletonData* pSkeletonData, 
-									    const std::string& vsFile, const std::string& psFile, 
 										const std::string& modelName)
 	{
 		for (uint32_t i = 0; i < rawMeshDatas.size(); ++i)

@@ -1,0 +1,24 @@
+///////////////////////////////////////////
+//RenderDog
+//FileName: Basic.mtl
+//Written by Xiang Weikang
+///////////////////////////////////////////
+
+MaterialPropertys
+{
+    ShaderFile = "Basic.hlsl"
+}
+
+MaterialParameters
+{
+    Texture2D LocVar_Material_DiffuseTexture = "ErrorTexture"
+
+    Texture2D LocVar_Material_NormalTexture = "FlatNormalTexture"
+
+    Texture2D LocVar_Material_MetallicRoughnessTexture = "WhiteTexture"
+}
+
+MaterialFunctions
+{
+
+}

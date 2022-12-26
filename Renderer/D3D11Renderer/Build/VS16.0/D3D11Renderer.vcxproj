@@ -129,10 +129,7 @@
     </Link>
     <PostBuildEvent>
       <Command>xcopy $(TargetDir)*.lib ..\..\..\..\EngineSDK\Renderer\Libs\ /i /s /y
-xcopy ..\..\Public\*.* ..\..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i /s /y
-
-del /s /q /f ..\..\..\..\EngineSDK\Renderer\Shaders\*.* 
-xcopy ..\..\Shaders\*.* ..\..\..\..\EngineSDK\Renderer\Shaders\ /i /s /y</Command>
+xcopy ..\..\Public\*.* ..\..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i /s /y</Command>
     </PostBuildEvent>
     <Lib>
       <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;DirectXTex_d.lib</AdditionalDependencies>
@@ -157,10 +154,7 @@ xcopy ..\..\Shaders\*.* ..\..\..\..\EngineSDK\Renderer\Shaders\ /i /s /y</Comman
     </Link>
     <PostBuildEvent>
       <Command>xcopy $(TargetDir)*.lib ..\..\..\..\EngineSDK\Renderer\Libs\ /i /s /y
-xcopy ..\..\Public\*.* ..\..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i /s /y
-
-del /s /q /f ..\..\..\..\EngineSDK\Renderer\Shaders\*.* 
-xcopy ..\..\Shaders\*.* ..\..\..\..\EngineSDK\Renderer\Shaders\ /i /s /y</Command>
+xcopy ..\..\Public\*.* ..\..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i /s /y</Command>
     </PostBuildEvent>
     <Lib>
       <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;DirectXTex.lib</AdditionalDependencies>
@@ -179,65 +173,49 @@ xcopy ..\..\Shaders\*.* ..\..\..\..\EngineSDK\Renderer\Shaders\ /i /s /y</Comman
     <ClInclude Include="..\..\Public\D3D11Renderer.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Shaders\PhongLightingCommon.hlsl">
+    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\Common.hlsl">
       <FileType>Document</FileType>
     </None>
-    <None Include="..\..\Shaders\PhongLightingPixelShader.hlsl">
+    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\LightingCommon.hlsl">
       <FileType>Document</FileType>
     </None>
-    <None Include="..\..\Shaders\SingleColorPixelShader.hlsl">
+    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\PhongLightingCommon.hlsl">
       <FileType>Document</FileType>
     </None>
-    <None Include="..\..\Shaders\StaticModelVertexShader.hlsl">
+    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\PhongLightingPixelShader.hlsl">
       <FileType>Document</FileType>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\Shaders\SimpleModelVertexShader.hlsl">
+    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\ShadowDepthPixelShader.hlsl">
       <FileType>Document</FileType>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\Shaders\ShadowDepthPixelShader.hlsl">
+    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\ShadowDepthSkinModelVertexShader.hlsl">
       <FileType>Document</FileType>
     </None>
-    <None Include="..\..\Shaders\ShadowDepthStaticModelVertexShader.hlsl">
+    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\ShadowDepthStaticModelVertexShader.hlsl">
       <FileType>Document</FileType>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\Shaders\ShadowTestCommon.hlsl">
+    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\ShadowTestCommon.hlsl">
       <FileType>Document</FileType>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\Shaders\SkyPixelShader.hlsl">
+    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\SimpleModelVertexShader.hlsl">
       <FileType>Document</FileType>
     </None>
-    <None Include="..\..\Shaders\SkyVertexShader.hlsl">
+    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\SingleColorPixelShader.hlsl">
       <FileType>Document</FileType>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\Shaders\Common.hlsl">
+    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\SkinModelVertexShader.hlsl">
       <FileType>Document</FileType>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\Shaders\SkinModelVertexShader.hlsl">
+    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\SkyPixelShader.hlsl">
       <FileType>Document</FileType>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\Shaders\ShadowDepthSkinModelVertexShader.hlsl">
+    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\SkyVertexShader.hlsl">
       <FileType>Document</FileType>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\Shaders\LightingCommon.hlsl">
+    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\StaticModelVertexShader.hlsl">
       <FileType>Document</FileType>
     </None>
-    <None Include="..\..\Shaders\MaterialShaders\Basic.hlsl">
+    <None Include="..\..\..\..\RenderDog\UserAsset\Shaders\sm5.0\Materials\Basic.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

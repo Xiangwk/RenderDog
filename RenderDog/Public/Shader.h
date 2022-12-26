@@ -20,18 +20,20 @@ namespace RenderDog
 	class   IMaterialInstance;
 
 	//VertexShader
-	const std::string g_SimpleModelVertexShadreFilePath = "Shaders/SimpleModelVertexShader.hlsl";
-	const std::string g_StaticModelVertexShaderFilePath = "Shaders/StaticModelVertexShader.hlsl";
-	const std::string g_SkinModelVertexShaderFilePath = "Shaders/SkinModelVertexShader.hlsl";
-	const std::string g_SkyVertexShaderFilePath = "Shaders/SkyVertexShader.hlsl";
-	const std::string g_ShadowDepthStaticVertexShaderFilePath = "Shaders/ShadowDepthStaticModelVertexShader.hlsl";
-	const std::string g_ShadowDepthSkinVertexShaderFilePath = "Shaders/ShadowDepthSkinModelVertexShader.hlsl";
+	const std::string g_SimpleModelVertexShadreFilePath = "EngineAsset/Shaders/SimpleModelVertexShader.hlsl";
+	const std::string g_StaticModelVertexShaderFilePath = "EngineAsset/Shaders/StaticModelVertexShader.hlsl";
+	const std::string g_SkinModelVertexShaderFilePath = "EngineAsset/Shaders/SkinModelVertexShader.hlsl";
+	const std::string g_SkyVertexShaderFilePath = "EngineAsset/Shaders/SkyVertexShader.hlsl";
+	const std::string g_ShadowDepthStaticVertexShaderFilePath = "EngineAsset/Shaders/ShadowDepthStaticModelVertexShader.hlsl";
+	const std::string g_ShadowDepthSkinVertexShaderFilePath = "EngineAsset/Shaders/ShadowDepthSkinModelVertexShader.hlsl";
 
 	//PixelShader
-	const std::string g_SingleColorPixelShader = "Shaders/SingleColorPixelShader.hlsl";
-	const std::string g_DirectionalLightingPixelShaderFilePath = "Shaders/PhongLightingPixelShader.hlsl";
-	const std::string g_SkyPixelShaderFilePath = "Shaders/SkyPixelShader.hlsl";
-	const std::string g_ShadowDepthPixelShaderFilePath = "Shaders/ShadowDepthPixelShader.hlsl";
+	const std::string g_SingleColorPixelShader = "EngineAsset/Shaders/SingleColorPixelShader.hlsl";
+	const std::string g_DirectionalLightingPixelShaderFilePath = "EngineAsset/Shaders/PhongLightingPixelShader.hlsl";
+	const std::string g_SkyPixelShaderFilePath = "EngineAsset/Shaders/SkyPixelShader.hlsl";
+	const std::string g_ShadowDepthPixelShaderFilePath = "EngineAsset/Shaders/ShadowDepthPixelShader.hlsl";
+
+	const std::string g_UserMaterialShaderRootPath = "UserAsset/Shaders/sm5.0/Materials/";
 
 	enum class SHADER_PARAM_TYPE
 	{

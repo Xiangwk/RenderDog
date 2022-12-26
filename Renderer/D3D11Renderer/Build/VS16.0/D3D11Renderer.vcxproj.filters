@@ -49,50 +49,50 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Shaders\Common.hlsl">
+    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\Common.hlsl">
       <Filter>Shaders\Common</Filter>
     </None>
-    <None Include="..\..\Shaders\PhongLightingCommon.hlsl">
+    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\LightingCommon.hlsl">
       <Filter>Shaders\Common</Filter>
     </None>
-    <None Include="..\..\Shaders\ShadowDepthSkinModelVertexShader.hlsl">
-      <Filter>Shaders\VertexShader</Filter>
-    </None>
-    <None Include="..\..\Shaders\ShadowDepthStaticModelVertexShader.hlsl">
-      <Filter>Shaders\VertexShader</Filter>
-    </None>
-    <None Include="..\..\Shaders\SimpleModelVertexShader.hlsl">
-      <Filter>Shaders\VertexShader</Filter>
-    </None>
-    <None Include="..\..\Shaders\SkinModelVertexShader.hlsl">
-      <Filter>Shaders\VertexShader</Filter>
-    </None>
-    <None Include="..\..\Shaders\SkyVertexShader.hlsl">
-      <Filter>Shaders\VertexShader</Filter>
-    </None>
-    <None Include="..\..\Shaders\StaticModelVertexShader.hlsl">
-      <Filter>Shaders\VertexShader</Filter>
-    </None>
-    <None Include="..\..\Shaders\ShadowTestCommon.hlsl">
+    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\PhongLightingCommon.hlsl">
       <Filter>Shaders\Common</Filter>
     </None>
-    <None Include="..\..\Shaders\PhongLightingPixelShader.hlsl">
-      <Filter>Shaders\PixelShader</Filter>
-    </None>
-    <None Include="..\..\Shaders\ShadowDepthPixelShader.hlsl">
-      <Filter>Shaders\PixelShader</Filter>
-    </None>
-    <None Include="..\..\Shaders\SingleColorPixelShader.hlsl">
-      <Filter>Shaders\PixelShader</Filter>
-    </None>
-    <None Include="..\..\Shaders\SkyPixelShader.hlsl">
-      <Filter>Shaders\PixelShader</Filter>
-    </None>
-    <None Include="..\..\Shaders\LightingCommon.hlsl">
+    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\ShadowTestCommon.hlsl">
       <Filter>Shaders\Common</Filter>
     </None>
-    <None Include="..\..\Shaders\MaterialShaders\Basic.hlsl">
+    <None Include="..\..\..\..\RenderDog\UserAsset\Shaders\sm5.0\Materials\Basic.hlsl">
       <Filter>Shaders\MaterialShaders</Filter>
+    </None>
+    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\PhongLightingPixelShader.hlsl">
+      <Filter>Shaders\PixelShader</Filter>
+    </None>
+    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\ShadowDepthPixelShader.hlsl">
+      <Filter>Shaders\PixelShader</Filter>
+    </None>
+    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\SingleColorPixelShader.hlsl">
+      <Filter>Shaders\PixelShader</Filter>
+    </None>
+    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\SkyPixelShader.hlsl">
+      <Filter>Shaders\PixelShader</Filter>
+    </None>
+    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\ShadowDepthSkinModelVertexShader.hlsl">
+      <Filter>Shaders\VertexShader</Filter>
+    </None>
+    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\ShadowDepthStaticModelVertexShader.hlsl">
+      <Filter>Shaders\VertexShader</Filter>
+    </None>
+    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\SimpleModelVertexShader.hlsl">
+      <Filter>Shaders\VertexShader</Filter>
+    </None>
+    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\SkinModelVertexShader.hlsl">
+      <Filter>Shaders\VertexShader</Filter>
+    </None>
+    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\SkyVertexShader.hlsl">
+      <Filter>Shaders\VertexShader</Filter>
+    </None>
+    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\StaticModelVertexShader.hlsl">
+      <Filter>Shaders\VertexShader</Filter>
     </None>
   </ItemGroup>
 </Project>

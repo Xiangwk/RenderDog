@@ -28,7 +28,6 @@ namespace RenderDog
 
 		bool							LoadFromRawMeshData(const std::vector<RDFbxImporter::RawMeshData>& rawMeshDatas,
 															const RDFbxImporter::RawSkeletonData* pSkeletonData,
-															const std::string& vsFile, const std::string& psFile,
 															const std::string& modelName);
 		
 		bool							LoadBoneAnimation(const RDFbxImporter::RawAnimation& rawAnimation);

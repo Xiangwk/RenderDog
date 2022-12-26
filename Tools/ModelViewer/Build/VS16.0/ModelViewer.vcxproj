@@ -72,10 +72,14 @@
     <PostBuildEvent>
       <Command>xcopy $(TargetDir)*.exe ..\..\..\..\Bin\Tools\$(ProjectName)\ /i /s /y
 xcopy ..\..\..\..\EngineSDK\3rdSDK\Bin\*.* ..\..\..\..\Bin\Tools\$(ProjectName)\ /i /s /y
-xcopy ..\..\..\..\EngineSDK\Renderer\Shaders\*.* ..\..\..\..\Bin\Tools\$(ProjectName)\Shaders\ /i /s /y
 
 del ..\..\..\..\Bin\Tools\$(ProjectName)\EngineAsset\Textures\*.* /f /s /q
-xcopy ..\..\..\..\EngineSDK\RenderDog\EngineAsset\*.* ..\..\..\..\Bin\Tools\$(ProjectName)\EngineAsset\ /i /s /y</Command>
+del ..\..\..\..\Bin\Tools\$(ProjectName)\EngineAsset\Shaders\*.* /f /s /q
+xcopy ..\..\..\..\EngineSDK\RenderDog\EngineAsset\*.* ..\..\..\..\Bin\Tools\$(ProjectName)\EngineAsset\ /i /s /y
+
+del ..\..\..\..\Bin\Tools\$(ProjectName)\UserAsset\Materials\*.* /f /s /q
+del ..\..\..\..\Bin\Tools\$(ProjectName)\UserAsset\Shaders\sm5.0\Materials\*.* /f /s /q
+xcopy ..\..\..\..\EngineSDK\RenderDog\UserAsset\*.* ..\..\..\..\Bin\Tools\$(ProjectName)\UserAsset\ /i /s /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -100,10 +104,14 @@ xcopy ..\..\..\..\EngineSDK\RenderDog\EngineAsset\*.* ..\..\..\..\Bin\Tools\$(Pr
     <PostBuildEvent>
       <Command>xcopy $(TargetDir)*.exe ..\..\..\..\Bin\Tools\$(ProjectName)\ /i /s /y
 xcopy ..\..\..\..\EngineSDK\3rdSDK\Bin\*.* ..\..\..\..\Bin\Tools\$(ProjectName)\ /i /s /y
-xcopy ..\..\..\..\EngineSDK\Renderer\Shaders\*.* ..\..\..\..\Bin\Tools\$(ProjectName)\Shaders\ /i /s /y
 
 del ..\..\..\..\Bin\Tools\$(ProjectName)\EngineAsset\Textures\*.* /f /s /q
-xcopy ..\..\..\..\EngineSDK\RenderDog\EngineAsset\*.* ..\..\..\..\Bin\Tools\$(ProjectName)\EngineAsset\ /i /s /y</Command>
+del ..\..\..\..\Bin\Tools\$(ProjectName)\EngineAsset\Shaders\*.* /f /s /q
+xcopy ..\..\..\..\EngineSDK\RenderDog\EngineAsset\*.* ..\..\..\..\Bin\Tools\$(ProjectName)\EngineAsset\ /i /s /y
+
+del ..\..\..\..\Bin\Tools\$(ProjectName)\UserAsset\Materials\*.* /f /s /q
+del ..\..\..\..\Bin\Tools\$(ProjectName)\UserAsset\Shaders\sm5.0\Materials\*.* /f /s /q
+xcopy ..\..\..\..\EngineSDK\RenderDog\UserAsset\*.* ..\..\..\..\Bin\Tools\$(ProjectName)\UserAsset\ /i /s /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

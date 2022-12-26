@@ -610,7 +610,7 @@ bool ModelViewer::LoadFbxModel(const std::string& fileName, LOAD_MODEL_TYPE mode
 
 		if (!m_pSkinModel->LoadFromRawMeshData(RenderDog::g_pRDFbxImporter->GetRawMeshData(),
 											   RenderDog::g_pRDFbxImporter->GetRawSkeletonData(),
-											   "Shaders/SkinModelVertexShader.hlsl", "Shaders/PhongLightingPixelShader.hlsl", fileName))
+											   fileName))
 		{
 			MessageBox(nullptr, "Load Model Failed!", "ERROR", MB_OK);
 			return false;

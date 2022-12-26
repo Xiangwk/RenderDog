@@ -138,7 +138,12 @@ xcopy ..\..\Public\*.* ..\..\..\EngineSDK\RenderDog\Public\$(ProjectName)\ /i /s
 xcopy ..\..\Math\Public\*.* ..\..\..\EngineSDK\RenderDog\Public\Math\ /i /s /y
 
 del ..\..\..\EngineSDK\RenderDog\EngineAsset\Textures\*.* /f /s /q
-xcopy ..\..\EngineAsset\*.* ..\..\..\EngineSDK\RenderDog\EngineAsset\ /i /s /y</Command>
+del ..\..\..\EngineSDK\RenderDog\EngineAsset\Shaders\*.* /f /s /q
+xcopy ..\..\EngineAsset\*.* ..\..\..\EngineSDK\RenderDog\EngineAsset\ /i /s /y
+
+del ..\..\..\EngineSDK\RenderDog\UserAsset\Materials\*.* /s /q /f 
+del ..\..\..\EngineSDK\RenderDog\UserAsset\Shaders\sm5.0\Materials\*.* /s /q /f 
+xcopy ..\..\UserAsset\*.* ..\..\..\EngineSDK\RenderDog\UserAsset\ /i /s /y</Command>
     </PostBuildEvent>
     <Lib>
       <AdditionalDependencies>libfbxsdk_d-md.lib;libxml2_d-md.lib;zlib_d-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -168,7 +173,12 @@ xcopy ..\..\Public\*.* ..\..\..\EngineSDK\RenderDog\Public\$(ProjectName)\ /i /s
 xcopy ..\..\Math\Public\*.* ..\..\..\EngineSDK\RenderDog\Public\Math\ /i /s /y
 
 del ..\..\..\EngineSDK\RenderDog\EngineAsset\Textures\*.* /f /s /q
-xcopy ..\..\EngineAsset\*.* ..\..\..\EngineSDK\RenderDog\EngineAsset\ /i /s /y</Command>
+del ..\..\..\EngineSDK\RenderDog\EngineAsset\Shaders\*.* /f /s /q
+xcopy ..\..\EngineAsset\*.* ..\..\..\EngineSDK\RenderDog\EngineAsset\ /i /s /y
+
+del ..\..\..\EngineSDK\RenderDog\UserAsset\Materials\*.* /s /q /f 
+del ..\..\..\EngineSDK\RenderDog\UserAsset\Shaders\sm5.0\Materials\*.* /s /q /f 
+xcopy ..\..\UserAsset\*.* ..\..\..\EngineSDK\RenderDog\UserAsset\ /i /s /y</Command>
     </PostBuildEvent>
     <Lib>
       <AdditionalDependencies>libfbxsdk-md.lib;libxml2-md.lib;zlib-md.lib;%(AdditionalDependencies)</AdditionalDependencies>

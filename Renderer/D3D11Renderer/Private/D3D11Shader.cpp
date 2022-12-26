@@ -196,10 +196,10 @@ namespace RenderDog
 		{
 			std::string line;
 			getline(input, line);
-			if (line == "#include \"MaterialShaders/Material.hlsl\"")
+			if (line == "#include \"Material.hlsl\"")
 			{
 				//FIXME!!! 这里需要修改为根据用户提供的MaterialShader文件来替换
-				line = "#include \"MaterialShaders/" + desc.mtlShaderName + "\"";
+				line = "#include \"" + g_UserMaterialShaderRootPath + desc.mtlShaderName + "\"";
 			}
 			sourceCode += (line + "\n");
 		}
