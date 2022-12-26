@@ -89,8 +89,8 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 		return false;
 	}
 
-	m_pBasicMaterial = CreateBasicMaterial("Basic.mtl");
-	m_pSkyMaterial = CreateSkyMaterial("Sky.mtl");
+	m_pBasicMaterial = CreateBasicMaterial("UserAsset/Materials/Basic.mtl");
+	m_pSkyMaterial = CreateSkyMaterial("UserAsset/Materials/Basic.mtl");
 
 	if (!LoadFloor(10, 10, 100.0f))
 	{
@@ -389,13 +389,13 @@ bool ModelViewer::LoadStaticModelMaterialParams(std::vector<RenderDog::MaterialP
 		{
 			return false;
 		}
-		RenderDog::MaterialParam DiffuseTextureParam("DiffuseTexture", RenderDog::MATERIAL_PARAM_TYPE::TEXTURE2D);
+		RenderDog::MaterialParam DiffuseTextureParam("LocVar_Material_DiffuseTexture", RenderDog::MATERIAL_PARAM_TYPE::TEXTURE2D);
 		DiffuseTextureParam.SetTexture2D(pDiffuseTexture);
 		params.push_back(DiffuseTextureParam);
 
 
 		RenderDog::SamplerDesc samplerDesc = {};
-		samplerDesc.name = "DiffuseTextureSampler";
+		samplerDesc.name = "LocVar_Material_DiffuseTextureSampler";
 		samplerDesc.filterMode = RenderDog::SAMPLER_FILTER::LINEAR;
 		samplerDesc.addressMode = RenderDog::SAMPLER_ADDRESS::WRAP;
 		RenderDog::ISamplerState* pDiffuseTextureSampler = RenderDog::g_pISamplerStateManager->CreateSamplerState(samplerDesc);
@@ -403,7 +403,7 @@ bool ModelViewer::LoadStaticModelMaterialParams(std::vector<RenderDog::MaterialP
 		{
 			return false;
 		}
-		RenderDog::MaterialParam DiffuseTextureSamplerParam("DiffuseTextureSampler", RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
+		RenderDog::MaterialParam DiffuseTextureSamplerParam("LocVar_Material_DiffuseTextureSampler", RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
 		DiffuseTextureSamplerParam.SetSamplerState(pDiffuseTextureSampler);
 		params.push_back(DiffuseTextureSamplerParam);
 	}
@@ -415,12 +415,12 @@ bool ModelViewer::LoadStaticModelMaterialParams(std::vector<RenderDog::MaterialP
 		{
 			return false;
 		}
-		RenderDog::MaterialParam NormalTextureParam("NormalTexture", RenderDog::MATERIAL_PARAM_TYPE::TEXTURE2D);
+		RenderDog::MaterialParam NormalTextureParam("LocVar_Material_NormalTexture", RenderDog::MATERIAL_PARAM_TYPE::TEXTURE2D);
 		NormalTextureParam.SetTexture2D(pNormalTexture);
 		params.push_back(NormalTextureParam);
 
 		RenderDog::SamplerDesc samplerDesc = {};
-		samplerDesc.name = "NormalTextureSampler";
+		samplerDesc.name = "LocVar_Material_NormalTextureSampler";
 		samplerDesc.filterMode = RenderDog::SAMPLER_FILTER::LINEAR;
 		samplerDesc.addressMode = RenderDog::SAMPLER_ADDRESS::WRAP;
 		RenderDog::ISamplerState* pNormalTextureSampler = RenderDog::g_pISamplerStateManager->CreateSamplerState(samplerDesc);
@@ -428,7 +428,7 @@ bool ModelViewer::LoadStaticModelMaterialParams(std::vector<RenderDog::MaterialP
 		{
 			return false;
 		}
-		RenderDog::MaterialParam NormalTextureSamplerParam("NormalTextureSampler", RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
+		RenderDog::MaterialParam NormalTextureSamplerParam("LocVar_Material_NormalTextureSampler", RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
 		NormalTextureSamplerParam.SetSamplerState(pNormalTextureSampler);
 		params.push_back(NormalTextureSamplerParam);
 	}
@@ -440,12 +440,12 @@ bool ModelViewer::LoadStaticModelMaterialParams(std::vector<RenderDog::MaterialP
 		{
 			return false;
 		}
-		RenderDog::MaterialParam MRTextureParam("MetallicRoughnessTexture", RenderDog::MATERIAL_PARAM_TYPE::TEXTURE2D);
+		RenderDog::MaterialParam MRTextureParam("LocVar_Material_MetallicRoughnessTexture", RenderDog::MATERIAL_PARAM_TYPE::TEXTURE2D);
 		MRTextureParam.SetTexture2D(pMRTexture);
 		params.push_back(MRTextureParam);
 
 		RenderDog::SamplerDesc samplerDesc = {};
-		samplerDesc.name = "MetallicRoughnessTextureSampler";
+		samplerDesc.name = "LocVar_Material_MetallicRoughnessTextureSampler";
 		samplerDesc.filterMode = RenderDog::SAMPLER_FILTER::LINEAR;
 		samplerDesc.addressMode = RenderDog::SAMPLER_ADDRESS::WRAP;
 		RenderDog::ISamplerState* pMRTextureSampler = RenderDog::g_pISamplerStateManager->CreateSamplerState(samplerDesc);
@@ -453,7 +453,7 @@ bool ModelViewer::LoadStaticModelMaterialParams(std::vector<RenderDog::MaterialP
 		{
 			return false;
 		}
-		RenderDog::MaterialParam MRTextureSamplerParam("MetallicRoughnessTextureSampler", RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
+		RenderDog::MaterialParam MRTextureSamplerParam("LocVar_Material_MetallicRoughnessTextureSampler", RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
 		MRTextureSamplerParam.SetSamplerState(pMRTextureSampler);
 		params.push_back(MRTextureSamplerParam);
 	}
@@ -662,7 +662,7 @@ RenderDog::IMaterial* ModelViewer::CreateBasicMaterial(const std::string& mtlNam
 {
 	RenderDog::IMaterial* pMtl = RenderDog::g_pMaterialManager->GetMaterial(mtlName, true);
 
-	std::wstring diffuseTexturePath = L"EngineAsset/Textures/Grey_diff.dds";
+	/*std::wstring diffuseTexturePath = L"EngineAsset/Textures/Grey_diff.dds";
 	std::wstring normalTexturePath = L"EngineAsset/Textures/FlatNormal_norm.dds";
 	std::wstring metallicRoughnessTexturePath = L"EngineAsset/Textures/Grey_diff.dds";
 
@@ -741,7 +741,7 @@ RenderDog::IMaterial* ModelViewer::CreateBasicMaterial(const std::string& mtlNam
 		RenderDog::MaterialParam MRTextureSamplerParam("MetallicRoughnessTextureSampler", RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
 		MRTextureSamplerParam.SetSamplerState(pMRTextureSampler);
 		pMtl->AddParam(MRTextureSamplerParam);
-	}
+	}*/
 
 	return pMtl;
 }

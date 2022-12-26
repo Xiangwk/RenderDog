@@ -84,9 +84,7 @@ namespace RenderDog
 			m_Params(0),
 			m_MtlInsId(0),
 			m_pShader(nullptr)
-		{
-			m_ShaderName = m_Name.substr(0, m_Name.rfind(".")) + ".hlsl";
-		}
+		{}
 
 		virtual ~Material()
 		{
@@ -269,11 +267,13 @@ namespace RenderDog
 					do
 					{
 						std::getline(fin, mtlProp);
-						if (mtlProp.find("ShaderFile"))
+						if (mtlProp.find("ShaderFile") != std::string::npos)
 						{
-							m_ShaderName = mtlProp.substr(mtlProp.find("\""), mtlProp.rfind("\""));
+							size_t offset = mtlProp.find("\"") + 1;
+							size_t count = mtlProp.rfind("\"") - offset;
+							m_ShaderName = mtlProp.substr(offset, count);
 						}
-					} while (mtlProp == "}");
+					} while (mtlProp != "}");
 				}
 				else if(line == "MaterialParameters")
 				{
@@ -281,10 +281,15 @@ namespace RenderDog
 					do
 					{
 						std::getline(fin, mtlParam);
-						if (mtlParam.find("Texture2D"))
+						if (mtlParam.find("Texture2D") != std::string::npos)
 						{
-							std::string mtlParamName = mtlParam.substr(mtlParam.find("Texture2D"), mtlParam.find("="));
-							std::string textureFileName = mtlParam.substr(mtlParam.find("\""), mtlParam.rfind("\""));
+							size_t offset = mtlParam.find("Texture2D") + 10;
+							size_t count = mtlParam.find("=") - offset - 1;
+							std::string mtlParamName = mtlParam.substr(offset, count);
+
+							offset = mtlParam.find("\"") + 1;
+							count = mtlParam.rfind("\"") - offset;
+							std::string textureFileName = mtlParam.substr(offset, count);
 
 							std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
 							RenderDog::ITexture2D* pTexture = RenderDog::g_pITextureManager->CreateTexture2D(converter.from_bytes(textureFileName));
@@ -296,7 +301,7 @@ namespace RenderDog
 							textureParam.SetTexture2D(pTexture);
 							AddParam(textureParam);
 						}
-					} while (mtlParam == "}");
+					} while (mtlParam != "}");
 				}
 				else if (line == "MaterialFunctions")
 				{
@@ -414,10 +419,10 @@ namespace RenderDog
 			pMaterial = new Material(filePath);
 			m_MaterialMap.insert({ filePath, pMaterial });
 
-			/*if (!pMaterial->GetParamsFromFile(filePath))
+			if (!pMaterial->GetParamsFromFile(filePath))
 			{
 				return nullptr;
-			}*/
+			}
 			
 			if (bIsUserMtl)
 			{
