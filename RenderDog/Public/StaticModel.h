@@ -33,6 +33,7 @@ namespace RenderDog
 														const std::string& fileName);
 
 		bool						CreateMaterialInstance(IMaterial* pMtl, const std::vector<MaterialParam>* pMtlParams = nullptr);
+		bool						CreateMaterialInstance(const std::string& mtlinsMapFileName);
 		
 		void						RegisterToScene(IScene* pScene);
 
@@ -51,6 +52,9 @@ namespace RenderDog
 
 		AABB						m_AABB;
 		BoundingSphere				m_BoundingSphere;
+
+		std::string					m_Name;
+		std::string					m_Directory;
 	};
 
 }// namespace RenderDog

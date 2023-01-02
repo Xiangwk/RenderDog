@@ -13,7 +13,9 @@ namespace RenderDog
 	StaticModel::StaticModel() :
 		m_Meshes(0),
 		m_AABB(),
-		m_BoundingSphere()
+		m_BoundingSphere(),
+		m_Name(),
+		m_Directory()
 	{}
 
 	StaticModel::~StaticModel()
@@ -48,6 +50,11 @@ namespace RenderDog
 		return true;
 	}
 
+	bool StaticModel::CreateMaterialInstance(const std::string& mtlinsMapFileName)
+	{
+		return true;
+	}
+
 	bool StaticModel::LoadFromRawMeshData(const std::vector<RDFbxImporter::RawMeshData>& rawMeshDatas, const std::string& fileName)
 	{
 		for (uint32_t i = 0; i < rawMeshDatas.size(); ++i)
@@ -76,6 +83,11 @@ namespace RenderDog
 
 				vertices.push_back(vert);
 			}
+
+			size_t nameStart = fileName.rfind("/") + 1;
+			size_t nameEnd = fileName.rfind(".");
+			m_Name = fileName.substr(nameStart, nameEnd - nameStart);
+			m_Directory = fileName.substr(0, fileName.rfind("/") + 1);
 
 			std::string meshName = fileName + "_" + meshData.name;
 			StaticMesh mesh(meshName);
