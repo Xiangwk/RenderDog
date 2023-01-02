@@ -12,7 +12,6 @@
 #include <vector>
 #include <unordered_map>
 #include <fstream>
-#include <sstream>
 #include <iostream>
 #include <locale>
 #include <codecvt>
@@ -300,6 +299,19 @@ namespace RenderDog
 							RenderDog::MaterialParam textureParam(mtlParamName, RenderDog::MATERIAL_PARAM_TYPE::TEXTURE2D);
 							textureParam.SetTexture2D(pTexture);
 							AddParam(textureParam);
+
+							RenderDog::SamplerDesc samplerDesc = {};
+							samplerDesc.name = mtlParamName + "Sampler";
+							samplerDesc.filterMode = RenderDog::SAMPLER_FILTER::LINEAR;
+							samplerDesc.addressMode = RenderDog::SAMPLER_ADDRESS::WRAP;
+							RenderDog::ISamplerState* pTextureSampler = RenderDog::g_pISamplerStateManager->CreateSamplerState(samplerDesc);
+							if (!pTextureSampler)
+							{
+								return false;
+							}
+							RenderDog::MaterialParam textureSamplerParam(samplerDesc.name, RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
+							textureSamplerParam.SetSamplerState(pTextureSampler);
+							AddParam(textureSamplerParam);
 						}
 					} while (mtlParam != "}");
 				}

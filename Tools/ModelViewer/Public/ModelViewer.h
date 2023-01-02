@@ -46,7 +46,7 @@ public:
 private:
 	bool						LoadFloor(uint32_t width, uint32_t depth, float unit);
 	bool						LoadSkyBox();
-	bool						LoadFbxModel(const std::string& fileName, LOAD_MODEL_TYPE modelType, const std::vector<RenderDog::MaterialParam>* pMtlParams = nullptr);
+	bool						LoadFbxModel(const std::string& fileName, LOAD_MODEL_TYPE modelType);
 	bool						LoadFbxAnimation(const std::string& fileName, RenderDog::SkinModel* pSkinModel);
 
 	//FIXME!!! 这里只是临时添加此函数，后续应将此函数转移到Model相关的类中

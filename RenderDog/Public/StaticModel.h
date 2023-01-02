@@ -33,7 +33,8 @@ namespace RenderDog
 														const std::string& fileName);
 
 		bool						CreateMaterialInstance(IMaterial* pMtl, const std::vector<MaterialParam>* pMtlParams = nullptr);
-		bool						CreateMaterialInstance(const std::string& mtlinsMapFileName);
+
+		bool						LoadMaterialInstance();
 		
 		void						RegisterToScene(IScene* pScene);
 

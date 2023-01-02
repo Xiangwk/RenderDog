@@ -7,6 +7,8 @@
 #include "StaticModel.h"
 #include "Scene.h"
 
+#include <fstream>
+
 
 namespace RenderDog
 {
@@ -23,9 +25,9 @@ namespace RenderDog
 		m_Meshes.clear();
 	}
 
-	void StaticModel::LoadFromStandardData(const std::vector<StandardVertex>& vertices, 
-										   const std::vector<uint32_t>& indices,
-										   const std::string& name)
+	void StaticModel::LoadFromStandardData(const std::vector<StandardVertex>& vertices,
+		const std::vector<uint32_t>& indices,
+		const std::string& name)
 	{
 		StaticMesh mesh;
 		mesh.LoadFromStandardData(vertices, indices, name);
@@ -50,8 +52,49 @@ namespace RenderDog
 		return true;
 	}
 
-	bool StaticModel::CreateMaterialInstance(const std::string& mtlinsMapFileName)
+	bool StaticModel::LoadMaterialInstance()
 	{
+		std::string mtlinsMapName = m_Directory + m_Name + ".mtlinsmap";
+
+		std::vector<std::string> mtlinsFiles;
+
+		std::ifstream fin(mtlinsMapName);
+		if (fin.is_open())
+		{
+			std::string line;
+			size_t strStart = 0;
+			size_t strEnd = 0;
+			while (std::getline(fin, line))
+			{
+				std::string meshName;
+				strStart = 0;
+				strEnd = line.find("=");
+				meshName = line.substr(strStart, strEnd - strStart);
+
+				std::string mtlinsName;
+				strStart = strEnd + 2;
+				strEnd = line.size();
+				mtlinsName = line.substr(strStart, strEnd - strStart);
+
+				mtlinsFiles.push_back(mtlinsName);
+			}
+		}
+		else
+		{
+			return false;
+		}
+
+		fin.close();
+
+		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
+		{
+			StaticMesh& mesh = m_Meshes[i];
+			if (!mesh.LoadMaterialInstance(m_Directory + "MaterialInstance/" + mtlinsFiles[i]))
+			{
+				return false;
+			}
+		}
+
 		return true;
 	}
 
@@ -103,6 +146,8 @@ namespace RenderDog
 		}
 
 		CalculateBoundings();
+
+		LoadMaterialInstance();
 
 		return true;
 	}

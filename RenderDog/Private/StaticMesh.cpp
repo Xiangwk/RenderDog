@@ -11,6 +11,9 @@
 #include "Material.h"
 
 #include <unordered_map>
+#include <fstream>
+#include <locale>
+#include <codecvt>
 
 namespace RenderDog
 {
@@ -128,6 +131,73 @@ namespace RenderDog
 	bool StaticMesh::CreateMaterialInstance(IMaterial* pMtl, const std::vector<MaterialParam>* pMtlParams)
 	{
 		m_pMtlIns = g_pMaterialManager->GetMaterialInstance(pMtl, pMtlParams);
+
+		return true;
+	}
+
+	bool StaticMesh::LoadMaterialInstance(const std::string& mtlinsFile)
+	{
+		std::ifstream fin(mtlinsFile);
+		if (fin.is_open())
+		{
+			std::string line;
+			std::getline(fin, line);
+
+			std::string mtlName;
+			size_t strStart = line.find("=") + 2;
+			size_t strEnd = line.size();
+			mtlName = line.substr(strStart, strEnd - strStart);
+
+			std::string mtlDirName = "UserAsset/Materials/";
+			IMaterial* pMtl = g_pMaterialManager->GetMaterial(mtlDirName + mtlName, true);
+
+			std::vector<MaterialParam> mtlParams;
+			while (std::getline(fin, line))
+			{
+				if (line.find("Texture2D") != std::string::npos)
+				{
+					size_t offset = line.find("Texture2D") + 10;
+					size_t count = line.find("=") - offset - 1;
+					std::string mtlParamName = line.substr(offset, count);
+
+					offset = line.find("\"") + 1;
+					count = line.rfind("\"") - offset;
+					std::string textureFileName = line.substr(offset, count);
+
+					std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+					RenderDog::ITexture2D* pTexture = RenderDog::g_pITextureManager->CreateTexture2D(converter.from_bytes(textureFileName));
+					if (!pTexture)
+					{
+						return false;
+					}
+					RenderDog::MaterialParam textureParam(mtlParamName, RenderDog::MATERIAL_PARAM_TYPE::TEXTURE2D);
+					textureParam.SetTexture2D(pTexture);
+					mtlParams.push_back(textureParam);
+
+					RenderDog::SamplerDesc samplerDesc = {};
+					samplerDesc.name = mtlParamName + "Sampler";
+					samplerDesc.filterMode = RenderDog::SAMPLER_FILTER::LINEAR;
+					samplerDesc.addressMode = RenderDog::SAMPLER_ADDRESS::WRAP;
+					RenderDog::ISamplerState* pTextureSampler = RenderDog::g_pISamplerStateManager->CreateSamplerState(samplerDesc);
+					if (!pTextureSampler)
+					{
+						return false;
+					}
+					RenderDog::MaterialParam textureSamplerParam(samplerDesc.name, RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
+					textureSamplerParam.SetSamplerState(pTextureSampler);
+					mtlParams.push_back(textureSamplerParam);
+				}
+			}
+
+			CreateMaterialInstance(pMtl, &mtlParams);
+			pMtl->Release();
+		}
+		else
+		{
+			return false;
+		}
+
+		fin.close();
 
 		return true;
 	}

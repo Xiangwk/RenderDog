@@ -56,7 +56,10 @@ namespace RenderDog
 		virtual const AABB&				GetAABB() const override { return m_AABB; }
 
 		void							LoadFromStandardData(const std::vector<StandardVertex>& vertices, const std::vector<uint32_t>& indices, const std::string& name);
+
 		bool							CreateMaterialInstance(IMaterial* pMtl, const std::vector<MaterialParam>* mtlParams = nullptr);
+
+		bool							LoadMaterialInstance(const std::string& mtlinsFile);
 
 		void							InitRenderData();
 
