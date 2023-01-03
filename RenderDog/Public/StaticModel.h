@@ -34,7 +34,7 @@ namespace RenderDog
 
 		bool						CreateMaterialInstance(IMaterial* pMtl, const std::vector<MaterialParam>* pMtlParams = nullptr);
 
-		bool						LoadMaterialInstance();
+		bool						LoadMaterialInstanceMap();
 		
 		void						RegisterToScene(IScene* pScene);
 

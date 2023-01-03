@@ -144,25 +144,28 @@ namespace RenderDog
 			std::getline(fin, line);
 
 			std::string mtlName;
-			size_t strStart = line.find("=") + 2;
+			size_t strStart = line.find("=") + 1;
 			size_t strEnd = line.size();
 			mtlName = line.substr(strStart, strEnd - strStart);
+			mtlName.erase(std::remove(mtlName.begin(), mtlName.end(), ' '), mtlName.end());
 
 			std::string mtlDirName = "UserAsset/Materials/";
-			IMaterial* pMtl = g_pMaterialManager->GetMaterial(mtlDirName + mtlName, true);
+			IMaterial* pMtl = g_pMaterialManager->GetMaterial(mtlDirName + mtlName);
 
 			std::vector<MaterialParam> mtlParams;
 			while (std::getline(fin, line))
 			{
-				if (line.find("Texture2D") != std::string::npos)
+				if (line.find(MTL_PARAMS_TEXTURE2D) != std::string::npos)
 				{
-					size_t offset = line.find("Texture2D") + 10;
-					size_t count = line.find("=") - offset - 1;
-					std::string mtlParamName = line.substr(offset, count);
+					strStart = line.find(MTL_PARAMS_TEXTURE2D) + MTL_PARAMS_TEXTURE2D.size();
+					strEnd = line.find("=");
+					std::string mtlParamName = line.substr(strStart, strEnd - strStart);
+					mtlParamName.erase(std::remove(mtlParamName.begin(), mtlParamName.end(), ' '), mtlParamName.end());
 
-					offset = line.find("\"") + 1;
-					count = line.rfind("\"") - offset;
-					std::string textureFileName = line.substr(offset, count);
+					strStart = line.find("\"") + 1;
+					strEnd = line.rfind("\"");
+					std::string textureFileName = line.substr(strStart, strEnd - strStart);
+					textureFileName.erase(std::remove(textureFileName.begin(), textureFileName.end(), ' '), textureFileName.end());
 
 					std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
 					RenderDog::ITexture2D* pTexture = RenderDog::g_pITextureManager->CreateTexture2D(converter.from_bytes(textureFileName));

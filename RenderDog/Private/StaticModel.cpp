@@ -52,7 +52,7 @@ namespace RenderDog
 		return true;
 	}
 
-	bool StaticModel::LoadMaterialInstance()
+	bool StaticModel::LoadMaterialInstanceMap()
 	{
 		std::string mtlinsMapName = m_Directory + m_Name + ".mtlinsmap";
 
@@ -70,11 +70,13 @@ namespace RenderDog
 				strStart = 0;
 				strEnd = line.find("=");
 				meshName = line.substr(strStart, strEnd - strStart);
+				meshName.erase(std::remove(meshName.begin(), meshName.end(), ' '), meshName.end());
 
 				std::string mtlinsName;
-				strStart = strEnd + 2;
+				strStart = strEnd + 1;
 				strEnd = line.size();
 				mtlinsName = line.substr(strStart, strEnd - strStart);
+				mtlinsName.erase(std::remove(mtlinsName.begin(), mtlinsName.end(), ' '), mtlinsName.end());
 
 				mtlinsFiles.push_back(mtlinsName);
 			}
@@ -89,7 +91,7 @@ namespace RenderDog
 		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
 		{
 			StaticMesh& mesh = m_Meshes[i];
-			if (!mesh.LoadMaterialInstance(m_Directory + "MaterialInstance/" + mtlinsFiles[i]))
+			if (!mesh.LoadMaterialInstance(m_Directory + MTLINS_DIR + mtlinsFiles[i]))
 			{
 				return false;
 			}
@@ -147,7 +149,7 @@ namespace RenderDog
 
 		CalculateBoundings();
 
-		LoadMaterialInstance();
+		LoadMaterialInstanceMap();
 
 		return true;
 	}

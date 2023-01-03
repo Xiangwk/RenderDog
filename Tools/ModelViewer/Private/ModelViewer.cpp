@@ -641,14 +641,14 @@ bool ModelViewer::LoadFbxAnimation(const std::string& fileName, RenderDog::SkinM
 
 RenderDog::IMaterial* ModelViewer::CreateBasicMaterial(const std::string& mtlName)
 {
-	RenderDog::IMaterial* pMtl = RenderDog::g_pMaterialManager->GetMaterial(mtlName, true);
+	RenderDog::IMaterial* pMtl = RenderDog::g_pMaterialManager->GetMaterial(mtlName);
 
 	return pMtl;
 }
 
 RenderDog::IMaterial* ModelViewer::CreateSkyMaterial(const std::string& mtlName)
 {
-	RenderDog::IMaterial* pMtl = RenderDog::g_pMaterialManager->GetMaterial(mtlName, false);
+	RenderDog::IMaterial* pMtl = RenderDog::g_pMaterialManager->GetMaterial(mtlName);
 
 	std::wstring diffuseTexturePath = L"EngineAsset/Textures/AlpsFieldCubeMap_d.dds";
 

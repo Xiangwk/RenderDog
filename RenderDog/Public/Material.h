@@ -18,6 +18,16 @@ namespace RenderDog
 	class   ISamplerState;
 	class   IShader;
 
+	const std::string MTL_PROPS				= "MaterialProperties";
+	const std::string MTL_PARAMS			= "MaterialParameters";
+	const std::string MTL_FUNCTIONS			= "MaterialFunctions";
+
+	const std::string MTL_PROPS_USER_MTL	= "UserMaterial";
+	const std::string MTL_PROPS_SHADER_FILE = "ShaderFile";
+	const std::string MTL_PARAMS_TEXTURE2D	= "Texture2D";
+
+	const std::string MTLINS_DIR			= "MaterialInstance/";
+
 	enum class MATERIAL_PARAM_TYPE
 	{
 		UNKNOWN = 0,
@@ -121,7 +131,7 @@ namespace RenderDog
 		virtual ~IMaterialManager() = default;
 
 	public:
-		virtual IMaterial*				GetMaterial(const std::string& filePath, bool bIsUserMtl) = 0;
+		virtual IMaterial*				GetMaterial(const std::string& filePath) = 0;
 		virtual IMaterialInstance*		GetMaterialInstance(IMaterial* pMaterial, const std::vector<MaterialParam>* pMtlParams = nullptr) = 0;
 	};
 

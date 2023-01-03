@@ -18,14 +18,6 @@
 
 namespace RenderDog
 {
-	const std::string MTL_PROPS = "MaterialProperties";
-	const std::string MTL_PARAMS = "MaterialParameters";
-	const std::string MTL_FUNCTIONS = "MaterialFunctions";
-
-	const std::string MTL_PROPS_USER_MTL = "UserMaterial";
-	const std::string MTL_PROPS_SHADER_FILE = "ShaderFile";
-	const std::string MTL_PARAMS_TEXTURE2D = "Texture2D";
-
 	MaterialParam INVALID_MATERIAL_PARAM = MaterialParam("InvalidParam", MATERIAL_PARAM_TYPE::UNKNOWN);
 
 	MaterialParam::MaterialParam(const MaterialParam& param):
@@ -190,7 +182,7 @@ namespace RenderDog
 		MaterialManager() = default;
 		virtual ~MaterialManager() = default;
 
-		virtual IMaterial*				GetMaterial(const std::string& filePath, bool bIsUserMtl) override;
+		virtual IMaterial*				GetMaterial(const std::string& filePath) override;
 		virtual IMaterialInstance*		GetMaterialInstance(IMaterial* pMaterial, const std::vector<MaterialParam>* pMtlParams = nullptr) override;
 
 		void							ReleaseMaterial(Material* pMaterial);
@@ -449,7 +441,7 @@ namespace RenderDog
 		g_MaterialManager.ReleaseMaterialInstance(this);
 	}
 
-	IMaterial* MaterialManager::GetMaterial(const std::string& filePath, bool bIsUserMtl)
+	IMaterial* MaterialManager::GetMaterial(const std::string& filePath)
 	{
 		Material* pMaterial = nullptr;
 
@@ -464,7 +456,7 @@ namespace RenderDog
 				return nullptr;
 			}
 			
-			if (bIsUserMtl)
+			if (pMaterial->IsUserMaterial())
 			{
 				pMaterial->CreateMaterialShader();
 			}
