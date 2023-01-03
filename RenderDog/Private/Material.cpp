@@ -12,12 +12,20 @@
 #include <vector>
 #include <unordered_map>
 #include <fstream>
-#include <iostream>
+#include <algorithm>
 #include <locale>
 #include <codecvt>
 
 namespace RenderDog
 {
+	const std::string MTL_PROPS = "MaterialProperties";
+	const std::string MTL_PARAMS = "MaterialParameters";
+	const std::string MTL_FUNCTIONS = "MaterialFunctions";
+
+	const std::string MTL_PROPS_USER_MTL = "UserMaterial";
+	const std::string MTL_PROPS_SHADER_FILE = "ShaderFile";
+	const std::string MTL_PARAMS_TEXTURE2D = "Texture2D";
+
 	MaterialParam INVALID_MATERIAL_PARAM = MaterialParam("InvalidParam", MATERIAL_PARAM_TYPE::UNKNOWN);
 
 	MaterialParam::MaterialParam(const MaterialParam& param):
@@ -82,7 +90,8 @@ namespace RenderDog
 			m_ShaderName(),
 			m_Params(0),
 			m_MtlInsId(0),
-			m_pShader(nullptr)
+			m_pShader(nullptr),
+			m_bIsUserMtl(false)
 		{}
 
 		virtual ~Material()
@@ -121,7 +130,9 @@ namespace RenderDog
 		virtual bool					CreateMaterialShader() override;
 		virtual IShader*				GetMaterialShader() override { return m_pShader; }
 
-		bool							GetParamsFromFile(const std::string& fileName);
+		bool							GetPropsAndParamsFromFile(const std::string& fileName);
+
+		bool							IsUserMaterial() const { return m_bIsUserMtl; }
 
 	private:
 		std::string						m_Name;
@@ -131,6 +142,8 @@ namespace RenderDog
 		int								m_MtlInsId;
 
 		IShader*						m_pShader;
+
+		bool							m_bIsUserMtl;
 	};
 
 	//================================================================
@@ -252,7 +265,7 @@ namespace RenderDog
 		}
 	}
 
-	bool Material::GetParamsFromFile(const std::string& fileName)
+	bool Material::GetPropsAndParamsFromFile(const std::string& fileName)
 	{
 		std::ifstream fin(fileName);
 		if (fin.is_open())
@@ -260,35 +273,50 @@ namespace RenderDog
 			std::string line;
 			while (std::getline(fin, line))
 			{
-				if (line == "MaterialPropertys")
+				if (line == MTL_PROPS)
 				{
 					std::string mtlProp;
-					do
+					while (mtlProp != "}")
 					{
+						size_t strStart = 0;
+						size_t strEnd = 0;
 						std::getline(fin, mtlProp);
-						if (mtlProp.find("ShaderFile") != std::string::npos)
+						if (mtlProp.find(MTL_PROPS_USER_MTL) != std::string::npos)
 						{
-							size_t offset = mtlProp.find("\"") + 1;
-							size_t count = mtlProp.rfind("\"") - offset;
-							m_ShaderName = mtlProp.substr(offset, count);
+							strStart = mtlProp.find("=") + 1;
+							strEnd = mtlProp.size();
+							std::string isUserMtl = mtlProp.substr(strStart, strEnd - strStart);
+							isUserMtl.erase(std::remove(isUserMtl.begin(), isUserMtl.end(), ' '), isUserMtl.end());
+							m_bIsUserMtl = std::stoi(isUserMtl) == 1 ? true : false;
 						}
-					} while (mtlProp != "}");
+						else if (mtlProp.find(MTL_PROPS_SHADER_FILE) != std::string::npos)
+						{
+							strStart = mtlProp.find("\"") + 1;
+							strEnd = mtlProp.rfind("\"");
+							m_ShaderName = mtlProp.substr(strStart, strEnd - strStart);
+							m_ShaderName.erase(std::remove(m_ShaderName.begin(), m_ShaderName.end(), ' '), m_ShaderName.end());
+						}
+					} 
 				}
-				else if(line == "MaterialParameters")
+				else if(line == MTL_PARAMS)
 				{
 					std::string mtlParam;
-					do
+					while (mtlParam != "}")
 					{
+						size_t strStart = 0;
+						size_t strEnd = 0;
 						std::getline(fin, mtlParam);
-						if (mtlParam.find("Texture2D") != std::string::npos)
+						if (mtlParam.find(MTL_PARAMS_TEXTURE2D) != std::string::npos)
 						{
-							size_t offset = mtlParam.find("Texture2D") + 10;
-							size_t count = mtlParam.find("=") - offset - 1;
-							std::string mtlParamName = mtlParam.substr(offset, count);
+							strStart = mtlParam.find(MTL_PARAMS_TEXTURE2D) + MTL_PARAMS_TEXTURE2D.size();
+							strEnd = mtlParam.find("=");
+							std::string mtlParamName = mtlParam.substr(strStart, strEnd - strStart);
+							mtlParamName.erase(std::remove(mtlParamName.begin(), mtlParamName.end(), ' '), mtlParamName.end());
 
-							offset = mtlParam.find("\"") + 1;
-							count = mtlParam.rfind("\"") - offset;
-							std::string textureFileName = mtlParam.substr(offset, count);
+							strStart = mtlParam.find("\"") + 1;
+							strEnd = mtlParam.rfind("\"");
+							std::string textureFileName = mtlParam.substr(strStart, strEnd - strStart);
+							textureFileName.erase(std::remove(textureFileName.begin(), textureFileName.end(), ' '), textureFileName.end());
 
 							std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
 							RenderDog::ITexture2D* pTexture = RenderDog::g_pITextureManager->CreateTexture2D(converter.from_bytes(textureFileName));
@@ -313,9 +341,9 @@ namespace RenderDog
 							textureSamplerParam.SetSamplerState(pTextureSampler);
 							AddParam(textureSamplerParam);
 						}
-					} while (mtlParam != "}");
+					}
 				}
-				else if (line == "MaterialFunctions")
+				else if (line == MTL_FUNCTIONS)
 				{
 
 				}
@@ -431,7 +459,7 @@ namespace RenderDog
 			pMaterial = new Material(filePath);
 			m_MaterialMap.insert({ filePath, pMaterial });
 
-			if (!pMaterial->GetParamsFromFile(filePath))
+			if (!pMaterial->GetPropsAndParamsFromFile(filePath))
 			{
 				return nullptr;
 			}

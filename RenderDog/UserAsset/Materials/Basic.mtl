@@ -4,9 +4,10 @@
 //Written by Xiang Weikang
 ///////////////////////////////////////////
 
-MaterialPropertys
+MaterialProperties
 {
-    ShaderFile = "Basic.hlsl"
+    UserMaterial  =  1                
+    ShaderFile    =  "Basic.hlsl"
 }
 
 MaterialParameters
