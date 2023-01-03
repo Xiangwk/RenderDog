@@ -12,6 +12,24 @@
 #include <DirectXTex.h>
 #include <unordered_map>
 
+namespace std
+{
+	template<>
+	struct hash<RenderDog::SamplerDesc>
+	{
+		size_t operator()(const RenderDog::SamplerDesc& desc) const
+		{
+			return hash<string>()(desc.name)
+				^ hash<uint32_t>()(uint32_t(desc.filterMode))
+				^ hash<uint32_t>()(uint32_t(desc.addressMode))
+				^ hash<float>()(desc.borderColor[0])
+				^ hash<float>()(desc.borderColor[1])
+				^ hash<float>()(desc.borderColor[2])
+				^ hash<float>()(desc.borderColor[3]);
+		}
+	};
+}
+
 namespace RenderDog
 {
 	//==================================================
@@ -311,7 +329,7 @@ namespace RenderDog
 	class D3D11SamplerStateManager : public ISamplerStateManager
 	{
 	private:
-		typedef std::unordered_map<std::string, ISamplerState*> SamplerMap;
+		typedef std::unordered_map<SamplerDesc, ISamplerState*> SamplerMap;
 
 	public:
 		D3D11SamplerStateManager() = default;
@@ -421,7 +439,7 @@ namespace RenderDog
 	{
 		D3D11SamplerState* pSampler = nullptr;
 
-		auto iter = m_SamplerMap.find(desc.name);
+		auto iter = m_SamplerMap.find(desc);
 		if (iter != m_SamplerMap.end())
 		{
 			pSampler = (D3D11SamplerState*)(iter->second);
@@ -430,6 +448,7 @@ namespace RenderDog
 		else
 		{
 			pSampler = new D3D11SamplerState(desc);
+			m_SamplerMap.insert({ desc, pSampler });
 		}
 		
 		return pSampler;
@@ -439,10 +458,10 @@ namespace RenderDog
 	{
 		if (pSampler)
 		{
-			std::string samplerName = pSampler->GetDesc().name;
+			SamplerDesc samplerDesc = pSampler->GetDesc();
 			if (pSampler->SubRef() == 0)
 			{
-				m_SamplerMap.erase(samplerName);
+				m_SamplerMap.erase(samplerDesc);
 			}
 		}
 	}

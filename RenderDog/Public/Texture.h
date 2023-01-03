@@ -118,6 +118,7 @@ namespace RenderDog
 		}
 
 		SamplerDesc(const SamplerDesc& desc) :
+			name(desc.name),
 			filterMode(desc.filterMode),
 			addressMode(desc.addressMode)
 		{
@@ -125,6 +126,17 @@ namespace RenderDog
 			{
 				borderColor[i] = desc.borderColor[i];
 			}
+		}
+
+		bool operator==(const SamplerDesc& desc) const
+		{
+			return name == desc.name &&
+				filterMode == desc.filterMode &&
+				addressMode == desc.addressMode &&
+				borderColor[0] == desc.borderColor[0] &&
+				borderColor[1] == desc.borderColor[1] &&
+				borderColor[2] == desc.borderColor[2] &&
+				borderColor[3] == desc.borderColor[3];
 		}
 	};
 
