@@ -297,6 +297,7 @@ namespace RenderDog
 		pIblBrdfLutTextureSamplerParam->SetSampler(m_pIblBrdfLutTextureSampler);
 
 		pMtlShader->Apply(nullptr);
+
 		pMtlShader->ApplyMaterialParams(renderParam.pMtlIns);
 		
 		uint32_t indexNum = renderParam.pIB->GetIndexNum();
@@ -409,9 +410,6 @@ namespace RenderDog
 
 		SceneView*					m_pSceneView;
 
-		IConstantBuffer*			m_pViewParamConstantBuffer;
-		IConstantBuffer*			m_pDirectionalLightConstantBuffer;
-
 		//Shadow
 		SceneView*					m_pShadowSceneView;
 
@@ -452,8 +450,6 @@ namespace RenderDog
 		m_ShadowViewport(),
 		m_pShadowSceneView(nullptr),
 		m_pSceneView(nullptr),
-		m_pViewParamConstantBuffer(nullptr),
-		m_pDirectionalLightConstantBuffer(nullptr),
 		m_pIblBrdfLutTexture(nullptr),
 		m_pIblBrdfLutTextureSampler(nullptr),
 		m_pShadowDepthTexture(nullptr),
@@ -552,19 +548,6 @@ namespace RenderDog
 		m_pShadowSceneView = new SceneView();
 		m_pSceneView = new SceneView(desc.pMainCamera);
 
-		BufferDesc cbDesc = {};
-		cbDesc.name = "ComVar_ConstantBuffer_ViewParam";
-		cbDesc.byteWidth = sizeof(ViewParamData);
-		cbDesc.pInitData = nullptr;
-		cbDesc.isDynamic = true;
-		m_pViewParamConstantBuffer = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
-
-		cbDesc.name = "ComVar_ConstantBuffer_LightingParam";
-		cbDesc.byteWidth = sizeof(DirectionalLightData);
-		cbDesc.pInitData = nullptr;
-		cbDesc.isDynamic = true;
-		m_pDirectionalLightConstantBuffer = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
-
 		if (!CreateInternalShaders())
 		{
 			return false;
@@ -626,18 +609,6 @@ namespace RenderDog
 		{
 			delete m_pSceneView;
 			m_pSceneView = nullptr;
-		}
-
-		if (m_pViewParamConstantBuffer)
-		{
-			m_pViewParamConstantBuffer->Release();
-			m_pViewParamConstantBuffer = nullptr;
-		}
-
-		if (m_pDirectionalLightConstantBuffer)
-		{
-			m_pDirectionalLightConstantBuffer->Release();
-			m_pDirectionalLightConstantBuffer = nullptr;
 		}
 
 		ReleaseInternalShaders();

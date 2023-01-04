@@ -24,6 +24,7 @@ namespace RenderDog
 
 	const std::string MTL_PROPS_USER_MTL	= "UserMaterial";
 	const std::string MTL_PROPS_SHADER_FILE = "ShaderFile";
+	const std::string MTL_PROPS_FLOAT4		= "float4";
 	const std::string MTL_PARAMS_TEXTURE2D	= "Texture2D";
 
 	const std::string MTLINS_DIR			= "MaterialInstance/";

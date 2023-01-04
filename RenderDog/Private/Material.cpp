@@ -298,7 +298,46 @@ namespace RenderDog
 						size_t strStart = 0;
 						size_t strEnd = 0;
 						std::getline(fin, mtlParam);
-						if (mtlParam.find(MTL_PARAMS_TEXTURE2D) != std::string::npos)
+						if (mtlParam.find(MTL_PROPS_FLOAT4) != std::string::npos)
+						{
+							strStart = mtlParam.find(MTL_PROPS_FLOAT4) + MTL_PROPS_FLOAT4.size();
+							strEnd = mtlParam.find("=");
+							std::string mtlParamName = mtlParam.substr(strStart, strEnd - strStart);
+							mtlParamName.erase(std::remove(mtlParamName.begin(), mtlParamName.end(), ' '), mtlParamName.end());
+
+							strStart = mtlParam.find("(") + 1;
+							strEnd = mtlParam.rfind(")");
+							std::string mtlParamValue = mtlParam.substr(strStart, strEnd - strStart);
+							mtlParamValue.erase(std::remove(mtlParamValue.begin(), mtlParamValue.end(), ' '), mtlParamValue.end());
+
+							Vector4 vec4Value;
+							strStart = 0;
+							strEnd = 0;
+							float tempVec4[4] = {};
+							int i = 0;
+							while (strEnd < mtlParamValue.size())
+							{
+								while (mtlParamValue[strEnd] != ',' && strEnd < mtlParamValue.size())
+								{
+									strEnd++;
+								}
+								std::string value = mtlParamValue.substr(strStart, strEnd - strStart);
+								tempVec4[i++] = std::stof(value);
+
+								strStart = strEnd + 1;
+								strEnd++;
+							}
+							
+							vec4Value.x = tempVec4[0];
+							vec4Value.y = tempVec4[1];
+							vec4Value.z = tempVec4[2];
+							vec4Value.w = tempVec4[3];
+
+							MaterialParam vec4Param(mtlParamName, MATERIAL_PARAM_TYPE::VECTOR4);
+							vec4Param.SetVector4(vec4Value);
+							AddParam(vec4Param);
+						}
+						else if (mtlParam.find(MTL_PARAMS_TEXTURE2D) != std::string::npos)
 						{
 							strStart = mtlParam.find(MTL_PARAMS_TEXTURE2D) + MTL_PARAMS_TEXTURE2D.size();
 							strEnd = mtlParam.find("=");
@@ -311,25 +350,25 @@ namespace RenderDog
 							textureFileName.erase(std::remove(textureFileName.begin(), textureFileName.end(), ' '), textureFileName.end());
 
 							std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-							RenderDog::ITexture2D* pTexture = RenderDog::g_pITextureManager->CreateTexture2D(converter.from_bytes(textureFileName));
+							ITexture2D* pTexture = g_pITextureManager->CreateTexture2D(converter.from_bytes(textureFileName));
 							if (!pTexture)
 							{
 								return false;
 							}
-							RenderDog::MaterialParam textureParam(mtlParamName, RenderDog::MATERIAL_PARAM_TYPE::TEXTURE2D);
+							MaterialParam textureParam(mtlParamName, MATERIAL_PARAM_TYPE::TEXTURE2D);
 							textureParam.SetTexture2D(pTexture);
 							AddParam(textureParam);
 
-							RenderDog::SamplerDesc samplerDesc = {};
+							SamplerDesc samplerDesc = {};
 							samplerDesc.name = mtlParamName + "Sampler";
-							samplerDesc.filterMode = RenderDog::SAMPLER_FILTER::LINEAR;
-							samplerDesc.addressMode = RenderDog::SAMPLER_ADDRESS::WRAP;
-							RenderDog::ISamplerState* pTextureSampler = RenderDog::g_pISamplerStateManager->CreateSamplerState(samplerDesc);
+							samplerDesc.filterMode = SAMPLER_FILTER::LINEAR;
+							samplerDesc.addressMode = SAMPLER_ADDRESS::WRAP;
+							ISamplerState* pTextureSampler = g_pISamplerStateManager->CreateSamplerState(samplerDesc);
 							if (!pTextureSampler)
 							{
 								return false;
 							}
-							RenderDog::MaterialParam textureSamplerParam(samplerDesc.name, RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
+							MaterialParam textureSamplerParam(samplerDesc.name, MATERIAL_PARAM_TYPE::SAMPLER);
 							textureSamplerParam.SetSamplerState(pTextureSampler);
 							AddParam(textureSamplerParam);
 						}
@@ -373,8 +412,8 @@ namespace RenderDog
 				ITexture2D* pTexture = mtlParam.GetTexture2D();
 				const std::wstring& textureFileName = pTexture->GetName();
 
-				ITexture2D* pNewTexture = RenderDog::g_pITextureManager->CreateTexture2D(textureFileName);
-				RenderDog::MaterialParam newTextureParam(mtlParam.GetName(), RenderDog::MATERIAL_PARAM_TYPE::TEXTURE2D);
+				ITexture2D* pNewTexture = g_pITextureManager->CreateTexture2D(textureFileName);
+				MaterialParam newTextureParam(mtlParam.GetName(), MATERIAL_PARAM_TYPE::TEXTURE2D);
 				newTextureParam.SetTexture2D(pNewTexture);
 
 				m_Params.push_back(newTextureParam);
@@ -386,8 +425,8 @@ namespace RenderDog
 				ISamplerState* pSampler = mtlParam.GetSamplerState();
 				SamplerDesc desc = pSampler->GetDesc();
 
-				RenderDog::ISamplerState* pNewSampler = RenderDog::g_pISamplerStateManager->CreateSamplerState(desc);
-				RenderDog::MaterialParam newSamplerParam(mtlParam.GetName(), RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
+				ISamplerState* pNewSampler = g_pISamplerStateManager->CreateSamplerState(desc);
+				MaterialParam newSamplerParam(mtlParam.GetName(), MATERIAL_PARAM_TYPE::SAMPLER);
 				newSamplerParam.SetSamplerState(pNewSampler);
 
 				m_Params.push_back(newSamplerParam);

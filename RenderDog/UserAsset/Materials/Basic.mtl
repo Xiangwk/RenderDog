@@ -12,11 +12,13 @@ MaterialProperties
 
 MaterialParameters
 {
-    Texture2D LocVar_Material_DiffuseTexture = "EngineAsset/Textures/Grey_diff.dds"
+    float4      LocVar_Material_MRParams = (1.0f, 1.0f, 1.0f, 1.0f)
 
-    Texture2D LocVar_Material_NormalTexture = "EngineAsset/Textures/FlatNormal_norm.dds"
+    Texture2D   LocVar_Material_DiffuseTexture = "EngineAsset/Textures/Grey_diff.dds"
 
-    Texture2D LocVar_Material_MetallicRoughnessTexture = "EngineAsset/Textures/Grey_diff.dds"
+    Texture2D   LocVar_Material_NormalTexture = "EngineAsset/Textures/FlatNormal_norm.dds"
+
+    Texture2D   LocVar_Material_MetallicRoughnessTexture = "EngineAsset/Textures/Grey_diff.dds"
 }
 
 MaterialFunctions
