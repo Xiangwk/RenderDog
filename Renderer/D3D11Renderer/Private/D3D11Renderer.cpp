@@ -302,7 +302,6 @@ namespace RenderDog
 		uint32_t indexNum = renderParam.pIB->GetIndexNum();
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
 
-		//Unbind ShadowDepthSRV
 		ID3D11ShaderResourceView* nullRes[] = { nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr };
 		g_pD3D11ImmediateContext->PSSetShaderResources(1, 8, nullRes);
 	}
