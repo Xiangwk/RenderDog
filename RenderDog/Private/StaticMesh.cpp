@@ -155,7 +155,47 @@ namespace RenderDog
 			std::vector<MaterialParam> mtlParams;
 			while (std::getline(fin, line))
 			{
-				if (line.find(MTL_PARAMS_TEXTURE2D) != std::string::npos)
+				if (line.find(MTL_PROPS_FLOAT4) != std::string::npos)
+				{
+					strStart = line.find(MTL_PROPS_FLOAT4) + MTL_PROPS_FLOAT4.size();
+					strEnd = line.find("=");
+					std::string mtlParamName = line.substr(strStart, strEnd - strStart);
+					mtlParamName.erase(std::remove(mtlParamName.begin(), mtlParamName.end(), ' '), mtlParamName.end());
+
+					strStart = line.find("(") + 1;
+					strEnd = line.rfind(")");
+					std::string mtlParamValue = line.substr(strStart, strEnd - strStart);
+					mtlParamValue.erase(std::remove(mtlParamValue.begin(), mtlParamValue.end(), ' '), mtlParamValue.end());
+
+					Vector4 vec4Value;
+					strStart = 0;
+					strEnd = 0;
+					float tempVec4[4] = {};
+					int i = 0;
+					while (strEnd < mtlParamValue.size())
+					{
+						while (mtlParamValue[strEnd] != ',' && strEnd < mtlParamValue.size())
+						{
+							strEnd++;
+						}
+						std::string value = mtlParamValue.substr(strStart, strEnd - strStart);
+						tempVec4[i++] = std::stof(value);
+
+						strStart = strEnd + 1;
+						strEnd++;
+					}
+
+					vec4Value.x = tempVec4[0];
+					vec4Value.y = tempVec4[1];
+					vec4Value.z = tempVec4[2];
+					vec4Value.w = tempVec4[3];
+
+					MaterialParam vec4Param(mtlParamName, MATERIAL_PARAM_TYPE::VECTOR4);
+					vec4Param.SetVector4(vec4Value);
+
+					mtlParams.push_back(vec4Param);
+				}
+				else if (line.find(MTL_PARAMS_TEXTURE2D) != std::string::npos)
 				{
 					strStart = line.find(MTL_PARAMS_TEXTURE2D) + MTL_PARAMS_TEXTURE2D.size();
 					strEnd = line.find("=");
