@@ -8,6 +8,7 @@
 #include "RefCntObject.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "Buffer.h"
 
 #include <vector>
 #include <unordered_map>
@@ -41,11 +42,6 @@ namespace RenderDog
 	{
 		switch (param.m_ParamType)
 		{
-		case MATERIAL_PARAM_TYPE::SCALAR:
-		{
-			m_FloatValue = param.m_FloatValue;
-			break;
-		}
 		case MATERIAL_PARAM_TYPE::VECTOR4:
 		{
 			m_Vector4Value = param.m_Vector4Value;
@@ -147,7 +143,8 @@ namespace RenderDog
 		MaterialInstance() :
 			m_Name(""),
 			m_Params(0),
-			m_pMaterial(nullptr)
+			m_pMaterial(nullptr),
+			m_pMtlParamsConstantBuffer(nullptr)
 		{}
 
 		MaterialInstance(IMaterial* pMtl);
@@ -168,6 +165,8 @@ namespace RenderDog
 		std::string						m_Name;
 		std::vector<MaterialParam>		m_Params;
 		IMaterial*						m_pMaterial;
+
+		IConstantBuffer*				m_pMtlParamsConstantBuffer;
 	};
 
 	//================================================================
@@ -401,12 +400,20 @@ namespace RenderDog
 		std::string mtlInsName = pMtl->GetName() + "_" + std::to_string(mtlInsId);
 		m_Name = mtlInsName;
 
+		uint32_t vec4ParamNum = 0;
 		for (uint32_t i = 0; i < pMtl->GetParamNum(); ++i)
 		{
 			MaterialParam& mtlParam = pMtl->GetParamByIndex(i);
 
 			switch (mtlParam.GetType())
 			{
+			case MATERIAL_PARAM_TYPE::VECTOR4:
+			{
+				m_Params.push_back(mtlParam);
+				vec4ParamNum++;
+
+				break;
+			}
 			case MATERIAL_PARAM_TYPE::TEXTURE2D:
 			{
 				ITexture2D* pTexture = mtlParam.GetTexture2D();
@@ -437,6 +444,13 @@ namespace RenderDog
 				break;
 			}
 		}
+
+		BufferDesc cbDesc = {};
+		cbDesc.name = "$Globals";
+		cbDesc.byteWidth = sizeof(Vector4) * vec4ParamNum;
+		cbDesc.pInitData = nullptr;
+		cbDesc.isDynamic = true;
+		m_pMtlParamsConstantBuffer = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
 	}
 
 	MaterialInstance::MaterialInstance(IMaterial* pMtl, const std::vector<MaterialParam>* pMtlParams):
@@ -451,10 +465,23 @@ namespace RenderDog
 		std::string mtlInsName = pMtl->GetName() + "_" + std::to_string(mtlInsId);
 		m_Name = mtlInsName;
 
+		uint32_t vec4ParamNum = 0;
 		for (uint32_t i = 0; i < pMtlParams->size(); ++i)
 		{
+			if (m_Params[i].GetType() == MATERIAL_PARAM_TYPE::VECTOR4)
+			{
+				vec4ParamNum++;
+			}
+
 			m_Params.push_back((*pMtlParams)[i]);
 		}
+
+		BufferDesc cbDesc = {};
+		cbDesc.name = "$Globals";
+		cbDesc.byteWidth = sizeof(Vector4) * vec4ParamNum;
+		cbDesc.pInitData = nullptr;
+		cbDesc.isDynamic = true;
+		m_pMtlParamsConstantBuffer = (IConstantBuffer*)g_pIBufferManager->GetConstantBuffer(cbDesc);
 	}
 
 	MaterialInstance::~MaterialInstance()
@@ -472,6 +499,12 @@ namespace RenderDog
 				ISamplerState* pSampler = param.GetSamplerState();
 				pSampler->Release();
 			}
+		}
+
+		if (m_pMtlParamsConstantBuffer)
+		{
+			m_pMtlParamsConstantBuffer->Release();
+			m_pMtlParamsConstantBuffer = nullptr;
 		}
 	}
 

@@ -32,7 +32,6 @@ namespace RenderDog
 	enum class MATERIAL_PARAM_TYPE
 	{
 		UNKNOWN = 0,
-		SCALAR,
 		VECTOR4,
 		TEXTURE2D,
 		SAMPLER
@@ -57,12 +56,10 @@ namespace RenderDog
 
 		MaterialParam& operator=(const MaterialParam& param);
 
-		float							GetScalar() { return m_FloatValue; }
 		Vector4							GetVector4() { return m_Vector4Value; }
 		ITexture2D*						GetTexture2D() { return m_pTexture2DValue; }
 		ISamplerState*					GetSamplerState() { return pSamplerValue; }
 
-		void							SetScalar(float value) { m_FloatValue = value; }
 		void							SetVector4(const Vector4& value) { m_Vector4Value = value; }
 		void							SetTexture2D(ITexture2D* pValue) { m_pTexture2DValue = pValue; }
 		void							SetSamplerState(ISamplerState* pValue) { pSamplerValue = pValue; }
@@ -76,7 +73,6 @@ namespace RenderDog
 	private:
 		union
 		{
-			float						m_FloatValue;
 			Vector4						m_Vector4Value;
 			ITexture2D*					m_pTexture2DValue;
 			ISamplerState*				pSamplerValue;

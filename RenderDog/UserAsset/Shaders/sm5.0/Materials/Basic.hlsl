@@ -4,6 +4,8 @@
 //Written by Xiang Weikang
 ////////////////////////////////////////
 
+float4			LocVar_Material_MRParams;
+
 Texture2D		LocVar_Material_DiffuseTexture;
 SamplerState	LocVar_Material_DiffuseTextureSampler;
 
@@ -12,6 +14,9 @@ SamplerState	LocVar_Material_NormalTextureSampler;
 
 Texture2D		LocVar_Material_MetallicRoughnessTexture;
 SamplerState	LocVar_Material_MetallicRoughnessTextureSampler;
+
+#define			LocVar_Material_Metallic	LocVar_Material_MRParams.x
+#define			LocVar_Material_Roughness	LocVar_Material_MRParams.y
 
 float3 ComFunc_Material_GetBaseColorRaw(float2 inTexCoord)
 {
@@ -35,12 +40,16 @@ float ComFunc_Material_GetMetallicRaw(float2 inTexCoord)
 {
 	float Metallic = LocVar_Material_MetallicRoughnessTexture.SampleLevel(LocVar_Material_MetallicRoughnessTextureSampler, inTexCoord, 0).r;
 
+	Metallic *= LocVar_Material_Metallic;
+
 	return saturate(Metallic);
 }
 
 float ComFunc_Material_GetRoughnessRaw(float2 inTexCoord)
 {
 	float Roughness = LocVar_Material_MetallicRoughnessTexture.SampleLevel(LocVar_Material_MetallicRoughnessTextureSampler, inTexCoord, 0).g;
+
+	Roughness *= LocVar_Material_Roughness;
 
 	return saturate(Roughness);
 }

@@ -476,8 +476,9 @@ namespace RenderDog
 			return;
 		}
 
+		std::vector<Vector4> vec4Params;
+
 		uint32_t mtlParamNum = pMtlIns->GetMaterialParamNum();
-		bool bNeedSetGlobalCB = false;
 		for (uint32_t i = 0; i < mtlParamNum; ++i)
 		{
 			MaterialParam& param = pMtlIns->GetMaterialParamByIndex(i);
@@ -486,13 +487,13 @@ namespace RenderDog
 			switch (paramType)
 			{
 			case MATERIAL_PARAM_TYPE::UNKNOWN:
-				break;
-			case MATERIAL_PARAM_TYPE::SCALAR:
 			{
+				break;
 			}
 			case MATERIAL_PARAM_TYPE::VECTOR4:
 			{
-				bNeedSetGlobalCB = true;
+				vec4Params.push_back(param.GetVector4());
+
 				break;
 			}
 			case MATERIAL_PARAM_TYPE::TEXTURE2D:
@@ -530,17 +531,19 @@ namespace RenderDog
 			}
 		}
 
-		if (bNeedSetGlobalCB)
+		if (vec4Params.size() > 0)
 		{
 			IConstantBuffer* pGlobalConstantBuffer = g_pIBufferManager->GetConstantBufferByName("$Globals");
 			if (pGlobalConstantBuffer)
 			{
+				pGlobalConstantBuffer->Update(vec4Params.data(), vec4Params.size() * sizeof(Vector4));
+
 				auto cbIter = m_ConstantBufferMap.find(pGlobalConstantBuffer->GetName());
 				if (cbIter != m_ConstantBufferMap.end())
 				{
 					uint32_t cbSlot = cbIter->second;
 					ID3D11Buffer* pCB = (ID3D11Buffer*)(pGlobalConstantBuffer->GetResource());
-					g_pD3D11ImmediateContext->VSSetConstantBuffers(cbSlot, 1, (ID3D11Buffer**)&pCB);
+					g_pD3D11ImmediateContext->PSSetConstantBuffers(cbSlot, 1, (ID3D11Buffer**)&pCB);
 				}
 			}
 		}
