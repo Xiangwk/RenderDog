@@ -477,7 +477,6 @@ namespace RenderDog
 		}
 
 		std::vector<Vector4> vec4Params;
-
 		uint32_t mtlParamNum = pMtlIns->GetMaterialParamNum();
 		for (uint32_t i = 0; i < mtlParamNum; ++i)
 		{

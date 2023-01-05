@@ -191,8 +191,6 @@ namespace RenderDog
 			switch (paramType)
 			{
 			case MATERIAL_PARAM_TYPE::UNKNOWN:
-				break;
-			case MATERIAL_PARAM_TYPE::SCALAR:
 			{
 				break;
 			}
@@ -203,14 +201,20 @@ namespace RenderDog
 			case MATERIAL_PARAM_TYPE::TEXTURE2D:
 			{
 				ShaderParam* pTextureParam = m_pPixelShader->GetShaderParamPtrByName(paramName);
-				pTextureParam->SetTexture(param.GetTexture2D());
+				if (pTextureParam)
+				{
+					pTextureParam->SetTexture(param.GetTexture2D());
+				}
 
 				break;
 			}
 			case MATERIAL_PARAM_TYPE::SAMPLER:
 			{
 				ShaderParam* pSamplerParam = m_pPixelShader->GetShaderParamPtrByName(paramName);
-				pSamplerParam->SetSampler(param.GetSamplerState());
+				if (pSamplerParam)
+				{
+					pSamplerParam->SetSampler(param.GetSamplerState());
+				}
 
 				break;
 			}
@@ -218,12 +222,6 @@ namespace RenderDog
 				break;
 			}
 		}
-
-		/*ShaderParam* pNormalTextureParam = m_pPixelShader->GetShaderParamPtrByName("NormalTexture");
-		pNormalTextureParam->SetTexture(renderParam.pNormalTexture);
-
-		ShaderParam* pNormalTextureSamplerParam = m_pPixelShader->GetShaderParamPtrByName("NormalTextureSampler");
-		pNormalTextureSamplerParam->SetSampler(renderParam.pNormalTextureSampler);*/
 	}
 
 	//===========================================================

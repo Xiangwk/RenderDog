@@ -72,7 +72,8 @@
     <PostBuildEvent>
       <Command>xcopy $(TargetDir)*.exe ..\..\..\..\Bin\Demos\$(ProjectName)\ /i /s /y
 xcopy ..\..\..\..\EngineSDK\3rdSDK\Bin\*.* ..\..\..\..\Bin\Demos\$(ProjectName)\ /i /s /y
-xcopy ..\..\..\..\EngineSDK\RenderDog\EngineAsset\*.* ..\..\..\..\Bin\Demos\$(ProjectName)\EngineAsset\ /i /s /y</Command>
+xcopy ..\..\..\..\EngineSDK\RenderDog\EngineAsset\*.* ..\..\..\..\Bin\Demos\$(ProjectName)\EngineAsset\ /i /s /y
+xcopy ..\..\..\..\EngineSDK\RenderDog\UserAsset\*.* ..\..\..\..\Bin\Demos\$(ProjectName)\UserAsset\ /i /s /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -97,7 +98,8 @@ xcopy ..\..\..\..\EngineSDK\RenderDog\EngineAsset\*.* ..\..\..\..\Bin\Demos\$(Pr
     <PostBuildEvent>
       <Command>xcopy $(TargetDir)*.exe ..\..\..\..\Bin\Demos\$(ProjectName)\ /i /s /y
 xcopy ..\..\..\..\EngineSDK\3rdSDK\Bin\*.* ..\..\..\..\Bin\Demos\$(ProjectName)\ /i /s /y
-xcopy ..\..\..\..\EngineSDK\RenderDog\EngineAsset\*.* ..\..\..\..\Bin\Demos\$(ProjectName)\EngineAsset\ /i /s /y</Command>
+xcopy ..\..\..\..\EngineSDK\RenderDog\EngineAsset\*.* ..\..\..\..\Bin\Demos\$(ProjectName)\EngineAsset\ /i /s /y
+xcopy ..\..\..\..\EngineSDK\RenderDog\UserAsset\*.* ..\..\..\..\Bin\Demos\$(ProjectName)\UserAsset\ /i /s /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

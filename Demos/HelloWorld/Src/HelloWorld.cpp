@@ -81,8 +81,8 @@ bool DemoApp::Init(const DemoInitDesc& desc)
 		return false;
 	}
 
-	m_pBasicMaterial = CreateBasicMaterial("Basic.mtl");
-	m_pGeneratorMaterial = CreateGeneratorMaterial("Generator.mtl");
+	m_pBasicMaterial = CreateBasicMaterial("UserAsset/Materials/Basic.mtl");
+	m_pGeneratorMaterial = CreateGeneratorMaterial("UserAsset/Materials/Basic.mtl");
 
 	if (!LoadModel("Models/generator/Generator.FBX", LOAD_MODEL_TYPE::CUSTOM_STATIC))
 	{
@@ -332,7 +332,7 @@ RenderDog::IMaterial* DemoApp::CreateBasicMaterial(const std::string& mtlName)
 		{
 			return nullptr;
 		}
-		RenderDog::MaterialParam DiffuseTextureParam("DiffuseTexture", RenderDog::MATERIAL_PARAM_TYPE::TEXTURE2D);
+		RenderDog::MaterialParam DiffuseTextureParam("LocVar_Material_DiffuseTexture", RenderDog::MATERIAL_PARAM_TYPE::TEXTURE2D);
 		DiffuseTextureParam.SetTexture2D(pDiffuseTexture);
 		pMtl->AddParam(DiffuseTextureParam);
 
@@ -345,7 +345,7 @@ RenderDog::IMaterial* DemoApp::CreateBasicMaterial(const std::string& mtlName)
 		{
 			return nullptr;
 		}
-		RenderDog::MaterialParam DiffuseTextureSamplerParam("DiffuseTextureSampler", RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
+		RenderDog::MaterialParam DiffuseTextureSamplerParam("LocVar_Material_DiffuseTextureSampler", RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
 		DiffuseTextureSamplerParam.SetSamplerState(pDiffuseTextureSampler);
 		pMtl->AddParam(DiffuseTextureSamplerParam);
 	}
@@ -357,7 +357,7 @@ RenderDog::IMaterial* DemoApp::CreateBasicMaterial(const std::string& mtlName)
 		{
 			return nullptr;
 		}
-		RenderDog::MaterialParam NormalTextureParam("NormalTexture", RenderDog::MATERIAL_PARAM_TYPE::TEXTURE2D);
+		RenderDog::MaterialParam NormalTextureParam("LocVar_Material_NormalTexture", RenderDog::MATERIAL_PARAM_TYPE::TEXTURE2D);
 		NormalTextureParam.SetTexture2D(pNormalTexture);
 		pMtl->AddParam(NormalTextureParam);
 
@@ -369,7 +369,7 @@ RenderDog::IMaterial* DemoApp::CreateBasicMaterial(const std::string& mtlName)
 		{
 			return nullptr;
 		}
-		RenderDog::MaterialParam NormalTextureSamplerParam("NormalTextureSampler", RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
+		RenderDog::MaterialParam NormalTextureSamplerParam("LocVar_Material_NormalTextureSampler", RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
 		NormalTextureSamplerParam.SetSamplerState(pNormalTextureSampler);
 		pMtl->AddParam(NormalTextureSamplerParam);
 	}
@@ -391,7 +391,7 @@ RenderDog::IMaterial* DemoApp::CreateGeneratorMaterial(const std::string& mtlNam
 		{
 			return nullptr;
 		}
-		RenderDog::MaterialParam DiffuseTextureParam("DiffuseTexture", RenderDog::MATERIAL_PARAM_TYPE::TEXTURE2D);
+		RenderDog::MaterialParam DiffuseTextureParam("LocVar_Material_DiffuseTexture", RenderDog::MATERIAL_PARAM_TYPE::TEXTURE2D);
 		DiffuseTextureParam.SetTexture2D(pDiffuseTexture);
 		pMtl->AddParam(DiffuseTextureParam);
 
@@ -404,7 +404,7 @@ RenderDog::IMaterial* DemoApp::CreateGeneratorMaterial(const std::string& mtlNam
 		{
 			return nullptr;
 		}
-		RenderDog::MaterialParam DiffuseTextureSamplerParam("DiffuseTextureSampler", RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
+		RenderDog::MaterialParam DiffuseTextureSamplerParam("LocVar_Material_DiffuseTextureSampler", RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
 		DiffuseTextureSamplerParam.SetSamplerState(pDiffuseTextureSampler);
 		pMtl->AddParam(DiffuseTextureSamplerParam);
 	}
@@ -416,7 +416,7 @@ RenderDog::IMaterial* DemoApp::CreateGeneratorMaterial(const std::string& mtlNam
 		{
 			return nullptr;
 		}
-		RenderDog::MaterialParam NormalTextureParam("NormalTexture", RenderDog::MATERIAL_PARAM_TYPE::TEXTURE2D);
+		RenderDog::MaterialParam NormalTextureParam("LocVar_Material_NormalTexture", RenderDog::MATERIAL_PARAM_TYPE::TEXTURE2D);
 		NormalTextureParam.SetTexture2D(pNormalTexture);
 		pMtl->AddParam(NormalTextureParam);
 
@@ -428,7 +428,7 @@ RenderDog::IMaterial* DemoApp::CreateGeneratorMaterial(const std::string& mtlNam
 		{
 			return nullptr;
 		}
-		RenderDog::MaterialParam NormalTextureSamplerParam("NormalTextureSampler", RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
+		RenderDog::MaterialParam NormalTextureSamplerParam("LocVar_Material_NormalTextureSampler", RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
 		NormalTextureSamplerParam.SetSamplerState(pNormalTextureSampler);
 		pMtl->AddParam(NormalTextureSamplerParam);
 	}

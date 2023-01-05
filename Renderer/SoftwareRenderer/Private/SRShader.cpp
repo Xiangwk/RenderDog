@@ -97,6 +97,8 @@ namespace RenderDog
 		virtual IShader*			GetDirectionLightingPixelShader(const ShaderCompileDesc& desc) override;
 		virtual IShader*			GetSkyPixelShader(const ShaderCompileDesc& desc) override;
 
+		virtual IShader*			GetMaterialShader(const ShaderCompileDesc& desc, const std::string& mtlName) override;
+
 		void						ReleaseShader(SRShader* pShader);
 
 	private:
@@ -168,17 +170,17 @@ namespace RenderDog
 	SRPixelShader::SRPixelShader(const ShaderCompileDesc& desc) :
 		SRShader(desc),
 		m_pPS(nullptr),
-		m_DiffuseTextureParam("DiffuseTexture", SHADER_PARAM_TYPE::TEXTURE),
-		m_DiffuseTextureSamplerParam("DiffuseTextureSampler", SHADER_PARAM_TYPE::SAMPLER),
-		m_NormalTextureParam("NormalTexture", SHADER_PARAM_TYPE::TEXTURE),
-		m_NormalTextureSamplerParam("NormalTextureSampler", SHADER_PARAM_TYPE::SAMPLER)
+		m_DiffuseTextureParam("LocVar_Material_DiffuseTexture", SHADER_PARAM_TYPE::TEXTURE),
+		m_DiffuseTextureSamplerParam("LocVar_Material_DiffuseTextureSampler", SHADER_PARAM_TYPE::SAMPLER),
+		m_NormalTextureParam("LocVar_Material_NormalTexture", SHADER_PARAM_TYPE::TEXTURE),
+		m_NormalTextureSamplerParam("LocVar_Material_NormalTextureSampler", SHADER_PARAM_TYPE::SAMPLER)
 	{
 		g_pSRDevice->CreatePixelShader(&m_pPS);
 
-		m_ShaderParamMap.insert({ "DiffuseTexture", &m_DiffuseTextureParam });
-		m_ShaderParamMap.insert({ "DiffuseTextureSampler", &m_DiffuseTextureSamplerParam });
-		m_ShaderParamMap.insert({ "NormalTexture", &m_NormalTextureParam });
-		m_ShaderParamMap.insert({ "NormalTextureSampler", &m_NormalTextureSamplerParam });
+		m_ShaderParamMap.insert({ "LocVar_Material_DiffuseTexture", &m_DiffuseTextureParam });
+		m_ShaderParamMap.insert({ "LocVar_Material_DiffuseTextureSampler", &m_DiffuseTextureSamplerParam });
+		m_ShaderParamMap.insert({ "LocVar_Material_NormalTexture", &m_NormalTextureParam });
+		m_ShaderParamMap.insert({ "LocVar_Material_NormalTextureSampler", &m_NormalTextureSamplerParam });
 	}
 
 	SRPixelShader::~SRPixelShader()
@@ -261,6 +263,12 @@ namespace RenderDog
 	}
 
 	IShader* SRShaderManager::GetSkyPixelShader(const ShaderCompileDesc& desc)
+	{
+		//TODO:
+		return nullptr;
+	}
+
+	IShader* SRShaderManager::GetMaterialShader(const ShaderCompileDesc& desc, const std::string& mtlName)
 	{
 		//TODO:
 		return nullptr;
