@@ -114,11 +114,11 @@ namespace RenderDog
 		m_fData[1][0] = 0.0f;
 		m_fData[1][2] = 0.0f;
 		m_fData[1][3] = 0.0f;
-
+		
 		m_fData[2][0] = 0.0f;
 		m_fData[2][1] = 0.0f;
 		m_fData[2][3] = 0.0f;
-
+		
 		m_fData[3][0] = 0.0f;
 		m_fData[3][1] = 0.0f;
 		m_fData[3][2] = 0.0f;
@@ -179,31 +179,67 @@ namespace RenderDog
 		return result;
 	}
 
-	Matrix4x4 operator*(const Matrix4x4& matLHS, const Matrix4x4& matRHS)
+	Matrix4x4 operator*(const Matrix4x4& matLhs, const Matrix4x4& matRhs)
 	{
 		Matrix4x4 matResult = GetIdentityMatrix();
 
-		matResult(0, 0) = matLHS(0, 0) * matRHS(0, 0) + matLHS(0, 1) * matRHS(1, 0) + matLHS(0, 2) * matRHS(2, 0) + matLHS(0, 3) * matRHS(3, 0);
-		matResult(0, 1) = matLHS(0, 0) * matRHS(0, 1) + matLHS(0, 1) * matRHS(1, 1) + matLHS(0, 2) * matRHS(2, 1) + matLHS(0, 3) * matRHS(3, 1);
-		matResult(0, 2) = matLHS(0, 0) * matRHS(0, 2) + matLHS(0, 1) * matRHS(1, 2) + matLHS(0, 2) * matRHS(2, 2) + matLHS(0, 3) * matRHS(3, 2);
-		matResult(0, 3) = matLHS(0, 0) * matRHS(0, 3) + matLHS(0, 1) * matRHS(1, 3) + matLHS(0, 2) * matRHS(2, 3) + matLHS(0, 3) * matRHS(3, 3);
+		float l00 = matLhs(0, 0), r00 = matRhs(0, 0);
+		float l01 = matLhs(0, 1), r01 = matRhs(0, 1);
+		float l02 = matLhs(0, 2), r02 = matRhs(0, 2);
+		float l03 = matLhs(0, 3), r03 = matRhs(0, 3);
 
-		matResult(1, 0) = matLHS(1, 0) * matRHS(0, 0) + matLHS(1, 1) * matRHS(1, 0) + matLHS(1, 2) * matRHS(2, 0) + matLHS(1, 3) * matRHS(3, 0);
-		matResult(1, 1) = matLHS(1, 0) * matRHS(0, 1) + matLHS(1, 1) * matRHS(1, 1) + matLHS(1, 2) * matRHS(2, 1) + matLHS(1, 3) * matRHS(3, 1);
-		matResult(1, 2) = matLHS(1, 0) * matRHS(0, 2) + matLHS(1, 1) * matRHS(1, 2) + matLHS(1, 2) * matRHS(2, 2) + matLHS(1, 3) * matRHS(3, 2);
-		matResult(1, 3) = matLHS(1, 0) * matRHS(0, 3) + matLHS(1, 1) * matRHS(1, 3) + matLHS(1, 2) * matRHS(2, 3) + matLHS(1, 3) * matRHS(3, 3);
+		float l10 = matLhs(1, 0), r10 = matRhs(1, 0);
+		float l11 = matLhs(1, 1), r11 = matRhs(1, 1);
+		float l12 = matLhs(1, 2), r12 = matRhs(1, 2);
+		float l13 = matLhs(1, 3), r13 = matRhs(1, 3);
 
-		matResult(2, 0) = matLHS(2, 0) * matRHS(0, 0) + matLHS(2, 1) * matRHS(1, 0) + matLHS(2, 2) * matRHS(2, 0) + matLHS(2, 3) * matRHS(3, 0);
-		matResult(2, 1) = matLHS(2, 0) * matRHS(0, 1) + matLHS(2, 1) * matRHS(1, 1) + matLHS(2, 2) * matRHS(2, 1) + matLHS(2, 3) * matRHS(3, 1);
-		matResult(2, 2) = matLHS(2, 0) * matRHS(0, 2) + matLHS(2, 1) * matRHS(1, 2) + matLHS(2, 2) * matRHS(2, 2) + matLHS(2, 3) * matRHS(3, 2);
-		matResult(2, 3) = matLHS(2, 0) * matRHS(0, 3) + matLHS(2, 1) * matRHS(1, 3) + matLHS(2, 2) * matRHS(2, 3) + matLHS(2, 3) * matRHS(3, 3);
+		float l20 = matLhs(2, 0), r20 = matRhs(2, 0);
+		float l21 = matLhs(2, 1), r21 = matRhs(2, 1);
+		float l22 = matLhs(2, 2), r22 = matRhs(2, 2);
+		float l23 = matLhs(2, 3), r23 = matRhs(2, 3);
 
-		matResult(3, 0) = matLHS(3, 0) * matRHS(0, 0) + matLHS(3, 1) * matRHS(1, 0) + matLHS(3, 2) * matRHS(2, 0) + matLHS(3, 3) * matRHS(3, 0);
-		matResult(3, 1) = matLHS(3, 0) * matRHS(0, 1) + matLHS(3, 1) * matRHS(1, 1) + matLHS(3, 2) * matRHS(2, 1) + matLHS(3, 3) * matRHS(3, 1);
-		matResult(3, 2) = matLHS(3, 0) * matRHS(0, 2) + matLHS(3, 1) * matRHS(1, 2) + matLHS(3, 2) * matRHS(2, 2) + matLHS(3, 3) * matRHS(3, 2);
-		matResult(3, 3) = matLHS(3, 0) * matRHS(0, 3) + matLHS(3, 1) * matRHS(1, 3) + matLHS(3, 2) * matRHS(2, 3) + matLHS(3, 3) * matRHS(3, 3);
+		float l30 = matLhs(3, 0), r30 = matRhs(3, 0);
+		float l31 = matLhs(3, 1), r31 = matRhs(3, 1);
+		float l32 = matLhs(3, 2), r32 = matRhs(3, 2);
+		float l33 = matLhs(3, 3), r33 = matRhs(3, 3);
+
+		matResult(0, 0) = l00 * r00 + l01 * r10 + l02 * r20 + l03 * r30;
+		matResult(0, 1) = l00 * r01 + l01 * r11 + l02 * r21 + l03 * r31;
+		matResult(0, 2) = l00 * r02 + l01 * r12 + l02 * r22 + l03 * r32;
+		matResult(0, 3) = l00 * r03 + l01 * r13 + l02 * r23 + l03 * r33;
+
+		matResult(1, 0) = l10 * r00 + l11 * r10 + l12 * r20 + l13 * r30;
+		matResult(1, 1) = l10 * r01 + l11 * r11 + l12 * r21 + l13 * r31;
+		matResult(1, 2) = l10 * r02 + l11 * r12 + l12 * r22 + l13 * r32;
+		matResult(1, 3) = l10 * r03 + l11 * r13 + l12 * r23 + l13 * r33;
+
+		matResult(2, 0) = l20 * r00 + l21 * r10 + l22 * r20 + l23 * r30;
+		matResult(2, 1) = l20 * r01 + l21 * r11 + l22 * r21 + l23 * r31;
+		matResult(2, 2) = l20 * r02 + l21 * r12 + l22 * r22 + l23 * r32;
+		matResult(2, 3) = l20 * r03 + l21 * r13 + l22 * r23 + l23 * r33;
+
+		matResult(3, 0) = l30 * r00 + l31 * r10 + l32 * r20 + l33 * r30;
+		matResult(3, 1) = l30 * r01 + l31 * r11 + l32 * r21 + l33 * r31;
+		matResult(3, 2) = l30 * r02 + l31 * r12 + l32 * r22 + l33 * r32;
+		matResult(3, 3) = l30 * r03 + l31 * r13 + l32 * r23 + l33 * r33;
 
 		return matResult;
+	}
+
+	bool operator==(const Matrix4x4& matLhs, const Matrix4x4& matRhs)
+	{
+		for (int i = 0; i < 4; ++i)
+		{
+			for(int j = 0; j < 4; ++j)
+			{
+				if (matLhs(i, j) != matRhs(i, j))
+				{
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 
 	Matrix4x4 GetIdentityMatrix()

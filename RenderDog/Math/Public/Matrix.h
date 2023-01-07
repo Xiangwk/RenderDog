@@ -13,7 +13,7 @@ namespace RenderDog
 	class Matrix4x4
 	{
 	public:
-		Matrix4x4();
+		Matrix4x4();		//全零
 		~Matrix4x4();
 
 		Matrix4x4(const Matrix4x4& mat);
@@ -24,11 +24,13 @@ namespace RenderDog
 				  float f20, float f21, float f22, float f23,
 				  float f30, float f31, float f32, float f33);
 
+		//行向量
 		Matrix4x4(const Vector4& v0, const Vector4& v1, const Vector4& v2, const Vector4& v3);
 
 		float		operator()(int r, int c) const { return m_fData[r][c]; }
 		float&		operator()(int r, int c) { return m_fData[r][c]; }
 		Vector4		GetRow(int r) const { return Vector4(m_fData[r][0], m_fData[r][1], m_fData[r][2], m_fData[r][3]); }
+		Vector4		GetCol(int c) const { return Vector4(m_fData[0][c], m_fData[1][c], m_fData[2][c], m_fData[3][c]); }
 
 		void		Identity();
 
@@ -42,6 +44,8 @@ namespace RenderDog
 
 	Vector4			operator*(const Vector4& vec, const Matrix4x4& mat);
 	Matrix4x4		operator*(const Matrix4x4& matLHS, const Matrix4x4& matRHS);
+
+	bool			operator==(const Matrix4x4& matLHS, const Matrix4x4& matRHS);
 
 	Matrix4x4		GetIdentityMatrix();
 
