@@ -114,7 +114,7 @@ namespace RenderDog
 		return Normalize(result);
 	}
 
-	const Quaternion operator*(const Quaternion& lhs, const Quaternion& rhs)
+	Quaternion operator*(const Quaternion& lhs, const Quaternion& rhs)
 	{
 		float resX = lhs.w * rhs.x + lhs.x * rhs.w + lhs.y * rhs.z - lhs.z * rhs.y;
 		float resY = lhs.w * rhs.y - lhs.x * rhs.z + lhs.y * rhs.w + lhs.z * rhs.x;

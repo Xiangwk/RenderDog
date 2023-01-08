@@ -29,7 +29,7 @@ namespace RenderDog
 			Vector3 scales = m_KeyFrames.front().scales;
 			Quaternion rotationQuat = m_KeyFrames.front().rotationQuat;
 
-			outputUpToParent = GetTransformation(translation, scales, rotationQuat);
+			outputUpToParent = GetTransformMatrix(translation, scales, rotationQuat);
 		}
 		else if (timePos >= m_KeyFrames.back().timePos)
 		{
@@ -37,7 +37,7 @@ namespace RenderDog
 			Vector3 scales = m_KeyFrames.back().scales;
 			Quaternion rotationQuat = m_KeyFrames.back().rotationQuat;
 
-			outputUpToParent = GetTransformation(translation, scales, rotationQuat);
+			outputUpToParent = GetTransformMatrix(translation, scales, rotationQuat);
 		}
 		else
 		{
@@ -60,7 +60,7 @@ namespace RenderDog
 					Vector3 translation1 = m_KeyFrames[i + 1].translation;
 					Vector3 currTranslation = Lerp(translation0, translation1, lerpFactor);
 
-					outputUpToParent = GetTransformation(currTranslation, currScales, currRotationQuat);
+					outputUpToParent = GetTransformMatrix(currTranslation, currScales, currRotationQuat);
 
 					break;
 				}

@@ -4,6 +4,7 @@
 //Written by Xiang Weikang
 ///////////////////////////////////
 
+#include "Matrix.h"
 #include "Transform.h"
 #include "Quaternion.h"
 #include "Utility.h"
@@ -180,7 +181,7 @@ namespace RenderDog
 		return orthoMatrix;
 	}
 
-	Matrix4x4 GetTransformation(const Vector3& translation, const Vector3& scales, const Vector3& eulers)
+	Matrix4x4 GetTransformMatrix(const Vector3& translation, const Vector3& scales, const Vector3& eulers)
 	{
 		Matrix4x4 scaleMatrix = GetScaleMatrix(scales.x, scales.y, scales.z);
 		Matrix4x4 rotationMatrix = GetRotationMatrix(eulers.x, eulers.y, eulers.z);
@@ -189,7 +190,7 @@ namespace RenderDog
 		return scaleMatrix * rotationMatrix * translationMatrix;
 	}
 
-	Matrix4x4 GetTransformation(const Vector3& translation, const Vector3& scales, const Quaternion& rotQuat)
+	Matrix4x4 GetTransformMatrix(const Vector3& translation, const Vector3& scales, const Quaternion& rotQuat)
 	{
 		Matrix4x4 scaleMatrix = GetScaleMatrix(scales.x, scales.y, scales.z);
 		Matrix4x4 rotationMatrix = GetRotationMatrix(rotQuat);
@@ -197,4 +198,5 @@ namespace RenderDog
 
 		return scaleMatrix * rotationMatrix * translationMatrix;
 	}
-}
+
+}// namespace RenderDog

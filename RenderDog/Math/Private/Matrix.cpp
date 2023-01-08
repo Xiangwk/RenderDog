@@ -297,4 +297,5 @@ namespace RenderDog
 		
 		return result;
 	}
+
 }// namespace RenderDog

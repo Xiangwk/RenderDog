@@ -26,7 +26,8 @@ namespace RenderDog
 			w(1.0f)
 		{}
 
-		~Quaternion() = default;
+		~Quaternion()
+		{}
 
 		Quaternion(float inX, float inY, float inZ, float inW) :
 			x(inX),
@@ -34,6 +35,23 @@ namespace RenderDog
 			z(inZ),
 			w(inW)
 		{}
+
+		Quaternion(const Quaternion& q) :
+			x(q.x),
+			y(q.y),
+			z(q.z),
+			w(q.w)
+		{}
+
+		Quaternion& operator=(const Quaternion& q)
+		{
+			x = q.x;
+			y = q.y;
+			z = q.z;
+			w = q.w;
+
+			return *this;
+		}
 
 		Quaternion& operator*=(const Quaternion& rhs);
 
@@ -43,11 +61,11 @@ namespace RenderDog
 		Vector3		GetRotateAxis() const;
 	};
 
-	Quaternion Normalize(const Quaternion& quat);
-	//FIXME!!! Lerp的效果有些问题，需要查验
-	Quaternion Lerp(const Quaternion& quat1, const Quaternion& quat2, float lerpFactor);
-	Quaternion SLerp(const Quaternion& quat1, const Quaternion& quat2, float lerpFactor);
+	Quaternion	Normalize(const Quaternion& quat);
+				//FIXME!!! Lerp的效果有些问题，需要查验
+	Quaternion	Lerp(const Quaternion& quat1, const Quaternion& quat2, float lerpFactor);
+	Quaternion	SLerp(const Quaternion& quat1, const Quaternion& quat2, float lerpFactor);
 
-	const Quaternion operator*(const Quaternion& lhs, const Quaternion& rhs);
+	Quaternion	operator*(const Quaternion& lhs, const Quaternion& rhs);
 
 }// namespace RenderDog
