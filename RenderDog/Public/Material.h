@@ -52,7 +52,8 @@ namespace RenderDog
 
 		MaterialParam(const MaterialParam& param);
 
-		~MaterialParam() = default;
+		~MaterialParam()
+		{}
 
 		MaterialParam& operator=(const MaterialParam& param);
 

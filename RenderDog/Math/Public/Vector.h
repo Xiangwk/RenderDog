@@ -14,6 +14,7 @@ namespace RenderDog
 	// ----------------------       Vector2         ---------------------------------//
 	///////////////////////////////////////////////////////////////////////////////////
 #pragma region Vector2
+
 	struct Vector2
 	{
 		float x;
@@ -45,9 +46,9 @@ namespace RenderDog
 			y(f)
 		{}
 
-		Vector2(float x, float y) :
-			x(x), 
-			y(y)
+		Vector2(float inX, float inY) :
+			x(inX),
+			y(inY)
 		{}
 
 		Vector2 operator-() const
@@ -96,21 +97,23 @@ namespace RenderDog
 		}
 	};
 
-	const Vector2	operator+(const Vector2& lhs, const Vector2& rhs);
-	const Vector2	operator-(const Vector2& lhs, const Vector2& rhs);
-	const Vector2	operator*(const Vector2& lhs, const Vector2& rhs);
-	const Vector2	operator*(const Vector2& v, float f);
-	const Vector2	operator*(float f, const Vector2& v);
-	const Vector2	operator/(const Vector2& v, float f);
+	Vector2	operator+(const Vector2& lhs, const Vector2& rhs);
+	Vector2	operator-(const Vector2& lhs, const Vector2& rhs);
+	Vector2	operator*(const Vector2& lhs, const Vector2& rhs);
+	Vector2	operator*(const Vector2& v, float f);
+	Vector2	operator*(float f, const Vector2& v);
+	Vector2	operator/(const Vector2& v, float f);
 
-	bool			operator==(const Vector2& lhs, const Vector2& rhs);
-	bool			operator!=(const Vector2& lhs, const Vector2& rhs);
+	bool	operator==(const Vector2& lhs, const Vector2& rhs);
+	bool	operator!=(const Vector2& lhs, const Vector2& rhs);
+
 #pragma endregion Vector2
 
 	///////////////////////////////////////////////////////////////////////////////////
 	// ----------------------       Vector3         ---------------------------------//
 	///////////////////////////////////////////////////////////////////////////////////
 #pragma region Vector3
+
 	struct Vector3
 	{
 		float x;
@@ -123,7 +126,8 @@ namespace RenderDog
 			z(0.0f)
 		{}
 
-		~Vector3() = default;
+		~Vector3()
+		{}
 
 		Vector3(const Vector3& v) :
 			x(v.x),
@@ -207,30 +211,33 @@ namespace RenderDog
 			return *this;
 		}
 
-		float	Normalize(); //return length of this
+		//返回值为向量的模
+		float Normalize();
 	};
 
-	const Vector3	operator+(const Vector3& lhs, const Vector3& rhs);
-	const Vector3	operator-(const Vector3& lhs, const Vector3& rhs);
-	const Vector3	operator*(const Vector3& lhs, const Vector3& rhs);
-	const Vector3	operator*(float f, const Vector3& rhs);
-	const Vector3	operator*(const Vector3& lhs, float f);
-	const Vector3	operator/(const Vector3& lhs, float f);
+	Vector3		operator+(const Vector3& lhs, const Vector3& rhs);
+	Vector3		operator-(const Vector3& lhs, const Vector3& rhs);
+	Vector3		operator*(const Vector3& lhs, const Vector3& rhs);
+	Vector3		operator*(float f, const Vector3& rhs);
+	Vector3		operator*(const Vector3& lhs, float f);
+	Vector3		operator/(const Vector3& lhs, float f);
 
-	bool			operator==(const Vector3& lhs, const Vector3& rhs);
-	bool			operator!=(const Vector3& lhs, const Vector3& rhs);
+	bool		operator==(const Vector3& lhs, const Vector3& rhs);
+	bool		operator!=(const Vector3& lhs, const Vector3& rhs);
 
-	Vector3		Normalize(const Vector3& v);
 	float		DotProduct(const Vector3& lhs, const Vector3& rhs);
 	Vector3		CrossProduct(const Vector3& lhs, const Vector3& rhs);
 
+	Vector3		Normalize(const Vector3& v);
 	Vector3		Lerp(const Vector3& lhs, const Vector3& rhs, float lerpFactor);
+
 #pragma endregion Vector3
 
 	///////////////////////////////////////////////////////////////////////////////////
 	// ----------------------       Vector4         ---------------------------------//
 	///////////////////////////////////////////////////////////////////////////////////
 #pragma region Vector4
+
 	struct Vector4
 	{
 		float x;
@@ -245,7 +252,8 @@ namespace RenderDog
 			w(0.0f)
 		{}
 
-		~Vector4() = default;
+		~Vector4()
+		{}
 
 		Vector4(const Vector4& v) :
 			x(v.x),
@@ -285,27 +293,28 @@ namespace RenderDog
 			w(f)
 		{}
 
-		float	Length() const
+		float Length() const
 		{
 			return std::sqrt(x * x + y * y + z * z + w * w);
 		}
 
-		void	Normalize();
+		//返回值为向量的模
+		float Normalize();
 	};
 
-	Vector4			Normalize(const Vector4& vec);
+	Vector4		operator+(const Vector4& lhs, const Vector4& rhs);
+	Vector4		operator-(const Vector4& lhs, const Vector4& rhs);
+	Vector4		operator*(const Vector4& lhs, const Vector4& rhs);
+	Vector4		operator*(const Vector4& lhs, float f);
+	Vector4		operator*(float f, const Vector4& rhs);
+	Vector4		operator/(const Vector4& lhs, float rhs);
 
-	const Vector4	operator+(const Vector4& lhs, const Vector4& rhs);
-	const Vector4	operator-(const Vector4& lhs, const Vector4& rhs);
-	const Vector4	operator*(const Vector4& lhs, const Vector4& rhs);
-	const Vector4	operator*(const Vector4& lhs, float f);
-	const Vector4	operator*(float f, const Vector4& rhs);
-	const Vector4	operator/(const Vector4& lhs, float rhs);
+	bool		operator==(const Vector4& lhs, const Vector4& rhs);
+	bool		operator!=(const Vector4& lhs, const Vector4& rhs);
 
-	bool			operator==(const Vector4& lhs, const Vector4& rhs);
-	bool			operator!=(const Vector4& lhs, const Vector4& rhs);
+	Vector4		Normalize(const Vector4& vec);
+	Vector4		Lerp(const Vector4& lhs, const Vector4& rhs, float lerpFactor);
 
-	Vector4			Lerp(const Vector4& lhs, const Vector4& rhs, float lerpFactor);
 #pragma endregion Vector4
 
-} // End namespace RenderDog
+} // namespace RenderDog
