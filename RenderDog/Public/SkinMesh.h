@@ -56,7 +56,7 @@ namespace RenderDog
 
 		void							LoadFromSkinData(const std::vector<SkinVertex>& vertices, const std::vector<uint32_t>& indices, const std::string& name);
 								
-		bool							CreateMaterialInstance(IMaterial* pMtl, const std::vector<MaterialParam>* pMtlParams = nullptr);
+		bool							CreateMaterialInstance(IMaterial* pMtl, const std::vector<MaterialParam>* pMtlParams);
 
 		void							InitRenderData();
 

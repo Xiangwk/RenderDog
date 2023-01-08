@@ -123,14 +123,7 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 #endif //MODEL_VIEWER_LOAD_STATIC_MODEL
 
 #if MODEL_VIEWER_LOAD_SKIN_MODEL
-	std::vector<RenderDog::MaterialParam> MtlParams;
-	if (!LoadSkinModelMaterialParams(MtlParams))
-	{
-		MessageBox(nullptr, "Load Skin Model MtlParams Failed!", "ERROR", MB_OK);
-		return false;
-	}
-
-	if (!LoadFbxModel("Models/Crunch/Crunch_Crash_Site.FBX", LOAD_MODEL_TYPE::CUSTOM_SKIN, &MtlParams))
+	if (!LoadFbxModel("Models/Crunch/Crunch_Crash_Site.FBX", LOAD_MODEL_TYPE::CUSTOM_SKIN))
 	{
 		MessageBox(nullptr, "Load Skin Model Failed!", "ERROR", MB_OK);
 		return false;

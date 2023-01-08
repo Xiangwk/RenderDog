@@ -58,35 +58,10 @@ namespace RenderDog
 
 		std::vector<std::string> mtlinsFiles;
 
-		std::ifstream fin(mtlinsMapName);
-		if (fin.is_open())
-		{
-			std::string line;
-			size_t strStart = 0;
-			size_t strEnd = 0;
-			while (std::getline(fin, line))
-			{
-				std::string meshName;
-				strStart = 0;
-				strEnd = line.find("=");
-				meshName = line.substr(strStart, strEnd - strStart);
-				meshName.erase(std::remove(meshName.begin(), meshName.end(), ' '), meshName.end());
-
-				std::string mtlinsName;
-				strStart = strEnd + 1;
-				strEnd = line.size();
-				mtlinsName = line.substr(strStart, strEnd - strStart);
-				mtlinsName.erase(std::remove(mtlinsName.begin(), mtlinsName.end(), ' '), mtlinsName.end());
-
-				mtlinsFiles.push_back(mtlinsName);
-			}
-		}
-		else
+		if (!g_pMaterialManager->LoadMaterialInstanceMap(mtlinsMapName, mtlinsFiles))
 		{
 			return false;
 		}
-
-		fin.close();
 
 		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
 		{

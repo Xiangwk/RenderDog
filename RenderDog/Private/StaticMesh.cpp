@@ -137,110 +137,20 @@ namespace RenderDog
 
 	bool StaticMesh::LoadMaterialInstance(const std::string& mtlinsFile)
 	{
-		std::ifstream fin(mtlinsFile);
-		if (fin.is_open())
-		{
-			std::string line;
-			std::getline(fin, line);
+		std::string mtlName;
+		std::vector<MaterialParam> mtlParams;
 
-			std::string mtlName;
-			size_t strStart = line.find("=") + 1;
-			size_t strEnd = line.size();
-			mtlName = line.substr(strStart, strEnd - strStart);
-			mtlName.erase(std::remove(mtlName.begin(), mtlName.end(), ' '), mtlName.end());
-
-			std::string mtlDirName = "UserAsset/Materials/";
-			IMaterial* pMtl = g_pMaterialManager->GetMaterial(mtlDirName + mtlName);
-
-			std::vector<MaterialParam> mtlParams;
-			while (std::getline(fin, line))
-			{
-				if (line.find(MTL_PROPS_FLOAT4) != std::string::npos)
-				{
-					strStart = line.find(MTL_PROPS_FLOAT4) + MTL_PROPS_FLOAT4.size();
-					strEnd = line.find("=");
-					std::string mtlParamName = line.substr(strStart, strEnd - strStart);
-					mtlParamName.erase(std::remove(mtlParamName.begin(), mtlParamName.end(), ' '), mtlParamName.end());
-
-					strStart = line.find("(") + 1;
-					strEnd = line.rfind(")");
-					std::string mtlParamValue = line.substr(strStart, strEnd - strStart);
-					mtlParamValue.erase(std::remove(mtlParamValue.begin(), mtlParamValue.end(), ' '), mtlParamValue.end());
-
-					Vector4 vec4Value;
-					strStart = 0;
-					strEnd = 0;
-					float tempVec4[4] = {};
-					int i = 0;
-					while (strEnd < mtlParamValue.size())
-					{
-						while (mtlParamValue[strEnd] != ',' && strEnd < mtlParamValue.size())
-						{
-							strEnd++;
-						}
-						std::string value = mtlParamValue.substr(strStart, strEnd - strStart);
-						tempVec4[i++] = std::stof(value);
-
-						strStart = strEnd + 1;
-						strEnd++;
-					}
-
-					vec4Value.x = tempVec4[0];
-					vec4Value.y = tempVec4[1];
-					vec4Value.z = tempVec4[2];
-					vec4Value.w = tempVec4[3];
-
-					MaterialParam vec4Param(mtlParamName, MATERIAL_PARAM_TYPE::VECTOR4);
-					vec4Param.SetVector4(vec4Value);
-
-					mtlParams.push_back(vec4Param);
-				}
-				else if (line.find(MTL_PARAMS_TEXTURE2D) != std::string::npos)
-				{
-					strStart = line.find(MTL_PARAMS_TEXTURE2D) + MTL_PARAMS_TEXTURE2D.size();
-					strEnd = line.find("=");
-					std::string mtlParamName = line.substr(strStart, strEnd - strStart);
-					mtlParamName.erase(std::remove(mtlParamName.begin(), mtlParamName.end(), ' '), mtlParamName.end());
-
-					strStart = line.find("\"") + 1;
-					strEnd = line.rfind("\"");
-					std::string textureFileName = line.substr(strStart, strEnd - strStart);
-					textureFileName.erase(std::remove(textureFileName.begin(), textureFileName.end(), ' '), textureFileName.end());
-
-					std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-					RenderDog::ITexture2D* pTexture = RenderDog::g_pITextureManager->CreateTexture2D(converter.from_bytes(textureFileName));
-					if (!pTexture)
-					{
-						return false;
-					}
-					RenderDog::MaterialParam textureParam(mtlParamName, RenderDog::MATERIAL_PARAM_TYPE::TEXTURE2D);
-					textureParam.SetTexture2D(pTexture);
-					mtlParams.push_back(textureParam);
-
-					RenderDog::SamplerDesc samplerDesc = {};
-					samplerDesc.name = mtlParamName + "Sampler";
-					samplerDesc.filterMode = RenderDog::SAMPLER_FILTER::LINEAR;
-					samplerDesc.addressMode = RenderDog::SAMPLER_ADDRESS::WRAP;
-					RenderDog::ISamplerState* pTextureSampler = RenderDog::g_pISamplerStateManager->CreateSamplerState(samplerDesc);
-					if (!pTextureSampler)
-					{
-						return false;
-					}
-					RenderDog::MaterialParam textureSamplerParam(samplerDesc.name, RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
-					textureSamplerParam.SetSamplerState(pTextureSampler);
-					mtlParams.push_back(textureSamplerParam);
-				}
-			}
-
-			CreateMaterialInstance(pMtl, &mtlParams);
-			pMtl->Release();
-		}
-		else
+		if (!g_pMaterialManager->LoadMaterialInstance(mtlinsFile, mtlName, mtlParams))
 		{
 			return false;
 		}
 
-		fin.close();
+		IMaterial* pMtl = g_pMaterialManager->GetMaterial(mtlName);
+		if (pMtl)
+		{
+			CreateMaterialInstance(pMtl, &mtlParams);
+			pMtl->Release();
+		}
 
 		return true;
 	}

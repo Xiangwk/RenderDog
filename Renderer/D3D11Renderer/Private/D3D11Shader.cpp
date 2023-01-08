@@ -535,7 +535,7 @@ namespace RenderDog
 			IConstantBuffer* pGlobalConstantBuffer = g_pIBufferManager->GetConstantBufferByName("$Globals");
 			if (pGlobalConstantBuffer)
 			{
-				pGlobalConstantBuffer->Update(vec4Params.data(), vec4Params.size() * sizeof(Vector4));
+				pGlobalConstantBuffer->Update(vec4Params.data(), static_cast<uint32_t>(vec4Params.size() * sizeof(Vector4)));
 
 				auto cbIter = m_ConstantBufferMap.find(pGlobalConstantBuffer->GetName());
 				if (cbIter != m_ConstantBufferMap.end())

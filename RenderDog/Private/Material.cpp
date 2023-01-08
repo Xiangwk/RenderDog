@@ -184,6 +184,9 @@ namespace RenderDog
 		virtual IMaterial*				GetMaterial(const std::string& filePath) override;
 		virtual IMaterialInstance*		GetMaterialInstance(IMaterial* pMaterial, const std::vector<MaterialParam>* pMtlParams = nullptr) override;
 
+		virtual bool					LoadMaterialInstanceMap(const std::string& fileName, std::vector<std::string>& outMtlFiles) override;
+		virtual bool					LoadMaterialInstance(const std::string& fileName, std::string& outMtlName, std::vector<MaterialParam>& outMtlParams) override;
+
 		void							ReleaseMaterial(Material* pMaterial);
 		void							ReleaseMaterialInstance(MaterialInstance* pMaterialIns);
 
@@ -557,6 +560,143 @@ namespace RenderDog
 		m_MaterialInsMap.insert({ pMtlIns->GetName(), pMtlIns });
 
 		return pMtlIns;
+	}
+
+	bool MaterialManager::LoadMaterialInstanceMap(const std::string& fileName, std::vector<std::string>& outMtlFiles)
+	{
+		std::ifstream fin(fileName);
+
+		if (fin.is_open())
+		{
+			std::string line;
+			size_t strStart = 0;
+			size_t strEnd = 0;
+			while (std::getline(fin, line))
+			{
+				std::string meshName;
+				strStart = 0;
+				strEnd = line.find("=");
+				meshName = line.substr(strStart, strEnd - strStart);
+				meshName.erase(std::remove(meshName.begin(), meshName.end(), ' '), meshName.end());
+
+				std::string mtlinsName;
+				strStart = strEnd + 1;
+				strEnd = line.size();
+				mtlinsName = line.substr(strStart, strEnd - strStart);
+				mtlinsName.erase(std::remove(mtlinsName.begin(), mtlinsName.end(), ' '), mtlinsName.end());
+
+				outMtlFiles.push_back(mtlinsName);
+			}
+		}
+		else
+		{
+			return false;
+		}
+
+		fin.close();
+
+		return true;
+	}
+
+	bool MaterialManager::LoadMaterialInstance(const std::string& fileName, std::string& outMtlName, std::vector<MaterialParam>& outMtlParams)
+	{
+		std::ifstream fin(fileName);
+		if (!fin.is_open())
+		{
+			return false;
+		}
+		
+		std::string line;
+		std::getline(fin, line);
+
+		size_t strStart = line.find("=") + 1;
+		size_t strEnd = line.size();
+		outMtlName = line.substr(strStart, strEnd - strStart);
+		outMtlName.erase(std::remove(outMtlName.begin(), outMtlName.end(), ' '), outMtlName.end());
+		outMtlName = MTL_USER_FILE_DIR + outMtlName;
+
+		while (std::getline(fin, line))
+		{
+			if (line.find(MTL_PROPS_FLOAT4) != std::string::npos)
+			{
+				strStart = line.find(MTL_PROPS_FLOAT4) + MTL_PROPS_FLOAT4.size();
+				strEnd = line.find("=");
+				std::string mtlParamName = line.substr(strStart, strEnd - strStart);
+				mtlParamName.erase(std::remove(mtlParamName.begin(), mtlParamName.end(), ' '), mtlParamName.end());
+
+				strStart = line.find("(") + 1;
+				strEnd = line.rfind(")");
+				std::string mtlParamValue = line.substr(strStart, strEnd - strStart);
+				mtlParamValue.erase(std::remove(mtlParamValue.begin(), mtlParamValue.end(), ' '), mtlParamValue.end());
+
+				Vector4 vec4Value;
+				strStart = 0;
+				strEnd = 0;
+				float tempVec4[4] = {};
+				int i = 0;
+				while (strEnd < mtlParamValue.size())
+				{
+					while (mtlParamValue[strEnd] != ',' && strEnd < mtlParamValue.size())
+					{
+						strEnd++;
+					}
+					std::string value = mtlParamValue.substr(strStart, strEnd - strStart);
+					tempVec4[i++] = std::stof(value);
+
+					strStart = strEnd + 1;
+					strEnd++;
+				}
+
+				vec4Value.x = tempVec4[0];
+				vec4Value.y = tempVec4[1];
+				vec4Value.z = tempVec4[2];
+				vec4Value.w = tempVec4[3];
+
+				MaterialParam vec4Param(mtlParamName, MATERIAL_PARAM_TYPE::VECTOR4);
+				vec4Param.SetVector4(vec4Value);
+
+				outMtlParams.push_back(vec4Param);
+			}
+			else if (line.find(MTL_PARAMS_TEXTURE2D) != std::string::npos)
+			{
+				strStart = line.find(MTL_PARAMS_TEXTURE2D) + MTL_PARAMS_TEXTURE2D.size();
+				strEnd = line.find("=");
+				std::string mtlParamName = line.substr(strStart, strEnd - strStart);
+				mtlParamName.erase(std::remove(mtlParamName.begin(), mtlParamName.end(), ' '), mtlParamName.end());
+
+				strStart = line.find("\"") + 1;
+				strEnd = line.rfind("\"");
+				std::string textureFileName = line.substr(strStart, strEnd - strStart);
+				textureFileName.erase(std::remove(textureFileName.begin(), textureFileName.end(), ' '), textureFileName.end());
+
+				std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+				RenderDog::ITexture2D* pTexture = RenderDog::g_pITextureManager->CreateTexture2D(converter.from_bytes(textureFileName));
+				if (!pTexture)
+				{
+					return false;
+				}
+				RenderDog::MaterialParam textureParam(mtlParamName, RenderDog::MATERIAL_PARAM_TYPE::TEXTURE2D);
+				textureParam.SetTexture2D(pTexture);
+				outMtlParams.push_back(textureParam);
+
+				RenderDog::SamplerDesc samplerDesc = {};
+				samplerDesc.name = mtlParamName + "Sampler";
+				samplerDesc.filterMode = RenderDog::SAMPLER_FILTER::LINEAR;
+				samplerDesc.addressMode = RenderDog::SAMPLER_ADDRESS::WRAP;
+				RenderDog::ISamplerState* pTextureSampler = RenderDog::g_pISamplerStateManager->CreateSamplerState(samplerDesc);
+				if (!pTextureSampler)
+				{
+					return false;
+				}
+				RenderDog::MaterialParam textureSamplerParam(samplerDesc.name, RenderDog::MATERIAL_PARAM_TYPE::SAMPLER);
+				textureSamplerParam.SetSamplerState(pTextureSampler);
+				outMtlParams.push_back(textureSamplerParam);
+			}
+		}
+		
+		fin.close();
+
+		return true;
 	}
 
 	void MaterialManager::ReleaseMaterial(Material* pMaterial)

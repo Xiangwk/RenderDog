@@ -28,6 +28,7 @@ namespace RenderDog
 	const std::string MTL_PARAMS_TEXTURE2D	= "Texture2D";
 
 	const std::string MTLINS_DIR			= "MaterialInstance/";
+	const std::string MTL_USER_FILE_DIR		= "UserAsset/Materials/";
 
 	enum class MATERIAL_PARAM_TYPE
 	{
@@ -131,6 +132,9 @@ namespace RenderDog
 	public:
 		virtual IMaterial*				GetMaterial(const std::string& filePath) = 0;
 		virtual IMaterialInstance*		GetMaterialInstance(IMaterial* pMaterial, const std::vector<MaterialParam>* pMtlParams = nullptr) = 0;
+
+		virtual bool					LoadMaterialInstanceMap(const std::string& fileName, std::vector<std::string>& outMtlFiles) = 0;
+		virtual bool					LoadMaterialInstance(const std::string& fileName, std::string& outMtlName, std::vector<MaterialParam>& outMtlParams) = 0;
 	};
 
 	extern IMaterialManager* g_pMaterialManager;
