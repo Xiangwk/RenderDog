@@ -52,7 +52,7 @@ namespace RenderDog
 		return true;
 	}
 
-	bool StaticModel::LoadMaterialInstanceMap()
+	bool StaticModel::LoadMaterialInstance()
 	{
 		std::string mtlinsMapName = m_Directory + m_Name + ".mtlinsmap";
 
@@ -124,7 +124,7 @@ namespace RenderDog
 
 		CalculateBoundings();
 
-		LoadMaterialInstanceMap();
+		LoadMaterialInstance();
 
 		return true;
 	}

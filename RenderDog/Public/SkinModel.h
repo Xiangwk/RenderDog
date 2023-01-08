@@ -28,12 +28,14 @@ namespace RenderDog
 
 		bool							LoadFromRawMeshData(const std::vector<RDFbxImporter::RawMeshData>& rawMeshDatas,
 															const RDFbxImporter::RawSkeletonData* pSkeletonData,
-															const std::string& modelName);
+															const std::string& fileName);
 		
 		bool							LoadBoneAnimation(const RDFbxImporter::RawAnimation& rawAnimation);
 
 
-		bool							CreateMaterialInstance(IMaterial* pMtl, const std::vector<MaterialParam>* pMtlParams = nullptr);
+		bool							CreateMaterialInstance(IMaterial* pMtl, const std::vector<MaterialParam>* pMtlParams);
+
+		bool							LoadMaterialInstance();
 
 		void							RegisterToScene(IScene* pScene);
 
@@ -50,6 +52,9 @@ namespace RenderDog
 		void							UpdateBoundings();
 
 	private:
+		std::string						m_Name;
+		std::string						m_Directory;
+		
 		std::vector<SkinMesh>			m_Meshes;
 		Skeleton*						m_pSkeleton;
 

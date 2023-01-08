@@ -134,6 +134,26 @@ namespace RenderDog
 		return true;
 	}
 
+	bool SkinMesh::LoadMaterialInstance(const std::string& mtlinsFile)
+	{
+		std::string mtlName;
+		std::vector<MaterialParam> mtlParams;
+
+		if (!g_pMaterialManager->LoadMaterialInstance(mtlinsFile, mtlName, mtlParams))
+		{
+			return false;
+		}
+
+		IMaterial* pMtl = g_pMaterialManager->GetMaterial(mtlName);
+		if (pMtl)
+		{
+			CreateMaterialInstance(pMtl, &mtlParams);
+			pMtl->Release();
+		}
+
+		return true;
+	}
+
 	void SkinMesh::InitRenderData()
 	{
 		m_pRenderData = new SkinMeshRenderData();

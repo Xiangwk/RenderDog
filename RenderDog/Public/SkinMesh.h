@@ -58,6 +58,8 @@ namespace RenderDog
 								
 		bool							CreateMaterialInstance(IMaterial* pMtl, const std::vector<MaterialParam>* pMtlParams);
 
+		bool							LoadMaterialInstance(const std::string& mtlinsFile);
+
 		void							InitRenderData();
 
 		void							SetPosGesture(const Vector3& pos, const Vector3& euler, const Vector3& scale);

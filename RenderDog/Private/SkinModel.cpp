@@ -16,6 +16,8 @@
 namespace RenderDog
 {
 	SkinModel::SkinModel():
+		m_Name(),
+		m_Directory(),
 		m_Meshes(0),
 		m_pSkeleton(nullptr),
 		m_AABB(),
@@ -34,7 +36,7 @@ namespace RenderDog
 	}
 
 	bool SkinModel::LoadFromRawMeshData(const std::vector<RDFbxImporter::RawMeshData>& rawMeshDatas, const RDFbxImporter::RawSkeletonData* pSkeletonData, 
-										const std::string& modelName)
+										const std::string& fileName)
 	{
 		for (uint32_t i = 0; i < rawMeshDatas.size(); ++i)
 		{
@@ -64,7 +66,12 @@ namespace RenderDog
 				vertices.push_back(vert);
 			}
 
-			std::string meshName = modelName + "_" + meshData.name;
+			size_t nameStart = fileName.rfind("/") + 1;
+			size_t nameEnd = fileName.rfind(".");
+			m_Name = fileName.substr(nameStart, nameEnd - nameStart);
+			m_Directory = fileName.substr(0, fileName.rfind("/") + 1);
+
+			std::string meshName = fileName + "_" + meshData.name;
 			SkinMesh mesh(meshName);
 			mesh.CalcTangentsAndGenIndices(vertices, meshData.smoothGroup);
 
@@ -78,6 +85,8 @@ namespace RenderDog
 		}
 
 		CalculateBoundings();
+
+		LoadMaterialInstance();
 
 		m_pSkeleton = new Skeleton;
 		m_pSkeleton->SetLocalMatrix(pSkeletonData->LocalMatrix);
@@ -127,12 +136,35 @@ namespace RenderDog
 		return true;
 	}
 
-	bool SkinModel::CreateMaterialInstance(IMaterial* pMtl, const std::vector<MaterialParam>* pMtlParams /*= nullptr*/)
+	bool SkinModel::CreateMaterialInstance(IMaterial* pMtl, const std::vector<MaterialParam>* pMtlParams)
 	{
 		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
 		{
 			SkinMesh& mesh = m_Meshes[i];
 			if (!mesh.CreateMaterialInstance(pMtl, pMtlParams))
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	bool SkinModel::LoadMaterialInstance()
+	{
+		std::string mtlinsMapName = m_Directory + m_Name + ".mtlinsmap";
+
+		std::vector<std::string> mtlinsFiles;
+
+		if (!g_pMaterialManager->LoadMaterialInstanceMap(mtlinsMapName, mtlinsFiles))
+		{
+			return false;
+		}
+
+		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
+		{
+			SkinMesh& mesh = m_Meshes[i];
+			if (!mesh.LoadMaterialInstance(m_Directory + MTLINS_DIR + mtlinsFiles[i]))
 			{
 				return false;
 			}
