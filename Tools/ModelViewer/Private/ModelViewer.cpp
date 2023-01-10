@@ -56,7 +56,7 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 	camDesc.aspectRitio = (float)desc.wndDesc.width / (float)desc.wndDesc.height;
 	camDesc.nearPlane = 0.1f;
 	camDesc.farPlane = 100000.0f;
-	camDesc.moveSpeed = 0.1f;
+	camDesc.moveSpeed = 150.0f;
 	camDesc.rotSpeed = 0.05f;
 	m_pFPSCamera = new RenderDog::FPSCamera(camDesc);
 
@@ -244,7 +244,8 @@ int ModelViewer::Run()
 			m_pGameTimer->Tick();
 			CalculateFrameStats();
 
-			Update();
+			float deltaTime = static_cast<float>(m_pGameTimer->GetDeltaTime());
+			Update(deltaTime);
 			RenderDog::g_pIFramework->Frame();
 		}
 	}
@@ -674,37 +675,37 @@ RenderDog::IMaterial* ModelViewer::CreateSkyMaterial(const std::string& mtlName)
 	return pMtl;
 }
 
-void ModelViewer::Update()
+void ModelViewer::Update(float deltaTime)
 {
 	//W
 	if (m_Keys[0x57])
 	{
-		m_pFPSCamera->Move(RenderDog::FPSCamera::MOVE_MODE::FRONT);
+		m_pFPSCamera->Move(RenderDog::FPSCamera::MOVE_MODE::FRONT, deltaTime);
 	}
 	//S
 	if (m_Keys[0x53])
 	{
-		m_pFPSCamera->Move(RenderDog::FPSCamera::MOVE_MODE::BACK);
+		m_pFPSCamera->Move(RenderDog::FPSCamera::MOVE_MODE::BACK, deltaTime);
 	}
 	//A
 	if (m_Keys[0x41])
 	{
-		m_pFPSCamera->Move(RenderDog::FPSCamera::MOVE_MODE::LEFT);
+		m_pFPSCamera->Move(RenderDog::FPSCamera::MOVE_MODE::LEFT, deltaTime);
 	}
 	//D
 	if (m_Keys[0x44])
 	{
-		m_pFPSCamera->Move(RenderDog::FPSCamera::MOVE_MODE::RIGHT);
+		m_pFPSCamera->Move(RenderDog::FPSCamera::MOVE_MODE::RIGHT, deltaTime);
 	}
 	//Q
 	if (m_Keys[0x51])
 	{
-		m_pFPSCamera->Move(RenderDog::FPSCamera::MOVE_MODE::UP);
+		m_pFPSCamera->Move(RenderDog::FPSCamera::MOVE_MODE::UP, deltaTime);
 	}
 	//E
 	if (m_Keys[0x45])
 	{
-		m_pFPSCamera->Move(RenderDog::FPSCamera::MOVE_MODE::DOWN);
+		m_pFPSCamera->Move(RenderDog::FPSCamera::MOVE_MODE::DOWN, deltaTime);
 	}
 
 	if (m_bModelMoved && m_pStaticModel)
@@ -793,7 +794,6 @@ void ModelViewer::OnMouseMove(WPARAM btnState, int x, int y)
 		float dx = RenderDog::AngleToRadians((float)(x - m_LastMousePosX));
 		float dy = RenderDog::AngleToRadians((float)(y - m_LastMousePosY));
 
-		float speed = 1.0f;
 		m_pFPSCamera->Rotate(dx, -dy);
 	}
 	else if ((btnState & MK_RBUTTON) != 0)

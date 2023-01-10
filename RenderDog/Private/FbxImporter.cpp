@@ -122,7 +122,7 @@ namespace RenderDog
 			return false;
 		}
 
-		//NOTE!!! 这里的代码不知道为何不起作用，暂时在读取顶点位置数据的时候，手动转换为Y轴朝上的左手系；
+		//NOTE!!! 这里的代码不知道为何不起作用，暂时在读取顶点位置数据的时候，手动转换为Y轴朝上的左手系（详见StaticModel::LoadFromRawMeshData函数）
 		/*FbxAxisSystem SceneAxisSystem = m_pScene->GetGlobalSettings().GetAxisSystem();
 		FbxAxisSystem RenderDogAxisSystem(FbxAxisSystem::eYAxis, FbxAxisSystem::eParityOdd, FbxAxisSystem::eLeftHanded);
 		if (SceneAxisSystem != RenderDogAxisSystem)

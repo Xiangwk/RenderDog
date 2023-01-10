@@ -60,7 +60,7 @@ namespace RenderDog
 		Matrix4x4			GetViewMatrix() const;
 		Matrix4x4			GetPerspProjectionMatrix() const;
 
-		void				Move(MOVE_MODE moveMode);
+		void				Move(MOVE_MODE moveMode, float deltaTime);
 		void				Rotate(float deltaYaw, float deltaPitch);
 
 		void				OnWindowResize(uint32_t width, uint32_t height);
@@ -80,7 +80,7 @@ namespace RenderDog
 		float				m_Near;
 		float				m_Far;
 
-		float				m_moveSpeed;
+		float				m_moveSpeed; //µ¥Î»ÊÇcm/s
 		float				m_rotSpeed;
 	};
 }

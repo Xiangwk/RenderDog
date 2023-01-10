@@ -56,7 +56,7 @@ private:
 	bool						LoadStaticModelMaterialParams(std::vector<RenderDog::MaterialParam>& params);
 	bool						LoadSkinModelMaterialParams(std::vector<RenderDog::MaterialParam>& params);
 
-	void						Update();
+	void						Update(float deltaTime);
 	void						RegisterObjectToScene();
 
 	void						CalculateFrameStats();
