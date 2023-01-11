@@ -584,8 +584,8 @@
                                 "y": 1158
                             },
                             "layout_right_offset": {
-                                "x": 525.4999991431831,
-                                "y": 438.99999664723885
+                                "x": 534.4999991431831,
+                                "y": 465.99999664723885
                             }
                         },
                         "children": [
@@ -784,8 +784,8 @@
                             "created": 1641135425023,
                             "text": "Math",
                             "layout_right_offset": {
-                                "x": 579.499999962747,
-                                "y": -501.9999985843896
+                                "x": 585.499999962747,
+                                "y": -541.9999985843896
                             },
                             "note": "1. 优先实现实际使用中用到的计算操作；\n\n2. 其他按需逐渐补全即可",
                             "priority": 6,
@@ -853,11 +853,36 @@
                                     "text": "Quaternion",
                                     "progress": 8,
                                     "layout_right_offset": {
-                                        "x": 401.74999413266755,
-                                        "y": -62.2499995343386
+                                        "x": 402.74999413266755,
+                                        "y": -59.2499995343386
                                     }
                                 },
-                                "children": []
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cppe6c1d8io0",
+                                            "created": 1673443397953,
+                                            "text": "SLerp",
+                                            "layout_right_offset": {
+                                                "x": 316,
+                                                "y": 38
+                                            }
+                                        },
+                                        "children": []
+                                    },
+                                    {
+                                        "data": {
+                                            "id": "cppe7ozui800",
+                                            "created": 1673443504523,
+                                            "text": "Lerp",
+                                            "layout_right_offset": {
+                                                "x": 317,
+                                                "y": -57
+                                            }
+                                        },
+                                        "children": []
+                                    }
+                                ]
                             },
                             {
                                 "data": {
@@ -865,8 +890,8 @@
                                     "created": 1673179375548,
                                     "text": "Transform",
                                     "layout_right_offset": {
-                                        "x": 398,
-                                        "y": -59
+                                        "x": 404,
+                                        "y": -39
                                     },
                                     "progress": 8,
                                     "expandState": "expand"
@@ -876,7 +901,7 @@
                                         "data": {
                                             "id": "clhxdlhpzr40",
                                             "created": 1658060454756,
-                                            "text": "四元数和旋转矩阵互转",
+                                            "text": "根据四元数获得旋转矩阵",
                                             "layout_right_offset": {
                                                 "x": 401,
                                                 "y": 3
@@ -922,7 +947,8 @@
                                                 "x": 401,
                                                 "y": -8
                                             },
-                                            "priority": 1
+                                            "priority": null,
+                                            "progress": 9
                                         },
                                         "children": []
                                     }
@@ -974,8 +1000,8 @@
                                     "created": 1643382743369,
                                     "text": "StaticModel",
                                     "layout_right_offset": {
-                                        "x": 393,
-                                        "y": 181
+                                        "x": 436,
+                                        "y": 198
                                     },
                                     "priority": 2,
                                     "note": "从FBX中加载，自己写一个加载器；",
@@ -1354,8 +1380,8 @@
                             "created": 1652793677393,
                             "text": "GameTimer",
                             "layout_right_offset": {
-                                "x": 583.2499993853271,
-                                "y": 572.4999992921948
+                                "x": 596.2499993853271,
+                                "y": 553.4999992921948
                             }
                         },
                         "children": []
@@ -1366,8 +1392,8 @@
                             "created": 1652875924119,
                             "text": "Light",
                             "layout_right_offset": {
-                                "x": 558.2499987892807,
-                                "y": 672.2499981932342
+                                "x": 575.2499987892807,
+                                "y": 605.2499981932342
                             }
                         },
                         "children": [
@@ -1413,14 +1439,51 @@
                             },
                             {
                                 "data": {
-                                    "id": "cl10ax83eyg0",
-                                    "created": 1656342189270,
-                                    "text": "环境球",
+                                    "id": "cppe1ug509s0",
+                                    "created": 1673443046207,
+                                    "text": "Sky",
                                     "layout_right_offset": {
-                                        "x": 314,
-                                        "y": 34
-                                    },
-                                    "priority": 1
+                                        "x": 306,
+                                        "y": 123
+                                    }
+                                },
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cl10ax83eyg0",
+                                            "created": 1656342189270,
+                                            "text": "环境球",
+                                            "layout_right_offset": {
+                                                "x": 324,
+                                                "y": 15
+                                            },
+                                            "priority": 1
+                                        },
+                                        "children": []
+                                    }
+                                ]
+                            },
+                            {
+                                "data": {
+                                    "id": "cppe20v67w80",
+                                    "created": 1673443060177,
+                                    "text": "点光源",
+                                    "layout_right_offset": {
+                                        "x": 313,
+                                        "y": -96
+                                    }
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "cppe23vdsy00",
+                                    "created": 1673443066720,
+                                    "text": "聚光灯",
+                                    "layout_right_offset": {
+                                        "x": 315,
+                                        "y": -77
+                                    }
                                 },
                                 "children": []
                             }
@@ -1432,8 +1495,8 @@
                             "created": 1673180436145,
                             "text": "Coordinate",
                             "layout_right_offset": {
-                                "x": 565,
-                                "y": -1668
+                                "x": 569,
+                                "y": -1778
                             },
                             "note": "1. 做好坐标系的约定，详见OneNote文档"
                         },
@@ -1444,8 +1507,8 @@
                                     "created": 1673180448641,
                                     "text": "LocalSpace",
                                     "layout_right_offset": {
-                                        "x": 404,
-                                        "y": -20
+                                        "x": 408,
+                                        "y": -28
                                     },
                                     "note": "1. 仅限渲染器生成的几何体，并非从外部导入的模型，外部导入的模型的坐标系取决于建模软件中的设置；"
                                 },
@@ -1457,8 +1520,8 @@
                                     "created": 1673180502237,
                                     "text": "TangentSpace",
                                     "layout_right_offset": {
-                                        "x": 403,
-                                        "y": -10
+                                        "x": 407,
+                                        "y": -18
                                     }
                                 },
                                 "children": []
@@ -1469,8 +1532,8 @@
                                     "created": 1673180456374,
                                     "text": "WorldSpace",
                                     "layout_right_offset": {
-                                        "x": 396,
-                                        "y": -3
+                                        "x": 400,
+                                        "y": -11
                                     }
                                 },
                                 "children": [

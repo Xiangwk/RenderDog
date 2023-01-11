@@ -352,7 +352,7 @@ bool ModelViewer::LoadFloor(uint32_t width, uint32_t depth, float unit)
 	RenderDog::g_pGeometryGenerator->GenerateGrid(width, depth, unit, GridMeshData);
 	m_pFloor = new RenderDog::StaticModel();
 	m_pFloor->LoadFromStandardData(GridMeshData.vertices, GridMeshData.indices, "MainSceneFloor");
-	if (!m_pFloor->CreateMaterialInstance(m_pBasicMaterial))
+	if (!m_pFloor->CreateMaterialInstance(m_pBasicMaterial, nullptr))
 	{
 		MessageBox(nullptr, "Load Texture Failed!", "ERROR", MB_OK);
 		return false;
@@ -549,7 +549,7 @@ bool ModelViewer::LoadFbxModel(const std::string& fileName, LOAD_MODEL_TYPE mode
 		RenderDog::GeometryGenerator::StandardMeshData SphereMeshData;
 		RenderDog::g_pGeometryGenerator->GenerateSphere(50, 50, 50, SphereMeshData);
 		m_pStaticModel->LoadFromStandardData(SphereMeshData.vertices, SphereMeshData.indices, "Sphere");
-		if (!m_pStaticModel->CreateMaterialInstance(m_pBasicMaterial))
+		if (!m_pStaticModel->CreateMaterialInstance(m_pBasicMaterial, nullptr))
 		{
 			MessageBox(nullptr, "Load Texture Failed!", "ERROR", MB_OK);
 			return false;

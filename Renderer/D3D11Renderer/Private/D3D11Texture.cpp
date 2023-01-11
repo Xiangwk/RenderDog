@@ -284,6 +284,7 @@ namespace RenderDog
 		else
 		{
 			pTexture = new D3D11Texture2D(desc);
+			m_TextureMap.insert({ desc.name, pTexture });
 		}
 
 		return pTexture;

@@ -429,7 +429,8 @@ namespace RenderDog
 
 	void ShaderResourceView::Release()
 	{
-		m_pViewResource->Release();
+		//FIXME!!! 这里需要验证是否需要Release
+		//m_pViewResource->Release();
 
 		--m_RefCnt;
 		if (m_RefCnt == 0)

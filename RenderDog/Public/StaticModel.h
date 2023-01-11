@@ -32,7 +32,7 @@ namespace RenderDog
 		bool						LoadFromRawMeshData(const std::vector<RDFbxImporter::RawMeshData>& rawMeshDatas,
 														const std::string& fileName);
 
-		bool						CreateMaterialInstance(IMaterial* pMtl, const std::vector<MaterialParam>* pMtlParams = nullptr);
+		bool						CreateMaterialInstance(IMaterial* pMtl, const std::vector<MaterialParam>* pMtlParams);
 
 		bool						LoadMaterialInstance();
 		

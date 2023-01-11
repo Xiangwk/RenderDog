@@ -85,8 +85,10 @@ namespace RenderDog
 	{}
 
 	SRTexture2D::SRTexture2D(const TextureDesc& desc) :
+		m_Name(desc.name),
 		m_pTexture2D(nullptr),
 		m_pRTV(nullptr),
+		m_pDSV(nullptr),
 		m_pSRV(nullptr)
 	{
 		//TODO!!!
@@ -205,9 +207,13 @@ namespace RenderDog
 	
 	ITexture2D* SRTextureManager::CreateTexture2D(const std::wstring& filePath)
 	{
+		//FIXME!!! 临时将dds强制替换为tga
+		std::wstring texPath = filePath.substr(0, filePath.rfind('.'));
+		texPath += L".tga";
+
 		SRTexture2D* pTexture = nullptr;
 
-		auto texture = m_TextureMap.find(filePath);
+		auto texture = m_TextureMap.find(texPath);
 		if (texture != m_TextureMap.end())
 		{
 			//NOTE!!! 这里用强转是否合适？
@@ -219,10 +225,10 @@ namespace RenderDog
 			pTexture = new SRTexture2D();
 			if (pTexture)
 			{
-				pTexture->LoadFromFile(filePath);
+				pTexture->LoadFromFile(texPath);
 			}
 
-			m_TextureMap.insert({ filePath, pTexture });
+			m_TextureMap.insert({ texPath, pTexture });
 		}
 
 		return pTexture;
@@ -242,6 +248,7 @@ namespace RenderDog
 		else
 		{
 			pTexture = new SRTexture2D(desc);
+			m_TextureMap.insert({ desc.name, pTexture });
 		}
 
 		return pTexture;

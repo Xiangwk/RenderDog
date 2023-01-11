@@ -48,7 +48,7 @@ private:
 	RenderDog::IMaterial*		CreateBasicMaterial(const std::string& mtlName);
 	RenderDog::IMaterial*		CreateGeneratorMaterial(const std::string& mtlName);
 
-	void						Update();
+	void						Update(float deltaTime);
 
 	void						CalculateFrameStats();
 
