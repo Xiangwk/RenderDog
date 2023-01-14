@@ -33,6 +33,8 @@ namespace RenderDog
 		{
 			x = y = z = 0;
 			w = 1;
+
+			return;
 		}
 
 		float invSqrt = 1.0f / std::sqrt(sqrSum);

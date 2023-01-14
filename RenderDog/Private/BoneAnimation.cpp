@@ -55,6 +55,8 @@ namespace RenderDog
 					Quaternion rotationQuat0 = m_KeyFrames[i].rotationQuat;
 					Quaternion rotationQuat1 = m_KeyFrames[i + 1].rotationQuat;
 					Quaternion currRotationQuat = SLerp(rotationQuat0, rotationQuat1, lerpFactor);
+					//FIXME!!! Lerp在Crunch的动作上效果有些问题，某些帧会发生突变，需要用其他模型查验
+					//Quaternion currRotationQuat = Lerp(rotationQuat0, rotationQuat1, lerpFactor);
 
 					Vector3 translation0 = m_KeyFrames[i].translation;
 					Vector3 translation1 = m_KeyFrames[i + 1].translation;
