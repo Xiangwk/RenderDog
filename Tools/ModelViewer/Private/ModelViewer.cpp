@@ -725,6 +725,11 @@ void ModelViewer::RegisterObjectToScene()
 {
 	m_pScene->Clear();
 
+	if (m_pMainLight)
+	{
+		m_pMainLight->RegisterToScene(m_pScene);
+	}
+
 	if (m_bShowUnitGrid)
 	{
 		m_pGridLine->RegisterToScene(m_pScene);

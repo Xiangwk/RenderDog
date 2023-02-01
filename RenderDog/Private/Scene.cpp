@@ -16,13 +16,12 @@
 
 namespace RenderDog
 {
-	//==============================================================
-	//                   Scene
-	//==============================================================
+	///////////////////////////////////////////////////////////////////////////////////
+	// ----------------------           Scene         -------------------------------//
+	///////////////////////////////////////////////////////////////////////////////////
+
 	class Scene : public IScene
 	{
-		friend class SceneManager;
-
 	public:
 		Scene();
 		Scene(const SceneInitDesc& desc);
@@ -55,14 +54,19 @@ namespace RenderDog
 		BoundingSphere					m_BoundingSphere;
 	};
 
-	//==============================================================
-	//                   SceneManager
-	//==============================================================
+
+	///////////////////////////////////////////////////////////////////////////////////
+	// -------------------           SceneManager         ---------------------------//
+	///////////////////////////////////////////////////////////////////////////////////
+
 	class SceneManager : public ISceneManager
 	{
 	public:
-		SceneManager() = default;
-		virtual ~SceneManager() = default;
+		SceneManager()
+		{}
+
+		virtual ~SceneManager()
+		{}
 
 		virtual IScene* CreateScene(const SceneInitDesc& sceneDesc);
 		virtual void	ReleaseScene(Scene* pScene);
@@ -78,6 +82,7 @@ namespace RenderDog
 		m_Name(""),
 		m_Primitives(0),
 		m_Lights(0),
+		m_pSkyBox(nullptr),
 		m_BoundingSphere()
 	{}
 
@@ -85,6 +90,7 @@ namespace RenderDog
 		m_Name(desc.name),
 		m_Primitives(0),
 		m_Lights(0),
+		m_pSkyBox(nullptr),
 		m_BoundingSphere()
 	{}
 
@@ -112,6 +118,7 @@ namespace RenderDog
 	void Scene::Clear()
 	{
 		m_Primitives.clear();
+		m_Lights.clear();
 	}
 
 	IScene* SceneManager::CreateScene(const SceneInitDesc& sceneDesc)

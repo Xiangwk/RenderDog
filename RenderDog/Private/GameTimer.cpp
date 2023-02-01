@@ -1,8 +1,8 @@
-//------------------------------------------------------
-//Created by Xiang Weikang
-//Desc: 计时器，主要用于对游戏计时
-//Date: 2019.1.3
-//------------------------------------------------------
+////////////////////////////////////////
+//RenderDog <·,·>
+//FileName: GameTimer.cpp
+//Written by Xiang Weikang
+////////////////////////////////////////
 
 #include "GameTimer.h"
 
@@ -115,6 +115,8 @@ namespace RenderDog
 	double GameTimer::GetCurrTime() const
 	{
 		QueryPerformanceCounter((LARGE_INTEGER*)&m_CurrTimeInCounts);
+
 		return m_SecondsPerCount * static_cast<double>(m_CurrTimeInCounts);
 	}
-}
+
+}// namespace RenderDog

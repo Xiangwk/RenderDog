@@ -1189,8 +1189,8 @@
                             "created": 1641481719830,
                             "text": "Scene",
                             "layout_right_offset": {
-                                "x": 562,
-                                "y": -10
+                                "x": 564,
+                                "y": -33
                             }
                         },
                         "children": [
@@ -1215,7 +1215,8 @@
                                         "x": 635,
                                         "y": -22
                                     },
-                                    "priority": 4
+                                    "priority": null,
+                                    "progress": 9
                                 },
                                 "children": [
                                     {
