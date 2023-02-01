@@ -584,8 +584,8 @@
                                 "y": 1158
                             },
                             "layout_right_offset": {
-                                "x": 534.4999991431831,
-                                "y": 465.99999664723885
+                                "x": 557.4999991431831,
+                                "y": 512.9999966472388
                             }
                         },
                         "children": [
@@ -711,8 +711,8 @@
                             "created": 1641135345642,
                             "text": "Window",
                             "layout_right_offset": {
-                                "x": 526.9999988824129,
-                                "y": 457.9999952316284
+                                "x": 556.9999988824129,
+                                "y": 551.9999952316284
                             }
                         },
                         "children": [
@@ -799,8 +799,8 @@
                                     "text": "Vector",
                                     "progress": 8,
                                     "layout_right_offset": {
-                                        "x": 383.2499944679439,
-                                        "y": -50.74999964609742
+                                        "x": 397.2499944679439,
+                                        "y": -39.74999964609742
                                     }
                                 },
                                 "children": []
@@ -812,8 +812,8 @@
                                     "text": "Matrix",
                                     "progress": 8,
                                     "layout_right_offset": {
-                                        "x": 385.2499942444265,
-                                        "y": -54.24999945983279
+                                        "x": 396.2499942444265,
+                                        "y": -38.24999945983279
                                     }
                                 },
                                 "children": [
@@ -892,7 +892,7 @@
                                     "text": "Transform",
                                     "layout_right_offset": {
                                         "x": 404,
-                                        "y": -39
+                                        "y": -58
                                     },
                                     "progress": 8,
                                     "expandState": "expand"
@@ -923,8 +923,8 @@
                             "created": 1641135477535,
                             "text": "Camera",
                             "layout_right_offset": {
-                                "x": 498.4999990686774,
-                                "y": 247.99999940395378
+                                "x": 564.4999990686774,
+                                "y": 250.99999940395378
                             }
                         },
                         "children": [
@@ -934,9 +934,10 @@
                                     "created": 1652875867675,
                                     "text": "WASD控制移动",
                                     "layout_right_offset": {
-                                        "x": 377,
+                                        "x": 381,
                                         "y": -7
-                                    }
+                                    },
+                                    "progress": 9
                                 },
                                 "children": [
                                     {
@@ -945,8 +946,8 @@
                                             "created": 1652875964303,
                                             "text": "移动速度不受帧率影响",
                                             "layout_right_offset": {
-                                                "x": 401,
-                                                "y": -8
+                                                "x": 434,
+                                                "y": -9
                                             },
                                             "priority": null,
                                             "progress": 9
@@ -961,7 +962,7 @@
                                     "created": 1652875886230,
                                     "text": "鼠标左键控制镜头旋转",
                                     "layout_right_offset": {
-                                        "x": 400,
+                                        "x": 421,
                                         "y": 21
                                     },
                                     "priority": null,
@@ -974,9 +975,10 @@
                                             "created": 1653143189011,
                                             "text": "按照俯仰角和偏航角来设置",
                                             "layout_right_offset": {
-                                                "x": 424,
-                                                "y": 29
-                                            }
+                                                "x": 448,
+                                                "y": 16
+                                            },
+                                            "progress": 9
                                         },
                                         "children": []
                                     }
@@ -990,8 +992,8 @@
                             "created": 1641193284785,
                             "text": "Primitive",
                             "layout_right_offset": {
-                                "x": 548.4999998882413,
-                                "y": 689.2499991618097
+                                "x": 586.4999998882413,
+                                "y": 712.2499991618097
                             }
                         },
                         "children": [
@@ -1187,8 +1189,8 @@
                             "created": 1641481719830,
                             "text": "Scene",
                             "layout_right_offset": {
-                                "x": 533,
-                                "y": -14
+                                "x": 562,
+                                "y": -10
                             }
                         },
                         "children": [
@@ -1264,8 +1266,8 @@
                             "created": 1643382280934,
                             "text": "Material",
                             "layout_right_offset": {
-                                "x": 596,
-                                "y": 697
+                                "x": 597,
+                                "y": 695
                             },
                             "priority": 3,
                             "progress": null
@@ -1303,8 +1305,8 @@
                             "created": 1643385992873,
                             "text": "Resource",
                             "layout_right_offset": {
-                                "x": 555.2499996833502,
-                                "y": -62.75000016763806
+                                "x": 581.2499996833502,
+                                "y": -45.75000016763806
                             }
                         },
                         "children": [
@@ -1382,7 +1384,7 @@
                             "text": "GameTimer",
                             "layout_right_offset": {
                                 "x": 596.2499993853271,
-                                "y": 553.4999992921948
+                                "y": 563.4999992921948
                             }
                         },
                         "children": []
@@ -1393,8 +1395,8 @@
                             "created": 1652875924119,
                             "text": "Light",
                             "layout_right_offset": {
-                                "x": 575.2499987892807,
-                                "y": 605.2499981932342
+                                "x": 569.2499987892807,
+                                "y": 623.2499981932342
                             }
                         },
                         "children": [
@@ -1496,8 +1498,8 @@
                             "created": 1673180436145,
                             "text": "Coordinate",
                             "layout_right_offset": {
-                                "x": 569,
-                                "y": -1778
+                                "x": 570,
+                                "y": -1780
                             },
                             "note": "1. 做好坐标系的约定，详见OneNote文档"
                         },

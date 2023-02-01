@@ -52,9 +52,8 @@ namespace RenderDog
 
 	public:
 		FPSCamera();
-		~FPSCamera();
-
 		FPSCamera(const CameraDesc& cameraDesc);
+		~FPSCamera();
 
 		const Vector3&		GetPosition() const { return m_Postion; }
 		Matrix4x4			GetViewMatrix() const;
@@ -75,7 +74,7 @@ namespace RenderDog
 		float				m_Yaw;		//偏航角（弧度表示）
 		float				m_Pitch;	//俯仰角（弧度表示）
 
-		float				m_Fov;		//角度
+		float				m_Fov;		//Fov（角度表示）
 		float				m_Aspect;	//宽高比
 		float				m_Near;
 		float				m_Far;
@@ -83,4 +82,5 @@ namespace RenderDog
 		float				m_moveSpeed; //单位是cm/s
 		float				m_rotSpeed;
 	};
-}
+
+}// namespace RenderDog

@@ -16,27 +16,35 @@ namespace RenderDog
 	class Framework : public IFramework
 	{
 	public:
-		Framework() = default;
-		virtual ~Framework() = default;
+		Framework():
+			m_Scenes(0)
+		{}
 
-		virtual bool Init() override;
-		virtual void Release() override;
+		virtual ~Framework()
+		{
+			m_Scenes.clear();
+		}
 
-		virtual void Frame() override;
-		virtual void OnResize(uint32_t width, uint32_t height) override;
+		virtual bool			Init() override;
+		virtual void			Release() override;
 
-		virtual void RegisterScene(IScene* pScene) override;
+		virtual void			Frame() override;
+		virtual void			OnResize(uint32_t width, uint32_t height) override;
+
+		virtual void			RegisterScene(IScene* pScene) override;
 
 	private:
-		std::vector<IScene*>	m_pScenes;
+		std::vector<IScene*>	m_Scenes;
 	};
 
-	Framework g_Framework;
-	IFramework* g_pIFramework = &g_Framework;
+	Framework	g_Framework;
+	IFramework*	g_pIFramework = &g_Framework;
 
-	//---------------------------------------------------------------------------
-	//     Function Definition
-	//---------------------------------------------------------------------------
+
+	///////////////////////////////////////////////////////////////////////////////////
+	// -----------------     Public Function Definition       -----------------------//
+	///////////////////////////////////////////////////////////////////////////////////
+
 	bool Framework::Init()
 	{
 		return true;
@@ -49,14 +57,14 @@ namespace RenderDog
 
 	void Framework::Frame()
 	{
-		for (uint32_t i = 0; i < m_pScenes.size(); ++i)
+		for (uint32_t i = 0; i < m_Scenes.size(); ++i)
 		{
-			g_pIRenderer->Update(m_pScenes[i]);
+			g_pIRenderer->Update(m_Scenes[i]);
 		}
 
-		for (uint32_t i = 0; i < m_pScenes.size(); ++i)
+		for (uint32_t i = 0; i < m_Scenes.size(); ++i)
 		{
-			g_pIRenderer->Render(m_pScenes[i]);
+			g_pIRenderer->Render(m_Scenes[i]);
 		}
 	}
 
@@ -69,7 +77,7 @@ namespace RenderDog
 
 	void Framework::RegisterScene(IScene* pScene)
 	{
-		m_pScenes.push_back(pScene);
+		m_Scenes.push_back(pScene);
 	}
 
 }// namespace RenderDog

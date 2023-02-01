@@ -15,35 +15,37 @@ namespace RenderDog
 		AppWindow();
 		virtual ~AppWindow();
 
-		virtual bool Init(const WindowDesc& desc) override;
-		virtual void Release() override;
+		virtual bool		Init(const WindowDesc& desc) override;
+		virtual void		Release() override;
 
-		virtual HWND GetHandle() const override { return m_hWnd; }
+		virtual HWND		GetHandle() const override { return m_hWnd; }
 
-		virtual uint32_t GetWidth() const override { return m_Width; }
-		virtual uint32_t GetHeight() const override { return m_Height; }
+		virtual uint32_t	GetWidth() const override { return m_Width; }
+		virtual uint32_t	GetHeight() const override { return m_Height; }
 
-		virtual void SetWidth(uint32_t width) override { m_Width = width; }
-		virtual void SetHeight(uint32_t height) override { m_Height = height; }
-
-	private:
-		bool RegisterWindowClass(const WindowDesc& desc);
-		bool CreateAppWindow(const WindowDesc& desc);
+		virtual void		SetWidth(uint32_t width) override { m_Width = width; }
+		virtual void		SetHeight(uint32_t height) override { m_Height = height; }
 
 	private:
-		HWND			m_hWnd;
-		uint32_t		m_Width;
-		uint32_t		m_Height;
-		std::string		m_Caption;
+		bool				RegisterWindowClass(const WindowDesc& desc);
+		bool				CreateAppWindow(const WindowDesc& desc);
+
+	private:
+		HWND				m_hWnd;
+		uint32_t			m_Width;
+		uint32_t			m_Height;
+		std::string			m_Caption;
 
 	};
 
-	AppWindow g_AppWindow;
-	IWindow* g_pIWindow = &g_AppWindow;
+	AppWindow	g_AppWindow;
+	IWindow*	g_pIWindow = &g_AppWindow;
 
-	//---------------------------------------------------------------------------
-	//   Public Function Definition
-	//---------------------------------------------------------------------------
+
+	///////////////////////////////////////////////////////////////////////////////////
+	// -----------------     Public Function Definition       -----------------------//
+	///////////////////////////////////////////////////////////////////////////////////
+
 	AppWindow::AppWindow() :
 		m_hWnd(0),
 		m_Width(0),
@@ -80,9 +82,11 @@ namespace RenderDog
 		DestroyWindow(m_hWnd);
 	}
 
-	//---------------------------------------------------------------------------
-	//   Private Function Definition
-	//---------------------------------------------------------------------------
+
+	///////////////////////////////////////////////////////////////////////////////////
+	// -----------------     Private Function Definition       ----------------------//
+	///////////////////////////////////////////////////////////////////////////////////
+
 	bool AppWindow::RegisterWindowClass(const WindowDesc& desc)
 	{
 		WNDCLASSEX wndClass = { 0 };
@@ -121,17 +125,18 @@ namespace RenderDog
 			MessageBox(nullptr, "Failed to adjust window rectangle!", "ERROR", MB_OK);
 			return false;
 		}
+
 		int width = WndRect.right - WndRect.left;
 		int height = WndRect.bottom - WndRect.top;
 
 		m_hWnd = CreateWindow(desc.className.c_str(),
-			desc.caption.c_str(),
-			WS_OVERLAPPEDWINDOW,
-			CW_USEDEFAULT, CW_USEDEFAULT,
-			width, height,
-			nullptr, nullptr,
-			desc.hAppInstance,
-			nullptr);
+							desc.caption.c_str(),
+							WS_OVERLAPPEDWINDOW,
+							CW_USEDEFAULT, CW_USEDEFAULT,
+							width, height,
+							nullptr, nullptr,
+							desc.hAppInstance,
+							nullptr);
 
 		if (!m_hWnd)
 		{

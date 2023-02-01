@@ -132,4 +132,5 @@ namespace RenderDog
 	{
 		m_Aspect = float(width) / (float)height;
 	}
-}
+
+}// namespace RenderDog
