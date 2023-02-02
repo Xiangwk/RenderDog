@@ -12,6 +12,7 @@
 #include <DirectXTex.h>
 #include <unordered_map>
 
+//Hash SamplerDesc
 namespace std
 {
 	template<>
@@ -28,13 +29,16 @@ namespace std
 				^ hash<float>()(desc.borderColor[3]);
 		}
 	};
-}
+
+}// namespace std
+
 
 namespace RenderDog
 {
-	//==================================================
-	//		Texture2D
-	//==================================================
+	///////////////////////////////////////////////////////////////////////////////////
+	//--------------------          Texture2D                 -----------------------//
+	///////////////////////////////////////////////////////////////////////////////////
+
 	class D3D11Texture2D : public ITexture2D, public RefCntObject
 	{
 	public:
@@ -61,19 +65,24 @@ namespace RenderDog
 		ID3D11ShaderResourceView*	m_pSRV;
 	};
 
-	//==================================================
-	//		Texture Manager
-	//==================================================
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//--------------------         Texture Manager            -----------------------//
+	///////////////////////////////////////////////////////////////////////////////////
+
 	class D3D11TextureManager : public ITextureManager
 	{
 	private:
 		typedef std::unordered_map<std::wstring, ITexture*> TextureMap;
 
 	public:
-		D3D11TextureManager() = default;
-		virtual ~D3D11TextureManager() = default;
+		D3D11TextureManager()
+		{}
 
-		virtual ITexture2D*			CreateTexture2D(const std::wstring& filePath) override;
+		virtual ~D3D11TextureManager()
+		{}
+
+		virtual ITexture2D*			GetTexture2D(const std::wstring& filePath) override;
 		virtual ITexture2D*			GetTexture2D(const TextureDesc& desc) override;
 
 		void						ReleaseTexture2D(D3D11Texture2D* pTexture);
@@ -85,9 +94,11 @@ namespace RenderDog
 	D3D11TextureManager	g_D3D11TextureManager;
 	ITextureManager*	g_pITextureManager = &g_D3D11TextureManager;
 
-	//==================================================
-	//		Function Implementation
-	//==================================================
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//------------------       Function Implementation        -----------------------//
+	///////////////////////////////////////////////////////////////////////////////////
+
 	D3D11Texture2D::D3D11Texture2D() :
 		RefCntObject(),
 		m_Name(L""),
@@ -224,8 +235,6 @@ namespace RenderDog
 			return false;
 		}
 
-		bool isCubeTexture = MetaData.IsCubemap();
-
 		hr = DirectX::CreateShaderResourceView(g_pD3D11Device, Image.GetImages(), MetaData.arraySize * MetaData.mipLevels, MetaData, &m_pSRV);
 		if (hr != S_OK)
 		{
@@ -242,15 +251,14 @@ namespace RenderDog
 		g_D3D11TextureManager.ReleaseTexture2D(this);
 	}
 
-	ITexture2D* D3D11TextureManager::CreateTexture2D(const std::wstring& filePath)
+	ITexture2D* D3D11TextureManager::GetTexture2D(const std::wstring& filePath)
 	{
 		D3D11Texture2D* pTexture = nullptr;
 
 		auto texture = m_TextureMap.find(filePath);
 		if (texture != m_TextureMap.end())
 		{
-			//NOTE!!! 这里用强转是否合适？
-			pTexture = (D3D11Texture2D*)(texture->second);
+			pTexture = dynamic_cast<D3D11Texture2D*>(texture->second);
 			pTexture->AddRef();
 		}
 		else
@@ -277,8 +285,7 @@ namespace RenderDog
 		auto texture = m_TextureMap.find(desc.name);
 		if (texture != m_TextureMap.end())
 		{
-			//NOTE!!! 这里用强转是否合适？
-			pTexture = (D3D11Texture2D*)(texture->second);
+			pTexture = dynamic_cast<D3D11Texture2D*>(texture->second);
 			pTexture->AddRef();
 		}
 		else
@@ -302,9 +309,11 @@ namespace RenderDog
 		}
 	}
 
-	//==================================================
-	//		SamplerState
-	//==================================================
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//--------------------------      SamplerState        ---------------------------//
+	///////////////////////////////////////////////////////////////////////////////////
+
 	class D3D11SamplerState : public ISamplerState, public RefCntObject
 	{
 	public:
@@ -324,9 +333,11 @@ namespace RenderDog
 		SamplerDesc						m_Desc;
 	};
 
-	//==================================================
-	//		SamplerState Manager
-	//==================================================
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//----------------------      SamplerState Manager       ------------------------//
+	///////////////////////////////////////////////////////////////////////////////////
+
 	class D3D11SamplerStateManager : public ISamplerStateManager
 	{
 	private:
@@ -336,7 +347,7 @@ namespace RenderDog
 		D3D11SamplerStateManager() = default;
 		virtual ~D3D11SamplerStateManager() = default;
 
-		virtual ISamplerState*	CreateSamplerState(const SamplerDesc& desc) override;
+		virtual ISamplerState*	GetSamplerState(const SamplerDesc& desc) override;
 
 		void					ReleaseSamplerState(D3D11SamplerState* pSampler);
 
@@ -348,9 +359,10 @@ namespace RenderDog
 	ISamplerStateManager*		g_pISamplerStateManager = &g_D3D11SamplerStateManager;
 
 
-	//==================================================
-	//		Function Implementation
-	//==================================================
+	///////////////////////////////////////////////////////////////////////////////////
+	//-------------------      Function Implementation       ------------------------//
+	///////////////////////////////////////////////////////////////////////////////////
+
 	D3D11SamplerState::D3D11SamplerState():
 		m_pSamplerState(nullptr),
 		m_Desc()
@@ -436,7 +448,7 @@ namespace RenderDog
 		g_pD3D11ImmediateContext->PSSetSamplers(startSlot, 1, &m_pSamplerState);
 	}
 
-	ISamplerState* D3D11SamplerStateManager::CreateSamplerState(const SamplerDesc& desc)
+	ISamplerState* D3D11SamplerStateManager::GetSamplerState(const SamplerDesc& desc)
 	{
 		D3D11SamplerState* pSampler = nullptr;
 

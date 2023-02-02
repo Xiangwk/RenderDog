@@ -11,9 +11,10 @@
 
 namespace RenderDog
 {
-	//==================================================
-	//		Texture
-	//==================================================
+	///////////////////////////////////////////////////////////////////////////////////
+	// ----------------------       Texture             -----------------------------//
+	///////////////////////////////////////////////////////////////////////////////////
+
 	enum class TEXTURE_FORMAT
 	{
 		UNKNOWN,
@@ -66,25 +67,26 @@ namespace RenderDog
 	};
 
 
-	//==================================================
-	//		Texture Manager
-	//==================================================
+	///////////////////////////////////////////////////////////////////////////////////
+	// ----------------------     TextureManager             ------------------------//
+	///////////////////////////////////////////////////////////////////////////////////
+
 	class ITextureManager
 	{
 	public:
 		virtual ~ITextureManager() = default;
 
-		virtual	ITexture2D*			CreateTexture2D(const std::wstring& filePath) = 0;
-
+		virtual	ITexture2D*			GetTexture2D(const std::wstring& filePath) = 0;
 		virtual ITexture2D*			GetTexture2D(const TextureDesc& desc) = 0;
 	};
 
 	extern ITextureManager* g_pITextureManager;
 
 
-	//==================================================
-	//		SamplerState
-	//==================================================
+	///////////////////////////////////////////////////////////////////////////////////
+	// ----------------------       SamplerState           --------------------------//
+	///////////////////////////////////////////////////////////////////////////////////
+
 	enum class SAMPLER_FILTER
 	{
 		POINT,
@@ -154,15 +156,17 @@ namespace RenderDog
 		virtual void					SetToPixelShader(uint32_t startSlot) = 0;
 	};
 
-	//==================================================
-	//		SamplerState Manager
-	//==================================================
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//-------------          SamplerState Manager             -----------------------//
+	///////////////////////////////////////////////////////////////////////////////////
+
 	class ISamplerStateManager
 	{
 	public:
 		virtual ~ISamplerStateManager() = default;
 
-		virtual ISamplerState*	CreateSamplerState(const SamplerDesc& desc) = 0;
+		virtual ISamplerState*	GetSamplerState(const SamplerDesc& desc) = 0;
 	};
 
 	extern ISamplerStateManager* g_pISamplerStateManager;

@@ -352,7 +352,7 @@ namespace RenderDog
 							textureFileName.erase(std::remove(textureFileName.begin(), textureFileName.end(), ' '), textureFileName.end());
 
 							std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-							ITexture2D* pTexture = g_pITextureManager->CreateTexture2D(converter.from_bytes(textureFileName));
+							ITexture2D* pTexture = g_pITextureManager->GetTexture2D(converter.from_bytes(textureFileName));
 							if (!pTexture)
 							{
 								return false;
@@ -365,7 +365,7 @@ namespace RenderDog
 							samplerDesc.name = mtlParamName + "Sampler";
 							samplerDesc.filterMode = SAMPLER_FILTER::LINEAR;
 							samplerDesc.addressMode = SAMPLER_ADDRESS::WRAP;
-							ISamplerState* pTextureSampler = g_pISamplerStateManager->CreateSamplerState(samplerDesc);
+							ISamplerState* pTextureSampler = g_pISamplerStateManager->GetSamplerState(samplerDesc);
 							if (!pTextureSampler)
 							{
 								return false;
@@ -422,7 +422,7 @@ namespace RenderDog
 				ITexture2D* pTexture = mtlParam.GetTexture2D();
 				const std::wstring& textureFileName = pTexture->GetName();
 
-				ITexture2D* pNewTexture = g_pITextureManager->CreateTexture2D(textureFileName);
+				ITexture2D* pNewTexture = g_pITextureManager->GetTexture2D(textureFileName);
 				MaterialParam newTextureParam(mtlParam.GetName(), MATERIAL_PARAM_TYPE::TEXTURE2D);
 				newTextureParam.SetTexture2D(pNewTexture);
 
@@ -435,7 +435,7 @@ namespace RenderDog
 				ISamplerState* pSampler = mtlParam.GetSamplerState();
 				SamplerDesc desc = pSampler->GetDesc();
 
-				ISamplerState* pNewSampler = g_pISamplerStateManager->CreateSamplerState(desc);
+				ISamplerState* pNewSampler = g_pISamplerStateManager->GetSamplerState(desc);
 				MaterialParam newSamplerParam(mtlParam.GetName(), MATERIAL_PARAM_TYPE::SAMPLER);
 				newSamplerParam.SetSamplerState(pNewSampler);
 
@@ -670,7 +670,7 @@ namespace RenderDog
 				textureFileName.erase(std::remove(textureFileName.begin(), textureFileName.end(), ' '), textureFileName.end());
 
 				std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-				RenderDog::ITexture2D* pTexture = RenderDog::g_pITextureManager->CreateTexture2D(converter.from_bytes(textureFileName));
+				RenderDog::ITexture2D* pTexture = RenderDog::g_pITextureManager->GetTexture2D(converter.from_bytes(textureFileName));
 				if (!pTexture)
 				{
 					return false;
@@ -683,7 +683,7 @@ namespace RenderDog
 				samplerDesc.name = mtlParamName + "Sampler";
 				samplerDesc.filterMode = RenderDog::SAMPLER_FILTER::LINEAR;
 				samplerDesc.addressMode = RenderDog::SAMPLER_ADDRESS::WRAP;
-				RenderDog::ISamplerState* pTextureSampler = RenderDog::g_pISamplerStateManager->CreateSamplerState(samplerDesc);
+				RenderDog::ISamplerState* pTextureSampler = RenderDog::g_pISamplerStateManager->GetSamplerState(samplerDesc);
 				if (!pTextureSampler)
 				{
 					return false;

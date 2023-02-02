@@ -371,7 +371,7 @@ bool ModelViewer::LoadStaticModelMaterialParams(std::vector<RenderDog::MaterialP
 
 	if (!diffuseTexturePath.empty())
 	{
-		RenderDog::ITexture2D* pDiffuseTexture = RenderDog::g_pITextureManager->CreateTexture2D(diffuseTexturePath);
+		RenderDog::ITexture2D* pDiffuseTexture = RenderDog::g_pITextureManager->GetTexture2D(diffuseTexturePath);
 		if (!pDiffuseTexture)
 		{
 			return false;
@@ -385,7 +385,7 @@ bool ModelViewer::LoadStaticModelMaterialParams(std::vector<RenderDog::MaterialP
 		samplerDesc.name = "LocVar_Material_DiffuseTextureSampler";
 		samplerDesc.filterMode = RenderDog::SAMPLER_FILTER::LINEAR;
 		samplerDesc.addressMode = RenderDog::SAMPLER_ADDRESS::WRAP;
-		RenderDog::ISamplerState* pDiffuseTextureSampler = RenderDog::g_pISamplerStateManager->CreateSamplerState(samplerDesc);
+		RenderDog::ISamplerState* pDiffuseTextureSampler = RenderDog::g_pISamplerStateManager->GetSamplerState(samplerDesc);
 		if (!pDiffuseTextureSampler)
 		{
 			return false;
@@ -397,7 +397,7 @@ bool ModelViewer::LoadStaticModelMaterialParams(std::vector<RenderDog::MaterialP
 
 	if (!normalTexturePath.empty())
 	{
-		RenderDog::ITexture2D* pNormalTexture = RenderDog::g_pITextureManager->CreateTexture2D(normalTexturePath);
+		RenderDog::ITexture2D* pNormalTexture = RenderDog::g_pITextureManager->GetTexture2D(normalTexturePath);
 		if (!pNormalTexture)
 		{
 			return false;
@@ -410,7 +410,7 @@ bool ModelViewer::LoadStaticModelMaterialParams(std::vector<RenderDog::MaterialP
 		samplerDesc.name = "LocVar_Material_NormalTextureSampler";
 		samplerDesc.filterMode = RenderDog::SAMPLER_FILTER::LINEAR;
 		samplerDesc.addressMode = RenderDog::SAMPLER_ADDRESS::WRAP;
-		RenderDog::ISamplerState* pNormalTextureSampler = RenderDog::g_pISamplerStateManager->CreateSamplerState(samplerDesc);
+		RenderDog::ISamplerState* pNormalTextureSampler = RenderDog::g_pISamplerStateManager->GetSamplerState(samplerDesc);
 		if (!pNormalTextureSampler)
 		{
 			return false;
@@ -422,7 +422,7 @@ bool ModelViewer::LoadStaticModelMaterialParams(std::vector<RenderDog::MaterialP
 
 	if (!metallicRoughnessTexturePath.empty())
 	{
-		RenderDog::ITexture2D* pMRTexture = RenderDog::g_pITextureManager->CreateTexture2D(metallicRoughnessTexturePath);
+		RenderDog::ITexture2D* pMRTexture = RenderDog::g_pITextureManager->GetTexture2D(metallicRoughnessTexturePath);
 		if (!pMRTexture)
 		{
 			return false;
@@ -435,7 +435,7 @@ bool ModelViewer::LoadStaticModelMaterialParams(std::vector<RenderDog::MaterialP
 		samplerDesc.name = "LocVar_Material_MetallicRoughnessTextureSampler";
 		samplerDesc.filterMode = RenderDog::SAMPLER_FILTER::LINEAR;
 		samplerDesc.addressMode = RenderDog::SAMPLER_ADDRESS::WRAP;
-		RenderDog::ISamplerState* pMRTextureSampler = RenderDog::g_pISamplerStateManager->CreateSamplerState(samplerDesc);
+		RenderDog::ISamplerState* pMRTextureSampler = RenderDog::g_pISamplerStateManager->GetSamplerState(samplerDesc);
 		if (!pMRTextureSampler)
 		{
 			return false;
@@ -456,7 +456,7 @@ bool ModelViewer::LoadSkinModelMaterialParams(std::vector<RenderDog::MaterialPar
 
 	if (!diffuseTexturePath.empty())
 	{
-		RenderDog::ITexture2D* pDiffuseTexture = RenderDog::g_pITextureManager->CreateTexture2D(diffuseTexturePath);
+		RenderDog::ITexture2D* pDiffuseTexture = RenderDog::g_pITextureManager->GetTexture2D(diffuseTexturePath);
 		if (!pDiffuseTexture)
 		{
 			return false;
@@ -470,7 +470,7 @@ bool ModelViewer::LoadSkinModelMaterialParams(std::vector<RenderDog::MaterialPar
 		samplerDesc.name = "DiffuseTextureSampler";
 		samplerDesc.filterMode = RenderDog::SAMPLER_FILTER::LINEAR;
 		samplerDesc.addressMode = RenderDog::SAMPLER_ADDRESS::WRAP;
-		RenderDog::ISamplerState* pDiffuseTextureSampler = RenderDog::g_pISamplerStateManager->CreateSamplerState(samplerDesc);
+		RenderDog::ISamplerState* pDiffuseTextureSampler = RenderDog::g_pISamplerStateManager->GetSamplerState(samplerDesc);
 		if (!pDiffuseTextureSampler)
 		{
 			return false;
@@ -482,7 +482,7 @@ bool ModelViewer::LoadSkinModelMaterialParams(std::vector<RenderDog::MaterialPar
 
 	if (!normalTexturePath.empty())
 	{
-		RenderDog::ITexture2D* pNormalTexture = RenderDog::g_pITextureManager->CreateTexture2D(normalTexturePath);
+		RenderDog::ITexture2D* pNormalTexture = RenderDog::g_pITextureManager->GetTexture2D(normalTexturePath);
 		if (!pNormalTexture)
 		{
 			return false;
@@ -495,7 +495,7 @@ bool ModelViewer::LoadSkinModelMaterialParams(std::vector<RenderDog::MaterialPar
 		samplerDesc.name = "NormalTextureSampler";
 		samplerDesc.filterMode = RenderDog::SAMPLER_FILTER::LINEAR;
 		samplerDesc.addressMode = RenderDog::SAMPLER_ADDRESS::WRAP;
-		RenderDog::ISamplerState* pNormalTextureSampler = RenderDog::g_pISamplerStateManager->CreateSamplerState(samplerDesc);
+		RenderDog::ISamplerState* pNormalTextureSampler = RenderDog::g_pISamplerStateManager->GetSamplerState(samplerDesc);
 		if (!pNormalTextureSampler)
 		{
 			return false;
@@ -507,7 +507,7 @@ bool ModelViewer::LoadSkinModelMaterialParams(std::vector<RenderDog::MaterialPar
 
 	if (!metallicRoughnessTexturePath.empty())
 	{
-		RenderDog::ITexture2D* pMRTexture = RenderDog::g_pITextureManager->CreateTexture2D(metallicRoughnessTexturePath);
+		RenderDog::ITexture2D* pMRTexture = RenderDog::g_pITextureManager->GetTexture2D(metallicRoughnessTexturePath);
 		if (!pMRTexture)
 		{
 			return false;
@@ -520,7 +520,7 @@ bool ModelViewer::LoadSkinModelMaterialParams(std::vector<RenderDog::MaterialPar
 		samplerDesc.name = "MetallicRoughnessTextureSampler";
 		samplerDesc.filterMode = RenderDog::SAMPLER_FILTER::LINEAR;
 		samplerDesc.addressMode = RenderDog::SAMPLER_ADDRESS::WRAP;
-		RenderDog::ISamplerState* pMRTextureSampler = RenderDog::g_pISamplerStateManager->CreateSamplerState(samplerDesc);
+		RenderDog::ISamplerState* pMRTextureSampler = RenderDog::g_pISamplerStateManager->GetSamplerState(samplerDesc);
 		if (!pMRTextureSampler)
 		{
 			return false;
@@ -648,7 +648,7 @@ RenderDog::IMaterial* ModelViewer::CreateSkyMaterial(const std::string& mtlName)
 
 	if (!diffuseTexturePath.empty())
 	{
-		RenderDog::ITexture2D* pDiffuseTexture = RenderDog::g_pITextureManager->CreateTexture2D(diffuseTexturePath);
+		RenderDog::ITexture2D* pDiffuseTexture = RenderDog::g_pITextureManager->GetTexture2D(diffuseTexturePath);
 		if (!pDiffuseTexture)
 		{
 			return nullptr;
@@ -662,7 +662,7 @@ RenderDog::IMaterial* ModelViewer::CreateSkyMaterial(const std::string& mtlName)
 		samplerDesc.name = "ComVar_Texture_SkyCubeTextureSampler";
 		samplerDesc.filterMode = RenderDog::SAMPLER_FILTER::LINEAR;
 		samplerDesc.addressMode = RenderDog::SAMPLER_ADDRESS::WRAP;
-		RenderDog::ISamplerState* pDiffuseTextureSampler = RenderDog::g_pISamplerStateManager->CreateSamplerState(samplerDesc);
+		RenderDog::ISamplerState* pDiffuseTextureSampler = RenderDog::g_pISamplerStateManager->GetSamplerState(samplerDesc);
 		if (!pDiffuseTextureSampler)
 		{
 			return nullptr;

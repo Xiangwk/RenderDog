@@ -59,7 +59,7 @@ namespace RenderDog
 		SRTextureManager() = default;
 		virtual ~SRTextureManager() = default;
 
-		virtual ITexture2D*			CreateTexture2D(const std::wstring& filePath) override;
+		virtual ITexture2D*			GetTexture2D(const std::wstring& filePath) override;
 		virtual ITexture2D*			GetTexture2D(const TextureDesc& desc) override;
 
 		void						ReleaseTexture2D(SRTexture2D* pTexture);
@@ -205,7 +205,7 @@ namespace RenderDog
 		g_SRTextureManager.ReleaseTexture2D(this);
 	}
 	
-	ITexture2D* SRTextureManager::CreateTexture2D(const std::wstring& filePath)
+	ITexture2D* SRTextureManager::GetTexture2D(const std::wstring& filePath)
 	{
 		//FIXME!!! 临时将dds强制替换为tga
 		std::wstring texPath = filePath.substr(0, filePath.rfind('.'));
@@ -298,7 +298,7 @@ namespace RenderDog
 		SRSamplerStateManager() = default;
 		virtual ~SRSamplerStateManager() = default;
 
-		virtual ISamplerState*	CreateSamplerState(const SamplerDesc& desc) override;
+		virtual ISamplerState*	GetSamplerState(const SamplerDesc& desc) override;
 
 		void					ReleaseSamplerState(SRSamplerState* pSampler);
 	};
@@ -356,7 +356,7 @@ namespace RenderDog
 
 	
 
-	ISamplerState* SRSamplerStateManager::CreateSamplerState(const SamplerDesc& desc)
+	ISamplerState* SRSamplerStateManager::GetSamplerState(const SamplerDesc& desc)
 	{
 		ISamplerState* pSampler = new SRSamplerState(desc);
 

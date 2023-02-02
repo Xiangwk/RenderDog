@@ -885,7 +885,7 @@ namespace RenderDog
 
 	bool D3D11Renderer::CreateInternalTextures()
 	{
-		m_pIblBrdfLutTexture = g_pITextureManager->CreateTexture2D(IblBrdfLutTextureFilePath);
+		m_pIblBrdfLutTexture = g_pITextureManager->GetTexture2D(IblBrdfLutTextureFilePath);
 		if (!m_pIblBrdfLutTexture)
 		{
 			return false;
@@ -895,7 +895,7 @@ namespace RenderDog
 		samplerDesc.name = IblBrdfLutTextureSamplerName;
 		samplerDesc.filterMode = SAMPLER_FILTER::LINEAR;
 		samplerDesc.addressMode = SAMPLER_ADDRESS::CLAMP;
-		m_pIblBrdfLutTextureSampler = g_pISamplerStateManager->CreateSamplerState(samplerDesc);
+		m_pIblBrdfLutTextureSampler = g_pISamplerStateManager->GetSamplerState(samplerDesc);
 		if (!m_pIblBrdfLutTextureSampler)
 		{
 			return false;
@@ -943,7 +943,7 @@ namespace RenderDog
 		shadowMapSamplerDesc.borderColor[1] = 1.0f;
 		shadowMapSamplerDesc.borderColor[2] = 1.0f;
 		shadowMapSamplerDesc.borderColor[3] = 1.0f;
-		m_pShadowDepthTextureSampler = g_pISamplerStateManager->CreateSamplerState(shadowMapSamplerDesc);
+		m_pShadowDepthTextureSampler = g_pISamplerStateManager->GetSamplerState(shadowMapSamplerDesc);
 		if (!m_pShadowDepthTextureSampler)
 		{
 			return false;
