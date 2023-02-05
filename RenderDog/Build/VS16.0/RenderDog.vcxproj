@@ -16,7 +16,6 @@
     <ClCompile Include="..\..\Math\Private\Transform.cpp" />
     <ClCompile Include="..\..\Math\Private\Utility.cpp" />
     <ClCompile Include="..\..\Math\Private\Vector.cpp" />
-    <ClCompile Include="..\..\Private\Bone.cpp" />
     <ClCompile Include="..\..\Private\BoneAnimation.cpp" />
     <ClCompile Include="..\..\Private\Camera.cpp" />
     <ClCompile Include="..\..\Private\FbxImporter.cpp" />

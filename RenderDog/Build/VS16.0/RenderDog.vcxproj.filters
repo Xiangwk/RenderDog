@@ -123,9 +123,6 @@
     <ClCompile Include="..\..\Private\SkinMesh.cpp">
       <Filter>Primitive\Private</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Private\Bone.cpp">
-      <Filter>Primitive\Private</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Private\Skeleton.cpp">
       <Filter>Primitive\Private</Filter>
     </ClCompile>

@@ -15,8 +15,15 @@ namespace RenderDog
 	class Bone
 	{
 	public:
-		Bone();
-		~Bone();
+		Bone() :
+			m_ParentIndex(-1),
+			m_OffsetMatrix(),
+			m_UpToParentMatrix(),
+			m_UpToRootMatrix()
+		{}
+
+		~Bone()
+		{}
 
 		Bone(const std::string& name, int parentIndex, const Matrix4x4& offsetMatrix, const Matrix4x4& upToParentMatrix) :
 			m_Name(name),
