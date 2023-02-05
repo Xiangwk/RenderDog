@@ -24,7 +24,10 @@ namespace RenderDog
 		Vector3 position;
 		Vector4 color;
 
-		SimpleVertex() = default;
+		SimpleVertex() :
+			position(),
+			color()
+		{}
 
 		SimpleVertex(float px, float py, float pz,
 					 float cx, float cy, float cz, float cw):
@@ -44,7 +47,12 @@ namespace RenderDog
 		Vector4 tangent;    //w: hand party
 		Vector2 texcoord;
 
-		StandardVertex() = default;
+		StandardVertex() :
+			SimpleVertex(),
+			normal(),
+			tangent(),
+			texcoord()
+		{}
 
 		StandardVertex(float px, float py, float pz,
 					float cx, float cy, float cz, float cw,
@@ -72,6 +80,7 @@ namespace RenderDog
 		uint8_t	boneIndices[4];
 
 		SkinVertex() :
+			StandardVertex(),
 			weights(0.0f)
 		{
 			for (int i = 0; i < 4; ++i)

@@ -11,11 +11,25 @@
 namespace RenderDog
 {
 	Skeleton::Skeleton() :
-		m_Bones(0)
+		m_Bones(0),
+		m_LocalMatrix()
+	{}
+
+	Skeleton::Skeleton(const Skeleton& skel) :
+		m_Bones(skel.m_Bones),
+		m_LocalMatrix(skel.m_LocalMatrix)
 	{}
 
 	Skeleton::~Skeleton()
 	{}
+
+	Skeleton& Skeleton::operator=(const Skeleton& skel)
+	{
+		m_Bones = skel.m_Bones;
+		m_LocalMatrix = skel.m_LocalMatrix;
+
+		return *this;
+	}
 
 	void Skeleton::Update()
 	{

@@ -22,8 +22,29 @@ namespace RenderDog
 			m_UpToRootMatrix()
 		{}
 
+		Bone(const Bone& bone):
+			m_Name(bone.m_Name),
+			m_ParentIndex(bone.m_ParentIndex),
+			m_OffsetMatrix(bone.m_OffsetMatrix),
+			m_UpToParentMatrix(bone.m_UpToParentMatrix),
+			m_UpToRootMatrix(bone.m_UpToRootMatrix),
+			m_FinalTransformMatrix(bone.m_FinalTransformMatrix)
+		{}
+
 		~Bone()
 		{}
+
+		Bone& operator=(const Bone& bone)
+		{
+			m_Name = bone.m_Name;
+			m_ParentIndex = bone.m_ParentIndex;
+			m_OffsetMatrix = bone.m_OffsetMatrix;
+			m_UpToParentMatrix = bone.m_UpToParentMatrix;
+			m_UpToRootMatrix = bone.m_UpToRootMatrix;
+			m_FinalTransformMatrix = bone.m_FinalTransformMatrix;
+
+			return *this;
+		}
 
 		Bone(const std::string& name, int parentIndex, const Matrix4x4& offsetMatrix, const Matrix4x4& upToParentMatrix) :
 			m_Name(name),

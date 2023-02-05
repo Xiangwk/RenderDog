@@ -60,8 +60,9 @@ namespace RenderDog
 		outputMesh.vertices.clear();
 		outputMesh.indices.clear();
 
-		outputMesh.vertices.reserve(2 * width + 2);
-		outputMesh.indices.reserve(2 * width + 2);
+		size_t vertsNum = 2 * static_cast<size_t>(width) + 2;
+		outputMesh.vertices.reserve(vertsNum);
+		outputMesh.indices.reserve(vertsNum);
 
 		float widthLen = width * gridUnit;
 		float depthLen = depth * gridUnit;
@@ -170,9 +171,11 @@ namespace RenderDog
 		outputMesh.vertices.clear();
 		outputMesh.indices.clear();
 
-		//===============================================
-		//					Vertice
-		//===============================================
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//---------------------------         Vertices            -----------------------//
+	///////////////////////////////////////////////////////////////////////////////////
+	
 		//Top Pole
 		Vector3 topPolePos = Vector3(0.0f, radius, 0.0f);
 
@@ -223,9 +226,9 @@ namespace RenderDog
 		}
 
 
-		//===============================================
-		//					Indices
-		//===============================================
+	///////////////////////////////////////////////////////////////////////////////////
+	//---------------------------         Indices             -----------------------//
+	///////////////////////////////////////////////////////////////////////////////////
 		//Top Cap
 		for (uint32_t i = 0; i < longitudeNum; ++i)
 		{

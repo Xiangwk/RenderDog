@@ -19,7 +19,10 @@ namespace RenderDog
 	{
 	public:
 		Skeleton();
+		Skeleton(const Skeleton& skel);
 		~Skeleton();
+
+		Skeleton& operator=(const Skeleton& skel);
 
 		void				SetLocalMatrix(const Matrix4x4& matrix) { m_LocalMatrix = matrix; }
 
