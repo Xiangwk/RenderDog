@@ -993,7 +993,7 @@
                             "text": "Primitive",
                             "layout_right_offset": {
                                 "x": 586.4999998882413,
-                                "y": 712.2499991618097
+                                "y": 723.2499991618097
                             }
                         },
                         "children": [
@@ -1268,7 +1268,7 @@
                             "text": "Material",
                             "layout_right_offset": {
                                 "x": 597,
-                                "y": 695
+                                "y": 706
                             },
                             "priority": 3,
                             "progress": null
@@ -1317,8 +1317,8 @@
                                     "created": 1643386013975,
                                     "text": "Texture",
                                     "layout_right_offset": {
-                                        "x": 404.8333331015374,
-                                        "y": 12.66666759384998
+                                        "x": 402.8333331015374,
+                                        "y": -11.33333240615002
                                     }
                                 },
                                 "children": []
@@ -1329,11 +1329,25 @@
                                     "created": 1643386019598,
                                     "text": "Buffer",
                                     "layout_right_offset": {
-                                        "x": 398.9999998013179,
-                                        "y": 7.166667494508829
+                                        "x": 396.9999998013179,
+                                        "y": -11.833332505491171
                                     }
                                 },
-                                "children": []
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cqaiswe1agg0",
+                                            "created": 1675589209796,
+                                            "text": "动态VB和IB",
+                                            "layout_right_offset": {
+                                                "x": 291,
+                                                "y": -9
+                                            },
+                                            "priority": 3
+                                        },
+                                        "children": []
+                                    }
+                                ]
                             },
                             {
                                 "data": {
@@ -1341,8 +1355,8 @@
                                     "created": 1652877758030,
                                     "text": "ResourceManager",
                                     "layout_right_offset": {
-                                        "x": 479.66666600439294,
-                                        "y": -146.6666656070288
+                                        "x": 474.66666600439294,
+                                        "y": -180.6666656070288
                                     },
                                     "priority": 3,
                                     "note": "负责管理引擎需要使用到的资源，如Buffer，Texture等；"
@@ -1355,10 +1369,11 @@
                                     "created": 1656342093588,
                                     "text": "Sampler",
                                     "layout_right_offset": {
-                                        "x": 417.9999992052715,
-                                        "y": -62.99999860922503
+                                        "x": 418.9999992052715,
+                                        "y": -56.99999860922503
                                     },
-                                    "priority": 2
+                                    "priority": null,
+                                    "progress": 9
                                 },
                                 "children": [
                                     {
@@ -1367,10 +1382,11 @@
                                             "created": 1656342103073,
                                             "text": "复用问题",
                                             "layout_right_offset": {
-                                                "x": 302,
-                                                "y": -34
+                                                "x": 307,
+                                                "y": -9
                                             },
-                                            "note": "使用相同采样参数设置的Sampler应该可以复用，需要在管理器中根据采样参数来做Hash；"
+                                            "note": "使用相同采样参数设置的Sampler应该可以复用，需要在管理器中根据采样参数来做Hash；",
+                                            "progress": 9
                                         },
                                         "children": []
                                     }

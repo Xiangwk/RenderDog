@@ -318,7 +318,7 @@ namespace RenderDog
 	{
 	public:
 		D3D11SamplerState();
-		D3D11SamplerState(const SamplerDesc& desc);
+		explicit D3D11SamplerState(const SamplerDesc& desc);
 		virtual ~D3D11SamplerState();
 
 		virtual void					Release() override;

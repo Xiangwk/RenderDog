@@ -13,9 +13,10 @@
 
 namespace RenderDog
 {
-	//================================================================
-	//       VertexBuffer
-	//================================================================
+	///////////////////////////////////////////////////////////////////////////////////
+	//--------------------------      Vertex Buffer       ---------------------------//
+	///////////////////////////////////////////////////////////////////////////////////
+
 	class D3D11VertexBuffer : public IVertexBuffer, public RefCntObject
 	{
 	public:
@@ -36,14 +37,16 @@ namespace RenderDog
 	private:
 		std::string					m_Name;
 
-		ID3D11Buffer* m_pVB;
+		ID3D11Buffer*				m_pVB;
 		uint32_t					m_Stride;
 		uint32_t					m_Offset;
 	};
 
-	//================================================================
-	//       IndexBuffer
-	//================================================================
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//--------------------------       Index Buffer       ---------------------------//
+	///////////////////////////////////////////////////////////////////////////////////
+
 	class D3D11IndexBuffer : public IIndexBuffer, public RefCntObject
 	{
 	public:
@@ -62,13 +65,15 @@ namespace RenderDog
 	private:
 		std::string					m_Name;
 
-		ID3D11Buffer* m_pIB;
+		ID3D11Buffer*				m_pIB;
 		uint32_t					m_indexNum;
 	};
 
-	//================================================================
-	//       ConstantBuffer
-	//================================================================
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//------------------------      Constant Buffer       ---------------------------//
+	///////////////////////////////////////////////////////////////////////////////////
+
 	class D3D11ConstantBuffer : public IConstantBuffer, public RefCntObject
 	{
 	public:
@@ -89,17 +94,22 @@ namespace RenderDog
 		bool						m_IsDynamic;
 	};
 
-	//================================================================
-	//       BufferManager
-	//================================================================
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//------------------------       Buffer Manager       ---------------------------//
+	///////////////////////////////////////////////////////////////////////////////////
+
 	class D3D11BufferManager : public IBufferManager
 	{
 	private:
 		typedef std::unordered_map<std::string, IBuffer*> BufferMap;
 
 	public:
-		D3D11BufferManager() = default;
-		virtual ~D3D11BufferManager() = default;
+		D3D11BufferManager()
+		{}
+
+		virtual ~D3D11BufferManager()
+		{}
 
 		virtual IVertexBuffer*		GetVertexBuffer(const BufferDesc& desc) override;
 		virtual IIndexBuffer*		GetIndexBuffer(const BufferDesc& desc) override;
@@ -115,12 +125,12 @@ namespace RenderDog
 	};
 
 	D3D11BufferManager	g_D3D11BufferManager;
-	IBufferManager* g_pIBufferManager = &g_D3D11BufferManager;
+	IBufferManager*	g_pIBufferManager = &g_D3D11BufferManager;
 
 
-	//================================================================
-	//       Function Implementation
-	//================================================================
+	///////////////////////////////////////////////////////////////////////////////////
+	//--------------------       Function Implementation     ------------------------//
+	///////////////////////////////////////////////////////////////////////////////////
 	D3D11VertexBuffer::D3D11VertexBuffer(const BufferDesc& desc) :
 		RefCntObject(),
 		m_Name(desc.name),
@@ -156,7 +166,6 @@ namespace RenderDog
 
 	void D3D11VertexBuffer::Update(void* srcData, uint32_t srcSize)
 	{
-
 	}
 
 	D3D11IndexBuffer::D3D11IndexBuffer(const BufferDesc& desc) :
