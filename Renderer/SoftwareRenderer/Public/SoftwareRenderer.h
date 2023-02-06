@@ -12,4 +12,5 @@ namespace RenderDog
 {
 	extern ISRDevice*			g_pSRDevice;
 	extern ISRDeviceContext*	g_pSRImmediateContext;
-}
+
+}// namespace RenderDog

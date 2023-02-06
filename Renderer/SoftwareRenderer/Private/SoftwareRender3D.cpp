@@ -73,7 +73,8 @@ namespace RenderDog
 		};
 	public:
 		PixelShader() :
-			m_pMainLight(nullptr)
+			m_pMainLight(nullptr),
+			m_pSampler(nullptr)
 		{
 			m_pMainLight = new MainLight;
 		}

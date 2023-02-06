@@ -14,9 +14,10 @@
 
 namespace RenderDog
 {
-	//================================================================
-	//       VertexBuffer
-	//================================================================
+	///////////////////////////////////////////////////////////////////////////////////
+	//----------------------         Vertex Buffer         --------------------------//
+	///////////////////////////////////////////////////////////////////////////////////
+
 	class SRVertexBuffer : public IVertexBuffer, public RefCntObject
 	{
 	public:
@@ -42,9 +43,11 @@ namespace RenderDog
 		uint32_t					m_Offset;
 	};
 
-	//================================================================
-	//       IndexBuffer
-	//================================================================
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//-----------------------         Index Buffer         --------------------------//
+	///////////////////////////////////////////////////////////////////////////////////
+
 	class SRIndexBuffer : public IIndexBuffer, public RefCntObject
 	{
 	public:
@@ -67,9 +70,11 @@ namespace RenderDog
 		uint32_t					m_indexNum;
 	};
 
-	//================================================================
-	//       ConstantBuffer
-	//================================================================
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//-----------------------         Constant Buffer         -----------------------//
+	///////////////////////////////////////////////////////////////////////////////////
+
 	class SRConstantBuffer : public IConstantBuffer, public RefCntObject
 	{
 	public:
@@ -90,9 +95,11 @@ namespace RenderDog
 		bool						m_IsDynamic;
 	};
 
-	//================================================================
-	//       BufferManager
-	//================================================================
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//-----------------------         Buffer Manager          -----------------------//
+	///////////////////////////////////////////////////////////////////////////////////
+
 	class SRBufferManager : public IBufferManager
 	{
 	private:
@@ -119,9 +126,10 @@ namespace RenderDog
 	IBufferManager* g_pIBufferManager = &g_SRBufferManager;
 
 
-	//================================================================
-	//       Function Implementation
-	//================================================================
+	///////////////////////////////////////////////////////////////////////////////////
+	//------------------         Function Implementation         --------------------//
+	///////////////////////////////////////////////////////////////////////////////////
+
 	SRVertexBuffer::SRVertexBuffer(const BufferDesc& desc) :
 		RefCntObject(),
 		m_Name(desc.name),
@@ -159,8 +167,6 @@ namespace RenderDog
 
 	}
 
-	
-
 	SRIndexBuffer::SRIndexBuffer(const BufferDesc& desc) :
 		RefCntObject(),
 		m_Name(desc.name),
@@ -196,7 +202,6 @@ namespace RenderDog
 
 	}
 	
-
 	SRConstantBuffer::SRConstantBuffer(const BufferDesc& desc) :
 		RefCntObject(),
 		m_Name(desc.name),
@@ -231,7 +236,6 @@ namespace RenderDog
 	{
 		g_pSRImmediateContext->UpdateSubresource(m_pCB, srcData, 0, 0);
 	}
-
 
 	IVertexBuffer* SRBufferManager::GetVertexBuffer(const BufferDesc& desc)
 	{

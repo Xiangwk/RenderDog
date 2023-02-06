@@ -313,4 +313,5 @@ namespace RenderDog
 #pragma endregion Interface
 
 	bool CreateDeviceAndSwapChain(ISRDevice** pDevice, ISRDeviceContext** pDeviceContext, ISRSwapChain** ppSwapChain, const SwapChainDesc* pSwapChainDesc);
-}
+
+}// namespace RenderDog

@@ -584,8 +584,8 @@
                                 "y": 1158
                             },
                             "layout_right_offset": {
-                                "x": 557.4999991431831,
-                                "y": 512.9999966472388
+                                "x": 558.4999991431831,
+                                "y": 536.9999966472388
                             }
                         },
                         "children": [
@@ -1017,8 +1017,8 @@
                                             "created": 1643383668737,
                                             "text": "StaticMesh",
                                             "layout_right_offset": {
-                                                "x": 416,
-                                                "y": 65
+                                                "x": 499,
+                                                "y": 95
                                             },
                                             "priority": 2,
                                             "note": "最好也加一个管理器，在StaticModel中最好不要放StaticMesh的数组，而是使用StaticMesh指针的数组，避免大量数据的拷贝；"
@@ -1030,10 +1030,24 @@
                                                     "created": 1657120162392,
                                                     "text": "Mesh的名字如何从FBX中加载得到",
                                                     "layout_right_offset": {
-                                                        "x": 468,
-                                                        "y": -32
+                                                        "x": 483,
+                                                        "y": -19
                                                     },
                                                     "note": "FBX根据MaterialID来区分Mesh；"
+                                                },
+                                                "children": []
+                                            },
+                                            {
+                                                "data": {
+                                                    "id": "cqaqmagzyfk0",
+                                                    "created": 1675611260781,
+                                                    "text": "增加一个使用代码指定材质的功能",
+                                                    "layout_right_offset": {
+                                                        "x": 488,
+                                                        "y": 9
+                                                    },
+                                                    "priority": 1,
+                                                    "note": "从而可以删掉SimpleMesh类型；"
                                                 },
                                                 "children": []
                                             }
@@ -1109,10 +1123,10 @@
                                     "created": 1657120210840,
                                     "text": "SkinModel",
                                     "layout_right_offset": {
-                                        "x": 419,
-                                        "y": 103
+                                        "x": 404,
+                                        "y": 127
                                     },
-                                    "priority": 1
+                                    "priority": null
                                 },
                                 "children": [
                                     {
@@ -1121,8 +1135,8 @@
                                             "created": 1657357992542,
                                             "text": "SkinMesh",
                                             "layout_right_offset": {
-                                                "x": 327,
-                                                "y": -41
+                                                "x": 341,
+                                                "y": 3
                                             }
                                         },
                                         "children": [
@@ -1147,8 +1161,8 @@
                                             "created": 1657358001530,
                                             "text": "Skeleton",
                                             "layout_right_offset": {
-                                                "x": 318,
-                                                "y": -36
+                                                "x": 327,
+                                                "y": 2
                                             }
                                         },
                                         "children": [
@@ -1173,8 +1187,8 @@
                                             "created": 1657358009888,
                                             "text": "Bone",
                                             "layout_right_offset": {
-                                                "x": 312,
-                                                "y": -24
+                                                "x": 321,
+                                                "y": -1
                                             }
                                         },
                                         "children": []
