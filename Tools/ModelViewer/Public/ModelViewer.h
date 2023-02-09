@@ -45,6 +45,7 @@ public:
 
 private:
 	bool						LoadFloor(uint32_t width, uint32_t depth, float unit);
+	bool						LoadAxis();
 	bool						LoadSkyBox();
 	bool						LoadFbxModel(const std::string& fileName, LOAD_MODEL_TYPE modelType);
 	bool						LoadFbxAnimation(const std::string& fileName, RenderDog::SkinModel* pSkinModel);
@@ -72,6 +73,7 @@ private:
 	RenderDog::SimpleModel*		m_pGridLine;
 	RenderDog::StaticModel*		m_pFloor;
 	RenderDog::StaticModel*		m_pStaticModel;
+	RenderDog::StaticModel*		m_pAxisModel;
 	RenderDog::SkinModel*		m_pSkinModel;
 	RenderDog::SkyBox*			m_pSkyBox;
 

@@ -28,6 +28,7 @@ ModelViewer::ModelViewer() :
 	m_pGridLine(nullptr),
 	m_pFloor(nullptr),
 	m_pStaticModel(nullptr),
+	m_pAxisModel(nullptr),
 	m_pSkinModel(nullptr),
 	m_pSkyBox(nullptr),
 	m_pFPSCamera(nullptr),
@@ -95,6 +96,12 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 	if (!LoadFloor(10, 10, 100.0f))
 	{
 		MessageBox(nullptr, "Load Floor Failed!", "ERROR", MB_OK);
+		return false;
+	}
+
+	if (!LoadAxis())
+	{
+		MessageBox(nullptr, "Load Axis Failed!", "ERROR", MB_OK);
 		return false;
 	}
 
@@ -168,6 +175,12 @@ void ModelViewer::Release()
 	{
 		delete m_pFloor;
 		m_pFloor = nullptr;
+	}
+
+	if (m_pAxisModel)
+	{
+		delete m_pAxisModel;
+		m_pAxisModel = nullptr;
 	}
 
 	if (m_pBasicMaterial)
@@ -346,7 +359,6 @@ bool ModelViewer::LoadFloor(uint32_t width, uint32_t depth, float unit)
 	m_pGridLine = new RenderDog::SimpleModel();
 	m_pGridLine->LoadFromSimpleData(GridLineMeshData.vertices, GridLineMeshData.indices, "MainSceneGridLine");
 	m_pGridLine->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
-	
 
 	RenderDog::GeometryGenerator::StandardMeshData GridMeshData;
 	RenderDog::g_pGeometryGenerator->GenerateGrid(width, depth, unit, GridMeshData);
@@ -359,6 +371,31 @@ bool ModelViewer::LoadFloor(uint32_t width, uint32_t depth, float unit)
 	}
 	m_pFloor->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
 	
+
+	return true;
+}
+
+bool ModelViewer::LoadAxis()
+{
+	std::string fileName = "Models/Axis/Axis.FBX";
+
+	m_pAxisModel = new RenderDog::StaticModel();
+
+	RenderDog::RDFbxImporter::FbxLoadParam fbxLoadParam;
+	fbxLoadParam.bIsFlipTexcoordV = false;
+	if (!RenderDog::g_pRDFbxImporter->LoadFbxFile(fileName, RenderDog::RDFbxImporter::FBX_LOAD_TYPE::STATIC_MODEL, fbxLoadParam))
+	{
+		MessageBox(nullptr, "Import FBX File Failed!", "ERROR", MB_OK);
+		return false;
+	}
+
+	if (!m_pAxisModel->LoadFromRawMeshData(RenderDog::g_pRDFbxImporter->GetRawMeshData(), fileName))
+	{
+		MessageBox(nullptr, "Load Model Failed!", "ERROR", MB_OK);
+		return false;
+	}
+
+	m_pAxisModel->SetPosGesture(RenderDog::Vector3(0.0f, 1.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.1f));
 
 	return true;
 }
@@ -738,6 +775,11 @@ void ModelViewer::RegisterObjectToScene()
 	if (m_pFloor)
 	{
 		m_pFloor->RegisterToScene(m_pScene);
+	}
+
+	if (m_pAxisModel)
+	{
+		m_pAxisModel->RegisterToScene(m_pScene);
 	}
 	
 	if (m_pSkyBox)

@@ -213,6 +213,14 @@ namespace RenderDog
 
 		FbxMesh* pMesh = pNode->GetMesh();
 
+		FbxAMatrix pivotTransform;
+		FbxVector4 Translation = pNode->GetGeometricTranslation(FbxNode::eSourcePivot);
+		FbxVector4 Rotation = pNode->GetGeometricRotation(FbxNode::eSourcePivot);
+		FbxVector4 Scaling = pNode->GetGeometricScaling(FbxNode::eSourcePivot);
+		pivotTransform.SetT(Translation);
+		pivotTransform.SetR(Rotation);
+		pivotTransform.SetS(Scaling);
+
 		FbxSkin* pFbxSkin = nullptr;
 		std::unordered_map<int, VertexBones> vertBonesMap;
 		if (m_bNeedBoneSkin)
@@ -286,7 +294,7 @@ namespace RenderDog
 					for (int j = 2; j >= 0; --j)
 					{
 						int ctrlPointIndex = pMesh->GetPolygonVertex(i, j);
-						ReadPositions(pMesh, ctrlPointIndex, pos[j]);
+						ReadPositions(pMesh, ctrlPointIndex, pivotTransform, pos[j]);
 						meshData.postions.push_back(pos[j]);
 
 						int uvIndex = pMesh->GetTextureUVIndex(i, j);
@@ -434,13 +442,14 @@ namespace RenderDog
 		}
 	}
 
-	void RDFbxImporter::ReadPositions(FbxMesh* pMesh, int vertexIndex, Vector3& outputPos)
+	void RDFbxImporter::ReadPositions(FbxMesh* pMesh, int vertexIndex, const FbxAMatrix& pivotTransform, Vector3& outputPos)
 	{
 		FbxVector4* pCtrlPoint = pMesh->GetControlPoints();
 
-		outputPos.x = static_cast<float>(pCtrlPoint[vertexIndex][0]);
-		outputPos.y = static_cast<float>(pCtrlPoint[vertexIndex][1]);
-		outputPos.z = static_cast<float>(pCtrlPoint[vertexIndex][2]);
+		FbxVector4 position = pivotTransform.MultT(pCtrlPoint[vertexIndex]);
+		outputPos.x = static_cast<float>(position[0]);
+		outputPos.y = static_cast<float>(position[1]);
+		outputPos.z = static_cast<float>(position[2]);
 	}
 
 	void RDFbxImporter::ReadTexcoord(FbxMesh* pMesh, int vertexIndex, int textureUVIndex, int uvLayer, Vector2& OutputUV)

@@ -171,7 +171,7 @@ namespace RenderDog
 
 		void								GetTriangleMaterialIndices(FbxMesh* pMesh, int triNum, std::vector<uint32_t>& outputIndices);
 		void								GetTriangleSmoothIndices(FbxMesh* pMesh, int triNum, std::vector<uint32_t>& outputIndices);
-		void								ReadPositions(FbxMesh* pMesh, int vertexIndex, Vector3& outputPos);
+		void								ReadPositions(FbxMesh* pMesh, int vertexIndex, const FbxAMatrix& pivotTransform, Vector3& outputPos);
 		void								ReadTexcoord(FbxMesh* pMesh, int vertexIndex, int textureUVIndex, int uvLayer, Vector2& outputUV);
 		
 		void								ProcessSkeletonNode(FbxNode* pNode, RawBoneData* pParentBone);
