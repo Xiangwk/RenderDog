@@ -41,6 +41,7 @@ namespace RenderDog
 		{
 			std::string					name;
 			std::vector<Vector3>		postions;
+			std::vector<Vector4>		color;
 			std::vector<Vector2>		texcoords;
 			std::vector<uint32_t>		smoothGroup;
 
@@ -50,6 +51,7 @@ namespace RenderDog
 			RawMeshData() :
 				name(),
 				postions(0),
+				color(0),
 				texcoords(0),
 				smoothGroup(0),
 				boneIndices(0),
@@ -172,6 +174,7 @@ namespace RenderDog
 		void								GetTriangleMaterialIndices(FbxMesh* pMesh, int triNum, std::vector<uint32_t>& outputIndices);
 		void								GetTriangleSmoothIndices(FbxMesh* pMesh, int triNum, std::vector<uint32_t>& outputIndices);
 		void								ReadPositions(FbxMesh* pMesh, int vertexIndex, const FbxAMatrix& pivotTransform, Vector3& outputPos);
+		void								ReadColors(FbxMesh* pMesh, int vertexIndex, int triIndex, int layer, Vector4& outputColor);
 		void								ReadTexcoord(FbxMesh* pMesh, int vertexIndex, int textureUVIndex, int uvLayer, Vector2& outputUV);
 		
 		void								ProcessSkeletonNode(FbxNode* pNode, RawBoneData* pParentBone);

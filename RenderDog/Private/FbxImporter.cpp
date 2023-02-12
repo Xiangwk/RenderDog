@@ -278,6 +278,7 @@ namespace RenderDog
 		for (int matIndex = 0; matIndex == 0 || matIndex < materialNum; ++matIndex)
 		{
 			meshData.postions.clear();
+			meshData.color.clear();
 			meshData.texcoords.clear();
 			meshData.smoothGroup.clear();
 			meshData.boneIndices.clear();
@@ -289,6 +290,7 @@ namespace RenderDog
 				{
 					//Positions
 					Vector3 pos[3];
+					Vector4 colors[3] = { Vector4(1.0f), Vector4(1.0f), Vector4(1.0f) };
 					Vector2 tex[3];
 					//NOTE!!! 这里需要变换顶点的环绕方向为顺时针
 					for (int j = 2; j >= 0; --j)
@@ -296,6 +298,10 @@ namespace RenderDog
 						int ctrlPointIndex = pMesh->GetPolygonVertex(i, j);
 						ReadPositions(pMesh, ctrlPointIndex, pivotTransform, pos[j]);
 						meshData.postions.push_back(pos[j]);
+
+						int vertexColorLayer = 1;
+						ReadColors(pMesh, ctrlPointIndex, i, vertexColorLayer, colors[j]);
+						meshData.color.push_back(colors[j]);
 
 						int uvIndex = pMesh->GetTextureUVIndex(i, j);
 						int uvLayer = 0;
@@ -450,6 +456,41 @@ namespace RenderDog
 		outputPos.x = static_cast<float>(position[0]);
 		outputPos.y = static_cast<float>(position[1]);
 		outputPos.z = static_cast<float>(position[2]);
+	}
+
+	void RDFbxImporter::ReadColors(FbxMesh* pMesh, int vertexIndex, int triIndex, int layer, Vector4& outputColor)
+	{
+		FbxLayerElementVertexColor* pVertexColor = pMesh->GetElementVertexColor(layer);
+		if (!pVertexColor)
+		{
+			return;
+		}
+
+		if (pVertexColor->GetMappingMode() == FbxGeometryElement::eByControlPoint)
+		{
+			if (pVertexColor->GetReferenceMode() == FbxGeometryElement::eDirect)
+			{
+				outputColor.x = static_cast<float>(pVertexColor->GetDirectArray().GetAt(vertexIndex)[0]);
+				outputColor.y = static_cast<float>(pVertexColor->GetDirectArray().GetAt(vertexIndex)[1]);
+				outputColor.z = static_cast<float>(pVertexColor->GetDirectArray().GetAt(vertexIndex)[2]);
+				outputColor.w = static_cast<float>(pVertexColor->GetDirectArray().GetAt(vertexIndex)[3]);
+			}
+			else if (pVertexColor->GetReferenceMode() == FbxGeometryElement::eIndexToDirect)
+			{
+				int id = pVertexColor->GetIndexArray().GetAt(vertexIndex);
+				outputColor.x = static_cast<float>(pVertexColor->GetDirectArray().GetAt(id)[0]);
+				outputColor.y = static_cast<float>(pVertexColor->GetDirectArray().GetAt(id)[1]);
+				outputColor.z = static_cast<float>(pVertexColor->GetDirectArray().GetAt(id)[2]);
+				outputColor.w = static_cast<float>(pVertexColor->GetDirectArray().GetAt(id)[3]);
+			}
+		}
+		else if (pVertexColor->GetMappingMode() == FbxGeometryElement::eByPolygonVertex)
+		{
+			outputColor.x = static_cast<float>(pVertexColor->GetDirectArray().GetAt(triIndex)[0]);
+			outputColor.y = static_cast<float>(pVertexColor->GetDirectArray().GetAt(triIndex)[1]);
+			outputColor.z = static_cast<float>(pVertexColor->GetDirectArray().GetAt(triIndex)[2]);
+			outputColor.w = static_cast<float>(pVertexColor->GetDirectArray().GetAt(triIndex)[3]);
+		}
 	}
 
 	void RDFbxImporter::ReadTexcoord(FbxMesh* pMesh, int vertexIndex, int textureUVIndex, int uvLayer, Vector2& OutputUV)

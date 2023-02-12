@@ -49,7 +49,7 @@ namespace RenderDog
 			{
 				SkinVertex vert;
 				vert.position = meshData.postions[index];
-				vert.color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+				vert.color = Vector4(meshData.color[i].x, meshData.color[i].y, meshData.color[i].z, meshData.color[i].w);
 				vert.normal = Vector3(0.0f, 0.0f, 0.0f);
 				vert.tangent = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
 				vert.texcoord = meshData.texcoords[index];
