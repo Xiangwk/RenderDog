@@ -9,6 +9,7 @@
 
 #include "SimpleMesh.h"
 #include "Vertex.h"
+#include "FbxImporter.h"
 
 #include <vector>
 #include <string>
@@ -28,6 +29,9 @@ namespace RenderDog
 
 		void						LoadFromSimpleData(const std::vector<SimpleVertex>& vertices, const std::vector<uint32_t>& indices,
 													   const std::string& name);
+
+		bool						LoadFromRawMeshData(const std::vector<RDFbxImporter::RawMeshData>& rawMeshDatas,
+														const std::string& fileName);
 
 		void						RegisterToScene(IScene* pScene);
 

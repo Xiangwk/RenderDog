@@ -8,10 +8,50 @@
 #include "SimpleMesh.h"
 #include "Transform.h"
 
+#include <unordered_map>
+
+namespace RenderDog
+{
+	struct VertexKey
+	{
+		Vector3		pos;
+
+		bool operator==(const VertexKey& rhs) const
+		{
+			return pos == rhs.pos;
+		}
+	};
+}// namespace RenderDog
+
+namespace std
+{
+	template<>
+	struct hash<RenderDog::VertexKey>
+	{
+		typedef size_t				result_type;
+		typedef RenderDog::Vector3	argument_type;
+
+		size_t operator()(const RenderDog::VertexKey& vk) const
+		{
+			return hash<float>()(vk.pos.x)
+				^ hash<float>()(vk.pos.y)
+				^ hash<float>()(vk.pos.z);
+		}
+	};
+}// namespace std
+
 namespace RenderDog
 {
 	SimpleMesh::SimpleMesh() :
 		m_Name(""),
+		m_Vertices(0),
+		m_Indices(0),
+		m_pRenderData(nullptr),
+		m_AABB()
+	{}
+
+	SimpleMesh::SimpleMesh(const std::string& name) :
+		m_Name(name),
 		m_Vertices(0),
 		m_Indices(0),
 		m_pRenderData(nullptr),
@@ -74,6 +114,61 @@ namespace RenderDog
 		m_Indices.assign(indices.begin(), indices.end());
 
 		m_Name = name;
+	}
+
+	void SimpleMesh::GenVerticesAndIndices(std::vector<SimpleVertex>& rawVertices)
+	{
+		//2. 合并相同的顶点
+		m_Vertices.reserve(rawVertices.size());
+		m_Indices.reserve(rawVertices.size());
+
+		if (rawVertices.size() < 3)
+		{
+			return;
+		}
+
+		struct VertexValue
+		{
+			SimpleVertex*	pVert;
+			uint32_t		index;
+		};
+
+		std::unordered_multimap<VertexKey, VertexValue> vertMap;
+		//加入第一个三角形
+		for (uint32_t i = 0; i < 3; ++i)
+		{
+			m_Vertices.push_back(rawVertices[i]);
+			m_Indices.push_back(i);
+
+			vertMap.insert({ {m_Vertices[i].position}, {&m_Vertices[i], i} });
+		}
+
+		for (uint32_t i = 3; i < rawVertices.size(); ++i)
+		{
+			SimpleVertex& rawVert = rawVertices[i];
+
+			size_t sameVertsNum = vertMap.count({ rawVert.position });
+			auto findedVert = vertMap.find({ rawVert.position });
+			if (findedVert != vertMap.end())
+			{
+				for (size_t n = 0; n < sameVertsNum; ++n)
+				{
+					m_Indices.push_back(findedVert->second.index);
+					findedVert++;
+				}
+			}
+			else
+			{
+				//没有找到相同点，直接加入到新的顶点数组以及HashMap中
+				uint32_t newIndex = (uint32_t)m_Vertices.size();
+				m_Indices.push_back(newIndex);
+
+				m_Vertices.push_back(rawVert);
+
+				SimpleVertex* pNewVert = &m_Vertices[newIndex];
+				vertMap.insert({ { pNewVert->position }, { pNewVert, newIndex} });
+			}
+		}
 	}
 
 	void SimpleMesh::InitRenderData()

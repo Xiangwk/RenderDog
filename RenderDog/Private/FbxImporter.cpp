@@ -299,11 +299,13 @@ namespace RenderDog
 						ReadPositions(pMesh, ctrlPointIndex, pivotTransform, pos[j]);
 						meshData.postions.push_back(pos[j]);
 
+						//NOTE!!! 暂时不知道为什么vertexColorLayer是1
 						int vertexColorLayer = 1;
 						ReadColors(pMesh, ctrlPointIndex, i, vertexColorLayer, colors[j]);
 						meshData.color.push_back(colors[j]);
 
 						int uvIndex = pMesh->GetTextureUVIndex(i, j);
+						//NOTE!!! 暂时不知道为什么uvLayer是0
 						int uvLayer = 0;
 						ReadTexcoord(pMesh, ctrlPointIndex, uvIndex, uvLayer, tex[j]);
 						if (bIsFlipTexcoordV)

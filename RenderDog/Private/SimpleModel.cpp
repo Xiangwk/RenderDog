@@ -29,6 +29,49 @@ namespace RenderDog
 		m_Meshes.push_back(mesh);
 	}
 
+	bool SimpleModel::LoadFromRawMeshData(const std::vector<RDFbxImporter::RawMeshData>& rawMeshDatas, const std::string& fileName)
+	{
+		for (uint32_t i = 0; i < rawMeshDatas.size(); ++i)
+		{
+			const RDFbxImporter::RawMeshData& meshData = rawMeshDatas[i];
+
+			std::vector<SimpleVertex> vertices;
+			vertices.reserve(meshData.postions.size());
+
+			//FBX中为Z轴朝上的右手系，使用下面的矩阵顶点坐标转换为Y轴朝上的左手系
+			Matrix4x4 transAxisMatrix(1.0f, 0.0f, 0.0f, 0.0f,
+				0.0f, 0.0f, 1.0f, 0.0f,
+				0.0f, 1.0f, 0.0f, 0.0f,
+				0.0f, 0.0f, 0.0f, 1.0f);
+
+			for (uint32_t index = 0; index < meshData.postions.size(); ++index)
+			{
+				SimpleVertex vert;
+				Vector4 tempPos = Vector4(meshData.postions[index], 1.0f);
+				tempPos = tempPos * transAxisMatrix;
+				vert.position = Vector3(tempPos.x, tempPos.y, tempPos.z);
+				vert.color = Vector4(meshData.color[i].x, meshData.color[i].y, meshData.color[i].z, meshData.color[i].w);
+
+				vertices.push_back(vert);
+			}
+
+			std::string meshName = fileName + "_" + meshData.name;
+			
+			SimpleMesh mesh(meshName);
+			mesh.GenVerticesAndIndices(vertices);
+
+			m_Meshes.push_back(mesh);
+		}
+
+		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
+		{
+			SimpleMesh& mesh = m_Meshes[i];
+			mesh.InitRenderData();
+		}
+
+		return true;
+	}
+
 	void SimpleModel::RegisterToScene(IScene* pScene)
 	{
 		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
