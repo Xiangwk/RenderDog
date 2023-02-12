@@ -58,6 +58,8 @@ namespace RenderDog
 
 		void							SetPosGesture(const Vector3& pos, const Vector3& euler, const Vector3& scale);
 
+		void							SetRenderLine(bool bRenderLine) { m_bIsLine = bRenderLine; }
+
 	private:
 		void							CloneRenderData(const SimpleMesh& mesh);
 		void							ReleaseRenderData();
@@ -71,5 +73,7 @@ namespace RenderDog
 		SimpleMeshRenderData*			m_pRenderData;
 
 		AABB							m_AABB;
+
+		bool							m_bIsLine;
 	};
 }// namespace RenderDog

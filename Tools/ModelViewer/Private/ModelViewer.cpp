@@ -359,6 +359,7 @@ bool ModelViewer::LoadFloor(uint32_t width, uint32_t depth, float unit)
 	m_pGridLine = new RenderDog::SimpleModel();
 	m_pGridLine->LoadFromSimpleData(GridLineMeshData.vertices, GridLineMeshData.indices, "MainSceneGridLine");
 	m_pGridLine->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
+	m_pGridLine->SetRenderLine(true);
 
 	RenderDog::GeometryGenerator::StandardMeshData GridMeshData;
 	RenderDog::g_pGeometryGenerator->GenerateGrid(width, depth, unit, GridMeshData);
@@ -379,7 +380,7 @@ bool ModelViewer::LoadAxis()
 {
 	std::string fileName = "Models/Axis/Axis.FBX";
 
-	m_pAxisModel = new RenderDog::StaticModel();
+	m_pAxisModel = new RenderDog::SimpleModel();
 
 	RenderDog::RDFbxImporter::FbxLoadParam fbxLoadParam;
 	fbxLoadParam.bIsFlipTexcoordV = false;

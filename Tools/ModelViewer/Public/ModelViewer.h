@@ -71,9 +71,10 @@ private:
 	RenderDog::IScene*			m_pScene;
 
 	RenderDog::SimpleModel*		m_pGridLine;
+	RenderDog::SimpleModel*		m_pAxisModel;
 	RenderDog::StaticModel*		m_pFloor;
 	RenderDog::StaticModel*		m_pStaticModel;
-	RenderDog::StaticModel*		m_pAxisModel;
+	
 	RenderDog::SkinModel*		m_pSkinModel;
 	RenderDog::SkyBox*			m_pSkyBox;
 

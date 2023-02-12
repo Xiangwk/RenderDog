@@ -50,7 +50,7 @@ namespace RenderDog
 				Vector4 tempPos = Vector4(meshData.postions[index], 1.0f);
 				tempPos = tempPos * transAxisMatrix;
 				vert.position = Vector3(tempPos.x, tempPos.y, tempPos.z);
-				vert.color = Vector4(meshData.color[i].x, meshData.color[i].y, meshData.color[i].z, meshData.color[i].w);
+				vert.color = Vector4(meshData.color[index].x, meshData.color[index].y, meshData.color[index].z, meshData.color[index].w);
 
 				vertices.push_back(vert);
 			}
@@ -87,6 +87,15 @@ namespace RenderDog
 		{
 			SimpleMesh* pMesh = &(m_Meshes[i]);
 			pMesh->SetPosGesture(pos, euler, scale);
+		}
+	}
+
+	void SimpleModel::SetRenderLine(bool bRenderLine)
+	{
+		for (uint32_t i = 0; i < m_Meshes.size(); ++i)
+		{
+			SimpleMesh* pMesh = &(m_Meshes[i]);
+			pMesh->SetRenderLine(bRenderLine);
 		}
 	}
 }// namespace RenderDog

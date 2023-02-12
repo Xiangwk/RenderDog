@@ -68,28 +68,27 @@ namespace RenderDog
 	}
 #pragma endregion MeshRenderer
 
-#pragma region LineMeshRenderer
-	//LineMeshRenderer: Use to draw line
-	class D3D11LineMeshRenderer : public D3D11MeshRenderer
+#pragma region SimpleMeshRenderer
+	class D3D11SimpleMeshRenderer : public D3D11MeshRenderer
 	{
 	public:
-		explicit D3D11LineMeshRenderer(SceneView* pSceneView);
-		virtual ~D3D11LineMeshRenderer();
+		explicit D3D11SimpleMeshRenderer(SceneView* pSceneView);
+		virtual ~D3D11SimpleMeshRenderer();
 
 		virtual void					Render(const PrimitiveRenderParam& renderParam) override;
 	};
 
-	D3D11LineMeshRenderer::D3D11LineMeshRenderer(SceneView* pSceneView) :
+	D3D11SimpleMeshRenderer::D3D11SimpleMeshRenderer(SceneView* pSceneView) :
 		D3D11MeshRenderer(pSceneView)
 	{
 		ShaderCompileDesc psDesc(g_SingleColorPixelShader, nullptr, "Main", "ps_5_0", 0);
 		m_pPixelShader = g_pIShaderManager->GetPixelShader(psDesc);
 	}
 
-	D3D11LineMeshRenderer::~D3D11LineMeshRenderer()
+	D3D11SimpleMeshRenderer::~D3D11SimpleMeshRenderer()
 	{}
 
-	void D3D11LineMeshRenderer::Render(const PrimitiveRenderParam& renderParam)
+	void D3D11SimpleMeshRenderer::Render(const PrimitiveRenderParam& renderParam)
 	{
 		if (!g_pD3D11ImmediateContext)
 		{
@@ -101,7 +100,15 @@ namespace RenderDog
 			return;
 		}
 
-		g_pD3D11ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+		if (renderParam.bRenderLine)
+		{
+			g_pD3D11ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+		}
+		else
+		{
+			g_pD3D11ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		}
+		
 
 		ID3D11Buffer* pVB = (ID3D11Buffer*)(renderParam.pVB->GetResource());
 		ID3D11Buffer* pIB = (ID3D11Buffer*)(renderParam.pIB->GetResource());
@@ -119,7 +126,7 @@ namespace RenderDog
 
 		g_pD3D11ImmediateContext->DrawIndexed(indexNum, 0, 0);
 	}
-#pragma endregion LineMeshRenderer
+#pragma endregion SimpleMeshRenderer
 
 #pragma region SkyMeshRenderer
 	class D3D11SkyRenderer : public D3D11MeshRenderer
@@ -1064,13 +1071,13 @@ namespace RenderDog
 	{
 		g_pD3D11ImmediateContext->RSSetViewports(1, &m_ScreenViewport);
 
-		D3D11LineMeshRenderer lineRender(m_pSceneView);
+		D3D11SimpleMeshRenderer simpleRender(m_pSceneView);
 
 		uint32_t simplePriNum = m_pSceneView->GetSimplePrisNum();
 		for (uint32_t i = 0; i < simplePriNum; ++i)
 		{
 			IPrimitive* pPri = m_pSceneView->GetSimplePri(i);
-			pPri->Render(&lineRender);
+			pPri->Render(&simpleRender);
 		}
 
 		SkyBox* pSkyBox = pScene->GetSkyBox();

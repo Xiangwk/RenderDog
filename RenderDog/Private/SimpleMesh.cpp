@@ -47,7 +47,8 @@ namespace RenderDog
 		m_Vertices(0),
 		m_Indices(0),
 		m_pRenderData(nullptr),
-		m_AABB()
+		m_AABB(),
+		m_bIsLine(false)
 	{}
 
 	SimpleMesh::SimpleMesh(const std::string& name) :
@@ -55,7 +56,8 @@ namespace RenderDog
 		m_Vertices(0),
 		m_Indices(0),
 		m_pRenderData(nullptr),
-		m_AABB()
+		m_AABB(),
+		m_bIsLine(false)
 	{}
 
 	SimpleMesh::SimpleMesh(const SimpleMesh& mesh) :
@@ -63,7 +65,8 @@ namespace RenderDog
 		m_Vertices(mesh.m_Vertices),
 		m_Indices(mesh.m_Indices),
 		m_pRenderData(nullptr),
-		m_AABB(mesh.m_AABB)
+		m_AABB(mesh.m_AABB),
+		m_bIsLine(mesh.m_bIsLine)
 	{
 		CloneRenderData(mesh);
 	}
@@ -87,6 +90,7 @@ namespace RenderDog
 		m_Vertices				= mesh.m_Vertices;
 		m_Indices				= mesh.m_Indices;
 		m_AABB					= mesh.m_AABB;
+		m_bIsLine				= mesh.m_bIsLine;
 		
 		ReleaseRenderData();
 
@@ -103,6 +107,7 @@ namespace RenderDog
 		renderParam.pMtlIns						= nullptr;
 		renderParam.pVS							= m_pRenderData->pVS;
 		renderParam.PerObjParam.pPerObjectCB	= m_pRenderData->pLocalToWorldCB;
+		renderParam.bRenderLine					= m_bIsLine;
 
 		pPrimitiveRenderer->Render(renderParam);
 	}

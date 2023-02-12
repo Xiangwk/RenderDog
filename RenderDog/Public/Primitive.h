@@ -36,13 +36,16 @@ namespace RenderDog
 
 		IMaterialInstance*	pMtlIns;
 
+		bool				bRenderLine;
+
 		PrimitiveRenderParam() :
 			pVB(nullptr),
 			pIB(nullptr),
 			pVS(nullptr),
 			pShadowVS(nullptr),
 			PerObjParam(),
-			pMtlIns(nullptr)
+			pMtlIns(nullptr),
+			bRenderLine(false)
 		{}
 	};
 

@@ -299,9 +299,10 @@ namespace RenderDog
 						ReadPositions(pMesh, ctrlPointIndex, pivotTransform, pos[j]);
 						meshData.postions.push_back(pos[j]);
 
-						//NOTE!!! 暂时不知道为什么vertexColorLayer是1
-						int vertexColorLayer = 1;
-						ReadColors(pMesh, ctrlPointIndex, i, vertexColorLayer, colors[j]);
+						//NOTE!!! 暂时不知道为什么vertexColorLayer是0
+						int vertexColorLayer = 0;
+						int colorIndex = i * 3 + j;
+						ReadColors(pMesh, ctrlPointIndex, colorIndex, vertexColorLayer, colors[j]);
 						meshData.color.push_back(colors[j]);
 
 						int uvIndex = pMesh->GetTextureUVIndex(i, j);
@@ -460,9 +461,15 @@ namespace RenderDog
 		outputPos.z = static_cast<float>(position[2]);
 	}
 
-	void RDFbxImporter::ReadColors(FbxMesh* pMesh, int vertexIndex, int triIndex, int layer, Vector4& outputColor)
+	void RDFbxImporter::ReadColors(FbxMesh* pMesh, int vertexIndex, int colorIndex, int layer, Vector4& outputColor)
 	{
-		FbxLayerElementVertexColor* pVertexColor = pMesh->GetElementVertexColor(layer);
+		FbxLayer* pBaseLayer = pMesh->GetLayer(layer);
+		if (!pBaseLayer)
+		{
+			return;
+		}
+
+		FbxLayerElementVertexColor* pVertexColor = pBaseLayer->GetVertexColors();
 		if (!pVertexColor)
 		{
 			return;
@@ -472,26 +479,37 @@ namespace RenderDog
 		{
 			if (pVertexColor->GetReferenceMode() == FbxGeometryElement::eDirect)
 			{
-				outputColor.x = static_cast<float>(pVertexColor->GetDirectArray().GetAt(vertexIndex)[0]);
-				outputColor.y = static_cast<float>(pVertexColor->GetDirectArray().GetAt(vertexIndex)[1]);
-				outputColor.z = static_cast<float>(pVertexColor->GetDirectArray().GetAt(vertexIndex)[2]);
-				outputColor.w = static_cast<float>(pVertexColor->GetDirectArray().GetAt(vertexIndex)[3]);
+				outputColor.x = static_cast<float>(pVertexColor->GetDirectArray().GetAt(vertexIndex).mRed);
+				outputColor.y = static_cast<float>(pVertexColor->GetDirectArray().GetAt(vertexIndex).mGreen);
+				outputColor.z = static_cast<float>(pVertexColor->GetDirectArray().GetAt(vertexIndex).mBlue);
+				outputColor.w = static_cast<float>(pVertexColor->GetDirectArray().GetAt(vertexIndex).mAlpha);
 			}
 			else if (pVertexColor->GetReferenceMode() == FbxGeometryElement::eIndexToDirect)
 			{
 				int id = pVertexColor->GetIndexArray().GetAt(vertexIndex);
-				outputColor.x = static_cast<float>(pVertexColor->GetDirectArray().GetAt(id)[0]);
-				outputColor.y = static_cast<float>(pVertexColor->GetDirectArray().GetAt(id)[1]);
-				outputColor.z = static_cast<float>(pVertexColor->GetDirectArray().GetAt(id)[2]);
-				outputColor.w = static_cast<float>(pVertexColor->GetDirectArray().GetAt(id)[3]);
+				outputColor.x = static_cast<float>(pVertexColor->GetDirectArray().GetAt(id).mRed);
+				outputColor.y = static_cast<float>(pVertexColor->GetDirectArray().GetAt(id).mGreen);
+				outputColor.z = static_cast<float>(pVertexColor->GetDirectArray().GetAt(id).mBlue);
+				outputColor.w = static_cast<float>(pVertexColor->GetDirectArray().GetAt(id).mAlpha);
 			}
 		}
 		else if (pVertexColor->GetMappingMode() == FbxGeometryElement::eByPolygonVertex)
 		{
-			outputColor.x = static_cast<float>(pVertexColor->GetDirectArray().GetAt(triIndex)[0]);
-			outputColor.y = static_cast<float>(pVertexColor->GetDirectArray().GetAt(triIndex)[1]);
-			outputColor.z = static_cast<float>(pVertexColor->GetDirectArray().GetAt(triIndex)[2]);
-			outputColor.w = static_cast<float>(pVertexColor->GetDirectArray().GetAt(triIndex)[3]);
+			if (pVertexColor->GetReferenceMode() == FbxGeometryElement::eDirect)
+			{
+				outputColor.x = static_cast<float>(pVertexColor->GetDirectArray().GetAt(colorIndex).mRed);
+				outputColor.y = static_cast<float>(pVertexColor->GetDirectArray().GetAt(colorIndex).mGreen);
+				outputColor.z = static_cast<float>(pVertexColor->GetDirectArray().GetAt(colorIndex).mBlue);
+				outputColor.w = static_cast<float>(pVertexColor->GetDirectArray().GetAt(colorIndex).mAlpha);
+			}
+			else if (pVertexColor->GetReferenceMode() == FbxGeometryElement::eIndexToDirect)
+			{
+				int id = pVertexColor->GetIndexArray().GetAt(colorIndex);
+				outputColor.x = static_cast<float>(pVertexColor->GetDirectArray().GetAt(id).mRed);
+				outputColor.y = static_cast<float>(pVertexColor->GetDirectArray().GetAt(id).mGreen);
+				outputColor.z = static_cast<float>(pVertexColor->GetDirectArray().GetAt(id).mBlue);
+				outputColor.w = static_cast<float>(pVertexColor->GetDirectArray().GetAt(id).mAlpha);
+			}
 		}
 	}
 

@@ -96,7 +96,7 @@ namespace RenderDog
 				Vector4 tempPos = Vector4(meshData.postions[index], 1.0f);
 				tempPos = tempPos * transAxisMatrix;
 				vert.position = Vector3(tempPos.x, tempPos.y, tempPos.z);
-				vert.color = Vector4(meshData.color[i].x, meshData.color[i].y, meshData.color[i].z, meshData.color[i].w);
+				vert.color = Vector4(meshData.color[index].x, meshData.color[index].y, meshData.color[index].z, meshData.color[index].w);
 				vert.normal = Vector3(0.0f, 0.0f, 0.0f);
 				vert.tangent = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
 				vert.texcoord = meshData.texcoords[index];

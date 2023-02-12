@@ -37,6 +37,8 @@ namespace RenderDog
 
 		void						SetPosGesture(const Vector3& pos, const Vector3& euler, const Vector3& scale);
 
+		void						SetRenderLine(bool bRenderLine);
+
 	private:
 		std::vector<SimpleMesh>		m_Meshes;
 	};
