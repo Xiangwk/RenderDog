@@ -475,67 +475,38 @@ namespace RenderDog
 			return;
 		}
 
-		if (pVertexColor->GetMappingMode() == FbxGeometryElement::eByControlPoint)
-		{
-			if (pVertexColor->GetReferenceMode() == FbxGeometryElement::eDirect)
-			{
-				outputColor.x = static_cast<float>(pVertexColor->GetDirectArray().GetAt(vertexIndex).mRed);
-				outputColor.y = static_cast<float>(pVertexColor->GetDirectArray().GetAt(vertexIndex).mGreen);
-				outputColor.z = static_cast<float>(pVertexColor->GetDirectArray().GetAt(vertexIndex).mBlue);
-				outputColor.w = static_cast<float>(pVertexColor->GetDirectArray().GetAt(vertexIndex).mAlpha);
-			}
-			else if (pVertexColor->GetReferenceMode() == FbxGeometryElement::eIndexToDirect)
-			{
-				int id = pVertexColor->GetIndexArray().GetAt(vertexIndex);
-				outputColor.x = static_cast<float>(pVertexColor->GetDirectArray().GetAt(id).mRed);
-				outputColor.y = static_cast<float>(pVertexColor->GetDirectArray().GetAt(id).mGreen);
-				outputColor.z = static_cast<float>(pVertexColor->GetDirectArray().GetAt(id).mBlue);
-				outputColor.w = static_cast<float>(pVertexColor->GetDirectArray().GetAt(id).mAlpha);
-			}
-		}
-		else if (pVertexColor->GetMappingMode() == FbxGeometryElement::eByPolygonVertex)
-		{
-			if (pVertexColor->GetReferenceMode() == FbxGeometryElement::eDirect)
-			{
-				outputColor.x = static_cast<float>(pVertexColor->GetDirectArray().GetAt(colorIndex).mRed);
-				outputColor.y = static_cast<float>(pVertexColor->GetDirectArray().GetAt(colorIndex).mGreen);
-				outputColor.z = static_cast<float>(pVertexColor->GetDirectArray().GetAt(colorIndex).mBlue);
-				outputColor.w = static_cast<float>(pVertexColor->GetDirectArray().GetAt(colorIndex).mAlpha);
-			}
-			else if (pVertexColor->GetReferenceMode() == FbxGeometryElement::eIndexToDirect)
-			{
-				int id = pVertexColor->GetIndexArray().GetAt(colorIndex);
-				outputColor.x = static_cast<float>(pVertexColor->GetDirectArray().GetAt(id).mRed);
-				outputColor.y = static_cast<float>(pVertexColor->GetDirectArray().GetAt(id).mGreen);
-				outputColor.z = static_cast<float>(pVertexColor->GetDirectArray().GetAt(id).mBlue);
-				outputColor.w = static_cast<float>(pVertexColor->GetDirectArray().GetAt(id).mAlpha);
-			}
-		}
+		int directIndex = pVertexColor->GetMappingMode() == FbxGeometryElement::eByControlPoint ? vertexIndex : colorIndex;
+		int index = pVertexColor->GetReferenceMode() == FbxGeometryElement::eDirect ? directIndex : pVertexColor->GetIndexArray().GetAt(directIndex);
+		outputColor.x = static_cast<float>(pVertexColor->GetDirectArray().GetAt(index).mRed);
+		outputColor.y = static_cast<float>(pVertexColor->GetDirectArray().GetAt(index).mGreen);
+		outputColor.z = static_cast<float>(pVertexColor->GetDirectArray().GetAt(index).mBlue);
+		outputColor.w = static_cast<float>(pVertexColor->GetDirectArray().GetAt(index).mAlpha);
 	}
 
 	void RDFbxImporter::ReadTexcoord(FbxMesh* pMesh, int vertexIndex, int textureUVIndex, int uvLayer, Vector2& OutputUV)
 	{
 		FbxGeometryElementUV* pVertexUV = pMesh->GetElementUV(uvLayer);
 
+		int index = 0;
 		if (pVertexUV->GetMappingMode() == FbxGeometryElement::eByControlPoint)
 		{
 			if (pVertexUV->GetReferenceMode() == FbxGeometryElement::eDirect)
 			{
-				OutputUV.x = static_cast<float>(pVertexUV->GetDirectArray().GetAt(vertexIndex)[0]);
-				OutputUV.y = static_cast<float>(pVertexUV->GetDirectArray().GetAt(vertexIndex)[1]);
+				index = vertexIndex;
 			}
 			else if (pVertexUV->GetReferenceMode() == FbxGeometryElement::eIndexToDirect)
 			{
-				int id = pVertexUV->GetIndexArray().GetAt(vertexIndex);
-				OutputUV.x = static_cast<float>(pVertexUV->GetDirectArray().GetAt(id)[0]);
-				OutputUV.y = static_cast<float>(pVertexUV->GetDirectArray().GetAt(id)[1]);
+				index = pVertexUV->GetIndexArray().GetAt(vertexIndex);
 			}
 		}
+		//FIXME!!! referenceMode为eIndexToDirect时会有错误，暂时仅使用eDirect，需要进一步验证修改
 		else if (pVertexUV->GetMappingMode() == FbxGeometryElement::eByPolygonVertex)
 		{
-			OutputUV.x = static_cast<float>(pVertexUV->GetDirectArray().GetAt(textureUVIndex)[0]);
-			OutputUV.y = static_cast<float>(pVertexUV->GetDirectArray().GetAt(textureUVIndex)[1]);
+			index = textureUVIndex;
 		}
+
+		OutputUV.x = static_cast<float>(pVertexUV->GetDirectArray().GetAt(index)[0]);
+		OutputUV.y = static_cast<float>(pVertexUV->GetDirectArray().GetAt(index)[1]);
 	}
 
 	void RDFbxImporter::ProcessSkeletonNode(FbxNode* pNode, RawBoneData* pParentBone)
