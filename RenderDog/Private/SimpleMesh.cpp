@@ -12,11 +12,11 @@
 
 namespace RenderDog
 {
-	struct VertexKey
+	struct SimpleVertexKey
 	{
 		Vector3		pos;
 
-		bool operator==(const VertexKey& rhs) const
+		bool operator==(const SimpleVertexKey& rhs) const
 		{
 			return pos == rhs.pos;
 		}
@@ -26,12 +26,12 @@ namespace RenderDog
 namespace std
 {
 	template<>
-	struct hash<RenderDog::VertexKey>
+	struct hash<RenderDog::SimpleVertexKey>
 	{
 		typedef size_t				result_type;
 		typedef RenderDog::Vector3	argument_type;
 
-		size_t operator()(const RenderDog::VertexKey& vk) const
+		size_t operator()(const RenderDog::SimpleVertexKey& vk) const
 		{
 			return hash<float>()(vk.pos.x)
 				^ hash<float>()(vk.pos.y)
@@ -138,7 +138,7 @@ namespace RenderDog
 			uint32_t		index;
 		};
 
-		std::unordered_multimap<VertexKey, VertexValue> vertMap;
+		std::unordered_multimap<SimpleVertexKey, VertexValue> vertMap;
 		//加入第一个三角形
 		for (uint32_t i = 0; i < 3; ++i)
 		{
