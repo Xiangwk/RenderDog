@@ -172,53 +172,6 @@ xcopy ..\..\Public\*.* ..\..\..\..\EngineSDK\Renderer\Public\$(ProjectName)\ /i 
     <ClInclude Include="..\..\Public\D3D11InputLayout.h" />
     <ClInclude Include="..\..\Public\D3D11Renderer.h" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\Common.hlsl">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\LightingCommon.hlsl">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\PhongLightingCommon.hlsl">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\PhongLightingPixelShader.hlsl">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\ShadowDepthPixelShader.hlsl">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\ShadowDepthSkinModelVertexShader.hlsl">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\ShadowDepthStaticModelVertexShader.hlsl">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\ShadowTestCommon.hlsl">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\SimpleModelVertexShader.hlsl">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\SingleColorPixelShader.hlsl">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\SkinModelVertexShader.hlsl">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\SkyPixelShader.hlsl">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\SkyVertexShader.hlsl">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="..\..\..\..\RenderDog\EngineAsset\Shaders\StaticModelVertexShader.hlsl">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="..\..\..\..\RenderDog\UserAsset\Shaders\sm5.0\Materials\Basic.hlsl">
-      <FileType>Document</FileType>
-    </None>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

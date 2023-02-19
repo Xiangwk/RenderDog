@@ -58,6 +58,24 @@
     <Filter Include="Animation">
       <UniqueIdentifier>{23532228-a91d-4321-8856-b5b9cf16cdfa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{1866489d-fa20-46be-ba19-f340e757f456}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\EngineAsset">
+      <UniqueIdentifier>{a58ed155-45eb-4710-93f2-6a896dad280b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\EngineAsset\Common">
+      <UniqueIdentifier>{1993590e-591e-456d-b43c-bd509ce495b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\EngineAsset\MaterialShaders">
+      <UniqueIdentifier>{c040ba57-39a3-493d-9783-d253edbf0cda}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\EngineAsset\PixelShader">
+      <UniqueIdentifier>{44da23a4-20af-4149-9351-ebf04b68c096}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\EngineAsset\VertexShader">
+      <UniqueIdentifier>{08f272e0-f356-47da-a2c3-5d122b3900b7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Math\Private\Matrix.cpp">
@@ -245,5 +263,52 @@
     <ClInclude Include="..\..\Math\Public\Quaternion.h">
       <Filter>Math\Public</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\EngineAsset\Shaders\Common.hlsl">
+      <Filter>Shaders\EngineAsset\Common</Filter>
+    </None>
+    <None Include="..\..\EngineAsset\Shaders\LightingCommon.hlsl">
+      <Filter>Shaders\EngineAsset\Common</Filter>
+    </None>
+    <None Include="..\..\EngineAsset\Shaders\PhongLightingCommon.hlsl">
+      <Filter>Shaders\EngineAsset\Common</Filter>
+    </None>
+    <None Include="..\..\EngineAsset\Shaders\ShadowTestCommon.hlsl">
+      <Filter>Shaders\EngineAsset\Common</Filter>
+    </None>
+    <None Include="..\..\EngineAsset\Shaders\PhongLightingPixelShader.hlsl">
+      <Filter>Shaders\EngineAsset\PixelShader</Filter>
+    </None>
+    <None Include="..\..\EngineAsset\Shaders\ShadowDepthPixelShader.hlsl">
+      <Filter>Shaders\EngineAsset\PixelShader</Filter>
+    </None>
+    <None Include="..\..\EngineAsset\Shaders\SingleColorPixelShader.hlsl">
+      <Filter>Shaders\EngineAsset\PixelShader</Filter>
+    </None>
+    <None Include="..\..\EngineAsset\Shaders\SkyPixelShader.hlsl">
+      <Filter>Shaders\EngineAsset\PixelShader</Filter>
+    </None>
+    <None Include="..\..\EngineAsset\Shaders\ShadowDepthSkinModelVertexShader.hlsl">
+      <Filter>Shaders\EngineAsset\VertexShader</Filter>
+    </None>
+    <None Include="..\..\EngineAsset\Shaders\ShadowDepthStaticModelVertexShader.hlsl">
+      <Filter>Shaders\EngineAsset\VertexShader</Filter>
+    </None>
+    <None Include="..\..\EngineAsset\Shaders\SimpleModelVertexShader.hlsl">
+      <Filter>Shaders\EngineAsset\VertexShader</Filter>
+    </None>
+    <None Include="..\..\EngineAsset\Shaders\SkinModelVertexShader.hlsl">
+      <Filter>Shaders\EngineAsset\VertexShader</Filter>
+    </None>
+    <None Include="..\..\EngineAsset\Shaders\SkyVertexShader.hlsl">
+      <Filter>Shaders\EngineAsset\VertexShader</Filter>
+    </None>
+    <None Include="..\..\EngineAsset\Shaders\StaticModelVertexShader.hlsl">
+      <Filter>Shaders\EngineAsset\VertexShader</Filter>
+    </None>
+    <None Include="..\..\UserAsset\Shaders\sm5.0\Materials\Basic.hlsl">
+      <Filter>Shaders\EngineAsset\MaterialShaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
