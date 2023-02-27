@@ -96,7 +96,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\EngineAsset\Shaders\PhongLightingPixelShader.hlsl">
+    <None Include="..\..\EngineAsset\Shaders\DirectionalLightingPixelShader.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

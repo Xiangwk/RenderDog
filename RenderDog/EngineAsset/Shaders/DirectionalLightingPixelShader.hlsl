@@ -1,6 +1,6 @@
 ////////////////////////////////////////
 //RenderDog <¡¤,¡¤>
-//FileName: PhongLightingPixelShader.hlsl
+//FileName: DirectionalLightingPixelShader.hlsl
 //Written by Xiang Weikang
 ////////////////////////////////////////
 
