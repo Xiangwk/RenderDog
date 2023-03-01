@@ -1,6 +1,6 @@
 ////////////////////////////////////////
 //RenderDog <¡¤,¡¤>
-//FileName: DirectionalLightingPixelShader.hlsl
+//FileName: ForwardLightingPixelShader.hlsl
 //Written by Xiang Weikang
 ////////////////////////////////////////
 
@@ -46,19 +46,19 @@ float4 Main(VSOutput VsOutput) : SV_Target
 	float Roughness = ComFunc_Material_GetRoughnessRaw(VsOutput.TexCoord);
 	float Specular = ComFunc_Material_GetSpecularRaw(VsOutput.TexCoord);
 
-	float3 DiffuseLighting = ComFunc_Lighting_DirectionalLighting(NoH, NoV, NoL, HoV, BaseColor, Metallic, Roughness);
+	float3 DirectionalLighting = ComFunc_Lighting_DirectionalLighting(NoH, NoV, NoL, HoV, BaseColor, Metallic, Roughness);
 	//Shadow
 	float3 ShadowPos = VsOutput.ShadowPos.xyz / VsOutput.ShadowPos.w;
 	float ShadowFactor = ComFunc_ShadowDepth_GetShadowFactor(ShadowPos);
-	DiffuseLighting *= ShadowFactor;
+	DirectionalLighting *= ShadowFactor;
 
-	float3 SpecularLighting = ComFunc_Lighting_EnvReflection(NoV, WorldNormal, EyeDir, BaseColor, Metallic, Roughness);
+	float3 EnvironmentLighting = ComFunc_Lighting_EnvReflection(NoV, WorldNormal, EyeDir, BaseColor, Metallic, Roughness);
 
-	float3 Radiance = DiffuseLighting + SpecularLighting;
+	float3 FinalColor = DirectionalLighting /*+ EnvironmentLighting*/;
 
 	//ColorTone
-	Radiance = abs(Radiance / (Radiance + 1.0f));
-	Radiance = pow(Radiance, 1.0f / 2.2f);
+	FinalColor = abs(FinalColor / (FinalColor + 1.0f));
+	FinalColor = pow(FinalColor, 1.0f / 2.2f);
 
-	return float4(Radiance, 1.0f);
+	return float4(FinalColor, 1.0f);
 }

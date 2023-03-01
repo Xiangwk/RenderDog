@@ -29,7 +29,7 @@ namespace RenderDog
 
 	//PixelShader
 	const std::string g_SingleColorPixelShader = "EngineAsset/Shaders/SingleColorPixelShader.hlsl";
-	const std::string g_DirectionalLightingPixelShaderFilePath = "EngineAsset/Shaders/DirectionalLightingPixelShader.hlsl";
+	const std::string g_DirectionalLightingPixelShaderFilePath = "EngineAsset/Shaders/ForwardLightingPixelShader.hlsl";
 	const std::string g_SkyPixelShaderFilePath = "EngineAsset/Shaders/SkyPixelShader.hlsl";
 	const std::string g_ShadowDepthPixelShaderFilePath = "EngineAsset/Shaders/ShadowDepthPixelShader.hlsl";
 

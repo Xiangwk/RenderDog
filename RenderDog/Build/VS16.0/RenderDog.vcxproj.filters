@@ -277,7 +277,7 @@
     <None Include="..\..\EngineAsset\Shaders\ShadowTestCommon.hlsl">
       <Filter>Shaders\EngineAsset\Common</Filter>
     </None>
-    <None Include="..\..\EngineAsset\Shaders\DirectionalLightingPixelShader.hlsl">
+    <None Include="..\..\EngineAsset\Shaders\ForwardLightingPixelShader.hlsl">
       <Filter>Shaders\EngineAsset\PixelShader</Filter>
     </None>
     <None Include="..\..\EngineAsset\Shaders\ShadowDepthPixelShader.hlsl">
