@@ -14,8 +14,8 @@
 #include <sstream>
 
 #define MODEL_VIEWER_LOAD_STANDARD_MODEL	0
-#define MODEL_VIEWER_LOAD_STATIC_MODEL		1
-#define MODEL_VIEWER_LOAD_SKIN_MODEL		0
+#define MODEL_VIEWER_LOAD_STATIC_MODEL		0
+#define MODEL_VIEWER_LOAD_SKIN_MODEL		1
 
 ModelViewer g_ModelViewer;
 ModelViewer* g_pModelViewer = &g_ModelViewer;
@@ -620,7 +620,7 @@ bool ModelViewer::LoadFbxModel(const std::string& fileName, LOAD_MODEL_TYPE mode
 		m_pSkinModel = new RenderDog::SkinModel();
 
 		RenderDog::RDFbxImporter::FbxLoadParam fbxLoadParam;
-		fbxLoadParam.bIsFlipTexcoordV = false;
+		fbxLoadParam.bIsFlipTexcoordV = true;
 		if (!RenderDog::g_pRDFbxImporter->LoadFbxFile(fileName, RenderDog::RDFbxImporter::FBX_LOAD_TYPE::SKIN_MODEL, fbxLoadParam))
 		{
 			MessageBox(nullptr, "Import FBX File Failed!", "ERROR", MB_OK);

@@ -17,6 +17,7 @@ SamplerState	LocVar_Material_MetallicRoughnessTextureSampler;
 
 #define			LocVar_Material_Metallic	LocVar_Material_MRParams.x
 #define			LocVar_Material_Roughness	LocVar_Material_MRParams.y
+#define			LocVar_Material_Specular	LocVar_Material_MRParams.z
 
 float3 ComFunc_Material_GetBaseColorRaw(float2 inTexCoord)
 {
@@ -52,4 +53,13 @@ float ComFunc_Material_GetRoughnessRaw(float2 inTexCoord)
 	Roughness *= LocVar_Material_Roughness;
 
 	return saturate(Roughness);
+}
+
+float ComFunc_Material_GetSpecularRaw(float2 inTexCoord)
+{
+	float Specular = LocVar_Material_MetallicRoughnessTexture.SampleLevel(LocVar_Material_MetallicRoughnessTextureSampler, inTexCoord, 0).b;
+
+	Specular *= LocVar_Material_Specular;
+
+	return saturate(Specular);
 }
