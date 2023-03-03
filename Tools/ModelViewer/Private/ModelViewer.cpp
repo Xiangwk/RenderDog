@@ -14,8 +14,8 @@
 #include <sstream>
 
 #define MODEL_VIEWER_LOAD_STANDARD_MODEL	0
-#define MODEL_VIEWER_LOAD_STATIC_MODEL		0
-#define MODEL_VIEWER_LOAD_SKIN_MODEL		1
+#define MODEL_VIEWER_LOAD_STATIC_MODEL		1
+#define MODEL_VIEWER_LOAD_SKIN_MODEL		0
 
 ModelViewer g_ModelViewer;
 ModelViewer* g_pModelViewer = &g_ModelViewer;
@@ -121,12 +121,14 @@ bool ModelViewer::Init(const ModelViewerInitDesc& desc)
 #endif //MODEL_VIEWER_LOAD_STANDARD_MODEL
 
 #if MODEL_VIEWER_LOAD_STATIC_MODEL
-	if (!LoadFbxModel("Models/Cerberus/Cerberus_LP.FBX", LOAD_MODEL_TYPE::CUSTOM_STATIC))
+	//if (!LoadFbxModel("Models/Cerberus/Cerberus_LP.FBX", LOAD_MODEL_TYPE::CUSTOM_STATIC))
+	if (!LoadFbxModel("Models/Crunch/Crunch_Crash_Site.FBX", LOAD_MODEL_TYPE::CUSTOM_STATIC))
 	{
 		MessageBox(nullptr, "Load Static Model Failed!", "ERROR", MB_OK);
 		return false;
 	}
-	m_pStaticModel->SetPosGesture(RenderDog::Vector3(0.0f, 100.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
+	//m_pStaticModel->SetPosGesture(RenderDog::Vector3(0.0f, 100.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
+	m_pStaticModel->SetPosGesture(RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(0.0f, 0.0f, 0.0f), RenderDog::Vector3(1.0f));
 #endif //MODEL_VIEWER_LOAD_STATIC_MODEL
 
 #if MODEL_VIEWER_LOAD_SKIN_MODEL

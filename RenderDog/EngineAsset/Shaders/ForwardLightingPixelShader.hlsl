@@ -46,13 +46,14 @@ float4 Main(VSOutput VsOutput) : SV_Target
 	float Roughness = ComFunc_Material_GetRoughnessRaw(VsOutput.TexCoord);
 	float Specular = ComFunc_Material_GetSpecularRaw(VsOutput.TexCoord);
 
-	float3 DirectionalLighting = ComFunc_Lighting_DirectionalLighting(NoH, NoV, NoL, HoV, BaseColor, Metallic, Roughness, Specular);
+	float3 SpecularColor = LocFunc_Lighting_GetSpecularColor(BaseColor, Specular, Metallic);
+	float3 DirectionalLighting = ComFunc_Lighting_DirectionalLighting(NoH, NoV, NoL, HoV, BaseColor, SpecularColor, Metallic, Roughness);
 	//Shadow
 	float3 ShadowPos = VsOutput.ShadowPos.xyz / VsOutput.ShadowPos.w;
 	float ShadowFactor = ComFunc_ShadowDepth_GetShadowFactor(ShadowPos);
 	DirectionalLighting *= ShadowFactor;
 
-	float3 EnvironmentLighting = ComFunc_Lighting_EnvReflection(NoV, WorldNormal, EyeDir, BaseColor, Metallic, Roughness, Specular);
+	float3 EnvironmentLighting = ComFunc_Lighting_EnvReflection(NoV, WorldNormal, EyeDir, BaseColor, SpecularColor, Metallic, Roughness);
 
 	float3 FinalColor = DirectionalLighting + EnvironmentLighting;
 
