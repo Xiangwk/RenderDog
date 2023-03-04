@@ -684,7 +684,7 @@ RenderDog::IMaterial* ModelViewer::CreateSkyMaterial(const std::string& mtlName)
 {
 	RenderDog::IMaterial* pMtl = RenderDog::g_pMaterialManager->GetMaterial(mtlName);
 
-	std::wstring diffuseTexturePath = L"EngineAsset/Textures/GardenNookCubeMap_d.dds";
+	std::wstring diffuseTexturePath = L"EngineAsset/Textures/Environment/GardenNookCubeMap_d.dds";
 
 	if (!diffuseTexturePath.empty())
 	{

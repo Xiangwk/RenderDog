@@ -10,8 +10,9 @@ SamplerState	ComVar_Texture_SkyCubeTextureSampler;
 Texture2D		ComVar_Texture_IblBrdfLutTexture;
 SamplerState	ComVar_Texture_IblBrdfLutTextureSampler;
 
-#define REFLECTION_CAPTURE_ROUGHEST_MIP 1
-#define REFLECTION_CAPTURE_ROUGHNESS_MIP_SCALE 1.2
+#define REFLECTION_CAPTURE_ROUGHEST_MIP			1
+#define REFLECTION_CAPTURE_ROUGHNESS_MIP_SCALE	1.2
+#define REFLECTION_CAPTURE_DIFFUSE_MIP			7.0
 
 cbuffer ComVar_ConstantBuffer_LightingParam
 {
@@ -88,7 +89,7 @@ float3 LocFunc_Lighting_SpecularGGX(float NoH, float NoV, float NoL, float HoV, 
 
 float3 LocFunc_Lighting_EnvReflectDiffuse(float3 DiffuseColor, float3 N)
 {
-	float3 Irradiance = ComVar_Texture_SkyCubeTexture.SampleLevel(ComVar_Texture_SkyCubeTextureSampler, N, 10.0f).rgb;
+	float3 Irradiance = ComVar_Texture_SkyCubeTexture.SampleLevel(ComVar_Texture_SkyCubeTextureSampler, N, REFLECTION_CAPTURE_DIFFUSE_MIP).rgb;
 
 	float3 Diffuse = Irradiance * DiffuseColor;
 
