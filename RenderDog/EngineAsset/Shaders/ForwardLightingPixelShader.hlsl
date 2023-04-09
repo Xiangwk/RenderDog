@@ -5,7 +5,6 @@
 ////////////////////////////////////////
 
 #include "LightingCommon.hlsl"
-//#include "PhongLightingCommon.hlsl"
 #include "ShadowTestCommon.hlsl"
 #include "Material.hlsl"
 
