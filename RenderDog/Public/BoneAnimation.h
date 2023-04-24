@@ -11,6 +11,7 @@
 #include "Quaternion.h"
 
 #include <vector>
+#include <string>
 #include <unordered_map>
 
 namespace RenderDog
